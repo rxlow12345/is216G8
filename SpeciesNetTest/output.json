@@ -1,0 +1,350 @@
+{
+ "predictions": [
+  {
+   "filepath": "C:/wamp64/www/WAD2/Project Stuff/SpeciesNetTest/wildlife-images/CG18-Wildlife-Hawksbill-Turtle-Credit-National-Parks-Board.webp",
+   "classifications": {
+    "classes": [
+     "446887df-3477-4f4a-a434-852f96ba48d9;reptilia;testudines;emydidae;emys;marmorata;western pond turtle",
+     "b1352069-a39c-4a84-a949-60044271c0c1;aves;;;;;bird",
+     "2dca052b-dff5-4cc9-8072-1282c5713286;mammalia;cetartiodactyla;giraffidae;giraffa;camelopardalis;giraffe",
+     "539ebd55-081b-429a-9ae6-5a6a0f6999d4;mammalia;cetartiodactyla;bovidae;bison;bison;american bison",
+     "1ae5230b-5168-4491-ad4e-19583eb21b52;mammalia;cetartiodactyla;bovidae;tragelaphus;scriptus;bushbuck"
+    ],
+    "scores": [
+     0.8435,
+     0.0293,
+     0.0139,
+     0.0043,
+     0.0033
+    ]
+   },
+   "detections": [
+    {
+     "category": "1",
+     "label": "animal",
+     "conf": 0.9245,
+     "bbox": [
+      0.0947,
+      0.0594,
+      0.8602,
+      0.7808
+     ]
+    }
+   ],
+   "prediction": "446887df-3477-4f4a-a434-852f96ba48d9;reptilia;testudines;emydidae;emys;marmorata;western pond turtle",
+   "prediction_score": 0.8435,
+   "prediction_source": "classifier",
+   "model_version": "4.0.1a"
+  },
+  {
+   "filepath": "C:/wamp64/www/WAD2/Project Stuff/SpeciesNetTest/wildlife-images/Common-palm-civet.webp",
+   "classifications": {
+    "classes": [
+     "20e0c8d9-c445-44b5-87fc-d5bb9724e874;mammalia;carnivora;viverridae;paradoxurus;hermaphroditus;common palm civet",
+     "05a177f4-8da4-400f-ad72-0a8437a1eea6;mammalia;carnivora;viverridae;paguma;larvata;masked palm civet",
+     "127278f5-8bf3-4f85-ba19-99e097f17f46;mammalia;carnivora;viverridae;civettictis;civetta;african civet",
+     "c56031a6-f8ce-4929-b6eb-b5253d4e1cdc;mammalia;carnivora;procyonidae;procyon;cancrivorus;crab-eating raccoon",
+     "b57debc1-dff2-48d3-a400-f2b5021e71b0;mammalia;carnivora;procyonidae;procyon;lotor;northern raccoon"
+    ],
+    "scores": [
+     0.9474,
+     0.0222,
+     0.0085,
+     0.0052,
+     0.0016
+    ]
+   },
+   "detections": [
+    {
+     "category": "1",
+     "label": "animal",
+     "conf": 0.6081,
+     "bbox": [
+      0.23,
+      0.2556,
+      0.4925,
+      0.3511
+     ]
+    },
+    {
+     "category": "1",
+     "label": "animal",
+     "conf": 0.0359,
+     "bbox": [
+      0.0,
+      0.2511,
+      0.7275,
+      0.5889
+     ]
+    }
+   ],
+   "prediction": "20e0c8d9-c445-44b5-87fc-d5bb9724e874;mammalia;carnivora;viverridae;paradoxurus;hermaphroditus;common palm civet",
+   "prediction_score": 0.9474,
+   "prediction_source": "classifier",
+   "model_version": "4.0.1a"
+  },
+  {
+   "filepath": "C:/wamp64/www/WAD2/Project Stuff/SpeciesNetTest/wildlife-images/Malayan-colugo.webp",
+   "classifications": {
+    "classes": [
+     "739a105e-d883-4ff8-9282-7ec44018e6a0;reptilia;;;;;reptile",
+     "f1856211-cfb7-4a5b-9158-c0f72fd09ee6;;;;;;blank",
+     "97efc2f7-1480-44a8-bade-936e91789e98;aves;galliformes;phasianidae;lophura;nycthemera;silver pheasant",
+     "f67c4346-bbbd-43d5-9b19-b541d493019b;mammalia;rodentia;sciuridae;tamiasciurus;douglasii;douglas's squirrel",
+     "4898c4d3-b7f2-4ce5-ae25-5d4acdfaa39c;mammalia;rodentia;sciuridae;otospermophilus;variegatus;rock squirrel"
+    ],
+    "scores": [
+     0.4883,
+     0.1566,
+     0.0188,
+     0.0123,
+     0.0122
+    ]
+   },
+   "detections": [
+    {
+     "category": "1",
+     "label": "animal",
+     "conf": 0.9216,
+     "bbox": [
+      0.47,
+      0.0978,
+      0.4938,
+      0.9022
+     ]
+    }
+   ],
+   "prediction": "1f689929-883d-4dae-958c-3d57ab5b6c16;;;;;;animal",
+   "prediction_score": 0.9216,
+   "prediction_source": "detector",
+   "model_version": "4.0.1a"
+  },
+  {
+   "filepath": "C:/wamp64/www/WAD2/Project Stuff/SpeciesNetTest/wildlife-images/Otter.webp",
+   "classifications": {
+    "classes": [
+     "07709a39-6d4b-4973-bc8e-3543ce208611;mammalia;carnivora;mustelidae;pteronura;brasiliensis;giant otter",
+     "a70c87e9-62bc-41c2-9e36-96fed9136046;mammalia;carnivora;mustelidae;lontra;canadensis;north american river otter",
+     "0f132580-6fc9-4ffa-8e6d-39cdc00c359e;mammalia;carnivora;mustelidae;lutra;lutra;eurasian otter",
+     "47271bc2-de1a-4ee4-8353-9039a1847f11;mammalia;carnivora;mustelidae;lontra;longicaudis;neotropical otter",
+     "7a839b39-9916-45ec-a01b-d88d814a11ed;mammalia;rodentia;myocastoridae;myocastor;coypus;nutria"
+    ],
+    "scores": [
+     0.6569,
+     0.3177,
+     0.0182,
+     0.0029,
+     0.0014
+    ]
+   },
+   "detections": [
+    {
+     "category": "1",
+     "label": "animal",
+     "conf": 0.7019,
+     "bbox": [
+      0.25,
+      0.0111,
+      0.5025,
+      0.9822
+     ]
+    }
+   ],
+   "prediction": "07709a39-6d4b-4973-bc8e-3543ce208611;mammalia;carnivora;mustelidae;pteronura;brasiliensis;giant otter",
+   "prediction_score": 0.6569,
+   "prediction_source": "classifier",
+   "model_version": "4.0.1a"
+  },
+  {
+   "filepath": "C:/wamp64/www/WAD2/Project Stuff/SpeciesNetTest/wildlife-images/Raffles-banded-langur.jpg",
+   "classifications": {
+    "classes": [
+     "13997909-c989-4400-9c2d-b9524976269c;mammalia;primates;cercopithecidae;cercopithecus;mitis;blue monkey",
+     "6d82d7e3-7bab-43dd-956d-f72c664aec42;mammalia;primates;cercopithecidae;lophocebus;albigena;grey-cheeked mangabey",
+     "55ca9b68-76bc-417d-87bf-aca0895f4500;mammalia;primates;cercopithecidae;piliocolobus;gordonorum;udzungwa red colobus",
+     "eee8373b-5d78-46e1-bead-739778b75b41;mammalia;primates;cercopithecidae;trachypithecus;hatinhensis;hatinh langur",
+     "62f2cd30-bf9e-4690-ad90-d987394e6157;mammalia;primates;cercopithecidae;presbytis;thomasi;thomas's langur"
+    ],
+    "scores": [
+     0.2161,
+     0.1955,
+     0.1662,
+     0.0631,
+     0.0479
+    ]
+   },
+   "detections": [
+    {
+     "category": "1",
+     "label": "animal",
+     "conf": 0.9336,
+     "bbox": [
+      0.1713,
+      0.0022,
+      0.59,
+      0.9822
+     ]
+    }
+   ],
+   "prediction": "feb9186e-13c5-4806-8852-5768d3dcde79;mammalia;primates;cercopithecidae;;;cercopithecidae family",
+   "prediction_score": 0.6887,
+   "prediction_source": "classifier+rollup_to_family",
+   "model_version": "4.0.1a"
+  },
+  {
+   "filepath": "C:/wamp64/www/WAD2/Project Stuff/SpeciesNetTest/wildlife-images/Singapore-wildlife-Hornbill.webp",
+   "classifications": {
+    "classes": [
+     "f7d316a3-0c5b-49b7-8bd7-7b116939caab;aves;bucerotiformes;bucerotidae;bycanistes;bucinator;trumpeter hornbill",
+     "37ee3aa1-ba29-4700-b8fb-76a338fe1dbc;aves;galliformes;cracidae;pipile;cumanensis;blue-throated piping-guan",
+     "e8082989-aa2f-4aa6-a457-19adfd77fabc;aves;bucerotiformes;bucerotidae;bucorvus;leadbeateri;southern ground-hornbill",
+     "92ef4613-3dff-488a-9cd8-b8517715058e;aves;piciformes;picidae;dryocopus;javensis;white-bellied woodpecker",
+     "5c5096b1-cb49-4186-98b8-6486f3f0be19;aves;musophagiformes;musophagidae;musophaga;rossae;ross's turaco"
+    ],
+    "scores": [
+     0.3827,
+     0.1821,
+     0.0789,
+     0.0412,
+     0.027
+    ]
+   },
+   "detections": [
+    {
+     "category": "1",
+     "label": "animal",
+     "conf": 0.9001,
+     "bbox": [
+      0.0575,
+      0.0444,
+      0.8462,
+      0.9244
+     ]
+    },
+    {
+     "category": "1",
+     "label": "animal",
+     "conf": 0.0438,
+     "bbox": [
+      0.255,
+      0.0511,
+      0.6237,
+      0.5622
+     ]
+    }
+   ],
+   "prediction": "b1352069-a39c-4a84-a949-60044271c0c1;aves;;;;;bird",
+   "prediction_score": 0.7119,
+   "prediction_source": "classifier+rollup_to_class",
+   "model_version": "4.0.1a"
+  },
+  {
+   "filepath": "C:/wamp64/www/WAD2/Project Stuff/SpeciesNetTest/wildlife-images/Sunda-pangolin.webp",
+   "classifications": {
+    "classes": [
+     "6cc43c63-2730-4495-8d1e-3c3b1c1b9793;mammalia;pholidota;manidae;manis;javanica;sunda pangolin",
+     "0763523f-9416-40ac-bda5-b12fa62bc871;mammalia;pholidota;manidae;smutsia;gigantea;giant ground pangolin",
+     "1ccdb5c3-88b4-498a-b8c8-0ff9fc5484c6;mammalia;cingulata;chlamyphoridae;cabassous;unicinctus;southern naked-tailed armadillo",
+     "d23e77b7-0314-4129-b2e8-810e9c4771e7;mammalia;cingulata;chlamyphoridae;priodontes;maximus;giant armadillo",
+     "ade3ecab-c110-429a-849e-b6afdb290219;mammalia;pholidota;manidae;manis;;pangolin species"
+    ],
+    "scores": [
+     0.5783,
+     0.2145,
+     0.0425,
+     0.0323,
+     0.0282
+    ]
+   },
+   "detections": [
+    {
+     "category": "1",
+     "label": "animal",
+     "conf": 0.7887,
+     "bbox": [
+      0.13,
+      0.1733,
+      0.6675,
+      0.6067
+     ]
+    }
+   ],
+   "prediction": "b1cefdc9-af34-4f28-b077-1186dd6b5072;mammalia;pholidota;manidae;;;pangolin family",
+   "prediction_score": 0.821,
+   "prediction_source": "classifier+rollup_to_family",
+   "model_version": "4.0.1a"
+  },
+  {
+   "filepath": "C:/wamp64/www/WAD2/Project Stuff/SpeciesNetTest/wildlife-images/The-Malayan-porcupine.webp",
+   "classifications": {
+    "classes": [
+     "e8490543-5bea-46a7-a326-a02142d2e6e1;mammalia;rodentia;hystricidae;hystrix;brachyura;malayan porcupine",
+     "3e764b23-9c39-4172-a386-09ecf92dffc5;mammalia;rodentia;hystricidae;hystrix;africaeaustralis;cape porcupine",
+     "cb86bb15-bf32-453f-930f-68da02c4b521;mammalia;rodentia;hystricidae;hystrix;cristata;crested porcupine",
+     "90d950db-2106-4bd9-a4c1-777604c3eada;mammalia;rodentia;;;;rodent",
+     "f2d233e3-80e3-433d-9687-e29ecc7a467a;mammalia;;;;;mammal"
+    ],
+    "scores": [
+     0.6151,
+     0.095,
+     0.0785,
+     0.0413,
+     0.0209
+    ]
+   },
+   "detections": [
+    {
+     "category": "1",
+     "label": "animal",
+     "conf": 0.8953,
+     "bbox": [
+      0.1163,
+      0.0444,
+      0.5825,
+      0.8578
+     ]
+    }
+   ],
+   "prediction": "2a0223ce-bf36-4acd-996a-20ecdaa472ac;mammalia;rodentia;hystricidae;hystrix;;hystrix species",
+   "prediction_score": 0.7886,
+   "prediction_source": "classifier+rollup_to_genus",
+   "model_version": "4.0.1a"
+  },
+  {
+   "filepath": "C:/wamp64/www/WAD2/Project Stuff/SpeciesNetTest/wildlife-images/Wild-boar.webp",
+   "classifications": {
+    "classes": [
+     "d372cda5-a8ca-4b7b-97ed-4e4fab9c9b4b;mammalia;cetartiodactyla;suidae;sus;scrofa;wild boar",
+     "b1352069-a39c-4a84-a949-60044271c0c1;aves;;;;;bird",
+     "6130285b-ff22-4602-b7e8-ef92e3a527da;mammalia;cetartiodactyla;suidae;potamochoerus;larvatus;bushpig",
+     "a0c46acc-fd6a-45b2-9f11-b701129b2633;mammalia;cetartiodactyla;suidae;sus;;sus species",
+     "f2d233e3-80e3-433d-9687-e29ecc7a467a;mammalia;;;;;mammal"
+    ],
+    "scores": [
+     0.9867,
+     0.006,
+     0.0025,
+     0.0017,
+     0.0006
+    ]
+   },
+   "detections": [
+    {
+     "category": "1",
+     "label": "animal",
+     "conf": 0.9174,
+     "bbox": [
+      0.0987,
+      0.0333,
+      0.7425,
+      0.9422
+     ]
+    }
+   ],
+   "prediction": "d372cda5-a8ca-4b7b-97ed-4e4fab9c9b4b;mammalia;cetartiodactyla;suidae;sus;scrofa;wild boar",
+   "prediction_score": 0.9867,
+   "prediction_source": "classifier",
+   "model_version": "4.0.1a"
+  }
+ ]
+}
