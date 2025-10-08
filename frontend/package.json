@@ -1,0 +1,20 @@
+{
+  "name": "critter-connect-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frontend for Critter Connect",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.4.0",
+    "axios": "^1.7.5",
+    "bootstrap": "^5.3.3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "vite": "^7.1.9"
+  }
+}

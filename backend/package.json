@@ -1,0 +1,22 @@
+{
+  "name": "critter-connect-backend",
+  "version": "1.0.0",
+  "description": "Backend for Critter Connect",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "build:frontend": "cd ../frontend && npm run build",
+    "serve:prod": "npm run build:frontend && node index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "firebase-admin": "^13.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
