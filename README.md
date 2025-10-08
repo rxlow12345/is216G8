@@ -1,9 +1,4 @@
-# 🦋 Critter Connect
-
-Critter Connect is a web application built with **Vue 3 + Vite** (frontend) and **Node.js + Express + Firebase** (backend).  
-
-
----
+# 🦋 Critter Connects
 
 ## 🚀 Getting Started
 
