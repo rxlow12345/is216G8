@@ -28,3 +28,7 @@ pnpm-debug.log*
 .idea/
 .DS_Store
 Thumbs.db
+
+# speciesnet-api related
+speciesnet-api/venv
+speciesnet-api/app/__pycache__

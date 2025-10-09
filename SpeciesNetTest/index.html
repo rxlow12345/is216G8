@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Axios Image Upload with Timing</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <h1>Speciesnet API Test</h1>
+  <input id="file" type="file" accept="image/*" />
+  <button id="send">Send</button>
+  <pre id="out"></pre>
+  <script>
+    const API_URL = "http://34.126.93.66:8000/predict";
+    const out = document.getElementById('out');
+    const fileEl = document.getElementById('file');
+
+    document.getElementById('send').addEventListener('click', async () => {
+      const file = fileEl.files[0];
+      if (!file) {
+        alert('Select an image file first');
+        return;
+      }
+
+      const form = new FormData();
+      form.append('file', file);
+
+      out.textContent = 'Uploading...';
+
+      const start = Date.now();
+      try {
+        const response = await axios.post(API_URL, form, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          timeout: 120000 // 2 minutes, prediction is slow
+        });
+        const elapsed = Date.now() - start;
+
+        const pred = response.data.predictions.predictions.[0];
+        const prediction = pred.prediction ?? 'N/A';
+        const score = pred.prediction_score ?? 'N/A';
+
+        out.textContent =  `Prediction: ${prediction}
+                            Score: ${score}
+                            Time taken: ${elapsed} ms`;
+
+      } catch (error) {
+        const elapsed = Date.now() - start;
+        const msg = error.response?.data ? JSON.stringify(error.response.data) : error.message;
+        out.textContent = `Request failed after ${elapsed} ms\n${msg}`;
+      }
+    });
+  </script>
+</body>
+</html>
