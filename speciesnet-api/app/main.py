@@ -10,7 +10,7 @@ app = FastAPI(title="SpeciesNet API", version="1.0")
 # Allow requests from localhost for testing, or "*" for all origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost"],  # or ["*"] for all
+    allow_origins=["*"],  # or ["*"] for all
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
