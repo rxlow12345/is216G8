@@ -39,9 +39,7 @@
         const prediction = pred.prediction ?? 'N/A';
         const score = pred.prediction_score ?? 'N/A';
 
-        out.textContent =  `Prediction: ${prediction}
-                            Score: ${score}
-                            Time taken: ${elapsed} ms`;
+        out.textContent =  `Prediction: ${prediction}\nScore: ${score}\nTime taken: ${elapsed} ms`;
 
       } catch (error) {
         const elapsed = Date.now() - start;
