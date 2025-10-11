@@ -24,9 +24,12 @@ Storage: 40gb
 
 Allow HTTP and HTTPS
 
-## Container image url
+## Docker Image URL and Tag
 
-Docker container url:
+Docker image URL:
+`https://hub.docker.com/layers/ryanc9029/speciesnet-api/latest/images/sha256-5761217309157d47d73a144973bca41cfb702a6dc1ba860c286d3fbe59e3383b`
+
+Docker image tag
 `docker.io/ryanc9029/speciesnet-api:latest`
 
 ## Pull
