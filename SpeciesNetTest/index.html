@@ -35,7 +35,7 @@
         });
         const elapsed = Date.now() - start;
 
-        const pred = response.data.predictions.predictions.[0];
+        const pred = response.data.predictions.predictions[0];
         const prediction = pred.prediction ?? 'N/A';
         const score = pred.prediction_score ?? 'N/A';
 

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wildlife Incident Report</title>
+    <link rel="stylesheet" href="css/report.css">
+    <script src="js/report.js"></script>
+</head>
+<body>
+    <h1>🐾 Wildlife Incident Report</h1>
+    <p>Please provide details about the wildlife incident you observed. This information will help wildlife rescue teams respond appropriately.</p>
+
+    <form id="reportForm">
+        <!-- Reporter Information -->
+        <div class="form-section">
+            <h3>1. Reporter Information</h3>
+            
+            <div class="form-group">
+                <label for="reporterName">Full Name <span class="required">*</span></label>
+                <input type="text" id="reporterName" name="reporterName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="contactEmail">Email Address <span class="required">*</span></label>
+                <input type="email" id="contactEmail" name="contactEmail" required>
+            </div>
+
+            <div class="form-group">
+                <label for="contactPhone">Phone Number</label>
+                <input type="tel" id="contactPhone" name="contactPhone">
+            </div>
+
+        </div>
+
+        <!-- Incident Details -->
+        <div class="form-section">
+            <h3>2. Incident Details</h3>
+
+            <div class="form-group">
+                <label for="incidentType">Type of Incident <span class="required">*</span></label>
+                <select id="incidentType" name="incidentType" required>
+                    <option value="">Select incident type</option>
+                    <option value="misplaced">Misplaced (animal in wrong location)</option>
+                    <option value="injured">Injured</option>
+                    <option value="trapped">Trapped</option>
+                    <option value="dead">Dead</option>
+                    <option value="others">Others</option>
+                </select>
+                <input type="text" id="incidentTypeOther" placeholder="Please specify..." style="display:none; margin-top:10px;">
+            </div>
+
+            <div class="form-group">
+                <label for="severity">Severity Level <span class="required">*</span></label>
+                <select id="severity" name="severity" required>
+                    <option value="">Select severity</option>
+                    <option value="low">Low - Not urgent</option>
+                    <option value="moderate">Moderate - Needs attention</option>
+                    <option value="urgent">Urgent - Immediate action needed</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">What did you observe? <span class="required">*</span></label>
+                <textarea id="description" name="description" placeholder="Please describe what you saw, including the animal's condition, behavior, and any immediate threats..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="photos">Photos/Videos (Optional)</label>
+                <input type="file" id="photos" name="photos" multiple accept="image/*,video/*">
+                <small>Upload photos or videos that show the animal and incident location</small>
+                <!-- Species identification message area -->
+                <div id="speciesDetectionMessage" style="margin-top: 10px; min-height: 20px;"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location <span class="required">*</span></label>
+                <input type="text" id="location" name="location" placeholder="e.g., Marina Bay Sands, Orchard Road, Singapore Botanic Gardens" required>
+                <small style="display: block; margin-top: 5px;">Please provide the specific location where you observed the wildlife incident (street name, landmark, park, etc.)</small>
+            </div>
+
+            <div class="form-group">
+                <label for="sightingDateTime">Date & Time of Sighting <span class="required">*</span></label>
+                <input type="datetime-local" id="sightingDateTime" name="sightingDateTime" required>
+            </div>
+        </div>
+
+        <!-- Animal Identification -->
+        <div class="form-section">
+            <h3>3. Animal Identification</h3>
+
+            <div class="form-group">
+                <label for="speciesName">Species Name (if known)</label>
+                <input type="text" id="speciesName" name="speciesName" placeholder="e.g., Common Palm Civet, Hornbill, Wild Boar">
+            </div>
+
+            <div class="form-group">
+                <label for="animalCondition">Special Behavior or Condition</label>
+                <textarea id="animalCondition" name="animalCondition" placeholder="e.g., limping, bleeding, nesting, aggressive behavior, etc."></textarea>
+            </div>
+        </div>
+
+        <!-- Reporter Assessment -->
+        <div class="form-section">
+            <h3>4. Quick Assessment</h3>
+
+            <div class="form-group">
+                <label>Is the animal moving normally? <span class="required">*</span></label>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="movingYes" name="isMovingNormally" value="yes" required>
+                        <label for="movingYes">Yes</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="movingNo" name="isMovingNormally" value="no" required>
+                        <label for="movingNo">No</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="movingUnknown" name="isMovingNormally" value="unknown" required>
+                        <label for="movingUnknown">Not sure</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Is it in immediate danger? <span class="required">*</span></label>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="dangerYes" name="isInDanger" value="yes" required>
+                        <label for="dangerYes">Yes (e.g., on road, in drain)</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="dangerNo" name="isInDanger" value="no" required>
+                        <label for="dangerNo">No</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="dangerUnknown" name="isInDanger" value="unknown" required>
+                        <label for="dangerUnknown">Not sure</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Has anyone already called a rescue hotline? <span class="required">*</span></label>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="rescueYes" name="rescueCalled" value="yes" required>
+                        <label for="rescueYes">Yes</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="rescueNo" name="rescueCalled" value="no" required>
+                        <label for="rescueNo">No</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="rescueUnknown" name="rescueCalled" value="unknown" required>
+                        <label for="rescueUnknown">Not sure</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Would you like to stay on-site until help arrives? <span class="required">*</span></label>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="stayYes" name="stayingOnSite" value="yes" required>
+                        <label for="stayYes">Yes, I can stay</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="stayNo" name="stayingOnSite" value="no" required>
+                        <label for="stayNo">No, I cannot stay</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="stayMaybe" name="stayingOnSite" value="maybe" required>
+                        <label for="stayMaybe">Maybe, depends on timing</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" id="submitBtn">Submit Report</button>
+    </form>
+
+    <div id="status" class="status"></div>
+
+    <div style="margin-top: 30px; padding: 20px; background: #e8f5e8; border-radius: 8px; font-size: 14px;">
+        <strong>Emergency Contacts:</strong><br>
+        • Wildlife Rescue: 1800-476-1600<br>
+        • SPCA: 6287-5355<br>
+        • NParks: 1800-471-7300<br><br>
+        <em>For immediate threats to life, call 999 first, then submit this report.</em>
+    </div>
+</body>
+</html>
