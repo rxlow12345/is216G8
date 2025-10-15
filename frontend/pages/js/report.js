@@ -152,7 +152,7 @@ async function identifySpecies(imageFile) {
         const speciesDetectionMessage = document.getElementById('speciesDetectionMessage');
         if (error.message.includes('timeout') || error.message.includes('Network Error')) {
             speciesDetectionMessage.innerHTML = `
-                <div style="color: #ff9800; font-weight: bold; background: #fff3e0; padding: 10px; border-radius: 4px; font-size: 14px;">
+                <div style="color: #000000ff; font-weight: bold; background: #af800a; padding: 10px; border-radius: 4px; font-size: 14px;">
                     ⏱️ Species identification is taking longer than expected. Please try again or enter species name manually.
                 </div>
             `;
@@ -177,7 +177,7 @@ function displaySpeciesResults(predictions) {
             // Check if species was unidentified
             if (topPrediction.unidentified) {
                 speciesDetectionMessage.innerHTML = `
-                   <div style="color: #ff9800; font-weight: bold; background: #fff3e0; padding: 10px; border-radius: 4px; font-size: 14px;">
+                   <div style="color: #000000ff; font-weight: bold; background: #af800a; padding: 10px; border-radius: 4px; font-size: 14px;">
                         <em>${topPrediction.message || 'No specific species could be identified. Please enter the species name manually below.'}</em>
                         <br><small style="color: #666; font-weight: normal; margin-top: 5px; display: block;">
                             💡 Tip: You can enter common names like "Hornbill", "Wild Boar", "Palm Civet", etc.
@@ -201,7 +201,7 @@ function displaySpeciesResults(predictions) {
             
             // Show identification results
             speciesDetectionMessage.innerHTML = `
-                <div style="color: #4caf50; font-weight: bold; background: #e8f5e8; padding: 10px; border-radius: 4px; font-size: 14px;">
+                <div style="color: #000000ff; font-weight: bold; background: #af800a; padding: 10px; border-radius: 4px; font-size: 14px;">
                     🐾 Species Identification Result:
                     <br><strong>${speciesName}</strong> (Confidence: ${confidence}%)
                     ${confidence >= 60 ? '<br><em>Species name automatically filled</em>' : '<br><em>Low confidence, please verify manually</em>'}
@@ -215,21 +215,21 @@ function displaySpeciesResults(predictions) {
                 ).join('<br>');
                 
                 speciesDetectionMessage.innerHTML += `
-                    <div style="color: #666; font-size: 12px; margin-top: 8px;">
+                    <div style="color: #000000ff; font-size: 12px; margin-top: 8px;">
                         Other possible species:<br>${additionalResults}
                     </div>
                 `;
             }
         } else {
             speciesDetectionMessage.innerHTML = `
-                <div style="color: #ff9800; font-weight: bold; background: #fff3e0; padding: 10px; border-radius: 4px; font-size: 14px;">
+                <div style="color: #000000ff; font-weight: bold; background: #af800a; padding: 10px; border-radius: 4px; font-size: 14px;">
                     ⚠️ Unable to identify species, please enter species name manually
                 </div>
             `;
         }
     } else {
         speciesDetectionMessage.innerHTML = `
-            <div style="color: #ff9800; font-weight: bold; background: #fff3e0; padding: 10px; border-radius: 4px; font-size: 14px;">
+            <div style="color: #000000ff; font-weight: bold; background: #af800a padding: 10px; border-radius: 4px; font-size: 14px;">
                 ⚠️ Species identification service temporarily unavailable, please enter species name manually
             </div>
         `;
@@ -386,7 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Show initial message
                 speciesDetectionMessage.innerHTML = `
-                    <div style="color: #2196F3; font-weight: bold; background: #e3f2fd; padding: 10px; border-radius: 4px; font-size: 14px;">
+                    <div style="color: ##000000ff; font-weight: bold; background: #af800a; padding: 10px; border-radius: 4px; font-size: 14px;">
                         🔍 Identifying species... This may take up to 30 seconds
                         <br><small style="color: #666; font-weight: normal;">Please wait while AI analyzes the image</small>
                         <div id="progressTimer" style="margin-top: 5px; font-size: 12px; color: #666;"></div>
@@ -414,7 +414,159 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // Wraps the Geolocation API in a Promise.
+
+// --- NEW CONCEPTUAL FUNCTION: Reverse Geocoding ---
+
+const OPENCAGE_API_KEY = "9047284f3fca4d20a801c1c973198406";
+const OPENCAGE_BASE_URL = "https://api.opencagedata.com/geocode/v1/json";
+
+// Helper function (remains the same)
+function getCurrentLocation() {
+    return new Promise((resolve, reject) => {
+        if (!("geolocation" in navigator)) {
+            return reject(new Error("Geolocation not supported."));
+        }
+        navigator.geolocation.getCurrentPosition(
+            (position) => resolve(position),
+            (error) => reject(error)
+        );
+    });
+}
+
+async function reverseGeocode(lat, lon) {
+    // 1. Construct the URL with coordinates and API key
+    // OpenCage uses the 'q' parameter with "latitude,longitude" format
+    const url = `${OPENCAGE_BASE_URL}?q=${lat}+${lon}&key=${OPENCAGE_API_KEY}`;
+
+    try {
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`OpenCage API request failed with status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // 2. Check for successful results
+        if (data.results && data.results.length > 0) {
+            // OpenCage returns the most specific address in results[0].formatted
+            return data.results[0].formatted;
+            
+        } else if (data.status.code === 402) {
+            // Handle error codes like 402 (Quota exceeded)
+             throw new Error("OpenCage quota exceeded or key invalid.");
+             
+        } else {
+            // No results found
+            return `No street address found for this location. (Lat: ${lat.toFixed(5)})`;
+        }
+
+    } catch (error) {
+        console.error("Reverse Geocoding Error:", error);
+        throw new Error("Failed to connect to the geocoding service.");
+    }
+}
+/**
+ * Creates and injects the Google Maps iframe centered on the given coordinates.
+ */
+let map = null; // Global variable for Leaflet map instance
+
+function embedMap(lat, lon) {
+    // 1. Get the current map container elements
+    const mapContainer = document.getElementById('map-container');
+    const osmMapDiv = document.getElementById('osm-map');
+
+    // CRITICAL SAFETY CHECK: Ensure the main Leaflet div exists
+    if (!osmMapDiv || !mapContainer) {
+        console.error("Map container HTML elements not found!");
+        return; // Exit the function if elements are missing
+    }
+
+    // 2. Clear previous map instance if it exists
+    if (map) {
+        map.remove();
+        map = null;
+    }
     
+    // 3. Initialize the Leaflet Map
+    map = L.map('osm-map').setView([lat, lon], 15);
+
+    // 4. Add the OpenStreetMap tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // 5. Add a marker
+    L.marker([lat, lon]).addTo(map)
+        .bindPopup("Your Location")
+        .openPopup();
+        
+    // 6. Make Visible and Invalidate Size
+    mapContainer.style.display = 'block';
+    
+    // Forces Leaflet to recalculate the container size, fixing blank map issues
+    map.invalidateSize(); 
+}
+
+// output of the first lat and lon becomes the input for the second function
+
+document.addEventListener('DOMContentLoaded', () => {
+    const locationInput = document.getElementById('location');
+    const locationBtn = document.getElementById('live-location-btn');
+    const spinner = locationBtn.querySelector('.spinner-border');
+    const mapContainer = document.getElementById('map-container');
+    if (mapContainer) mapContainer.style.display = 'none';
+
+    locationBtn.addEventListener('click', async () => {
+        spinner.style.display = 'inline-block';
+        locationBtn.disabled = true;
+        locationInput.placeholder = "Locating address...";
+        locationInput.value = ""; // Clear old value
+
+        try {
+            // 1. Get the coordinates (AWAIT)
+            const position = await getCurrentLocation();
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            
+            // 2. Reverse Geocode the coordinates (AWAIT)
+            locationInput.placeholder = "Searching for street name...";
+            
+            // This line calls the OpenCage function defined above
+            // crucial step to take the lat and lon variables successfully
+            const address = await reverseGeocode(lat, lon); 
+
+            // 3. Fill the input with the readable address
+            locationInput.value = address; 
+            if (typeof embedMap === 'function') {
+                embedMap(lat, lon); 
+            }
+            
+        } catch (error) {
+            let errorMessage = 'Unable to get location.';
+            console.log("the full error is", error);
+            if (error.message.includes('permission denied')) {
+                errorMessage = 'Geolocation permission denied.';
+            } else if (error.message.includes('OpenCage')) {
+                 errorMessage = error.message; // Use specific OpenCage error
+            }
+
+            alert(`Error: ${errorMessage}`);
+            
+        } finally {
+            spinner.style.display = 'none';
+            locationBtn.disabled = false;
+            if (!locationInput.value) {
+                 locationInput.placeholder = "e.g., Marina Bay Sands...";
+            }
+        }
+    });
+});
+
+
     
 });
 
