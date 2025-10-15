@@ -20,7 +20,7 @@ const API_BASE_URL = isDevelopment
 // SpeciesNet API configuration
 const SPECIESNET_API_URL = isDevelopment 
     ? `${window.location.protocol}//${window.location.hostname}:8000`
-    : 'https://your-speciesnet-api-url.com'; // Production URL
+    : 'https://speciesnet-api-url.com'; // Production URL
 
 // Compress image before upload, Firestore doesn't allow to store large file
 function compressImage(file, maxWidth = 600, quality = 0.5) {
@@ -173,6 +173,26 @@ function displaySpeciesResults(predictions) {
         
         if (prediction && prediction.length > 0) {
             const topPrediction = prediction[0];
+            
+            // Check if species was unidentified
+            if (topPrediction.unidentified) {
+                speciesDetectionMessage.innerHTML = `
+                    <div style="color: #ff9800; font-weight: bold; background: #fff3e0; padding: 10px; border-radius: 4px; font-size: 14px;">
+                        🔍 Species Identification Result:
+                        <br><strong>No specific species identified</strong>
+                        <br><em>${topPrediction.message || 'Please enter the species name manually below.'}</em>
+                        <br><small style="color: #666; font-weight: normal; margin-top: 5px; display: block;">
+                            💡 Tip: You can enter common names like "Hornbill", "Wild Boar", "Palm Civet", etc.
+                        </small>
+                    </div>
+                `;
+                
+                // Focus on the species name input to encourage manual entry
+                speciesNameInput.focus();
+                speciesNameInput.placeholder = "Enter species name (e.g., Hornbill, Wild Boar, Palm Civet)";
+                return;
+            }
+            
             const speciesName = topPrediction.class_name || topPrediction.species || 'Unknown';
             const confidence = Math.round((topPrediction.confidence || topPrediction.score || 0) * 100);
             

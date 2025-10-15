@@ -3,9 +3,8 @@ import { v4 as uuidv4 } from 'uuid'; // Generate random ID
 import axios from 'axios';
 import FormData from 'form-data';
 
-// SpeciesNet API configuration
+// SpeciesNet API configuration - using the working remote API
 const SPECIESNET_API_URL = process.env.SPECIESNET_API_URL || 'http://34.126.93.66:8000';
-
 
 // Call SpeciesNet API for species identification
 export const identifySpecies = async (req, res) => {
@@ -37,28 +36,57 @@ export const identifySpecies = async (req, res) => {
         },
         timeout: 60000 // 60 second timeout (SpeciesNet takes ~25-30 seconds)
       });
-
-       // Parse the real SpeciesNet API response format
+      
+      // Parse the real SpeciesNet API response format
       const predictions = response.data.predictions;
       let formattedPredictions = {};
       
       if (predictions && predictions.predictions && predictions.predictions.length > 0) {
         // Convert the real API format to our expected format
         const pred = predictions.predictions[0];
-        const speciesName = pred.prediction.split(';').pop(); // Get last part (e.g., "domestic cat")
+        
+        // Extract species name from the prediction string
+        // Format: "uuid;class;order;family;genus;species;common_name"
+        // We want the common_name (last part after splitting by ';')
+        const predictionParts = pred.prediction.split(';');
+        const speciesName = predictionParts.length > 0 ? predictionParts[predictionParts.length - 1] : 'Unknown';
         const confidence = pred.prediction_score;
         
-        formattedPredictions = {
-          "image.jpg": [
-            {
-              "class_name": speciesName,
-              "confidence": confidence
-            }
-          ]
-        };
+        // Check if we have a meaningful species identification
+        // If the species name is empty, generic, or very low confidence, treat as unidentified
+        const isGenericOrEmpty = !speciesName || 
+                                speciesName.trim() === '' || 
+                                speciesName.toLowerCase() === 'unknown' ||
+                                speciesName.toLowerCase() === 'animal' ||
+                                speciesName.toLowerCase() === 'mammal' ||
+                                speciesName.toLowerCase() === 'blank' ||
+                                confidence < 0.3; // Less than 30% confidence
+        
+        if (isGenericOrEmpty) {
+          // Return a special indicator that no specific species was identified
+          formattedPredictions = {
+            "image.jpg": [
+              {
+                "class_name": null, // No specific species identified
+                "confidence": confidence,
+                "unidentified": true,
+                "message": "No specific species could be identified. Please enter the species name manually."
+              }
+            ]
+          };
+        } else {
+          formattedPredictions = {
+            "image.jpg": [
+              {
+                "class_name": speciesName,
+                "confidence": confidence
+              }
+            ]
+          };
+        }
       }
       
-     res.json({
+      res.json({
         success: true,
         data: {
           predictions: formattedPredictions,
