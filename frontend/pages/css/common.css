@@ -1,4 +1,27 @@
-* {
-    margin: 0;
-    padding: 0;
+.logo-section {
+    background-color:#fbffd0;
+    padding: 40px;
+    width: 100%;
+    margin: auto;
+    text-align: center;
+    position: relative
+
+}
+
+.navbar{
+    background-color: transparent;
+}
+
+.logo-section img{
+    height: 200px;
+    width: 200px;
+}
+
+.title-section {
+    background-color:#052507;
+    color: white;
+    padding: 30px;
+    width: 100%;
+    margin: auto;
+    text-align: center;
 }
