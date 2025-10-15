@@ -177,10 +177,8 @@ function displaySpeciesResults(predictions) {
             // Check if species was unidentified
             if (topPrediction.unidentified) {
                 speciesDetectionMessage.innerHTML = `
-                    <div style="color: #ff9800; font-weight: bold; background: #fff3e0; padding: 10px; border-radius: 4px; font-size: 14px;">
-                        🔍 Species Identification Result:
-                        <br><strong>No specific species identified</strong>
-                        <br><em>${topPrediction.message || 'Please enter the species name manually below.'}</em>
+                   <div style="color: #ff9800; font-weight: bold; background: #fff3e0; padding: 10px; border-radius: 4px; font-size: 14px;">
+                        <em>${topPrediction.message || 'No specific species could be identified. Please enter the species name manually below.'}</em>
                         <br><small style="color: #666; font-weight: normal; margin-top: 5px; display: block;">
                             💡 Tip: You can enter common names like "Hornbill", "Wild Boar", "Palm Civet", etc.
                         </small>
