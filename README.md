@@ -67,11 +67,12 @@ This structure helps keep the code modular and maintainable.
 
 ---
 
-### 4. Start Servers
+### 4. Start Servers 
 
 #### 🧱 Backend (runs on http://localhost:4100)
 
 ```bash
+#open new Terminal
 cd backend
 npm run dev
 ```
@@ -79,6 +80,7 @@ npm run dev
 #### 💻 Frontend (runs on http://localhost:5175)
 
 ```bash
+#open new Terminal
 cd frontend
 npm run dev
 ```
