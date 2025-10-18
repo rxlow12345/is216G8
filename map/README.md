@@ -49,22 +49,19 @@ frontend/
 │   Contains: VITE_OPENCAGE_API_KEY, VITE_API_URL
 │
 └── package.json                    📦 DEPENDENCIES
-Purpose: Lists all npm packages needed
-Contains: vue, leaflet, socket.io-client, axios
-
+    Purpose: Lists all npm packages needed
+    Contains: vue, leaflet, socket.io-client, axios
 ```
 
 ### **Backend Files**
-
 ```
-
 backend/
 ├── server.js                       🖥️ MAIN SERVER
 │   Purpose: Express server + WebSocket server
 │   Role: Handles HTTP requests, manages WebSocket connections
-│   Does:
+│   Does: 
 │     - Starts Express server on port 3000
-│     - Initializes [Socket.io](http://socket.io/) for real-time
+│     - Initializes Socket.io for real-time
 │     - Sets up CORS for frontend communication
 │     - Routes all /api/reports to reports.js
 │
@@ -84,9 +81,8 @@ backend/
 │   Contains: PORT, FRONTEND_URL, Firebase keys
 │
 └── package.json                    📦 DEPENDENCIES
-Purpose: Backend packages
-Contains: express, cors, [socket.io](http://socket.io/), firebase-admin
-
+    Purpose: Backend packages
+    Contains: express, cors, socket.io, firebase-admin
 ```
 
 ---
@@ -94,63 +90,55 @@ Contains: express, cors, [socket.io](http://socket.io/), firebase-admin
 ## 🔄 Part 2: How Everything Connects
 
 ### **Startup Flow:**
-
 ```
-
-1. User opens browser → [http://localhost:5173](http://localhost:5173/)
-↓
+1. User opens browser → http://localhost:5173
+   ↓
 2. main.js runs → Creates Vue app
-↓
+   ↓
 3. router/index.js checks URL → Loads RescueDashboard.vue
-↓
+   ↓
 4. RescueDashboard.vue mounts:
-├─→ Calls api.js.getReports() → HTTP request to backend
-├─→ Calls socket.js.connect() → WebSocket to backend
-├─→ Renders MapView.vue (passes reports as props)
-└─→ Renders ReportCard.vue for each report
-↓
+   ├─→ Calls api.js.getReports() → HTTP request to backend
+   ├─→ Calls socket.js.connect() → WebSocket to backend
+   ├─→ Renders MapView.vue (passes reports as props)
+   └─→ Renders ReportCard.vue for each report
+   ↓
 5. Backend receives requests:
-├─→ Express handles HTTP (routes/reports.js)
-└─→ [Socket.io](http://socket.io/) handles WebSocket (server.js)
-
+   ├─→ Express handles HTTP (routes/reports.js)
+   └─→ Socket.io handles WebSocket (server.js)
 ```
 
 ### **Data Flow - Creating a Report:**
-
 ```
-
 User clicks "Create Report" in frontend
-↓
+   ↓
 api.js → POST /api/reports
-↓
+   ↓
 Backend routes/reports.js receives request
-↓
+   ↓
 Saves to database (currently in-memory array)
-↓
-Broadcasts via [Socket.io](http://socket.io/): io.emit('new-report', newReport)
-↓
+   ↓
+Broadcasts via Socket.io: io.emit('new-report', newReport)
+   ↓
 All connected clients receive WebSocket event
-↓
+   ↓
 socket.js captures event → calls registered listener
-↓
+   ↓
 RescueDashboard.vue adds report to reports array
-↓
+   ↓
 Vue reactivity updates:
-├─→ ReportCard.vue (new card appears in sidebar)
-└─→ MapView.vue (new marker appears on map)
-
+   ├─→ ReportCard.vue (new card appears in sidebar)
+   └─→ MapView.vue (new marker appears on map)
 ```
 
 ### **Component Communication:**
-
 ```
-
 RescueDashboard.vue (Parent)
-│
-├─→ Props down → MapView.vue
-│    Sends: reports array, center coordinates
-│    Receives: @marker-click events
-│
-└─→ Props down → ReportCard.vue (multiple instances)
-Sends: individual report object, selected status
-Receives: @click events
+   │
+   ├─→ Props down → MapView.vue
+   │    Sends: reports array, center coordinates
+   │    Receives: @marker-click events
+   │
+   └─→ Props down → ReportCard.vue (multiple instances)
+        Sends: individual report object, selected status
+        Receives: @click events
