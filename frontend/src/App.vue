@@ -20,9 +20,5 @@ export default {
 </template>
 
 <style>
-/* Add some simple styling for the active link */
-.router-link-exact-active {
-  color: #42b983;
-  font-weight: bold;
-}
+
 </style>
