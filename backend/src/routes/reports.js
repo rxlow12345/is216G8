@@ -4,7 +4,10 @@ import {
   //updateReportStatus -> to be included later
   uploadImage,
   getFallbackImage,
-  identifySpecies
+  identifySpecies,
+  getAllReports,
+  getReportById,
+  updateReportStatus
 } from '../controllers/reportController.js';
 
 const router = express.Router();
@@ -21,6 +24,13 @@ router.post('/', createReport);
 // Species identification using SpeciesNet API
 router.post('/identify-species', identifySpecies);
 
+// Gets a single report document from Firestore by its ID.
+router.get('/getAllReports', getAllReports);
 
+// Gets a single report document from Firestore by its ID.
+router.get('/getReport/:id', getReportById);
+
+// Updates the status of a single report document in Firestore.
+router.post('/updateReport/:id', updateReportStatus);
 export default router;
 

@@ -370,3 +370,105 @@ function generateReportId() {
   const random = Math.random().toString(36).substr(2, 5);
   return `WR-${timestamp}-${random}`.toUpperCase();
 }
+
+/**
+ * Gets all report documents from the 'reports' collection in Firestore.
+ */
+export const getAllReports = async (req, res) => {
+  try {
+    // Get a reference to the 'reports' collection, ordering by creation date descending
+    const reportsRef = db.collection('incidentReports').orderBy('createdAt', 'desc');
+    const snapshot = await reportsRef.get();
+
+    // The .map() function is a clean way to transform the snapshot documents
+    // into an array of plain JavaScript objects.
+    const reports = snapshot.docs.map(doc => ({
+      id: doc.id, // Include the document ID
+      ...doc.data() // Spread the rest of the document data
+    }));
+    
+    // Send the array of reports back to the client
+    res.status(200).json({
+      success: true,
+      data: reports
+    });
+
+  } catch (error) {
+    console.error("Error fetching all reports:", error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve reports'
+    });
+  }
+};
+
+/**
+ * Gets a single report document from Firestore by its ID.
+ */
+export const getReportById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Reference the document in the 'reports' collection
+    const reportRef = db.collection('incidentReports').doc(id);
+    const doc = await reportRef.get();
+
+    if (!doc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: 'Report not found'
+      });
+    }
+
+    // Send the document data back to the client
+    res.status(200).json({
+      success: true,
+      data: doc.data()
+    });
+
+  } catch (error) {
+    console.error("Error fetching report by ID:", error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve report'
+    });
+  }
+};
+
+/**
+ * Updates the status of a single report document in Firestore.
+ */
+export const updateReportStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body; // Expects a JSON body like { "status": "in-progress" }
+
+    // Basic validation to ensure a status was provided
+    if (!status) {
+      return res.status(400).json({
+        success: false,
+        message: 'A new status is required in the request body'
+      });
+    }
+
+    const reportRef = db.collection('incidentReports').doc(id);
+
+    // Update the status field and the updatedAt timestamp
+    await reportRef.update({
+      status: status,
+      updatedAt: new Date()
+    });
+
+    res.status(200).json({
+      success: true,
+      message: `Report ${id} status successfully updated to '${status}'`
+    });
+
+  } catch (error) {
+    console.error("Error updating report status:", error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update report status'
+    });
+  }
+};
