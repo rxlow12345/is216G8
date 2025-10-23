@@ -29,6 +29,7 @@ if (missingVars.length > 0) {
 }
 
 const firebaseConfig = {
+<<<<<<< HEAD
   apiKey: process.env.VITE_FIREBASE_API_KEY,
   authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.VITE_FIREBASE_PROJECT_ID,
@@ -36,6 +37,9 @@ const firebaseConfig = {
   messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.VITE_FIREBASE_APP_ID,
   measurementId: process.env.VITE_FIREBASE_MEASUREMENT_ID
+=======
+  // Replace with .env data
+>>>>>>> d8401f2238fd3dd53de72c30562fcb65f724a231
 };
 
 // Initialize Firebase
