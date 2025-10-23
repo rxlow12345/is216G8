@@ -123,3 +123,83 @@ export async function getCurrentUser() {
 export function onAuthStateChange(callback) {
   return onAuthStateChanged(auth, callback);
 }
+
+/**
+ * Check user authentication and role with automatic redirect
+ * @param {Object} router - Vue Router instance
+ * @param {string} requiredRole - Required role for access ('admin', 'reporter', or 'volunteer')
+ * @param {Object} reactiveData - Object containing userEmail and currentUser refs
+ * @returns {Promise<boolean>} True if user is authenticated and has required role
+ */
+export async function checkUserAuthAndRole(router, requiredRole, reactiveData = {}) {
+  try {
+    // Get current user
+    const user = await getCurrentUser();
+    
+    if (!user) {
+      // User not logged in - redirect to login
+      console.log('No user logged in, redirecting to login');
+      router.push('/login');
+      return false;
+    }
+    
+    // Store user info in reactive data if provided
+    if (reactiveData.userEmail) {
+      reactiveData.userEmail.value = user.email;
+    }
+    if (reactiveData.currentUser) {
+      reactiveData.currentUser.value = user;
+    }
+    
+    // Check if user has required role
+    if (user.role !== requiredRole) {
+      // User doesn't have required role - redirect to their appropriate dashboard
+      console.log(`User role is ${user.role}, redirecting to ${user.role} dashboard`);
+      router.push(`/${user.role}/dashboard`);
+      return false;
+    }
+    
+    // User is authenticated and has correct role
+    console.log(`${requiredRole} user authenticated:`, user.email);
+    return true;
+    
+  } catch (error) {
+    console.error('Error checking user authentication:', error);
+    router.push('/login');
+    return false;
+  }
+}
+
+/**
+ * Simple authentication check without role validation
+ * @param {Object} router - Vue Router instance
+ * @param {Object} reactiveData - Object containing userEmail and currentUser refs
+ * @returns {Promise<boolean>} True if user is authenticated
+ */
+export async function checkUserAuth(router, reactiveData = {}) {
+  try {
+    const user = await getCurrentUser();
+    
+    if (!user) {
+      console.log('No user logged in, redirecting to login');
+      router.push('/login');
+      return false;
+    }
+    
+    // Store user info in reactive data if provided
+    if (reactiveData.userEmail) {
+      reactiveData.userEmail.value = user.email;
+    }
+    if (reactiveData.currentUser) {
+      reactiveData.currentUser.value = user;
+    }
+    
+    console.log('User authenticated:', user.email, 'Role:', user.role);
+    return true;
+    
+  } catch (error) {
+    console.error('Error checking user authentication:', error);
+    router.push('/login');
+    return false;
+  }
+}

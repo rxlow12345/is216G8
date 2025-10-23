@@ -49,26 +49,21 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { logout, getCurrentUser } from '../../api/auth.js';
+import { logout, checkUserAuthAndRole } from '../../api/auth.js';
 
 // Reactive data
 const userEmail = ref('');
+const currentUser = ref(null);
 
 // Router instance
 const router = useRouter();
 
 /**
- * Get current user info on component mount
+ * Check user authentication and role on component mount
  */
 onMounted(async () => {
-  try {
-    const user = await getCurrentUser();
-    if (user) {
-      userEmail.value = user.email;
-    }
-  } catch (error) {
-    console.error('Error getting user info:', error);
-  }
+  // Use the utility function for cleaner code
+  await checkUserAuthAndRole(router, 'volunteer', { userEmail, currentUser });
 });
 
 /**

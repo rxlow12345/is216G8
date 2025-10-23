@@ -1,0 +1,474 @@
+{
+  "name": "Wildlife Incident Report System - Complete Test Suite",
+  "description": "Comprehensive automated testing for wildlife incident reporting system with image upload functionality",
+  "version": "1.0.0",
+  "baseUrl": "http://localhost:5175",
+  "apiBaseUrl": "http://localhost:4100/api",
+  
+  "environments": {
+    "development": {
+      "baseUrl": "http://localhost:5175",
+      "apiBaseUrl": "http://localhost:4100/api"
+    },
+    "production": {
+      "baseUrl": "https://your-domain.com",
+      "apiBaseUrl": "https://your-domain.com/api"
+    }
+  },
+  
+  "testSuites": [
+    {
+      "name": "Backend API Tests",
+      "description": "Tests all backend API endpoints",
+      "tests": [
+        {
+          "name": "Health Check",
+          "type": "api",
+          "method": "GET",
+          "url": "/api/health",
+          "expectedStatus": 200,
+          "expectedResponse": {
+            "status": "OK",
+            "message": "Critter Connect API is running"
+          },
+          "timeout": 5000
+        },
+        
+        {
+          "name": "Image Upload Test",
+          "type": "api",
+          "method": "POST",
+          "url": "/api/reports/upload-image",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "imageData": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+          },
+          "expectedStatus": 200,
+          "expectedResponse": {
+            "success": true,
+            "data": {
+              "imageURL": ".*",
+              "filename": ".*"
+            }
+          },
+          "timeout": 10000
+        },
+        
+        {
+          "name": "Report Creation (No Image)",
+          "type": "api",
+          "method": "POST",
+          "url": "/api/reports",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "reporterName": "TestSprite User",
+            "contactEmail": "test@testsprite.com",
+            "contactPhone": "+1234567890",
+            "incidentType": "injured",
+            "severity": "moderate",
+            "description": "TestSprite automated test - wildlife incident report",
+            "location": "TestSprite Testing Ground, Singapore",
+            "sightingDateTime": "{{currentDateTime}}",
+            "speciesName": "Test Animal",
+            "animalCondition": "Testing automated report submission",
+            "isMovingNormally": "no",
+            "isInDanger": "yes",
+            "rescueCalled": "no",
+            "stayingOnSite": "yes"
+          },
+          "expectedStatus": 201,
+          "expectedResponse": {
+            "success": true,
+            "reportId": ".*"
+          },
+          "timeout": 5000
+        },
+        
+        {
+          "name": "Report Creation (With Image)",
+          "type": "api",
+          "method": "POST",
+          "url": "/api/reports",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "reporterName": "TestSprite User with Image",
+            "contactEmail": "test@testsprite.com",
+            "contactPhone": "+1234567890",
+            "incidentType": "injured",
+            "severity": "urgent",
+            "description": "TestSprite test with image upload",
+            "location": "TestSprite Testing Ground, Singapore",
+            "sightingDateTime": "{{currentDateTime}}",
+            "speciesName": "Test Animal with Photo",
+            "animalCondition": "Testing image upload functionality",
+            "isMovingNormally": "no",
+            "isInDanger": "yes",
+            "rescueCalled": "no",
+            "stayingOnSite": "yes",
+            "photoURLs": ["{{imageURL}}"]
+          },
+          "expectedStatus": 201,
+          "expectedResponse": {
+            "success": true,
+            "reportId": ".*"
+          },
+          "dependsOn": ["Image Upload Test"],
+          "timeout": 10000
+        },
+        
+        {
+          "name": "Report Retrieval",
+          "type": "api",
+          "method": "GET",
+          "url": "/api/reports",
+          "expectedStatus": 200,
+          "expectedResponse": {
+            "success": true,
+            "data": ".*"
+          },
+          "timeout": 5000
+        },
+        
+        {
+          "name": "Report Statistics",
+          "type": "api",
+          "method": "GET",
+          "url": "/api/reports/stats",
+          "expectedStatus": 200,
+          "expectedResponse": {
+            "total": ".*",
+            "byStatus": ".*",
+            "bySeverity": ".*",
+            "byIncidentType": ".*",
+            "urgentCount": ".*"
+          },
+          "timeout": 5000
+        },
+        
+        {
+          "name": "Error Handling - Invalid Report Data",
+          "type": "api",
+          "method": "POST",
+          "url": "/api/reports",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "reporterName": "",
+            "contactEmail": "invalid-email"
+          },
+          "expectedStatus": 400,
+          "expectedResponse": {
+            "success": false,
+            "message": ".*"
+          },
+          "timeout": 5000
+        },
+        
+        {
+          "name": "Error Handling - Invalid Image Upload",
+          "type": "api",
+          "method": "POST",
+          "url": "/api/reports/upload-image",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "invalidField": "test"
+          },
+          "expectedStatus": 400,
+          "expectedResponse": {
+            "success": false,
+            "message": ".*"
+          },
+          "timeout": 5000
+        }
+      ]
+    },
+    
+    {
+      "name": "Frontend UI Tests",
+      "description": "Tests the report form user interface",
+      "tests": [
+        {
+          "name": "Report Page Load",
+          "type": "ui",
+          "url": "/pages/report.html",
+          "actions": [
+            {
+              "type": "waitForElement",
+              "selector": "h1",
+              "timeout": 5000
+            },
+            {
+              "type": "assertText",
+              "selector": "h1",
+              "expectedText": "🐾 Wildlife Incident Report"
+            },
+            {
+              "type": "assertElementExists",
+              "selector": "#reportForm"
+            },
+            {
+              "type": "assertElementExists",
+              "selector": "#submitBtn"
+            }
+          ]
+        },
+        
+        {
+          "name": "Form Validation Test",
+          "type": "ui",
+          "url": "/pages/report.html",
+          "actions": [
+            {
+              "type": "click",
+              "selector": "#submitBtn"
+            },
+            {
+              "type": "waitForElement",
+              "selector": "#status",
+              "timeout": 3000
+            },
+            {
+              "type": "assertText",
+              "selector": "#status",
+              "contains": "Error"
+            }
+          ]
+        },
+        
+        {
+          "name": "Complete Form Submission Test",
+          "type": "ui",
+          "url": "/pages/report.html",
+          "actions": [
+            {
+              "type": "fill",
+              "selector": "#reporterName",
+              "value": "TestSprite User"
+            },
+            {
+              "type": "fill",
+              "selector": "#contactEmail",
+              "value": "test@testsprite.com"
+            },
+            {
+              "type": "fill",
+              "selector": "#contactPhone",
+              "value": "+1234567890"
+            },
+            {
+              "type": "select",
+              "selector": "#incidentType",
+              "value": "injured"
+            },
+            {
+              "type": "select",
+              "selector": "#severity",
+              "value": "moderate"
+            },
+            {
+              "type": "fill",
+              "selector": "#description",
+              "value": "TestSprite automated test - wildlife incident report"
+            },
+            {
+              "type": "fill",
+              "selector": "#location",
+              "value": "TestSprite Testing Ground, Singapore"
+            },
+            {
+              "type": "fill",
+              "selector": "#speciesName",
+              "value": "Test Animal"
+            },
+            {
+              "type": "fill",
+              "selector": "#animalCondition",
+              "value": "Testing automated report submission"
+            },
+            {
+              "type": "click",
+              "selector": "input[name='isMovingNormally'][value='no']"
+            },
+            {
+              "type": "click",
+              "selector": "input[name='isInDanger'][value='yes']"
+            },
+            {
+              "type": "click",
+              "selector": "input[name='rescueCalled'][value='no']"
+            },
+            {
+              "type": "click",
+              "selector": "input[name='stayingOnSite'][value='yes']"
+            },
+            {
+              "type": "click",
+              "selector": "#submitBtn"
+            },
+            {
+              "type": "waitForElement",
+              "selector": "#status",
+              "timeout": 15000
+            },
+            {
+              "type": "assertText",
+              "selector": "#status",
+              "contains": "successfully"
+            }
+          ]
+        }
+      ]
+    },
+    
+    {
+      "name": "Performance Tests",
+      "description": "Tests system performance and load handling",
+      "tests": [
+        {
+          "name": "Page Load Performance",
+          "type": "performance",
+          "url": "/pages/report.html",
+          "metrics": {
+            "maxLoadTime": 3000,
+            "maxResourceCount": 20,
+            "maxImageCount": 5
+          }
+        },
+        
+        {
+          "name": "Image Upload Performance",
+          "type": "api",
+          "method": "POST",
+          "url": "/api/reports/upload-image",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "imageData": "data:image/jpeg;base64," + "A".repeat(50000)
+          },
+          "expectedStatus": 200,
+          "maxResponseTime": 5000,
+          "timeout": 10000
+        },
+        
+        {
+          "name": "Concurrent Report Creation",
+          "type": "load",
+          "concurrency": 5,
+          "iterations": 10,
+          "method": "POST",
+          "url": "/api/reports",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "reporterName": "Load Test User",
+            "contactEmail": "loadtest@testsprite.com",
+            "incidentType": "injured",
+            "severity": "low",
+            "description": "Load test report",
+            "location": "Load Test Location",
+            "sightingDateTime": "{{currentDateTime}}",
+            "isMovingNormally": "yes",
+            "isInDanger": "no",
+            "rescueCalled": "no",
+            "stayingOnSite": "no"
+          },
+          "expectedStatus": 201,
+          "maxResponseTime": 3000
+        }
+      ]
+    }
+  ],
+  
+  "browsers": [
+    {
+      "name": "chrome",
+      "version": "latest"
+    },
+    {
+      "name": "firefox",
+      "version": "latest"
+    },
+    {
+      "name": "safari",
+      "version": "latest"
+    },
+    {
+      "name": "edge",
+      "version": "latest"
+    }
+  ],
+  
+  "variables": {
+    "currentDateTime": "{{new Date().toISOString().slice(0, 16)}}",
+    "testImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
+  },
+  
+  "setup": {
+    "beforeAll": [
+      {
+        "type": "api",
+        "method": "GET",
+        "url": "/api/health",
+        "description": "Verify backend is running"
+      }
+    ],
+    "afterAll": [
+      {
+        "type": "log",
+        "message": "TestSprite testing completed for Wildlife Incident Report System"
+      }
+    ]
+  },
+  
+  "teardown": {
+    "afterAll": [
+      {
+        "type": "log",
+        "message": "Cleaning up test data..."
+      }
+    ]
+  },
+  
+  "reporting": {
+    "formats": ["html", "json", "junit"],
+    "includeScreenshots": true,
+    "includeNetworkLogs": true,
+    "includeConsoleLogs": true
+  },
+  
+  "notifications": {
+    "onSuccess": {
+      "email": "your-email@example.com",
+      "message": "All tests passed for Wildlife Incident Report System!"
+    },
+    "onFailure": {
+      "email": "your-email@example.com",
+      "message": "Some tests failed for Wildlife Incident Report System. Please check the results."
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

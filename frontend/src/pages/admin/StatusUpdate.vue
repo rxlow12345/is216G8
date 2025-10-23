@@ -1,8 +1,6 @@
 <!-- src/components/StatusUpdate.vue -->
 
 <script>
-// THIS SCRIPT SECTION REMAINS THE SAME!
-// It doesn't need to change because it only handles logic, not styling.
 import api from '../../api/reportApi.js'; // Make sure this path is correct
 import { logout, getCurrentUser } from '../../api/auth.js'; // Import auth functions
 
