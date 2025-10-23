@@ -7,12 +7,7 @@ import { getFirestore, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCVH91J74eWx_RrU_HNGTS-vMDROPH8EIk",
-  authDomain: "wad2-92dca.firebaseapp.com",
-  projectId: "wad2-92dca",
-  storageBucket: "wad2-92dca.firebasestorage.app",
-  messagingSenderId: "818836310123",
-  appId: "1:818836310123:web:3f12d66a9c9781df29892e"
+  // Replace with .env data
 };
 
 // Initialize Firebase
