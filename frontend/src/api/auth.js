@@ -5,7 +5,7 @@ import {
   signOut, 
   onAuthStateChanged 
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '../firebase.js';
 
 /**
@@ -17,7 +17,7 @@ import { auth, db } from '../firebase.js';
  */
 export async function signup(email, password, role) {
   try {
-    // Create user with Firebase Auth
+    // Create user with Firebase Auth (Firebase Auth automatically prevents duplicate emails)
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     
@@ -28,13 +28,25 @@ export async function signup(email, password, role) {
       createdAt: serverTimestamp()
     });
     
+    // Sign out the user immediately so they can see success message and redirect to login
+    await signOut(auth);
+    
     return {
       uid: user.uid,
       email: user.email,
       role: role
     };
   } catch (error) {
-    throw new Error(`Signup failed: ${error.message}`);
+    // Handle Firebase auth errors with better error messages
+    if (error.code === 'auth/email-already-in-use') {
+      throw new Error('An account already exists with this email address. Please use a different email or try logging in.');
+    } else if (error.code === 'auth/weak-password') {
+      throw new Error('Password is too weak. Please choose a stronger password.');
+    } else if (error.code === 'auth/invalid-email') {
+      throw new Error('Please enter a valid email address.');
+    } else {
+      throw new Error(`Signup failed: ${error.message}`);
+    }
   }
 }
 

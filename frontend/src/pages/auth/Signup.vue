@@ -18,7 +18,11 @@
             </div>
             
             <!-- Signup Form -->
-            <form @submit.prevent="handleSignup">
+            <form @submit.prevent="handleSignup" autocomplete="off">
+              <!-- Hidden dummy fields to confuse browser autofill -->
+              <input type="email" style="display: none;" autocomplete="off" />
+              <input type="password" style="display: none;" autocomplete="off" />
+              <input type="password" style="display: none;" autocomplete="off" />
               <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input
@@ -187,7 +191,7 @@ function clearFormData() {
   role.value = '';
   loading.value = false;
   error.value = '';
-  success.value = '';
+  // Don't clear success message - let it persist
   emailFocused.value = false;
   emailBlurred.value = false;
   passwordFocused.value = false;
@@ -204,10 +208,14 @@ function clearFormData() {
 onMounted(() => {
   clearFormData();
   
-  // Additional clearing after a short delay to handle browser autofill
-  setTimeout(() => {
-    clearFormData();
-  }, 100);
+  // More aggressive clearing to handle persistent browser autofill
+  const clearIntervals = [50, 100, 200, 500, 1000, 2000];
+  
+  clearIntervals.forEach(delay => {
+    setTimeout(() => {
+      clearFormData();
+    }, delay);
+  });
 });
 
 /**
@@ -289,9 +297,9 @@ async function handleSignup() {
     }, 2000);
     
   } catch (err) {
-    // Handle Firebase auth errors
-    if (err.message.includes('email-already-in-use')) {
-      error.value = 'This email is already registered. Please use a different email or try logging in.';
+    // Handle Firebase auth errors and custom validation errors
+    if (err.message.includes('email-already-in-use') || err.message.includes('An account already exists with this email address')) {
+      error.value = 'An account already exists with this email address. Please use a different email or try logging in.';
     } else if (err.message.includes('weak-password')) {
       error.value = 'Password is too weak. Please choose a stronger password.';
     } else if (err.message.includes('invalid-email')) {

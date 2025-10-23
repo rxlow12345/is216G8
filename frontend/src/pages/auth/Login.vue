@@ -13,7 +13,10 @@
             </div>
             
             <!-- Login Form -->
-            <form @submit.prevent="handleLogin">
+            <form @submit.prevent="handleLogin" autocomplete="off">
+              <!-- Hidden dummy fields to confuse browser autofill -->
+              <input type="email" style="display: none;" autocomplete="off" />
+              <input type="password" style="display: none;" autocomplete="off" />
               <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input
@@ -24,7 +27,8 @@
                   v-model="email"
                   required
                   placeholder="Enter your email"
-                  autocomplete="username"
+                  autocomplete="new-password"
+                  data-form-type="other"
                   @focus="emailFocused = true"
                   @blur="emailBlurred = true"
                 />
@@ -43,7 +47,8 @@
                     v-model="password"
                     required
                     placeholder="Enter your password"
-                    autocomplete="current-password"
+                    autocomplete="new-password"
+                    data-form-type="other"
                     @focus="passwordFocused = true"
                     @blur="passwordBlurred = true"
                   />
@@ -133,10 +138,22 @@ function clearFormData() {
 onMounted(() => {
   clearFormData();
   
-  // Additional clearing after a short delay to handle browser autofill
-  setTimeout(() => {
-    clearFormData();
-  }, 100);
+  // More aggressive clearing to handle persistent browser autofill
+  const clearIntervals = [50, 100, 200, 500, 1000, 2000];
+  
+  clearIntervals.forEach(delay => {
+    setTimeout(() => {
+      clearFormData();
+    }, delay);
+  });
+  
+  // Also clear on window focus (when user returns to tab)
+  window.addEventListener('focus', clearFormData);
+  
+  // Clean up listener on unmount
+  return () => {
+    window.removeEventListener('focus', clearFormData);
+  };
 });
 
 /**
