@@ -24,13 +24,16 @@
                 <input
                   type="email"
                   class="form-control"
-                  :class="{ 'is-invalid': email && passwordFocused && !isValidEmail(email) }"
+                  :class="{ 'is-invalid': emailBlurred && !isValidEmail(email) }"
                   id="email"
                   v-model="email"
                   required
                   placeholder="Enter your email"
+                  autocomplete="off"
+                  @focus="emailFocused = true"
+                  @blur="emailBlurred = true"
                 />
-                <div v-if="email && passwordFocused && !isValidEmail(email)" class="invalid-feedback">
+                <div v-if="emailBlurred && !isValidEmail(email)" class="invalid-feedback" style="display: block !important; color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;">
                   Please enter a valid email address
                 </div>
               </div>
@@ -41,13 +44,15 @@
                   <input
                     :type="showPassword ? 'text' : 'password'"
                     class="form-control"
-                    :class="{ 'is-invalid': password && confirmPasswordFocused && password.length < 6 }"
+                    :class="{ 'is-invalid': passwordBlurred && password.length < 6 }"
                     id="password"
                     v-model="password"
                     required
                     placeholder="Enter your password"
                     minlength="6"
-                    @focus="passwordFocused = true"
+                    autocomplete="new-password"
+                  @focus="passwordFocused = true"
+                  @blur="passwordBlurred = true"
                   />
                   <button
                     class="password-toggle-btn"
@@ -67,10 +72,10 @@
                     </svg>
                   </button>
                 </div>
-                <div v-if="password && confirmPasswordFocused && password.length < 6" class="invalid-feedback">
+                <div v-if="passwordBlurred && password.length < 6" class="invalid-feedback" style="display: block !important; color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;">
                   Password must be at least 6 characters long
                 </div>
-                <div v-else class="form-text">Password must be at least 6 characters long.</div>
+                <div v-else-if="!passwordBlurred" class="form-text">Password must be at least 6 characters long.</div>
               </div>
               
               <div class="mb-3">
@@ -79,12 +84,14 @@
                   <input
                     :type="showConfirmPassword ? 'text' : 'password'"
                     class="form-control"
-                    :class="{ 'is-invalid': confirmPassword && confirmPasswordFocused && password !== confirmPassword }"
+                    :class="{ 'is-invalid': confirmPasswordBlurred && password !== confirmPassword }"
                     id="confirmPassword"
                     v-model="confirmPassword"
                     required
                     placeholder="Confirm your password"
+                    autocomplete="new-password"
                     @focus="confirmPasswordFocused = true"
+                    @blur="confirmPasswordBlurred = true"
                   />
                   <button
                     class="password-toggle-btn"
@@ -104,7 +111,7 @@
                     </svg>
                   </button>
                 </div>
-                <div v-if="confirmPassword && confirmPasswordFocused && password !== confirmPassword" class="invalid-feedback">
+                <div v-if="confirmPasswordBlurred && password !== confirmPassword" class="invalid-feedback" style="display: block !important; color: #dc3545; font-size: 0.875rem; margin-top: 0.25rem;">
                   Passwords do not match
                 </div>
               </div>
@@ -146,7 +153,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { signup } from '../../api/auth.js';
 
@@ -159,13 +166,49 @@ const loading = ref(false);
 const error = ref('');
 const success = ref('');
 const emailFocused = ref(false);
+const emailBlurred = ref(false);
 const passwordFocused = ref(false);
+const passwordBlurred = ref(false);
 const confirmPasswordFocused = ref(false);
+const confirmPasswordBlurred = ref(false);
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 
 // Router instance
 const router = useRouter();
+
+/**
+ * Clear all form data and reset states
+ */
+function clearFormData() {
+  email.value = '';
+  password.value = '';
+  confirmPassword.value = '';
+  role.value = '';
+  loading.value = false;
+  error.value = '';
+  success.value = '';
+  emailFocused.value = false;
+  emailBlurred.value = false;
+  passwordFocused.value = false;
+  passwordBlurred.value = false;
+  confirmPasswordFocused.value = false;
+  confirmPasswordBlurred.value = false;
+  showPassword.value = false;
+  showConfirmPassword.value = false;
+}
+
+/**
+ * Clear form data when component mounts
+ */
+onMounted(() => {
+  clearFormData();
+  
+  // Additional clearing after a short delay to handle browser autofill
+  setTimeout(() => {
+    clearFormData();
+  }, 100);
+});
 
 /**
  * Computed property to validate form

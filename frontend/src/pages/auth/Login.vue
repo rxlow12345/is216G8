@@ -19,13 +19,16 @@
                 <input
                   type="email"
                   class="form-control"
-                  :class="{ 'is-invalid': email && passwordFocused && !isValidEmail(email) }"
+                  :class="{ 'is-invalid': email && emailBlurred && !isValidEmail(email) }"
                   id="email"
                   v-model="email"
                   required
                   placeholder="Enter your email"
+                  autocomplete="username"
+                  @focus="emailFocused = true"
+                  @blur="emailBlurred = true"
                 />
-                <div v-if="email && passwordFocused && !isValidEmail(email)" class="invalid-feedback">
+                <div v-if="email && emailBlurred && !isValidEmail(email)" class="invalid-feedback">
                   Please enter a valid email address
                 </div>
               </div>
@@ -40,7 +43,9 @@
                     v-model="password"
                     required
                     placeholder="Enter your password"
+                    autocomplete="current-password"
                     @focus="passwordFocused = true"
+                    @blur="passwordBlurred = true"
                   />
                   <button
                     class="password-toggle-btn"
@@ -89,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { login } from '../../api/auth.js';
 
@@ -99,11 +104,40 @@ const password = ref('');
 const loading = ref(false);
 const error = ref('');
 const emailFocused = ref(false);
+const emailBlurred = ref(false);
 const passwordFocused = ref(false);
+const passwordBlurred = ref(false);
 const showPassword = ref(false);
 
 // Router instance
 const router = useRouter();
+
+/**
+ * Clear all form data and reset states
+ */
+function clearFormData() {
+  email.value = '';
+  password.value = '';
+  loading.value = false;
+  error.value = '';
+  emailFocused.value = false;
+  emailBlurred.value = false;
+  passwordFocused.value = false;
+  passwordBlurred.value = false;
+  showPassword.value = false;
+}
+
+/**
+ * Clear form data when component mounts
+ */
+onMounted(() => {
+  clearFormData();
+  
+  // Additional clearing after a short delay to handle browser autofill
+  setTimeout(() => {
+    clearFormData();
+  }, 100);
+});
 
 /**
  * Validate email format
