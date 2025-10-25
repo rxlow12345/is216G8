@@ -1,6 +1,22 @@
 /* ======================== Carousel ======================== */
 .carouselItem {
-  /* height: 100%; */
-  width: 100%;
-  object-fit: cover;
+    height: 75%;
+    width: 100%;
+    object-fit: cover;
+}
+
+#heroCarousel {
+    margin-top: 100px;
+}
+
+@media (max-width: 767px) {
+    #heroCarousel {
+        margin-top: 70px;
+    }
+}
+
+@media (max-width: 576px) {
+    #heroCarousel {
+        margin-top: 50px;
+    }
 }

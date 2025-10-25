@@ -1,13 +1,22 @@
-// const navBarToggle = document.getElementById("navbarToggle");
-// const navBarBurger = document.getElementById("navbarToggleBurger");
+document.addEventListener("DOMContentLoaded", () => {
+  const navbarBurger = document.getElementById("navbarToggleBurger");
+  const navbarClose = document.getElementById("navbarNav"); // renamed
 
-// let isOpen = true;
+    navbarClose.addEventListener("shown.bs.collapse", () => {
+        navbarBurger.classList.add("navFadeOut");
+        setTimeout(() => {
+            navbarBurger.src = "../../src/public/assets/navClose.svg";
+            navbarBurger.classList.remove("navFadeOut");
+            navbarBurger.classList.add("navFadeIn");
+        }, 100);
+    });
 
-// navBarToggle.addEventListener("click", function() {
-//   if (!isOpen) {
-//     navBarBurger.src = "src/public/assets/navBurger.svg";
-//   } else {
-//     navBarBurger.src = "src/public/assets/navClose.svg";
-//   }
-//   isOpen = !isOpen;
-// });
+    navbarClose.addEventListener("hidden.bs.collapse", () => {
+        navbarBurger.classList.add("navFadeOut");
+        setTimeout(() => {
+            navbarBurger.src = "../../src/public/assets/navBurger.svg";
+            navbarBurger.classList.remove("navFadeOut");
+            navbarBurger.classList.add("navFadeIn");
+        }, 100);
+    });
+});
