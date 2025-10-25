@@ -49,7 +49,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { logout, checkUserAuthAndRole } from '../../api/auth.js';
+import { logout, checkUserAuthAndRole } from '../../src/api/auth.js';
 
 // Reactive data
 const userEmail = ref('');

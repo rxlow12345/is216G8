@@ -159,7 +159,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { signup } from '../../api/auth.js';
+import { signup } from '../../src/api/auth.js';
 
 // Reactive data
 const email = ref('');

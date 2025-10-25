@@ -101,7 +101,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { login } from '../../api/auth.js';
+import { login } from '../../src/api/auth.js';
 
 // Reactive data
 const email = ref('');

@@ -5,11 +5,11 @@ import { onAuthStateChange } from '../src/api/auth.js';
 
 // Import components
 import App from '../src/App.vue';
-import Login from '../src/pages/auth/Login.vue';
-import Signup from '../src/pages/auth/Signup.vue';
-import StatusUpdate from '../src/pages/admin/StatusUpdate.vue';
-import ReporterDashboard from '../src/pages/reporter/ReporterDashboard.vue';
-import VolunteerDashboard from '../src/pages/volunteer/VolunteerDashboard.vue';
+import Login from '../pages/auth/Login.vue';
+import Signup from '../pages/auth/Signup.vue';
+import StatusUpdate from '../pages/admin/StatusUpdate.vue';
+import ReporterDashboard from '../pages/reporter/ReporterDashboard.vue';
+import VolunteerDashboard from '../pages/volunteer/VolunteerDashboard.vue';
 
 // 1. Define your routes as an array of objects
 const routes = [

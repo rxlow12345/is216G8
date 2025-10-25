@@ -1,8 +1,8 @@
 <!-- src/components/StatusUpdate.vue -->
 
 <script>
-import api from '../../api/reportApi.js'; // Make sure this path is correct
-import { logout, getCurrentUser } from '../../api/auth.js'; // Import auth functions
+import api from '../../src/api/reportApi.js'; // Make sure this path is correct
+import { logout, getCurrentUser } from '../../src/api/auth.js'; // Import auth functions
 
 export default {
   name: 'StatusUpdate',
