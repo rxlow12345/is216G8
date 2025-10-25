@@ -7,6 +7,8 @@ import { onAuthStateChange } from '../src/api/auth.js';
 import App from '../src/App.vue';
 import Login from '../src/pages/Login.vue';
 import Signup from '../src/pages/Signup.vue';
+import Login from '../src/pages/Login.vue';
+import Signup from '../src/pages/Signup.vue';
 import StatusUpdate from '../pages/orgAdmin/StatusUpdate.vue';
 import Report from '../src/pages/reporter/Report.vue';
 import VolunteerHome from '../src/pages/volunteer/Home.vue';

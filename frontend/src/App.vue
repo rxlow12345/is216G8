@@ -15,7 +15,8 @@ export default {
     
     <!-- This is the magic placeholder! -->
     <!-- Your HomeView, MyNewView, etc., will be rendered right here -->
-    <router-view></router-view>
+    <!-- <router-view></router-view> -->
+    <!-- the above is for Reports Dashboard, uncomment to check  -->
   </div>
 </template>
 
