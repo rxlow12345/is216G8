@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CritterConnect</title>
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Custom CSS, sitewide -->
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/home.css">
+    <!-- Javascript -->
+    <script src="js/home,js"></script>
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-md fixed-top customNavbar">
+      <div class="container-fluid">
+        <a class="navbar-brand navbarLogo" href="home.html">
+          <img src="../src/public/assets/logo.png" alt="Logo">
+        </a>
+
+        <button class="navbar-toggler navbarToggle" id="navbarToggle" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <img id="navbarToggleBurger" src="../src/public/assets/navBurger.svg" alt="menu">
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav navbarNav">
+            <li class="nav-item"><a class="nav-link navLink active" href="home.html">Home</a></li>
+            <li class="nav-item"><a class="nav-link navLink" href="guidebook/guidebook.html">Guidebook</a></li>
+            <li class="nav-item"><a class="nav-link navLink" href="#">Resources</a></li>
+            <li class="nav-item"><a class="nav-link navLink" href="report.html">Report</a></li>
+            <li class="nav-item"><a class="nav-link navLink" href="#">Map</a></li>
+            <!-- <li class="nav-item"><a class="nav-link navLink" href="#">Login</a></li> -->
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Carousel -->
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Cat"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Chicken"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Pigeon"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3" aria-label="Squirrel"></button>
+      </div>
+
+      <div class="carousel-inner">
+        <div class="carousel-item carouselItem active">
+          <img src="../src/public/assets/cat.jpg" class="d-block w-100 carouselPic" alt="Cat">
+        </div>
+
+        <div class="carousel-item carouselItem">
+          <img src="../src/public/assets/chicken.jpg" class="d-block w-100 carouselPic" alt="Chicken">
+        </div>
+
+        <div class="carousel-item carouselItem">
+          <img src="../src/public/assets/pigeon.jpg" class="d-block w-100 carouselPic" alt="Pigeon">
+        </div>
+
+        <div class="carousel-item carouselItem">
+          <img src="../src/public/assets/squirrel.jpg" class="d-block w-100 carouselPic" alt="Squirrel">
+        </div>
+      </div>
+    </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+
+    <!-- Boostrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- main.js -->
+    <!-- <script type="module" src="/src/main.js"></script> -->
+    <script src="js/home.js"></script>
+  </body>
+</html>
