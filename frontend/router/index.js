@@ -3,6 +3,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import App from '../src/App.vue'; // Default app
 import StatusUpdate from '../pages/status-update/StatusUpdate.vue'; // StatusUpdate
+import GuideBook from '../src/components/GuideBook.vue';
 
 // 1. Define your routes as an array of objects
 const routes = [
@@ -15,6 +16,11 @@ const routes = [
     path: '/status-update',         // <-- THE URL FOR YOUR COMPONENT
     name: 'StatusUpdate',            // <-- A UNIQUE NAME
     component: StatusUpdate        // <-- THE COMPONENT VUE WILL RENDER
+  },
+  {
+    path:'/guidebook',
+    name:'GuideBook',
+    component:GuideBook
   }
 ];
 
