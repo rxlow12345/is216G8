@@ -513,7 +513,75 @@ function embedMap(lat, lon) {
 
 // output of the first lat and lon becomes the input for the second function
 
+// Step navigation functionality
+let currentStep = 1;
+const totalSteps = 3;
+
+function updateStepDisplay() {
+    // Hide all step panes
+    document.querySelectorAll('.step-pane').forEach(pane => {
+        pane.classList.remove('active');
+        pane.style.display = 'none';
+    });
+    
+    // Show current step pane
+    const currentPane = document.querySelector(`[data-step="${currentStep}"]`);
+    if (currentPane) {
+        currentPane.classList.add('active');
+        currentPane.style.display = 'block';
+    }
+    
+    // Update progress bar
+    const progressBar = document.getElementById('progressBar');
+    const progress = (currentStep / totalSteps) * 100;
+    if (progressBar) {
+        progressBar.style.width = `${progress}%`;
+        progressBar.textContent = `${Math.round(progress)}%`;
+    }
+    
+    // Update step pills
+    document.querySelectorAll('.step-pill').forEach((pill, index) => {
+        pill.classList.remove('active');
+        if (index + 1 <= currentStep) {
+            pill.classList.add('active');
+        }
+    });
+    
+    // Update button visibility
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    if (prevBtn) prevBtn.style.display = currentStep === 1 ? 'none' : 'inline-block';
+    if (nextBtn) nextBtn.style.display = currentStep === totalSteps ? 'none' : 'inline-block';
+    if (submitBtn) submitBtn.style.display = currentStep === totalSteps ? 'inline-block' : 'none';
+}
+
+function nextStep() {
+    if (currentStep < totalSteps) {
+        currentStep++;
+        updateStepDisplay();
+    }
+}
+
+function prevStep() {
+    if (currentStep > 1) {
+        currentStep--;
+        updateStepDisplay();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize step navigation
+    updateStepDisplay();
+    
+    // Add event listeners for step navigation
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    
+    if (nextBtn) nextBtn.addEventListener('click', nextStep);
+    if (prevBtn) prevBtn.addEventListener('click', prevStep);
+    
     const locationInput = document.getElementById('location');
     const locationBtn = document.getElementById('live-location-btn');
     const spinner = locationBtn.querySelector('.spinner-border');

@@ -5,11 +5,11 @@ import { onAuthStateChange } from '../src/api/auth.js';
 
 // Import components
 import App from '../src/App.vue';
-import Login from '../src/pages/Login.vue';
-import Signup from '../src/pages/Signup.vue';
-import StatusUpdate from '../pages/orgAdmin/StatusUpdate.vue';
-import Report from '../src/pages/reporter/Report.vue';
-import VolunteerHome from '../src/pages/volunteer/Home.vue';
+import Login from '../pages/auth/Login.vue';
+import Signup from '../pages/auth/Signup.vue';
+import StatusUpdate from '../pages/admin/StatusUpdate.vue';
+import ReporterDashboard from '../pages/reporter/ReporterDashboard.vue';
+import VolunteerDashboard from '../pages/volunteer/VolunteerDashboard.vue';
 
 // 1. Define your routes as an array of objects
 const routes = [
@@ -45,14 +45,14 @@ const routes = [
   },
   {
     path: '/report',
-    name: 'Report',
-    component: Report,
+    name: 'ReporterDashboard',
+    component: ReporterDashboard,
     meta: { requiresAuth: true, roles: ['reporter'] }
   },
   {
     path: '/volunteer/home',
-    name: 'VolunteerHome',
-    component: VolunteerHome,
+    name: 'VolunteerDashboard',
+    component: VolunteerDashboard,
     meta: { requiresAuth: true, roles: ['volunteer'] }
   }
 ];
