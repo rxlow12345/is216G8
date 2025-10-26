@@ -196,3 +196,61 @@ button:disabled {
 #live-location-btn{
     background-color:#064301
 }
+
+/* Step navigation animations */
+.step-pane {
+    transition: all 0.3s ease-in-out;
+    opacity: 0;
+    transform: translateX(20px);
+}
+
+.step-pane.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.step-pill {
+    transition: all 0.3s ease-in-out;
+    opacity: 0.6;
+}
+
+.step-pill.active {
+    opacity: 1;
+    background-color: #4CAF50;
+    color: white;
+}
+
+.progress-bar {
+    transition: width 0.5s ease-in-out;
+}
+
+/* Button animations */
+.btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Form validation animations */
+.invalid-feedback {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Loading animations */
+.spinner-border {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

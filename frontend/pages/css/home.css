@@ -1,0 +1,24 @@
+/* ======================== Carousel ======================== */
+#heroCarousel {
+    /* margin-top: 100px; */
+    height: 100vh;
+    overflow: hidden;
+}
+
+.carouselItem {
+    height: 75%;
+    width: 100%;
+    object-fit: cover;
+}
+
+@media (max-width: 767px) {
+    #heroCarousel {
+        margin-top: 70px;
+    }
+}
+
+@media (max-width: 576px) {
+    #heroCarousel {
+        margin-top: 50px;
+    }
+}

@@ -1,9 +1,8 @@
 <!-- src/components/StatusUpdate.vue -->
 
 <script>
-// THIS SCRIPT SECTION REMAINS THE SAME!
-// It doesn't need to change because it only handles logic, not styling.
 import api from '../../src/api/reportApi.js'; // Make sure this path is correct
+import { logout, getCurrentUser } from '../../src/api/auth.js'; // Import auth functions
 
 export default {
   name: 'StatusUpdate',
@@ -14,7 +13,8 @@ export default {
       error: null,
       statusFilter: 'all',
       searchQuery: '',
-      selectedReport: null
+      selectedReport: null,
+      userEmail: '' // Add user email for display
     };
   },
   computed: {
@@ -68,9 +68,29 @@ export default {
     formatDate(timestamp) {
       if (!timestamp || !timestamp._seconds) return 'N/A';
       return new Date(timestamp._seconds * 1000).toLocaleString();
+    },
+    async handleLogout() {
+      try {
+        await logout();
+        this.$router.push('/login');
+      } catch (error) {
+        console.error('Logout error:', error);
+        alert('Logout failed. Please try again.');
+      }
     }
   },
-  mounted() {
+  async mounted() {
+    // Get current user info
+    try {
+      const user = await getCurrentUser();
+      if (user) {
+        this.userEmail = user.email;
+      }
+    } catch (error) {
+      console.error('Error getting user info:', error);
+    }
+    
+    // Fetch reports
     this.fetchReports();
   }
 };
@@ -81,8 +101,14 @@ export default {
   <div class="container my-5">
     
     <!-- Header -->
-    <div class="pb-3 mb-4 border-bottom">
-      <h1 class="display-5">Reports Dashboard</h1>
+    <div class="pb-3 mb-4 border-bottom d-flex justify-content-between align-items-center">
+      <h1 class="display-5 mb-0">Reports Dashboard</h1>
+      <div class="d-flex align-items-center">
+        <span class="me-3 text-muted">Welcome, {{ userEmail }}</span>
+        <button class="btn btn-outline-danger" @click="handleLogout">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </button>
+      </div>
     </div>
 
     <!-- Loading State with Bootstrap Spinner -->
