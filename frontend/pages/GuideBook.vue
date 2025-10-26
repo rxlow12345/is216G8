@@ -3,7 +3,7 @@
     <!-- Logo Section -->
     <div id="logo">
       <header class="text-center">
-        <img src="../public/assets/logo.png" alt="Logo">
+        <img src="../src/public/assets/logo.png" alt="Logo">
       </header>
     </div>
 
@@ -129,7 +129,7 @@
 
 <script>
 // Import your JSON directly
-import animalsData from '../public/guidebook.json'
+import animalsData from '../src/public/guidebook.json'
 
 export default {
   name: 'Guidebook',
