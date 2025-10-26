@@ -10,6 +10,7 @@ import Signup from '../pages/auth/Signup.vue';
 import StatusUpdate from '../pages/admin/StatusUpdate.vue';
 import ReporterDashboard from '../pages/reporter/ReporterDashboard.vue';
 import VolunteerDashboard from '../pages/volunteer/VolunteerDashboard.vue';
+import Game from "../pages/guidebook/guidebook game/game.vue";
 
 // 1. Define your routes as an array of objects
 const routes = [
@@ -54,6 +55,12 @@ const routes = [
     name: 'VolunteerDashboard',
     component: VolunteerDashboard,
     meta: { requiresAuth: true, roles: ['volunteer'] }
+  },
+  {
+    path: '/guidebook/game',
+    name: 'Game',
+    component: Game,
+    meta: { requiresAuth: false}
   }
 ];
 
