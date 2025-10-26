@@ -1,7 +1,6 @@
 // src/router/index.js
 
 import { createRouter, createWebHistory } from 'vue-router';
-import { onAuthStateChange } from '../src/api/auth.js';
 import App from '../src/App.vue'; // Default app
 import StatusUpdate from '../pages/orgAdmin/StatusUpdate.vue'; // StatusUpdate
 import Login from '../pages/auth/Login.vue';
