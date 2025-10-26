@@ -1,7 +1,8 @@
 /* ======================== Carousel ======================== */
 #heroCarousel {
     /* margin-top: 100px; */
-    height: 100vh;
+    width: 100%;
+    height: auto;
     overflow: hidden;
 }
 
@@ -20,5 +21,93 @@
 @media (max-width: 576px) {
     #heroCarousel {
         margin-top: 50px;
+    }
+}
+
+/* ======================== About Section ======================== */
+.aboutSection {
+    background-color: white;
+    color: #283618;
+    position: relative;
+    overflow: hidden;
+}
+
+.aboutTitle {
+    color: #606C38;
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+.aboutText {
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+
+.reportBtn {
+    background-color: #DDA15E;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 25px;
+    width: 200px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.reportBtn:hover {
+    background-color: #BC6C25;
+    color: white;
+    transform: translateY(-3px);
+}
+
+@media (max-width: 767px) {
+    .reportBtn {
+        display: block;
+        margin: 0 auto;
+    }
+}
+
+.aboutImg {
+    max-height: 400px;
+    object-fit: cover;
+    transition: transform 0.5s ease, box-shadow 0.5s ease;
+}
+
+.aboutImg:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.guidebookLink {
+    color: #BC6C25;
+    text-decoration: underline;
+}
+
+.guidebookLink:hover {
+    color: #606C38;
+}
+
+.fade-in-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: all 0.8s ease-out;
+}
+
+.fade-in-right {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: all 0.8s ease-out;
+}
+
+.fade-in-left.visible,
+.fade-in-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Responsive tweaks */
+@media (max-width: 767px) {
+    .aboutImg {
+        max-height: 350px;
     }
 }
