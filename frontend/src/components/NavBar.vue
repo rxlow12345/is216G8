@@ -3,19 +3,23 @@
   <nav class="navbar navbar-expand-md fixed-top customNavbar py-1">
     <div class="container-fluid">
       <!-- Logo -->
-      <router-link class="navbar-brand navbarLogo" to="/">
+      <router-link class="navbar-brand navbarLogo order-0" to="/">
         <img src="../public/assets/logo.png" alt="Logo" class="d-inline-block align-text-top" style="height: 60px;">
       </router-link>
 
+      <!-- Welcome Message -->
+      <span v-if="auth.uid" class="navbar-text me-auto ms-3 order-1">
+        Welcome, {{ auth.email }}
+      </span>
+
       <!-- Toggler -->
-      <button class="navbar-toggler navbarToggle" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler navbarToggle order-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <img id="navbarToggleBurger" src="../public/assets/navBurger.svg" alt="menu">
       </button>
 
       <!-- Nav links -->
-      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <div class="collapse navbar-collapse justify-content-end order-2" id="navbarNav">
         <ul class="navbar-nav navbarNav">
-
           <!-- Always visible links -->
           <li class="nav-item"><router-link class="nav-link navLink" to="/" exact-active-class="active">Home</router-link></li>
           <li class="nav-item"><router-link class="nav-link navLink" to="/guidebook" exact-active-class="active">Guidebook</router-link></li>
