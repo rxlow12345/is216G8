@@ -1,15 +1,14 @@
 // src/router/index.js
 
 import { createRouter, createWebHistory } from 'vue-router';
-import { onAuthStateChange } from '../src/api/auth.js';
-
-// Import components
-import App from '../src/App.vue';
+import App from '../src/App.vue'; // Default app
+import StatusUpdate from '../pages/orgAdmin/StatusUpdate.vue'; // StatusUpdate
 import Login from '../pages/auth/Login.vue';
 import Signup from '../pages/auth/Signup.vue';
-import StatusUpdate from '../pages/admin/StatusUpdate.vue';
 import ReporterDashboard from '../pages/reporter/ReporterDashboard.vue';
 import VolunteerDashboard from '../pages/volunteer/VolunteerDashboard.vue';
+import Game from '../pages/guidebook/guidebook game/game.vue';
+import GuideBook from '../pages/GuideBook.vue';
 
 // 1. Define your routes as an array of objects
 const routes = [
@@ -38,22 +37,21 @@ const routes = [
     meta: { requiresAuth: true, roles: ['admin'] }
   },
   {
-    path: '/status-update',
-    name: 'StatusUpdate',
-    component: StatusUpdate,
-    meta: { requiresAuth: true, roles: ['admin', 'volunteer'] }
+    path:'/guidebook',
+    name: 'GuideBook',
+    component: GuideBook,
+    meta: { requiresAuth: false }
   },
   {
-    path: '/report',
-    name: 'ReporterDashboard',
-    component: ReporterDashboard,
-    meta: { requiresAuth: true, roles: ['reporter'] }
+    path: '/status-update',         // <-- THE URL FOR YOUR COMPONENT
+    name: 'StatusUpdate',            // <-- A UNIQUE NAME
+    component: StatusUpdate        // <-- THE COMPONENT VUE WILL RENDER
   },
   {
-    path: '/volunteer/home',
-    name: 'VolunteerDashboard',
-    component: VolunteerDashboard,
-    meta: { requiresAuth: true, roles: ['volunteer'] }
+    path:'/guidebook/game',
+    name: 'GuideBook Game',
+    component: Game,
+    meta: { requiresAuth: false }
   }
 ];
 
