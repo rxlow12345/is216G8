@@ -106,6 +106,12 @@
 }
 
 /* Responsive tweaks */
+@media (max-width: 991px) {
+    .aboutImg {
+        max-height: 500px;
+    }
+}
+
 @media (max-width: 767px) {
     .aboutImg {
         max-height: 350px;
