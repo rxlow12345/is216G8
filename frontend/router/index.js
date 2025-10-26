@@ -53,6 +53,16 @@ const routes = [
     name: 'GuideBook Game',
     component: Game,
     meta: { requiresAuth: false }
+  },
+  {
+    path:'/report',
+    name: 'Reporter Dashboard',
+    component: ReporterDashboard,
+  },
+  {
+    path:'/volunteer/home',
+    name: 'Volunteer Dashboard',
+    component: VolunteerDashboard,
   }
 ];
 
