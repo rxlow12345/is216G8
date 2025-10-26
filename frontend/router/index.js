@@ -2,7 +2,13 @@
 
 import { createRouter, createWebHistory } from 'vue-router';
 import App from '../src/App.vue'; // Default app
-import StatusUpdate from '../pages/status-update/StatusUpdate.vue'; // StatusUpdate
+import StatusUpdate from '../pages/orgAdmin/StatusUpdate.vue'; // StatusUpdate
+import Login from '../pages/auth/Login.vue';
+import Signup from '../pages/auth/Signup.vue';
+import ReporterDashboard from '../pages/reporter/ReporterDashboard.vue';
+import VolunteerDashboard from '../pages/volunteer/VolunteerDashboard.vue';
+import Game from '../pages/guidebook/guidebook game/game.vue';
+import GuideBook from '../pages/GuideBook.vue';
 
 // 1. Define your routes as an array of objects
 const routes = [
@@ -33,7 +39,8 @@ const routes = [
   {
     path:'/guidebook',
     name: 'GuideBook',
-    component: GuideBook
+    component: GuideBook,
+    meta: { requiresAuth: false }
   },
   {
     path: '/status-update',         // <-- THE URL FOR YOUR COMPONENT
@@ -41,9 +48,10 @@ const routes = [
     component: StatusUpdate        // <-- THE COMPONENT VUE WILL RENDER
   },
   {
-    path:'/guidebook',
-    name: 'GuideBook',
-    component: GuideBook
+    path:'/guidebook/game',
+    name: 'GuideBook Game',
+    component: Game,
+    meta: { requiresAuth: false }
   }
 ];
 
