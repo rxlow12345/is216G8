@@ -107,7 +107,7 @@
           <h5 class="card-title">{{ animal.common_name }}</h5>
           <p class="scientific-name">{{ animal.scientific_name }}</p>
           <p class="card-text">{{ animal.description }}</p>
-          <a :href="animal.learn_more_url" class="btn btn-success btn-sm"> <!--Do we want __blank or __self?-->
+          <a :href="animal.learn_more_url" target="__blank" class="btn btn-success btn-sm"> 
             Learn More
           </a>
         </div>
