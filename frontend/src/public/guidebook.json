@@ -41,18 +41,18 @@
   },
   {
     "category": "Mammals",
-    "common_name": "Long-tailed Fruit Bat",
+    "common_name": "Pygmy Fruit Bat",
     "scientific_name": "Aethalops alecto",
     "description": "A small fruit bat species found in Singapore’s forests; part of the bat diversity in the city state.",
-    "image_url": "/src/public/assets/LongTailedFruitBat.png",
+    "image_url": "/src/public/assets/PygmyFruitBat.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Aethalops_alecto"
   },
   {
     "category": "Mammals",
-    "common_name": "Malayan Pangolin",
+    "common_name": "Sunda Pangolin",
     "scientific_name": "Manis javanica",
-    "description": "Same as Sunda Pangolin above; included here for completeness in mammals list.",
-    "image_url": "/src/public/assets/MalayanPangolin.png",
+    "description": "It is covered in scaled that are made of compressed hair. When threatened, it curls up into an armoured ball.",
+    "image_url": "/src/public/assets/SundaPangolin.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Sunda_pangolin"
   },
   {
@@ -67,31 +67,31 @@
     "category": "Mammals",
     "common_name": "Wild Boar",
     "scientific_name": "Sus scrofa",
-    "description": "Common in forests and nature reserves; forages in groups.",
+    "description": "Common in forests and nature reserves; forages in groups. If spotted, please REPORT immediately!",
     "image_url": "/src/public/assets/WildBoar.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Wild_boar"
   },
   {
     "category": "Mammals",
-    "common_name": "Singapore Civet",
-    "scientific_name": "Viverra tangalunga",
-    "description": "Nocturnal mammal seen in urban and forest areas.",
-    "image_url": "/src/public/assets/SingaporeCivet.png",
-    "learn_more_url": "https://en.wikipedia.org/wiki/Viverra_tangalunga"
+    "common_name": "Asian Palm Civet",
+    "scientific_name": "Paradoxurus Hermaphroditus",
+    "description": "Nocturnal mammal found mainly in trees. Often seen near urbanised areas. The Asian Palm Civets are commonly spotted in Singapore.",
+    "image_url": "/src/public/assets/PalmCivet.png",
+    "learn_more_url": "https://en.wikipedia.org/wiki/paradoxurus_hermaphroditus"
   },
   {
     "category": "Marine",
-    "common_name": "Giant Clam",
-    "scientific_name": "Tridacna gigas",
-    "description": "The world’s largest clam; found in coral reef areas around Singapore (especially offshore islands) though now rare.",
-    "image_url": "/src/public/assets/GiantClam.png",
+    "common_name": "Small Giant Clam",
+    "scientific_name": "Tridacna Maxima",
+    "description": "Helps to clean up water column by filtering out nutrients and larger particles. Was last recorded in Singapore in 2003.",
+    "image_url": "/src/public/assets/SmallGiantClam.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Tridacna_gigas"
   },
   {
     "category": "Marine",
     "common_name": "Hawksbill Sea Turtle",
     "scientific_name": "Eretmochelys imbricata",
-    "description": "Already listed above — but included here again for completeness of marine list.",
+    "description": "Have been regularly sighted along the Singapore Strait. Females have been spotted coming ashore at East COast Park to lay eggs.",
     "image_url": "/src/public/assets/HawksbillSeaTurtle.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Eretmochelys_imbricata"
   },
@@ -115,31 +115,23 @@
     "category": "Marine",
     "common_name": "Humphead Wrasse",
     "scientific_name": "Cheilinus undulatus",
-    "description": "A large reef fish species recorded in Singapore’s waters (though rare) with prominent hump on head; vulnerable status.",
+    "description": "An endangered coral reef fish—growing over six feet long—with a prominent bulge on its forehead. Some of them live to be over 30 years old.",
     "image_url": "/src/public/assets/HumpheadWrasse.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Cheilinus_undulatus"
   },
   {
     "category": "Marine",
-    "common_name": "Sea Star (Crown-of-Thorns Starfish)",
-    "scientific_name": "Acanthaster planci",
-    "description": "A large starfish that feeds on coral; found in Singapore’s reef systems though less frequently, important in reef ecology.",
-    "image_url": "/src/public/assets/SeaStar.png",
-    "learn_more_url": "https://en.wikipedia.org/wiki/Acanthaster_planci"
-  },
-  {
-    "category": "Marine",
     "common_name": "Mangrove Horseshoe Crab",
     "scientific_name": "Carcinoscorpius rotundicauda",
-    "description": "A species of horseshoe crab found in Singapore’s mangrove habitats; part of the coastal biodiversity of Singapore.",
-    "image_url": "/src/public/assets/MangroveHorseshoeCrab.png",
+    "description": "Normally seen when they come up to the edge of the shore to breed. Grows up to an average diameter of 150mm.",
+    "image_url": "/src/public/assets/HorseshoeCrab.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Carcinoscorpius_rotundicauda"
   },
   {
     "category": "Marine",
     "common_name": "Blue-ringed Angelfish",
     "scientific_name": "Pomacanthus annularis",
-    "description": "A colourful reef fish species found around Singapore islands; yellow body with blue rings near the tail.",
+    "description": "Juveniles are found in shallow areas. Adults are often found in pairs. Are unfortunately often harvested from the wild for live aquarium trade.",
     "image_url": "/src/public/assets/BlueRingedAngelfish.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Pomacanthus_annularis"
   },
@@ -147,7 +139,7 @@
     "category": "Marine",
     "common_name": "Spotted Eagle Ray",
     "scientific_name": "Aetobatus narinari",
-    "description": "A large ray species seen in Singapore’s waters and off the coast of the southern islands; spotted pattern and wide pectoral fins.",
+    "description": "Was sighted swimming peacefully near VivoCity in 2021. Has spotted pattern and wide pectoral fins.",
     "image_url": "/src/public/assets/SpottedEagleRay.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Aetobatus_narinari"
   },
@@ -155,7 +147,7 @@
     "category": "Marine",
     "common_name": "Bottlenose Dolphin",
     "scientific_name": "Tursiops aduncus",
-    "description": "A dolphin species recorded in Singapore’s waters; part of the marine mammal list in Singapore.",
+    "description": "By releasing air through their blowholes, producing their unique signature whistle to broadcast their identity",
     "image_url": "/src/public/assets/BottleNoseDolphin.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Tursiops_aduncus"
   },
