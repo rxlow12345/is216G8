@@ -107,7 +107,7 @@
           <h5 class="card-title">{{ animal.common_name }}</h5>
           <p class="scientific-name">{{ animal.scientific_name }}</p>
           <p class="card-text">{{ animal.description }}</p>
-          <a :href="animal.learn_more_url" target="_blank" class="btn btn-success btn-sm">
+          <a :href="animal.learn_more_url" class="btn btn-success btn-sm"> <!--Do we want __blank or __self?-->
             Learn More
           </a>
         </div>
@@ -327,7 +327,7 @@ h1{
 
 #cardsContainer .card img {
   width: 100%;
-  height: 180px;
+  height: 250px; /* original height 180px*/
   object-fit: cover;
 }
 

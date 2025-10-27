@@ -4,7 +4,7 @@
     "common_name": "Malayan Colugo (Flying Lemur)",
     "scientific_name": "Galeopterus variegatus",
     "description": "An arboreal gliding mammal found in some Singapore forest patches, rarely seen though.",
-    "image_url": "../assets/MalayanColugo.png",
+    "image_url": "/src/public/assets/MalayanColugo.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Galeopterus_variegatus"
   },
   {
@@ -12,7 +12,7 @@
     "common_name": "Sunda Slow Loris",
     "scientific_name": "Nycticebus coucang",
     "description": "A nocturnal primate recorded in Singapore (though rare) with big eyes and slow movements.",
-    "image_url": "/images/SundaSlowLoris.jpg",
+    "image_url": "/src/public/assets/SundaSlowLoris.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Sunda_slow_loris"
   },
   {
@@ -20,7 +20,7 @@
     "common_name": "Long-tailed Macaque",
     "scientific_name": "Macaca fascicularis",
     "description": "Same species as Crab-eating Macaque (alternate common name); widespread around Singapore’s nature reserves.",
-    "image_url": "/images/LongTailedMacaque.jpg",
+    "image_url": "/src/public/assets/LongTailedMacaque.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Macaca_fascicularis"
   },
   {
@@ -28,7 +28,7 @@
     "common_name": "Sambar Deer",
     "scientific_name": "Rusa unicolor",
     "description": "A large deer species once more common in Singapore’s forest reserves; very rare now locally.",
-    "image_url": "/images/SambarDeer.jpg",
+    "image_url": "/src/public/assets/SambarDeer.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Rusa_unicolor"
   },
   {
@@ -36,7 +36,7 @@
     "common_name": "Greater Mouse-deer",
     "scientific_name": "Tragulus napu",
     "description": "Another chevrotain species recorded on Singapore’s offshore islands and forested catchments; small shy deer-like animal.",
-    "image_url": "/images/GreaterMouseDeer.jpg",
+    "image_url": "/src/public/assets/GreaterMouseDeer.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Tragulus_napu"
   },
   {
@@ -44,7 +44,7 @@
     "common_name": "Long-tailed Fruit Bat",
     "scientific_name": "Aethalops alecto",
     "description": "A small fruit bat species found in Singapore’s forests; part of the bat diversity in the city state.",
-    "image_url": "/images/LongTailedFruitBat.jpg",
+    "image_url": "/src/public/assets/LongTailedFruitBat.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Aethalops_alecto"
   },
   {
@@ -52,7 +52,7 @@
     "common_name": "Malayan Pangolin",
     "scientific_name": "Manis javanica",
     "description": "Same as Sunda Pangolin above; included here for completeness in mammals list.",
-    "image_url": "/images/MalayanPangolin.jpg",
+    "image_url": "/src/public/assets/MalayanPangolin.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Sunda_pangolin"
   },
   {
@@ -60,7 +60,7 @@
     "common_name": "Malayan Porcupine",
     "scientific_name": "Hystrix brachyura",
     "description": "A nocturnal rodent with quills, recorded on some of Singapore’s offshore islands and less-disturbed forest patches.",
-    "image_url": "/images/MalayanPorcupine.jpg",
+    "image_url": "/src/public/assets/MalayanPorcupine.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Hystrix_brachyura"
   },
   {
@@ -68,7 +68,7 @@
     "common_name": "Wild Boar",
     "scientific_name": "Sus scrofa",
     "description": "Common in forests and nature reserves; forages in groups.",
-    "image_url": "/images/WildBoar.jpg",
+    "image_url": "/src/public/assets/WildBoar.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Wild_boar"
   },
   {
@@ -76,7 +76,7 @@
     "common_name": "Singapore Civet",
     "scientific_name": "Viverra tangalunga",
     "description": "Nocturnal mammal seen in urban and forest areas.",
-    "image_url": "/images/SingaporeCivet.jpg",
+    "image_url": "/src/public/assets/SingaporeCivet.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Viverra_tangalunga"
   },
   {
@@ -84,7 +84,7 @@
     "common_name": "Giant Clam",
     "scientific_name": "Tridacna gigas",
     "description": "The world’s largest clam; found in coral reef areas around Singapore (especially offshore islands) though now rare.",
-    "image_url": "/images/GiantClam.jpg",
+    "image_url": "/src/public/assets/GiantClam.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Tridacna_gigas"
   },
   {
@@ -92,7 +92,7 @@
     "common_name": "Hawksbill Sea Turtle",
     "scientific_name": "Eretmochelys imbricata",
     "description": "Already listed above — but included here again for completeness of marine list.",
-    "image_url": "/images/HawksbillSeaTurtle.jpg",
+    "image_url": "/src/public/assets/HawksbillSeaTurtle.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Eretmochelys_imbricata"
   },
   {
@@ -100,7 +100,7 @@
     "common_name": "Green Sea Turtle",
     "scientific_name": "Chelonia mydas",
     "description": "Another sea-turtle species found in the waters around Singapore, foraging on seagrass and reef flats.",
-    "image_url": "/images/GreenSeaTurtle.jpg",
+    "image_url": "/src/public/assets/GreenSeaTurtle.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Green_sea_turtle"
   },
   {
@@ -108,7 +108,7 @@
     "common_name": "Coral Grouper",
     "scientific_name": "Plectropomus leopardus",
     "description": "A reef fish species found around Singapore’s coral reefs and island reefs; spotted body and sought after in diving sites.",
-    "image_url": "/images/CoralGrouper.jpg",
+    "image_url": "/src/public/assets/CoralGrouper.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Plectropomus_leopardus"
   },
   {
@@ -116,7 +116,7 @@
     "common_name": "Humphead Wrasse",
     "scientific_name": "Cheilinus undulatus",
     "description": "A large reef fish species recorded in Singapore’s waters (though rare) with prominent hump on head; vulnerable status.",
-    "image_url": "/images/HumpheadWrasse.jpg",
+    "image_url": "/src/public/assets/HumpheadWrasse.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Cheilinus_undulatus"
   },
   {
@@ -124,7 +124,7 @@
     "common_name": "Sea Star (Crown-of-Thorns Starfish)",
     "scientific_name": "Acanthaster planci",
     "description": "A large starfish that feeds on coral; found in Singapore’s reef systems though less frequently, important in reef ecology.",
-    "image_url": "/images/SeaStar.jpg",
+    "image_url": "/src/public/assets/SeaStar.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Acanthaster_planci"
   },
   {
@@ -132,7 +132,7 @@
     "common_name": "Mangrove Horseshoe Crab",
     "scientific_name": "Carcinoscorpius rotundicauda",
     "description": "A species of horseshoe crab found in Singapore’s mangrove habitats; part of the coastal biodiversity of Singapore.",
-    "image_url": "/images/MangroveHorseshoeCrab.jpg",
+    "image_url": "/src/public/assets/MangroveHorseshoeCrab.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Carcinoscorpius_rotundicauda"
   },
   {
@@ -140,7 +140,7 @@
     "common_name": "Blue-ringed Angelfish",
     "scientific_name": "Pomacanthus annularis",
     "description": "A colourful reef fish species found around Singapore islands; yellow body with blue rings near the tail.",
-    "image_url": "/images/BlueRingedAngelfish.jpg",
+    "image_url": "/src/public/assets/BlueRingedAngelfish.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Pomacanthus_annularis"
   },
   {
@@ -148,7 +148,7 @@
     "common_name": "Spotted Eagle Ray",
     "scientific_name": "Aetobatus narinari",
     "description": "A large ray species seen in Singapore’s waters and off the coast of the southern islands; spotted pattern and wide pectoral fins.",
-    "image_url": "/images/SpottedEagleRay.jpg",
+    "image_url": "/src/public/assets/SpottedEagleRay.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Aetobatus_narinari"
   },
   {
@@ -156,7 +156,7 @@
     "common_name": "Bottlenose Dolphin",
     "scientific_name": "Tursiops aduncus",
     "description": "A dolphin species recorded in Singapore’s waters; part of the marine mammal list in Singapore.",
-    "image_url": "/images/BottleNoseDolphin.jpg",
+    "image_url": "/src/public/assets/BottleNoseDolphin.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Tursiops_aduncus"
   },
   {
@@ -164,7 +164,7 @@
     "common_name": "Clownfish (Orange-anemonefish)",
     "scientific_name": "Amphiprion percula",
     "description": "A small reef fish found around coral reef areas near Singapore’s islands; iconic bright orange with white bands.",
-    "image_url": "/images/ClownFish.jpg",
+    "image_url": "/src/public/assets/ClownFish.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Amphiprion_percula"
   },
   {
@@ -172,7 +172,7 @@
     "common_name": "Moray Eel",
     "scientific_name": "Gymnothorax javanicus",
     "description": "A large reef eel species found around Singapore’s rocky and coral habitats; often seen poking out from crevices at diving spots.",
-    "image_url": "/images/MorayEel.jpg",
+    "image_url": "/src/public/assets/MorayEel.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Gymnothorax_javanicus"
   },
   {
@@ -180,7 +180,7 @@
     "common_name": "Malayan Water Monitor",
     "scientific_name": "Varanus salvator",
     "description": "Large lizard commonly seen near rivers and canals.",
-    "image_url": "/images/MalayanWaterMonitor.jpg",
+    "image_url": "/src/public/assets/MalayanWaterMonitor.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Water_monitor_lizard"
   },
   {
@@ -188,7 +188,7 @@
     "common_name": "Spitting Cobra (Equatorial Spitting Cobra)",
     "scientific_name": "Naja sumatrana",
     "description": "A venomous snake species found in Singapore’s mangroves and forest edges; capable of spitting venom a short distance.",
-    "image_url": "/images/SpittingCobra.jpg",
+    "image_url": "/src/public/assets/SpittingCobra.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Naja_sumatrana"
   },
   {
@@ -196,7 +196,7 @@
     "common_name": "Green Crested Lizard",
     "scientific_name": "Bronchocela cristatella",
     "description": "A bright green agamid lizard common in Singapore’s parks and gardens, often seen on tree trunks and branches.",
-    "image_url": "images/GreenCrestedLizard.jpg",
+    "image_url": "/src/public/assets/GreenCrestedLizard.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Bronchocela_cristatella"
   },
   {
@@ -204,7 +204,7 @@
     "common_name": "Tokay Gecko",
     "scientific_name": "Gekko gecko",
     "description": "A large nocturnal gecko found in Singapore, known for loud “tok-ay” calls and sticky climbing ability.",
-    "image_url": "/images/TokayGecko.jpg",
+    "image_url": "/src/public/assets/TokayGecko.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Gekko_gecko"
   },
   {
@@ -212,7 +212,7 @@
     "common_name": "Water Monitor",
     "scientific_name": "Varanus salvator",
     "description": "A large monitor lizard common in Singapore’s mangroves, reservoirs and urban waterways; powerful reptile and good swimmer.",
-    "image_url": "/images/WaterMonitor.jpg",
+    "image_url": "/src/public/assets/WaterMonitor.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Water_monitor_lizard"
   },
   {
@@ -220,7 +220,7 @@
     "common_name": "Paradise Tree Snake",
     "scientific_name": "Chrysopelea paradisi",
     "description": "A striking arboreal snake species found in Singapore’s forests; slender body with black and green pattern, good climber.",
-    "image_url": "/images/ParadiseTreeSnake.jpg",
+    "image_url": "/src/public/assets/ParadiseTreeSnake.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Chrysopelea_paradisi"
   },
   {
@@ -228,7 +228,7 @@
     "common_name": "Common Sun Skink",
     "scientific_name": "Eutropis multifasciata",
     "description": "A widespread skink (lizard) in Singapore, often found in open, sunny patches in the forest floor or near paths.",
-    "image_url": "/images/SunSkink.jpg",
+    "image_url": "/src/public/assets/SunSkink.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Eutropis_multifasciata"
   },
   {
@@ -236,7 +236,7 @@
     "common_name": "Singapore Swamp Skink",
     "scientific_name": "Tytthoscincus temasekensis",
     "description": "A recently described skink species found in Singapore’s swampy forest streams; small and elusive.",
-    "image_url": "/images/SingaporeSwampSkink.jpg",
+    "image_url": "/src/public/assets/SingaporeSwampSkink.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Tytthoscincus_temasekensis"
   },
   {
@@ -244,7 +244,7 @@
     "common_name": "Red-necked Keelback",
     "scientific_name": "Rhabdophis subminiatus",
     "description": "A mildly venomous snake found in Singapore’s forested habitats and near streams; distinctive red nape patch.",
-    "image_url": "/images/RedNeckedKeelback.jpg",
+    "image_url": "/src/public/assets/RedNeckedKeelback.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Rhabdophis_subminiatus"
   },
   {
@@ -252,7 +252,7 @@
     "common_name": "Flying Lizard (Common Draco)",
     "scientific_name": "Draco volans",
     "description": "Another gliding lizard species found in Singapore’s trees; extends ribs to glide between tree trunks.",
-    "image_url": "/images/DracoVolans.jpg",
+    "image_url": "/src/public/assets/FlyingLizard.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Draco_volans"
   },
   {
@@ -260,7 +260,7 @@
     "common_name": "Common Tree Frog",
     "scientific_name": "Polypedates leucomystax",
     "description": "A small frog species commonly found around Singapore, especially in urban gardens and forests; green or brown morphs.",
-    "image_url": "/images/TreeFrog.jpg",
+    "image_url": "/src/public/assets/TreeFrog.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Polypedates_leucomystax"
   },
   {
@@ -268,7 +268,7 @@
     "common_name": "Asian Bullfrog",
     "scientific_name": "Hoplobatrachus rugulosus",
     "description": "A large frog species sometimes called the East Asian Bullfrog; found in Singapore’s freshwater habitats.",
-    "image_url": "/images/AsianBullfrog.jpg",
+    "image_url": "/src/public/assets/AsianBullfrog.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Hoplobatrachus_rugulosus"
   },
   {
@@ -276,7 +276,7 @@
     "common_name": "Harlequin Flying Frog",
     "scientific_name": "Rhacophorus pardalis",
     "description": "A strikingly patterned gliding frog found in Singapore’s forests; capable of parachuting from trees using webbed feet.",
-    "image_url": "/images/RhacophorusPardalis.jpg",
+    "image_url": "/src/public/assets/HarlequinFlyingFrog.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Rhacophorus_pardalis"
   },
   {
@@ -284,7 +284,7 @@
     "common_name": "Asian Koel",
     "scientific_name": "Eudynamys scolopaceus",
     "description": "A fairly common resident bird in Singapore, often heard (male with deep 'koo-el' calls) especially in open woodland and parks.",
-    "image_url": "/images/AsianKoel.jpg",
+    "image_url": "/src/public/assets/AsianKoel.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Asian_koel"
   },
   {
@@ -292,7 +292,7 @@
     "common_name": "Olive-winged Bulbul",
     "scientific_name": "Pycnonotus plumosus",
     "description": "A common bulbul species in Singapore’s forest edge and gardens; olive-brown upper parts and whitish underparts.",
-    "image_url": "/images/OliveWingesBulbul.jpg",
+    "image_url": "/src/public/assets/OliveWingesBulbul.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Olive-winged_bulbul"
   },
   {
@@ -300,7 +300,7 @@
     "common_name": "Collared Kingfisher",
     "scientific_name": "Todiramphus chloris",
     "description": "A widespread kingfisher in Singapore, found near coastlines, mangroves and even parks; bright turquoise and white colouring.",
-    "image_url": "/images/KingfisherColared.jpg",
+    "image_url": "/src/public/assets/CollaredKingfisher.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Collared_kingfisher"
   },
   {
@@ -308,7 +308,7 @@
     "common_name": "White-throated Kingfisher",
     "scientific_name": "Halcyon smyrnensis",
     "description": "A kingfisher species found in Singapore’s reservoirs and open habitats, with bright blue back and chestnut head.",
-    "image_url": "/images/WhiteThroatedKingfisher.jpg",
+    "image_url": "/src/public/assets/WhiteThroatedKingfisher.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/White-throated_kingfisher"
   },
   {
@@ -316,7 +316,7 @@
     "common_name": "Blue-winged Pitta",
     "scientific_name": "Pitta moluccensis",
     "description": "A brightly coloured ground- and understorey bird found in Singapore’s woodlands during migration and breeding seasons.",
-    "image_url": "/images/BlueWingedPitta.jpg",
+    "image_url": "/src/public/assets/BlueWingedPitta.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Blue-winged_pitta"
   },
   {
@@ -324,7 +324,7 @@
     "common_name": "Pink-necked Green Pigeon",
     "scientific_name": "Treron vernans",
     "description": "A colourful pigeon species found in Singapore’s parks and gardens; male with pink neck and green body.",
-    "image_url": "/images/PinkNeckedGreenPigeon.jpg",
+    "image_url": "/src/public/assets/PinkNeckedGreenPigeon.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Pink-necked_green_pigeon"
   },
   {
@@ -332,7 +332,7 @@
     "common_name": "Domestic Rooster",
     "scientific_name": "Gallus gallus domesticus",
     "description": "Common in rural areas; known for early morning crowing.",
-    "image_url": "/images/DomesticRooster.jpg",
+    "image_url": "/src/public/assets/DomesticRooster.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Chicken"
   },
   {
@@ -340,7 +340,7 @@
     "common_name": "Smooth Otter",
     "scientific_name": "Lutrogale perspicillata",
     "description": "Social otter species often seen in waterways and reservoirs.",
-    "image_url": "/images/SmoothOtter.jpg",
+    "image_url": "/src/public/assets/SmoothOtter.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Smooth_otter"
   }
 ]
