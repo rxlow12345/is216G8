@@ -202,7 +202,8 @@
   </div>
 
   <!-- Selecting Difficulty -->
-  <div id="difficultyLevel">
+  
+  <div id="difficultyLevel" class="col-6">
     <p class="difficulty-label">Please select your difficulty level:</p>
     <select name="difficulty" id="difficulty" v-model="selectedDifficulty">
       <option value="easy">Easy</option>
@@ -216,7 +217,7 @@
   </div>
 
   <!-- Game Statistics -->
-  <div class="gameStats" v-if="gameStarted">
+  <div class="gameStats col-6" v-if="gameStarted">
     <div class="stat">
       <span class="label">⏱️ Time:</span>
       <span class="value">{{ timer }}s</span>
@@ -234,10 +235,10 @@
   <!-- Start/Restart Game Button -->
   <div class="button-container">
     <button v-if="!gameStarted" class="start-button" @click="startGame">
-      🎮 Start Game
+      Start Game
     </button>
     <button v-else class="start-button" @click="restartGame">
-      🔄 Restart Game
+      Restart Game
     </button>
   </div>
 
@@ -287,11 +288,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Initial Message -->
-  <div v-if="!gameStarted" class="initial-message">
-    <p>🎯 Select a difficulty level and click "Start Game" to begin!</p>
-  </div>
 </template>
 
 <style scoped>
@@ -315,8 +311,8 @@ h1 {
   width: 100%;
   background-color: rgb(40, 54, 24);
   color: white;
-  padding: 25px;
-  margin-bottom: 30px;
+  padding: 15px;
+  margin-bottom: 15px;
 }
 
 #topBanner h1 {
