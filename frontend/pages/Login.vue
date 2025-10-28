@@ -110,24 +110,25 @@ async function handleLogin() {
 }
 </script>
 
-<style scoped>
-.card {
-  border: none;
-  border-radius: 10px;
-}
+<style scoped> 
+.card { 
+  border: none; 
+  border-radius: 10px; 
+} 
 
-.btn-primary {
-  background-color: #4CAF50;
-  border-color: #4CAF50;
-}
-
-.btn-primary:hover {
-  background-color: #45a049;
-  border-color: #45a049;
-}
-
-.spinner-border-sm {
-  width: 1rem;
-  height: 1rem;
-}
+.btn-primary { 
+  background-color: #4CAF50; 
+  border-color: #4CAF50; 
+  } 
+  
+  .btn-primary:hover { 
+    background-color: #45a049; 
+    border-color: #45a049; 
+  } 
+  
+.spinner-border-sm { 
+  width: 1rem; 
+  height: 1rem; 
+} 
+  
 </style>
