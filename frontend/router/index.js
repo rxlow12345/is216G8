@@ -75,7 +75,10 @@ const routes = [
 // 2. Create the router instance
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition){
+    return {top:0};
+  }
 });
 
 // 3. Authentication guard
