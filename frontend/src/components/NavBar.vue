@@ -21,7 +21,7 @@
       <div class="collapse navbar-collapse justify-content-end order-2" id="navbarNav">
         <ul class="navbar-nav navbarNav">
           <!-- Always visible links -->
-          <li class="nav-item"><router-link class="nav-link navLink" to="/" exact-active-class="active" @click="collapseNavbar">Home</router-link></li>
+          <li class="nav-item"><router-link class="nav-link navLink" to="/home" exact-active-class="active" @click="collapseNavbar">Home</router-link></li>
           <li class="nav-item"><router-link class="nav-link navLink" to="/guidebook" exact-active-class="active" @click="collapseNavbar">Guidebook</router-link></li>
           <li class="nav-item"><router-link class="nav-link navLink" to="/map" exact-active-class="active" @click="collapseNavbar">Map</router-link></li>
 
