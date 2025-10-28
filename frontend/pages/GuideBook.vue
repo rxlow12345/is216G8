@@ -11,22 +11,27 @@
     <div id="topBanner">
       <header class="text-center mb-2">
         <h1>🌿 Wildlife Guidebook 🌿</h1>
-        <p class="text-muted">Discover the amazing biodiversity of Singapore</p>
+        <p>Discover the amazing biodiversity of Singapore</p>
       </header>
     </div>
 
-    <!-- Search Box -->
-    <div class="mb-4 d-flex justify-content-center">
-      <input 
-        v-model="searchQuery" 
-        @input="filterBySearch"
-        type="text" 
-        id="searchInput" 
-        class="form-control w-50" 
-        placeholder="Search for a species..."
-      >
-      <button @click="filterBySearch" id="searchBtn" class="btn ms-2">🔍 Search</button>
+     <!-- Search Box -->
+    <div class="search-section">
+      <div class="search-bar">
+        <input
+          v-model="searchQuery"
+          @input="filterBySearch"
+          type="text"
+          id="searchInput"
+          placeholder="🔍 Search for a species..."
+        >
+        <button @click="filterBySearch" id="searchBtn">Search</button>
+      </div>
     </div>
+
+    <!-- Game Button -->
+    <RouterLink to="/guidebook/game" class="floating-game-btn">🎮 Play Game!</RouterLink>
+
 
     <!-- Category Tabs -->
     <ul class="nav nav-tabs justify-content-center mb-4" id="categoryTabs">
@@ -107,7 +112,7 @@
           <h5 class="card-title">{{ animal.common_name }}</h5>
           <p class="scientific-name">{{ animal.scientific_name }}</p>
           <p class="card-text">{{ animal.description }}</p>
-          <a :href="animal.learn_more_url" target="_blank" class="btn btn-success btn-sm">
+          <a :href="animal.learn_more_url" target="__blank" class="btn btn-success btn-sm"> 
             Learn More
           </a>
         </div>
@@ -128,7 +133,6 @@
 </template>
 
 <script>
-// Import your JSON directly
 import animalsData from '../src/public/guidebook.json'
 
 export default {
@@ -237,15 +241,59 @@ h1 {
 }
 
 h1{
-    padding-top:25px;
+    padding: 20px 0;
     font-size: 35px;
 }
 
-/*Search Button*/
-#searchBtn {
-    background-color: rgb(40,54,24);
-    color:white;
+/* Search Bar */
+.search-section {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0 20px 0;
 }
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background-color: #f6f8f3;
+  border-radius: 40px;
+  padding: 6px 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+  width: 60%;
+  max-width: 500px;
+}
+
+.search-bar:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transform: translateY(-2px);
+}
+
+#searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+  padding: 8px 12px;
+  color: #2e4f2f;
+}
+
+#searchBtn {
+  background-color: #285436;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 8px 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+#searchBtn:hover {
+  background-color: #a8c686;
+  color: #285436;
+}
+
 
 /* Tab Styles*/
 #categoryTabs {
@@ -288,6 +336,30 @@ h1{
     border-color: #285436;
 }
 
+/* Game Button */
+.floating-game-btn {
+  position: fixed;
+  top: 110px;
+  right: 30px;
+  background: linear-gradient(135deg, #285436, #3d714c);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 40px;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 0.95rem;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.floating-game-btn:hover {
+  transform: scale(1.07);
+  background: linear-gradient(135deg, #3d714c, #4f8a5f);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+}
+
+
 /* Cards */
 #cardsContainer {
   display: flex;
@@ -327,7 +399,7 @@ h1{
 
 #cardsContainer .card img {
   width: 100%;
-  height: 180px;
+  height: 250px; /* original height 180px*/
   object-fit: cover;
 }
 
