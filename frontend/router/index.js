@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { onAuthStateChange } from '../src/api/auth.js';
 import App from '../src/App.vue'; // Default app
 import StatusUpdate from '../pages/orgAdmin/StatusUpdate.vue'; // StatusUpdate
+import Home from '../pages/Home.vue'
 import Login from '../pages/auth/Login.vue';
 import Signup from '../pages/auth/Signup.vue';
 import ReporterDashboard from '../pages/reporter/ReporterDashboard.vue';
@@ -63,6 +64,11 @@ const routes = [
     path:'/volunteer/home',
     name: 'Volunteer Dashboard',
     component: VolunteerDashboard,
+  },
+  {
+    path: '/home',
+    name: 'Home',
+    component: Home,
   }
 ];
 
