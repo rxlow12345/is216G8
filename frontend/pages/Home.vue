@@ -45,7 +45,7 @@
       </div>
     </section>
 
-    <!-- About Section -->
+    <!-- ======================== About Section ======================== -->
     <section class="about-section">
       <div class="container">
         <div class="about-card">
@@ -114,7 +114,7 @@
       </div>
     </section>
 
-    <!-- Guidebook CTA Banner -->
+    <!-- ======================== Guidebook CTA Banner ======================== -->
     <section class="guidebook-cta-section">
       <div class="container">
         <div class="guidebook-banner">
@@ -143,7 +143,7 @@
       </div>
     </section>
 
-    <!-- Features Section -->
+    <!-- ======================== Features Section ======================== -->
     <section class="features-section">
       <div class="container">
         <h2 class="section-title text-center">How CritterConnect Helps</h2>
@@ -171,7 +171,7 @@
       </div>
     </section>
 
-    <!-- Final CTA Section -->
+    <!-- ======================== Final CTA Section ======================== -->
     <section class="final-cta-section">
       <div class="container">
         <div class="final-cta-card">
@@ -187,7 +187,7 @@
             </router-link>
           </div>
 
-          <!-- Footer Critters -->
+          <!-- ======================== Footer Critters ======================== -->
           <div class="footer-critters">
             <span class="critter">🦝</span>
             <span class="critter">🐿️</span>
@@ -206,10 +206,10 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import '../pages/css/home.css'
 
-// Floating animals array
+// ======================== Floating Animals Array ========================
 const floatingAnimals = ['🦊', '🦝', '🐿️', '🦔', '🦉', '🦌', '🐰', '🦫', '🐻', '🦅', '🐺', '🦜'];
 
-// Carousel images
+// ======================== Carousel Images ========================
 const carouselImages = [
   { src: '/src/public/assets/otter.jpg', alt: 'Otter', caption: "Otters", emoji: '🦦' },
   { src: '/src/public/assets/cat.jpg', alt: 'Cat', caption: 'Community Cats', emoji: '🐱' },
@@ -222,9 +222,7 @@ const currentSlide = ref(0);
 const isTransitioning = ref(false);
 let autoRotateInterval = null;
 
-/**
- * Get random style for floating animals
- */
+// ======================== Get random style for floating animals ========================
 function getAnimalStyle(index) {
   return {
     left: `${Math.random() * 100}%`,
@@ -234,9 +232,7 @@ function getAnimalStyle(index) {
   };
 }
 
-/**
- * Carousel Controls
- */
+// ======================== Carousel Controls ========================
 function nextSlide() {
   if (isTransitioning.value) return;
   isTransitioning.value = true;
@@ -258,9 +254,9 @@ function goToSlide(index) {
   setTimeout(() => { isTransitioning.value = false; }, 500);
 }
 
-/**
- * Auto-rotate
- */
+
+// ======================== Auto-rotate ========================
+
 function startAutoRotate() {
   autoRotateInterval = setInterval(() => {
     nextSlide();
