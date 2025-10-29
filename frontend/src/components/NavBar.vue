@@ -25,8 +25,10 @@
           <li class="nav-item"><router-link class="nav-link navLink" to="/guidebook" exact-active-class="active" @click="collapseNavbar">Guidebook</router-link></li>
           <li class="nav-item"><router-link class="nav-link navLink" to="/map" exact-active-class="active" @click="collapseNavbar">Map</router-link></li>
           <li class="nav-item"><router-link class="nav-link navLink" to="/donate" exact-active-class="active" @click="collapseNavbar">Donate</router-link></li>
-          <li class="nav-item"><router-link class="nav-link navLink" to="/report" exact-active-class="active" @click="collapseNavbar">Report</router-link></li>
-
+          <!-- to go to report page !-->
+          <li class="nav-item"><a class="nav-link navLink" href="new_report/report.html" exact-active-class="active" @click="collapseNavbar">Report</a></li> 
+          <!-- <li class="nav-item"><router-link class="nav-link navLink" to="/report" exact-active-class="active" @click="collapseNavbar">Report</router-link></li> -->
+          
           <!-- Only if not logged in -->
           <li v-if="!auth.uid" class="nav-item"><router-link class="nav-link navLink" to="/login" exact-active-class="active" @click="collapseNavbar">Login</router-link></li>
 
