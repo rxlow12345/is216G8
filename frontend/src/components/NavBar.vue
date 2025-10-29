@@ -58,7 +58,7 @@ export default {
     handleLogout() {
       try {
         logout();
-        window.location.href = "/"; // redirect home
+        this.$router.push('/'); // redirect home
       } catch (err) {
         console.error(err);
       }
