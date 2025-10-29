@@ -22,3 +22,20 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+// ======================== Scroll to Top  ========================
+document.addEventListener("DOMContentLoaded", () => {
+    const scrollTopBtn = document.getElementById("scrollTopBtn");
+
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > 200) {
+            scrollTopBtn.style.display = "flex"; // use flex to center icon
+        }
+        else {
+            scrollTopBtn.style.display = "none";
+        }
+    });
+
+    scrollTopBtn.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+});

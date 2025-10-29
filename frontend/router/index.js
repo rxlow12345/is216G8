@@ -12,6 +12,7 @@ import VolunteerDashboard from '../pages/volunteer/VolunteerDashboard.vue';
 import Game from '../pages/guidebook/guidebook game/game.vue';
 import GuideBook from '../pages/GuideBook.vue';
 import RescueMap from '../pages/rescuemap/RescueMap.vue';
+import Status from '../pages/reporter/Status.vue';
 
 // 1. Define your routes as an array of objects
 const routes = [
@@ -57,6 +58,11 @@ const routes = [
     component: StatusUpdate        // <-- THE COMPONENT VUE WILL RENDER
   },
   {
+    path: '/status/:id',
+    name: 'Status',       
+    component: Status      
+  },
+  {
     path:'/guidebook/game',
     name: 'GuideBook Game',
     component: Game,
@@ -82,7 +88,13 @@ const routes = [
 // 2. Create the router instance
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition){
+    return {
+      top:0,
+      behavior: 'smooth'
+    };
+  }
 });
 
 // 3. Authentication guard
