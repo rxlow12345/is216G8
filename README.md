@@ -13,7 +13,7 @@ G3 Group 8
 
 | Photo | Full Name | Role / Features Responsible For |
 |:--:|:--|:--|
-| <img src="/src/public/assets/Jessica.png" width="80"> | Ang Hui Peng Jessica | Designed the Home page |
+| <img src="frontend/src/public/assets/Jessica.png" width="80"> | Ang Hui Peng Jessica | Designed the Home page |
 | <img src="src/public/assets/Charlize.png" width="80"> | Charlize Teo Hui Zi | Designed the Guidebook game function and Backend logic of map page |
 | <img src="src/public/assets/Haoyue.png" width="80"> | Wu Haoyue | Database & Auth - Firebase Integration, Integrate backend logic for Report, Login & Signup page |
 | <img src="src/public/assets/Amelia.png" width="80"> | Soh Li Qing Amelia | Designed Report, Resources/Donate page |
