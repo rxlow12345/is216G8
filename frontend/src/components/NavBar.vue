@@ -21,21 +21,21 @@
       <div class="collapse navbar-collapse justify-content-end order-2" id="navbarNav">
         <ul class="navbar-nav navbarNav">
           <!-- Always visible links -->
-          <li class="nav-item"><router-link class="nav-link navLink" to="/" exact-active-class="active">Home</router-link></li>
-          <li class="nav-item"><router-link class="nav-link navLink" to="/guidebook" exact-active-class="active">Guidebook</router-link></li>
-          <li class="nav-item"><router-link class="nav-link navLink" to="/map" exact-active-class="active">Map</router-link></li>
+          <li class="nav-item"><router-link class="nav-link navLink" to="/home" exact-active-class="active" @click="collapseNavbar">Home</router-link></li>
+          <li class="nav-item"><router-link class="nav-link navLink" to="/guidebook" exact-active-class="active" @click="collapseNavbar">Guidebook</router-link></li>
+          <li class="nav-item"><router-link class="nav-link navLink" to="/map" exact-active-class="active" @click="collapseNavbar">Map</router-link></li>
 
           <!-- Only if not logged in -->
-          <li v-if="!auth.uid" class="nav-item"><router-link class="nav-link navLink" to="/login" exact-active-class="active">Login</router-link></li>
+          <li v-if="!auth.uid" class="nav-item"><router-link class="nav-link navLink" to="/login" exact-active-class="active" @click="collapseNavbar">Login</router-link></li>
 
           <!-- Volunteer role -->
-          <li v-if="auth.role === 'volunteer'" class="nav-item"><router-link class="nav-link navLink" to="/volunteer/home" exact-active-class="active">Dashboard</router-link></li>
+          <li v-if="auth.role === 'volunteer'" class="nav-item"><router-link class="nav-link navLink" to="/volunteer/home" exact-active-class="active" @click="collapseNavbar">Dashboard</router-link></li>
           <!-- Reporter role -->
-          <li v-if="auth.role === 'reporter'" class="nav-item"><router-link class="nav-link navLink" to="/report" exact-active-class="active">Dashboard</router-link></li>
+          <li v-if="auth.role === 'reporter'" class="nav-item"><router-link class="nav-link navLink" to="/report" exact-active-class="active" @click="collapseNavbar">Dashboard</router-link></li>
           <!-- Admin role -->
-          <li v-if="auth.role === 'admin'" class="nav-item"><router-link class="nav-link navLink" to="/admin" exact-active-class="active">Admin Panel</router-link></li>
+          <li v-if="auth.role === 'admin'" class="nav-item"><router-link class="nav-link navLink" to="/admin" exact-active-class="active" @click="collapseNavbar">Admin Panel</router-link></li>
           <!-- Logout -->
-          <li v-if="auth.uid" class="nav-item"><a class="nav-link navLink" href="#" @click.prevent="handleLogout" exact-active-class="active">Logout</a></li>
+          <li v-if="auth.uid" class="nav-item"><a class="nav-link navLink" href="#" @click.prevent="handleLogoutAndCollapse" exact-active-class="active">Logout</a></li>
         </ul>
       </div>
     </div>
@@ -45,6 +45,7 @@
 <script>
 import { getCurrentUser, logout } from '../api/auth.js';
 import { onAuthStateChange } from '../api/auth.js';
+import { Collapse } from 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 export default {
   name: 'Navbar',
@@ -57,7 +58,6 @@ export default {
     handleLogout() {
       try {
         logout();
-        this.authReady = false;
         window.location.href = "/"; // redirect home
       } catch (err) {
         console.error(err);
@@ -76,6 +76,17 @@ export default {
         console.error(err);
       }
     },
+    collapseNavbar() {
+      const navbar = document.querySelector('#navbarNav');
+      const bsCollapse = Collapse.getInstance(navbar);
+      if (bsCollapse && navbar.classList.contains('show')) {
+        bsCollapse.hide();
+      }
+    },
+    handleLogoutAndCollapse() {
+      this.handleLogout();
+      this.collapseNavbar();
+    }
   },
   created() {
     console.log('created: ', this.auth);
