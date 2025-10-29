@@ -11,6 +11,7 @@ import ReporterDashboard from '../pages/reporter/ReporterDashboard.vue';
 import VolunteerDashboard from '../pages/volunteer/VolunteerDashboard.vue';
 import Game from '../pages/guidebook/guidebook game/game.vue';
 import GuideBook from '../pages/GuideBook.vue';
+import RescueMap from '../pages/rescuemap/RescueMap.vue';
 
 // 1. Define your routes as an array of objects
 const routes = [
@@ -37,6 +38,12 @@ const routes = [
     name: 'AdminDashboard',
     component: StatusUpdate,
     meta: { requiresAuth: true, roles: ['admin'] }
+  },
+  {
+    path: '/rescuemap',
+    name: 'Rescue Map',
+    component: RescueMap,
+    meta: { requiresAuth: false, roles: ['admin'] }
   },
   {
     path:'/guidebook',

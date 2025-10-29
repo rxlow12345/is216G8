@@ -5,7 +5,6 @@ import FormData from 'form-data';
 
 // SpeciesNet API configuration - using the working remote API
 const SPECIESNET_API_URL = process.env.SPECIESNET_API_URL || 'http://34.126.93.66:8000';
-
 // Call SpeciesNet API for species identification
 export const identifySpecies = async (req, res) => {
   try {
@@ -229,6 +228,22 @@ export const getFallbackImage = async (req, res) => {
   }
 };
 
+// getByGeoSpatial,
+export const getByGeoSpatial = async (req, res) => {
+  try {
+    // const { lat, lng, radius } = req.query;
+    // const userLat = parseFloat(lat);
+    // const userLng = parseFloat(lng);
+    // const userRadius = parseFloat(radius); 
+    // const snapshot = await db.collection("reports").get();
+
+
+
+  } catch(error){
+
+  }
+};
+
 // Create a new incident report
 export const createReport = async (req, res) => {
   try {
@@ -349,6 +364,17 @@ export const createReport = async (req, res) => {
       error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     });
   }
+};
+
+//   deleteReport,
+export const deleteReport = async (req, res) => {
+  try{
+    const { id } = req.params;
+
+    const doc = await db.collection('incidentReports').doc(id).get();
+  } catch (error) {
+
+  };
 };
 
 // Helper functions

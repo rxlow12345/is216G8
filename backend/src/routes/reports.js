@@ -7,7 +7,9 @@ import {
   identifySpecies,
   getAllReports,
   getReportById,
-  updateReportStatus
+  updateReportStatus,
+  getByGeoSpatial,
+  deleteReport, 
 } from '../controllers/reportController.js';
 
 const router = express.Router();
@@ -18,8 +20,16 @@ router.post('/upload-image', uploadImage);
 // Serve fallback images
 router.get('/images/:id', getFallbackImage);
 
+// Get incident via lat, lng, & radius
+// Function added on 28/10/2025 by Charlize
+router.get('/getByGeoSpatial', getByGeoSpatial)
+
 // Create a new incident report
 router.post('/', createReport);
+
+// Create a new incident report
+// Function added on 28/10/2025 by Charlize
+router.delete('/', deleteReport);
 
 // Species identification using SpeciesNet API
 router.post('/identify-species', identifySpecies);
