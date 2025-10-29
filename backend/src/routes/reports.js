@@ -32,5 +32,6 @@ router.get('/getReport/:id', getReportById);
 
 // Updates the status of a single report document in Firestore.
 router.post('/updateReport/:id', updateReportStatus);
+
 export default router;
 

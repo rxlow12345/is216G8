@@ -53,7 +53,25 @@ const api = {
       throw new Error(result.message || 'Failed to update status via API.');
     }
     return result;
-  }
+  },
+  /**
+   * Fetches a single report by its ID.
+   * @param {string} reportId - The ID of the report to fetch.
+   * @returns {Promise<Object>} A promise that resolves to the report object.
+   */
+  async getReportById(reportId) {
+    const response = await fetch(`${API_BASE_URL}/reports/getReport/${reportId}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok while fetching the report.');
+    }
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to get report from API.');
+    }
+    return result.data;
+  },
 };
+
+
 
 export default api;

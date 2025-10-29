@@ -11,6 +11,7 @@ import ReporterDashboard from '../pages/reporter/ReporterDashboard.vue';
 import VolunteerDashboard from '../pages/volunteer/VolunteerDashboard.vue';
 import Game from '../pages/guidebook/guidebook game/game.vue';
 import GuideBook from '../pages/GuideBook.vue';
+import Status from '../pages/reporter/Status.vue';
 
 // 1. Define your routes as an array of objects
 const routes = [
@@ -48,6 +49,11 @@ const routes = [
     path: '/status-update',         // <-- THE URL FOR YOUR COMPONENT
     name: 'StatusUpdate',            // <-- A UNIQUE NAME
     component: StatusUpdate        // <-- THE COMPONENT VUE WILL RENDER
+  },
+  {
+    path: '/status/:id',
+    name: 'Status',       
+    component: Status      
   },
   {
     path:'/guidebook/game',
