@@ -61,6 +61,7 @@ export default {
     handleLogout() {
       try {
         logout();
+        this.auth = { email: null, role: null , uid: null};
         this.$router.push('/'); // redirect home
       } catch (err) {
         console.error(err);
