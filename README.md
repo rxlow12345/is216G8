@@ -13,12 +13,12 @@ G3 Group 8
 
 | Photo | Full Name | Role / Features Responsible For |
 |:--:|:--|:--|
-| <img src="photos/member1.jpg" width="80"> | Ang Hui Peng Jessica | Designed the Home page |
-| <img src="photos/member2.jpg" width="80"> | Charlize Teo Hui Zi | Designed the Guidebook game function and Backend logic of map page |
-| <img src="photos/member3.jpg" width="80"> | Wu Haoyue | Database & Auth - Firebase Integration, Integrate backend logic for Report, Login & Signup page |
-| <img src="photos/member4.jpg" width="80"> | Soh Li Qing Amelia | Designed Report, Resources/Donate page |
-| <img src="photos/member4.jpg" width="80"> | Chua Wee Chye Ryan | integrated the backend logic for AI Camera and Status Page |
-| <img src="photos/member4.jpg" width="80"> | Low Rui Xuan | Designed Guidebook, Login & Signup page |
+| <img src="src/public/assets/Jessica.png" width="80"> | Ang Hui Peng Jessica | Designed the Home page |
+| <img src="src/public/assets/Charlize.png" width="80"> | Charlize Teo Hui Zi | Designed the Guidebook game function and Backend logic of map page |
+| <img src="src/public/assets/Haoyue.png" width="80"> | Wu Haoyue | Database & Auth - Firebase Integration, Integrate backend logic for Report, Login & Signup page |
+| <img src="src/public/assets/Amelia.png" width="80"> | Soh Li Qing Amelia | Designed Report, Resources/Donate page |
+| <img src="src/public/assets/Ryan.png" width="80"> | Chua Wee Chye Ryan | integrated the backend logic for AI Camera and Status Page |
+| <img src="src/public/assets/Ruixuan.png" width="80"> | Low Rui Xuan | Designed Guidebook, Login & Signup page |
 
 > Place all headshot thumbnails in the `/photos` folder (JPEG or PNG).
 
