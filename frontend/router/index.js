@@ -5,7 +5,7 @@ import { onAuthStateChange } from '../src/api/auth.js';
 import App from '../src/App.vue'; // Default app
 import StatusUpdate from '../pages/orgAdmin/StatusUpdate.vue'; // StatusUpdate
 import Home from '../pages/Home.vue'
-import Donate from '../components/Donate.vue';
+import Donate from '../src/components/Donate.vue';
 import Login from '../pages/auth/Login.vue';
 import Signup from '../pages/auth/Signup.vue';
 import ReporterDashboard from '../pages/reporter/ReporterDashboard.vue';
