@@ -1,97 +1,123 @@
 <!-- frontend/src/pages/Login.vue -->
 <template>
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-6 col-lg-4">
-        <div class="card shadow">
-          <div class="card-body p-4">
-            <h2 class="text-center mb-4">Login</h2>
-            
-            <!-- Error Message -->
-            <div v-if="error" class="alert alert-danger" role="alert">
-              {{ error }}
+  <div class="login-wrapper">
+    <!-- Floating Animals Background -->
+    <div class="floating-animals">
+      <div 
+        v-for="(animal, index) in floatingAnimals" 
+        :key="index"
+        class="floating-animal"
+        :style="getAnimalStyle(index)"
+      >
+        {{ animal }}
+      </div>
+    </div>
+
+    <!-- Decorative Leaves -->
+    <div class="leaf leaf-top">🍃</div>
+    <div class="leaf leaf-bottom">🍃</div>
+
+    <div class="container">
+      <div class="auth-card">
+        <!-- Header with Logo -->
+        <div class="header">
+          <div class="logo">
+            <span class="logo-icon">🦊</span>
+            <span class="logo-icon">🌿</span>
+          </div>
+          <h2 class="text-center mb-4">CritterConnects</h2>
+          <p class="subtitle">Welcome back to nature</p>
+        </div>
+        
+        <!-- Error Message -->
+        <transition name="slide-fade">
+          <div v-if="error" class="alert alert-danger" role="alert">
+            {{ error }}
+          </div>
+        </transition>
+        
+        <!-- Login Form -->
+        <form @submit.prevent="handleLogin" autocomplete="off">
+          <!-- Hidden dummy fields to confuse browser autofill -->
+          <input type="email" style="display: none;" autocomplete="off" />
+          <input type="password" style="display: none;" autocomplete="off" />
+          
+          <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <div class="input-wrapper">
+              <span class="input-icon">✉️</span>
+              <input
+                type="email"
+                class="form-control"
+                :class="{ 'is-invalid': email && emailBlurred && !isValidEmail(email) }"
+                id="email"
+                v-model="email"
+                required
+                placeholder="Enter your email"
+                autocomplete="new-password"
+                data-form-type="other"
+                @focus="emailFocused = true"
+                @blur="emailBlurred = true"
+              />
             </div>
-            
-            <!-- Login Form -->
-            <form @submit.prevent="handleLogin" autocomplete="off">
-              <!-- Hidden dummy fields to confuse browser autofill -->
-              <input type="email" style="display: none;" autocomplete="off" />
-              <input type="password" style="display: none;" autocomplete="off" />
-              <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input
-                  type="email"
-                  class="form-control"
-                  :class="{ 'is-invalid': email && emailBlurred && !isValidEmail(email) }"
-                  id="email"
-                  v-model="email"
-                  required
-                  placeholder="Enter your email"
-                  autocomplete="new-password"
-                  data-form-type="other"
-                  @focus="emailFocused = true"
-                  @blur="emailBlurred = true"
-                />
-                <div v-if="email && emailBlurred && !isValidEmail(email)" class="invalid-feedback">
-                  Please enter a valid email address
-                </div>
-              </div>
-              
-              <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <div class="input-group">
-                  <input
-                    :type="showPassword ? 'text' : 'password'"
-                    class="form-control"
-                    id="password"
-                    v-model="password"
-                    required
-                    placeholder="Enter your password"
-                    autocomplete="new-password"
-                    data-form-type="other"
-                    @focus="passwordFocused = true"
-                    @blur="passwordBlurred = true"
-                  />
-                  <button
-                    class="password-toggle-btn"
-                    type="button"
-                    @click="showPassword = !showPassword"
-                    :title="showPassword ? 'Hide password' : 'Show password'"
-                  >
-                    <svg v-if="showPassword" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      <line x1="2" y1="2" x2="22" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              
-              <div class="d-grid">
-                <button 
-                  type="submit" 
-                  class="btn btn-primary"
-                  :disabled="loading"
-                >
-                  <span v-if="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
-                  {{ loading ? 'Signing in...' : 'Sign In' }}
-                </button>
-              </div>
-            </form>
-            
-            <!-- Sign Up Link -->
-            <div class="text-center mt-3">
-              <p class="mb-0">
-                Don't have an account? 
-                <router-link to="/signup" class="text-decoration-none">Sign up here</router-link>
-              </p>
+            <div v-if="email && emailBlurred && !isValidEmail(email)" class="invalid-feedback">
+              Please enter a valid email address
             </div>
           </div>
+          
+          <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <div class="input-wrapper">
+              <span class="input-icon">🔒</span>
+              <input
+                :type="showPassword ? 'text' : 'password'"
+                class="form-control"
+                id="password"
+                v-model="password"
+                required
+                placeholder="Enter your password"
+                autocomplete="new-password"
+                data-form-type="other"
+                @focus="passwordFocused = true"
+                @blur="passwordBlurred = true"
+              />
+              <button
+                class="password-toggle-btn"
+                type="button"
+                @click="showPassword = !showPassword"
+                :title="showPassword ? 'Hide password' : 'Show password'"
+              >
+                {{ showPassword ? '🙈' : '👁️' }}
+              </button>
+            </div>
+          </div>
+          
+          <div class="d-grid">
+            <button 
+              type="submit" 
+              class="btn btn-primary"
+              :disabled="loading"
+            >
+              <span v-if="loading" class="spinner"></span>
+              <span v-else>🌲 {{ loading ? 'Signing in...' : 'Sign In' }}</span>
+            </button>
+          </div>
+        </form>
+        
+        <!-- Sign Up Link -->
+        <div class="text-center mt-3">
+          <p class="signup-text">
+            Don't have an account? 
+            <router-link to="/signup" class="signup-link">Sign up here</router-link>
+          </p>
+        </div>
+
+        <!-- Footer Critters -->
+        <div class="footer-critters">
+          <span class="critter">🦝</span>
+          <span class="critter">🐿️</span>
+          <span class="critter">🦔</span>
+          <span class="critter">🦉</span>
         </div>
       </div>
     </div>
@@ -231,57 +257,352 @@ async function handleLogin() {
 </script>
 
 <style scoped>
-.card {
-  border: none;
-  border-radius: 10px;
-}
-
-.btn-primary {
-  background-color: #4CAF50;
-  border-color: #4CAF50;
-}
-
-.btn-primary:hover {
-  background-color: #45a049;
-  border-color: #45a049;
-}
-
-.spinner-border-sm {
-  width: 1rem;
-  height: 1rem;
-}
-
-.password-toggle-btn {
-  border: none;
-  border-left: 1px solid #ced4da;
-  background-color: #ffffff;
-  color: #6c757d;
-  padding: 8px 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.login-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 44px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Floating Animals */
+.floating-animals {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.floating-animal {
+  position: absolute;
+  font-size: 40px;
+  opacity: 0.2;
+  animation: float 20s infinite ease-in-out;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(30px, -30px) rotate(10deg); }
+  50% { transform: translate(-20px, 20px) rotate(-10deg); }
+  75% { transform: translate(40px, 10px) rotate(5deg); }
+}
+
+/* Decorative Leaves */
+.leaf {
+  position: absolute;
+  font-size: 80px;
+  opacity: 0.15;
+  color: #10b981;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.leaf-top {
+  top: 40px;
+  left: 40px;
+}
+
+.leaf-bottom {
+  bottom: 40px;
+  right: 40px;
+  transform: rotate(180deg);
+}
+
+/* Container */
+.container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 440px;
+}
+
+/* Auth Card */
+.auth-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: transform 0.5s;
+}
+
+.auth-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo {
+  font-size: 50px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  animation: bounce 2s infinite;
+}
+
+.logo-icon:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+h2 {
+  color: #fff;
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 15px;
+  margin: 0;
+}
+
+/* Alert Messages */
+.alert-danger {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fecaca;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.2s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(-10px);
+  opacity: 0;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 20px;
+  transition: transform 0.3s;
+}
+
+.form-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+/* Input Wrapper */
+.input-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  opacity: 0.7;
+  z-index: 1;
+}
+
+/* Form Control */
+.form-control {
+  width: 100%;
+  padding: 14px 50px 14px 44px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 15px;
+  transition: all 0.3s;
+  outline: none;
+}
+
+.form-control::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.form-control:focus {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #10b981;
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+  transform: translateY(-2px);
+}
+
+.form-control.is-invalid {
+  border-color: #ef4444;
+}
+
+.invalid-feedback {
+  color: #fecaca;
+  font-size: 13px;
+  margin-top: 6px;
+  display: block;
+}
+
+/* Password Toggle Button */
+.password-toggle-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.3s;
+  padding: 4px;
+  z-index: 1;
 }
 
 .password-toggle-btn:hover {
-  background-color: #f8f9fa;
-  color: #495057;
+  color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-50%) scale(1.1);
 }
 
-.password-toggle-btn:focus {
-  box-shadow: none;
-  outline: none;
-  background-color: #f8f9fa;
+/* Submit Button */
+.d-grid {
+  margin-top: 24px;
 }
 
-.input-group .form-control:focus {
-  border-right: none;
-  box-shadow: none;
+.btn-primary {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
 }
 
-.input-group .form-control:focus + .password-toggle-btn {
-  border-color: #86b7fe;
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Sign Up Text */
+.text-center {
+  text-align: center;
+}
+
+.mt-3 {
+  margin-top: 1.5rem;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.signup-text {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 15px;
+  margin: 0;
+  font-weight: 500;
+}
+
+.signup-link {
+  color: #34d399;
+  text-decoration: none;
+  font-weight: 700;
+  transition: all 0.3s;
+  font-size: 16px;
+}
+
+.signup-link:hover {
+  color: #6ee7b7;
+  text-decoration: underline;
+  transform: scale(1.05);
+}
+
+/* Footer Critters */
+.footer-critters {
+  text-align: center;
+  font-size: 36px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.critter {
+  display: inline-block;
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+
+.critter:hover {
+  transform: scale(1.5) rotate(30deg);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 32px 24px;
+  }
+
+  h2 {
+    font-size: 28px;
+  }
+
+  .logo {
+    font-size: 40px;
+  }
 }
 </style>

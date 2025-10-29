@@ -21,9 +21,10 @@
       <div class="collapse navbar-collapse justify-content-end order-2" id="navbarNav">
         <ul class="navbar-nav navbarNav">
           <!-- Always visible links -->
-          <li class="nav-item"><router-link class="nav-link navLink" to="/" exact-active-class="active" @click="collapseNavbar">Home</router-link></li>
+          <li class="nav-item"><router-link class="nav-link navLink" to="/home" exact-active-class="active" @click="collapseNavbar">Home</router-link></li>
           <li class="nav-item"><router-link class="nav-link navLink" to="/guidebook" exact-active-class="active" @click="collapseNavbar">Guidebook</router-link></li>
           <li class="nav-item"><router-link class="nav-link navLink" to="/map" exact-active-class="active" @click="collapseNavbar">Map</router-link></li>
+          <li class="nav-item"><router-link class="nav-link navLink" to="/report" exact-active-class="active" @click="collapseNavbar">Report</router-link></li>
 
           <!-- Only if not logged in -->
           <li v-if="!auth.uid" class="nav-item"><router-link class="nav-link navLink" to="/login" exact-active-class="active" @click="collapseNavbar">Login</router-link></li>
@@ -46,6 +47,8 @@
 import { getCurrentUser, logout } from '../api/auth.js';
 import { onAuthStateChange } from '../api/auth.js';
 import { Collapse } from 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import burgerIcon from '../public/assets/navBurger.svg';
+import closeIcon from '../public/assets/navClose.svg';
 
 export default {
   name: 'Navbar',
@@ -86,6 +89,32 @@ export default {
     handleLogoutAndCollapse() {
       this.handleLogout();
       this.collapseNavbar();
+    },
+    initNavbarAnimation() {
+      const navbarBurger = document.getElementById("navbarToggleBurger");
+      const navbarClose = document.getElementById("navbarNav");
+
+      if (!navbarBurger || !navbarClose) return;
+
+      // Shown event
+      navbarClose.addEventListener("shown.bs.collapse", () => {
+        navbarBurger.classList.add("navFadeOut");
+        setTimeout(() => {
+          navbarBurger.src = closeIcon;
+          navbarBurger.classList.remove("navFadeOut");
+          navbarBurger.classList.add("navFadeIn");
+        }, 100);
+      });
+
+      // Hidden event
+      navbarClose.addEventListener("hidden.bs.collapse", () => {
+        navbarBurger.classList.add("navFadeOut");
+        setTimeout(() => {
+          navbarBurger.src = burgerIcon;
+          navbarBurger.classList.remove("navFadeOut");
+          navbarBurger.classList.add("navFadeIn");
+        }, 100);
+      });
     }
   },
   created() {
@@ -107,9 +136,21 @@ export default {
         }
       }
     });
-  }
+  },
+  mounted() {
+  // Initialize the navbar animation after DOM is ready
+  this.initNavbarAnimation();
+}
 };
 </script>
 <style>
+.navFadeOut {
+  opacity: 0;
+  transform: scale(0.8);
+}
 
+.navFadeIn {
+  opacity: 1;
+  transform: scale(1);
+}
 </style>
