@@ -198,12 +198,17 @@ export default {
       }
     },
     nextPage() {
-      if (this.currentPage < this.totalPages) this.currentPage++
+      if (this.currentPage < this.totalPages) 
+      {this.currentPage++,
+         window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     },
     prevPage() {
-      if (this.currentPage > 1) this.currentPage--
+      if (this.currentPage > 1) 
+      {this.currentPage--,
+         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  },
+    },
   mounted() {
     this.updateAnimalsPerPage()
     window.addEventListener('resize', this.updateAnimalsPerPage)
@@ -211,5 +216,5 @@ export default {
   beforeUnmount() {
     window.removeEventListener('resize', this.updateAnimalsPerPage)
   }
-}
+}}
 </script>

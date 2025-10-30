@@ -67,9 +67,9 @@
               </p>
 
               <div class="about-actions">
-                <router-link to="/report" class="btn btn-report">
+                <a href="/pages/new_report/report.html" class="btn-report" target="_self">
                   📝 Report an Animal
-                </router-link>
+                </a>
               </div>
             </div>
 
