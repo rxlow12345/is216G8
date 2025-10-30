@@ -35,7 +35,7 @@
               
               <!-- Action Button -->
               <div class="text-center py-4">
-                <a href="/pages/report.html" class="btn btn-success btn-lg">
+                <a href="new_report/report.html" class="btn btn-success btn-lg">
                   <i class="bi bi-plus-circle"></i> Create Wildlife Report
                 </a>
               </div>

@@ -5,13 +5,14 @@ import { onAuthStateChange } from '../src/api/auth.js';
 import App from '../src/App.vue'; // Default app
 import StatusUpdate from '../pages/orgAdmin/StatusUpdate.vue'; // StatusUpdate
 import Home from '../pages/Home.vue'
+import Donate from '../src/components/Donate.vue';
 import Login from '../pages/auth/Login.vue';
 import Signup from '../pages/auth/Signup.vue';
 import ReporterDashboard from '../pages/reporter/ReporterDashboard.vue';
 import VolunteerDashboard from '../pages/volunteer/VolunteerDashboard.vue';
 import Game from '../pages/guidebook/guidebook game/game.vue';
 import GuideBook from '../pages/GuideBook.vue';
-import RescueMap from '../pages/rescuemap/RescueMap.vue';
+import Map from '../pages/map/Map.vue';
 import Status from '../pages/reporter/Status.vue';
 
 // 1. Define your routes as an array of objects
@@ -41,9 +42,9 @@ const routes = [
     meta: { requiresAuth: true, roles: ['admin'] }
   },
   {
-    path: '/rescuemap',
-    name: 'Rescue Map',
-    component: RescueMap,
+    path: '/map',
+    name: 'Map',
+    component: Map,
     meta: { requiresAuth: false, roles: ['admin'] }
   },
   {
@@ -78,10 +79,16 @@ const routes = [
     name: 'Volunteer Dashboard',
     component: VolunteerDashboard,
   },
-  {
-    path: '/home',
-    name: 'Home',
-    component: Home,
+  // {
+  //   path: '/home',
+  //   name: 'Home',
+  //   component: Home,
+  // },
+    {
+    path: '/donate',
+    name: 'Donate',
+    component: Donate,
+    meta: { requiresAuth: false }
   }
 ];
 
