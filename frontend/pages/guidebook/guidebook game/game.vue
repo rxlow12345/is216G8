@@ -1,5 +1,5 @@
 <script>
-  import { number } from 'mathjs';
+  //import { number } from 'mathjs';
 import animalsData from '../../../src/public/guidebook.json'
 
   export default {
