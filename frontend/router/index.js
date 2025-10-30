@@ -79,17 +79,17 @@ const routes = [
     name: 'Volunteer Dashboard',
     component: VolunteerDashboard,
   },
-  {
-    path: '/home',
-    name: 'Home',
-    component: Home,
-  },
+  // {
+  //   path: '/home',
+  //   name: 'Home',
+  //   component: Home,
+  // },
     {
     path: '/donate',
     name: 'Donate',
     component: Donate,
     meta: { requiresAuth: false }
-  },
+  }
 ];
 
 // 2. Create the router instance
