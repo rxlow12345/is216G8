@@ -16,8 +16,8 @@ import GuideBook from '../pages/GuideBook.vue';
 const routes = [
   {
     path: '/',
-    name: 'Login',
-    component: Login,
+    name: 'Home',
+    component: Home,
     meta: { requiresAuth: false }
   },
   {
