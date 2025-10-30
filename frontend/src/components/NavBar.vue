@@ -4,7 +4,7 @@
     <div class="container-fluid">
       <!-- Logo -->
       <router-link class="navbar-brand navbarLogo order-0" to="/">
-        <img src="../public/assets/logo.png" alt="Logo" class="d-inline-block align-text-top" style="height: 60px;">
+        <img src="../public/assets/logo.png" alt="Logo" class="d-inline-block align-text-top" style="height: 75px;">
       </router-link>
 
       <!-- Welcome Message -->
