@@ -25,7 +25,7 @@
           <span class="logo-icon">🌿</span>
         </div>
         <h1 class="hero-title">CritterConnect</h1>
-        <p class="hero-subtitle">Connecting communities with wildlife conservation in Singapore</p>
+        <p class="hero-subtitle">Join Us In Saving Singapore's Wildlife!</p>
         
         <!-- CTA Buttons -->
         <div class="hero-buttons">
@@ -146,8 +146,8 @@
     <!-- ======================== Features Section ======================== -->
     <section class="features-section">
       <div class="container">
-        <h2 class="section-title text-center">How CritterConnect Helps</h2>
-        <p class="section-subtitle text-center">Join our community and make a difference for wildlife</p>
+        <h2 class="section-title text-center">Make a Difference with CritterConnect</h2>
+        <p class="section-subtitle text-center">Report, learn, and receive live rescue updates about our critters</p>
         
         <div class="features-grid">
           <div class="feature-card">
@@ -163,9 +163,9 @@
           </div>
           
           <div class="feature-card">
-            <div class="feature-icon">🤝</div>
-            <h3>Join Community</h3>
-            <p>Connect with fellow wildlife enthusiasts and volunteers across Singapore</p>
+            <div class="feature-icon">📬</div>
+            <h3>Track Rescures</h3>
+            <p>Receive live updates of the critter you have rescued and celebrate their recovery journey</p>
           </div>
         </div>
       </div>
@@ -179,22 +179,21 @@
           <p>Join CritterConnect today and help protect Singapore's wildlife</p>
           
           <div class="cta-buttons">
-            <router-link to="/signup" class="btn btn-signup-large">
-              🦊 Create Free Account
-            </router-link>
-            <router-link to="/login" class="btn btn-login-outline">
+            <router-link to="/login" class="btn btn-signup-large">
               🌲 Login
+            </router-link>
+            <router-link to="/signup" class="btn btn-login-outline">
+              🦊 Sign Up Now 
             </router-link>
           </div>
 
           <!-- ======================== Footer Critters ======================== -->
           <div class="footer-critters">
-            <span class="critter">🦝</span>
-            <span class="critter">🐿️</span>
-            <span class="critter">🦔</span>
-            <span class="critter">🦉</span>
-            <span class="critter">🦌</span>
-            <span class="critter">🐰</span>
+            <span class = "critter">🦔</span>
+            <span class = "critter">🦅</span>
+            <span class = "critter">🐿️</span>
+            <span class = "critter">🦉</span>
+            <span class = "critter">🦜</span>
           </div>
         </div>
       </div>
@@ -212,7 +211,7 @@ const floatingAnimals = ['🦊', '🦝', '🐿️', '🦔', '🦉', '🦌', '�
 // ======================== Carousel Images ========================
 const carouselImages = [
   { src: '/src/public/assets/otter.jpg', alt: 'Otter', caption: "Otters", emoji: '🦦' },
-  { src: '/src/public/assets/cat.jpg', alt: 'Cat', caption: 'Community Cats', emoji: '🐱' },
+  { src: '/src/public/assets/cat.jpg', alt: 'Cat', caption: 'Felines', emoji: '🐱' },
   { src: '/src/public/assets/squirrel.jpg', alt: 'Squirrel', caption: 'Squirrels', emoji: '🐿️' },
   { src: '/src/public/assets/pigeon.jpg', alt: 'Pigeon', caption: 'Pigeons', emoji: '🕊️' },
   { src: '/src/public/assets/chicken.jpg', alt: 'Chicken', caption: 'Chickens', emoji: '🐔' }
