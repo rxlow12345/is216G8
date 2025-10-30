@@ -18,8 +18,8 @@ import Status from '../pages/reporter/Status.vue';
 const routes = [
   {
     path: '/',
-    name: 'Login',
-    component: Login,
+    name: 'Home',
+    component: Home,
     meta: { requiresAuth: false }
   },
   {
