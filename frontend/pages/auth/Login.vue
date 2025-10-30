@@ -25,7 +25,7 @@
             <span class="logo-icon">🦊</span>
             <span class="logo-icon">🌿</span>
           </div>
-          <h2 class="text-center mb-4">CritterConnects</h2>
+          <h2 class="text-center mb-4">CritterConnect</h2>
           <p class="subtitle">Welcome back to nature</p>
         </div>
         
