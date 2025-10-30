@@ -164,7 +164,7 @@
           
           <div class="feature-card">
             <div class="feature-icon">📬</div>
-            <h3>Track Rescures</h3>
+            <h3>Track Rescues</h3>
             <p>Receive live updates of the critter you have rescued and celebrate their recovery journey</p>
           </div>
         </div>
