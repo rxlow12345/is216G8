@@ -1,5 +1,6 @@
 <script>
-  import animalsData from '../../../src/public/guidebook.json'
+  import { number } from 'mathjs';
+import animalsData from '../../../src/public/guidebook.json'
 
   export default {
     data() {
@@ -205,7 +206,7 @@
   
   <div id="difficultyLevel" class="col-6">
     <p class="difficulty-label">Please select your difficulty level:</p>
-    <select name="difficulty" id="difficulty" v-model="selectedDifficulty">
+    <select name="difficulty" id="difficulty" v-model="selectedDifficulty" @click="restartGame()">
       <option value="easy">Easy</option>
       <option value="medium">Medium</option>
       <option value="hard">Hard</option>
@@ -215,6 +216,15 @@
     <p class="subtitle" v-else-if="selectedDifficulty == 'medium'">Match animals to their description</p>
     <p class="subtitle" v-else-if="selectedDifficulty == 'hard'">Match animals to their scientific name</p>
   </div>
+
+  <!-- Selecting Board Size --> 
+   <div id="boardSize">
+        <p class = "difficulty-label"> Please select the size of your board: </p>
+        <select name="boardSize" id="board-size" v-model="numberOfPairs" @click="restartGame()">
+            <option value=""></option>
+        </select>
+
+   </div>
 
   <!-- Game Statistics -->
   <div class="gameStats col-6" v-if="gameStarted">
@@ -320,20 +330,21 @@ h1 {
 }
 
 /* Difficulty Selection */
-#difficultyLevel {
+#boardCustomisation {
+/* , #difficultyLevel, #boardSize, #difficultyDisplay, .subtitle { */
   text-align: center;
   margin: 30px auto;
   max-width: 600px;
 }
 
-.difficulty-label {
+.difficulty-label, .board-size {
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 15px;
   color: rgb(40, 54, 24);
 }
 
-#difficulty {
+#difficulty, #board {
   padding: 12px 24px;
   font-size: 18px;
   border: 2px solid rgb(40, 54, 24);
@@ -353,6 +364,7 @@ h1 {
   color: #666;
   font-style: italic;
   margin-top: 10px;
+  /* text-align: center; */
 }
 
 /* Game Statistics */
