@@ -1,13 +1,5 @@
 <template>
   <div class="container-fluid p-0">
-    <!-- Logo Section
-    <div id="logo">
-      <header class="text-center">
-        <img src="../src/public/assets/logo.png" alt="Logo">
-      </header>
-    </div>
-  -->
-
     <!-- Top Banner -->
     <div id="topBanner">
       <header class="text-center mb-2">
@@ -43,7 +35,10 @@
           href="#" 
           @click.prevent="filterByCategory('All')"
         >
-          All
+        <span class="tab-content">
+          <span class="tab-emoji">🌍</span>
+          <span class="tab-text">All</span>
+        </span>
         </a>
       </li>
       <li class="nav-item">
@@ -53,7 +48,10 @@
           href="#" 
           @click.prevent="filterByCategory('Mammals')"
         >
-          🦊 Mammals
+        <span class="tab-content">
+          <span class="tab-emoji">🦊</span>
+          <span class="tab-text">Mammals</span>
+        </span>
         </a>
       </li>
       <li class="nav-item">
@@ -63,7 +61,10 @@
           href="#" 
           @click.prevent="filterByCategory('Birds')"
         >
-          🦜 Birds
+        <span class="tab-content">
+          <span class="tab-emoji">🦜</span>
+          <span class="tab-text">Birds</span>
+        </span>
         </a>
       </li>
       <li class="nav-item">
@@ -73,7 +74,11 @@
           href="#" 
           @click.prevent="filterByCategory('Reptiles')"
         >
-          🦎 Reptiles
+        <span class="tab-content">
+          <span class="tab-emoji">🦎</span>
+          <span class="tab-text">Reptiles</span>
+        </span>
+
         </a>
       </li>
       <li class="nav-item">
@@ -83,7 +88,10 @@
           href="#" 
           @click.prevent="filterByCategory('Amphibians')"
         >
-          🐸 Amphibians
+        <span class="tab-content">
+          <span class="tab-emoji">🐸</span>
+          <span class="tab-text">Amphibians</span>
+        </span>
         </a>
       </li>
       <li class="nav-item">
@@ -93,7 +101,10 @@
           href="#" 
           @click.prevent="filterByCategory('Marine')"
         >
-          🐙 Marine
+        <span class="tab-content">
+          <span class="tab-emoji">🐙</span>
+          <span class="tab-text">Marine</span>
+        </span>
         </a>
       </li>
     </ul>
@@ -119,18 +130,34 @@
         </div>
       </div>
     </div>
+    
+  <!-- Pagination -->
+  <div 
+    id="pagination" 
+    class="pagination-buttons d-flex justify-content-center align-items-center mt-4"
+    v-show="showPagination"
+  >
+    <button class="btn btn-outline-success me-2" @click="goToFirstPage" :disabled="currentPage === 1">
+      «
+    </button>
 
-    <!-- Pagination -->
-    <div id="pagination" class="pagination-buttons">
-      <button id="prevBtn" @click="prevPage" :disabled="currentPage === 1">
-        Previous
-      </button>
-      <span id="pageIndicator">Page {{ currentPage }}</span>
-      <button id="nextBtn" @click="nextPage" :disabled="currentPage === totalPages">
-        Next
-      </button>
-    </div>
+    <button class="btn btn-outline-success me-2" @click="prevPage" :disabled="currentPage === 1">
+      ‹ Prev
+    </button>
+
+    <span id="pageIndicator" class="mx-2">
+      Page {{ currentPage }} of {{ totalPages }}
+    </span>
+
+    <button class="btn btn-outline-success ms-2" @click="nextPage" :disabled="currentPage === totalPages">
+      › Next
+    </button>
+
+    <button class="btn btn-outline-success ms-2" @click="goToLastPage" :disabled="currentPage === totalPages">
+      »
+    </button>
   </div>
+</div>
 </template>
 
 <script>
@@ -146,16 +173,33 @@ export default {
       currentPage: 1,
       animalsPerPage: 9,
       selectedCategory: 'All',
-      searchQuery: ''
+      searchQuery: '',
+      showPagination: false
     }
   },
   computed: {
     totalPages() {
+      if (this.selectedCategory === 'All') return 1
       return Math.ceil(this.filteredAnimals.length / this.animalsPerPage) || 1
     },
     paginatedAnimals() {
+      if (this.selectedCategory === 'All') {
+        return this.filteredAnimals
+      }
       const start = (this.currentPage - 1) * this.animalsPerPage
       return this.filteredAnimals.slice(start, start + this.animalsPerPage)
+    },
+
+    shouldShowPagination() {
+      return this.selectedCategory !== 'All' && this.showPagination && this.totalPages > 1
+    },
+
+    isFirstPage() {
+      return this.currentPage === 1
+    },
+
+    isLastPage() {
+      return this.currentPage === this.totalPages
     }
   },
   methods: {
@@ -169,7 +213,9 @@ export default {
         this.filteredAnimals = this.allAnimals.filter(a => a.category === category)
       }
       this.currentPage = 1
+      this.showPagination = false
     },
+
     filterBySearch() {
       const query = this.searchQuery.trim().toLowerCase()
       
@@ -187,6 +233,7 @@ export default {
       this.filteredAnimals = animals
       this.currentPage = 1
     },
+
     updateAnimalsPerPage() {
       const width = window.innerWidth
       if (width <= 520) {
@@ -197,24 +244,39 @@ export default {
         this.animalsPerPage = 12 
       }
     },
+
+    goToFirstPage(){
+      this.currentPage = 1
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    },
+
+    goToLastPage(){
+      this.currentPage = this.totalPages
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    },
+
     nextPage() {
-      if (this.currentPage < this.totalPages) 
-      {this.currentPage++,
-         window.scrollTo({ top: 0, behavior: 'smooth' });
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++
+        window.scrollTo({ top: 0, behavior: 'smooth' })
       }
     },
+
     prevPage() {
-      if (this.currentPage > 1) 
-      {this.currentPage--,
-         window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+      if (this.currentPage > 1) {
+        this.currentPage--
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
     },
+
   mounted() {
     this.updateAnimalsPerPage()
     window.addEventListener('resize', this.updateAnimalsPerPage)
   },
+
   beforeUnmount() {
     window.removeEventListener('resize', this.updateAnimalsPerPage)
   }
-}}
+}
+}
 </script>
