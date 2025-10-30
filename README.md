@@ -14,7 +14,7 @@ G3 Group 8
 | Photo | Full Name | Role / Features Responsible For |
 |:--:|:--|:--|
 | <img src="frontend/src/public/assets/Jessica.png" width="80"> | Ang Hui Peng Jessica | Designed the Home page |
-| <img src="frontend/src/public/assets/Charlize.png" width="80"> | Charlize Teo Hui Zi | Designed the Guidebook game function and Backend logic of map page |
+| <img src="frontend/src/public/assets/Charlize.png" width="80"> | Charlize Teo Hui Zi | Designed the Guidebook game function and Volunteer map page |
 | <img src="frontend/src/public/assets/Haoyue.png" width="80"> | Wu Haoyue | Database & Auth - Firebase Integration, Integrate backend logic for Report, Login & Signup page |
 | <img src="frontend/src/public/assets/Amelia.png" width="80"> | Soh Li Qing Amelia | Designed Report, Resources/Donate page |
 | <img src="frontend/src/public/assets/Ryan.png" width="80"> | Chua Wee Chye Ryan | integrated the backend logic for AI Camera and Status Page |
@@ -29,8 +29,8 @@ G3 Group 8
 Describe the **real-world business or community problem** your project addresses.
 
 > *Example:*  
-> Current wildlife rescue system have slow response times & inefficient processes
-> Our web application aims to enhance coordination with resuce organisations through faster case response, educate and empower the general public, and increase community involvement and support.
+> Singapore's current wildlife rescue system faces slow response timings & inefficient processes
+> Our web application aims to enhance coordination with resuce organisations by enabling the public to make faster, more efficient reports which results in quicker case response. It also aims to educate, empower and increase community involvement and support among the general public.
 
 ---
 
@@ -46,10 +46,10 @@ Explain the core features and the benefit each provides.
 | Feature | Description | User Benefit |
 |:--|:--|:--|
 | Register & Login | Secure authentication system | Personalized experience and data security |
-| GuideBook | Educational Guide for all users with game function| Increase knowledge of animals and interactivity with the app|
-| Reporting function with integrated AI camera | Helps to identify the animal and pre-fill the report page with the animal| More efficient and helps users if they are unable to identify the animal |
-|Live Incident Map| Volunteers can access map which will provide them with real time location of the animal | Easier for volunteers to locate the animal |
-|Status Page| Page will update and reporters can see live updates of the animal they rescued | Sense of fulfilment for the reporters when they see that the animal has been rescued |
+| GuideBook | Educational Guide for all users with game function| Increase knowledge of animals while improving app interactivity|
+| Reporting function with integrated AI camera | Helps to identify the animal and pre-fill the report page with the animal| Makes the reporting process smooth and easy for users |
+|Live Incident Map| Volunteers can access map which will provide them with real time location of the animal | Allow volunteers to easily locate the animal |
+|Status Page| Page will update and reporters can see live updates of the animal they rescued | Allows reporters to gain a sense of fulfilment when they see that the animal has been rescued |
 |Donation Page| Page that will accept donation from users | Clear and informative donation page for users to donate to the cause easily
 
 ---
@@ -78,21 +78,21 @@ Provide screenshots and captions showing how users interact with your app.
 
 2. **Report Feature**  
    <img src="screenshots/search.png" width="600">  
-   - Users report the wounded animal that they found
+   - Users can report wild distressed animals that they encounter
 
 3. **Guidebook**  
    <img src="screenshots/dashboard.png" width="600">  
-   - While waiting for rescuers, the user takes a look at the guidebook.
+   - Users can read the guidebook to learn more about the animals
   
 4. **Game**
    <img>
-  - User decides to play the game to test their knowledge
+  - Interactive game users can play to test their knowledge or use to learn more 
 
 5. **Status Update**
-  - Taking quite some time, decides to look at the status page to see when help will arrive.
+  - Allows users to estimate when the rescue services are coming, as well as key updates after they leave the wild animal with the rescue organisation 
 
 6. **Donation Page**
-   - After the animal is rescued, the user decides to donate out of goodwill and respect for the cause.
+   - Users can decides to donate out of goodwill and respect for the cause.
 
 > Save screenshots inside `/screenshots` with clear filenames.
 
@@ -323,7 +323,7 @@ Each member should contribute 2–3 sentences on their learning and project expe
 > **Reflections:**  
 > - Ryan:  
 > - Haoyue:
-> - Charlize:
+> - Charlize: I feel like this project has been challenging and complicated, but it was really insightful in helping me realise how a proper project works. I learnt how to efficiently split up and delegate tasks based on our strengths, how to work together as a group to integrate our code and our ideas together, how to debug and fix errors that we came across and more. I think the biggest challenge was getting all our ideas aligned, and ensuring everyone was on the same page, since we all had different impressions of the same feature, which led to a lot of miscommunication and extra work.
 > - Amelia:
 > - Jessica:
 > - Rui Xuan:
