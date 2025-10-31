@@ -42,6 +42,16 @@
   }
 }
 
+@media (max-width: 520px){
+  #topBanner h1 {
+    font-size: 40px;
+  }
+
+  #topBanner p {
+    font-size: 20px;
+  }
+}
+
 /* Search Bar */
 .search-section {
   display: flex;

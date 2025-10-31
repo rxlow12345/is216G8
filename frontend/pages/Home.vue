@@ -1,6 +1,9 @@
 <!-- frontend/src/pages/Home.vue -->
 <template>
   <div class="home-wrapper">
+    <!-- Moving Cursor Component -->
+    <OtterCursor animal="🦦" :speed="0.08" />
+
     <!-- Floating Animals Background -->
     <div class="floating-animals">
       <div 
@@ -204,6 +207,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import '../pages/css/home.css'
+import OtterCursor from '../src/components/OtterCursor.vue';
 
 // ======================== Floating Animals Array ========================
 const floatingAnimals = ['🦊', '🦝', '🐿️', '🦔', '🦉', '🦌', '🐰', '🦫', '🐻', '🦅', '🐺', '🦜'];
@@ -253,9 +257,7 @@ function goToSlide(index) {
   setTimeout(() => { isTransitioning.value = false; }, 500);
 }
 
-
 // ======================== Auto-rotate ========================
-
 function startAutoRotate() {
   autoRotateInterval = setInterval(() => {
     nextSlide();

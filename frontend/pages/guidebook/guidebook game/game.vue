@@ -1,8 +1,10 @@
 <script>
   //import { number } from 'mathjs';
 import animalsData from '../../../src/public/guidebook.json'
+import OtterCursor from '../../../src/components/OtterCursor.vue';
 
   export default {
+    components: {OtterCursor},
     data() {
       return {
         allAnimals: animalsData, 
@@ -195,6 +197,8 @@ import animalsData from '../../../src/public/guidebook.json'
 </script>
 
 <template>
+  <!-- Otter Cursor -->
+   <OtterCursor animal="🦦" :speed="0.08"/>
   <!-- Top Banner -->
   <div id="topBanner">
     <header class="text-center mb-2">

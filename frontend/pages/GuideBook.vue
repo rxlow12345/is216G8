@@ -1,5 +1,9 @@
 <template>
   <div class="container-fluid p-0">
+
+    <!--Moving Cursor-->
+    <OtterCursor animal="🦦" :speed="0.08"/>
+
     <!-- Top Banner -->
     <div id="topBanner">
       <header class="text-center mb-2">
@@ -163,9 +167,11 @@
 <script>
 import animalsData from '../src/public/guidebook.json'
 import '../pages/css/guidebook.css'
+import OtterCursor from '../src/components/OtterCursor.vue';
 
 export default {
   name: 'Guidebook',
+  components:{OtterCursor},
   data() {
     return {
       allAnimals: animalsData,
@@ -174,7 +180,7 @@ export default {
       animalsPerPage: 9,
       selectedCategory: 'All',
       searchQuery: '',
-      showPagination: false
+      showPagination: false,
     }
   },
   computed: {
@@ -268,6 +274,7 @@ export default {
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }
     },
+  },
 
   mounted() {
     this.updateAnimalsPerPage()
@@ -276,7 +283,7 @@ export default {
 
   beforeUnmount() {
     window.removeEventListener('resize', this.updateAnimalsPerPage)
+    document.removeEventListener('mousemove', this.handleMouseMove)
   }
-}
 }
 </script>
