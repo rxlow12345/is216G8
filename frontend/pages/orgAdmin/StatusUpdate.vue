@@ -31,7 +31,7 @@ export default {
     // Computed props for stat cards are the same
     totalReports() { return this.reports.length; },
     pendingReports() { return this.reports.filter(r => r.status === 'pending').length; },
-    inProgressReports() { return this.reports.filter(r => r.status === 'in-progress').length; },
+    activeReports() { return this.reports.filter(r => r.status === 'in-progress').length; },
     resolvedReports() { return this.reports.filter(r => r.status === 'resolved').length; }
   },
   methods: {
@@ -138,8 +138,8 @@ export default {
           <div class="col-md-6 col-xl-3">
             <div class="card h-100 shadow-sm border-start border-info border-5">
               <div class="card-body text-center">
-                <h5 class="card-title fs-1 fw-bold">{{ inProgressReports }}</h5>
-                <p class="card-text text-muted">In Progress</p>
+                <h5 class="card-title fs-1 fw-bold">{{ activeReports }}</h5>
+                <p class="card-text text-muted">Active</p>
               </div>
             </div>
           </div>
@@ -162,7 +162,7 @@ export default {
                 <select id="status-filter" class="form-select" v-model="statusFilter">
                   <option value="all">All Statuses</option>
                   <option value="pending">Pending</option>
-                  <option value="in-progress">In Progress</option>
+                  <option value="in-progress">Active</option>
                   <option value="resolved">Resolved</option>
                   <option value="closed">Closed</option>
                 </select>
@@ -181,12 +181,14 @@ export default {
             @click.prevent="selectReport(report)" 
             class="list-group-item list-group-item-action">
             <div class="d-flex w-100 justify-content-between">
-              <h5 class="mb-1">{{ report.speciesName || 'Unknown Species' }}</h5>
+              <h5 class="mb-1">Report ID: {{ report.reportId || 'Unknown Species' }}</h5>
               <!-- Status Badge using Bootstrap Badge component -->
+              
               <span :class="['badge', `bg-${report.status === 'pending' ? 'warning text-dark' : report.status === 'in-progress' ? 'primary' : report.status === 'resolved' ? 'success' : 'secondary'}`]">{{ report.status }}</span>
             </div>
-            <p class="mb-1 text-muted">{{ report.location }}</p>
-            <small class="text-muted">{{ report.reportId }} &middot; Reported on {{ formatDate(report.createdAt) }}</small>
+            <p class="mb-0 text-muted">Species: {{ report.speciesName }}</p>
+            <p class="mb-1 text-muted">Location: {{ report.location }}</p>
+            <small class="text-muted">Reported on {{ formatDate(report.createdAt) }}</small>
           </a>
         </div>
 
@@ -222,7 +224,7 @@ export default {
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-outline-secondary" @click="closeModal">Close</button>
-              <button type="button" class="btn btn-primary" @click="handleStatusChange(selectedReport.id, 'in-progress')">Set In Progress</button>
+              <button type="button" class="btn btn-primary" @click="handleStatusChange(selectedReport.id, 'active')">Set Active</button>
               <button type="button" class="btn btn-success" @click="handleStatusChange(selectedReport.id, 'resolved')">Set Resolved</button>
             </div>
           </div>

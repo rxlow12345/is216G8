@@ -610,7 +610,7 @@ export const updateReportStatus = async (req, res) => {
       updatedAt: new Date()
     });
 
-    const updatedReport = { id: docRef.id, ...reportRef.data() };
+    const updatedReport = { id: id, ...reportRef.data };
 
     const io = req.app.get('io');
     if (io) {
@@ -626,7 +626,7 @@ export const updateReportStatus = async (req, res) => {
     console.error("Error updating report status:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to update report status'
+      message: 'Failed to update report status: '
     });
   }
 };
