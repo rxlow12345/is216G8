@@ -69,15 +69,6 @@ export default {
       if (!timestamp || !timestamp._seconds) return 'N/A';
       return new Date(timestamp._seconds * 1000).toLocaleString();
     },
-    async handleLogout() {
-      try {
-        await logout();
-        this.$router.push('/login');
-      } catch (error) {
-        console.error('Logout error:', error);
-        alert('Logout failed. Please try again.');
-      }
-    }
   },
   async mounted() {
     // Get current user info
@@ -103,12 +94,6 @@ export default {
     <!-- Header -->
     <div class="pb-3 mb-4 border-bottom d-flex justify-content-between align-items-center">
       <h1 class="display-5 mb-0">Reports Dashboard</h1>
-      <div class="d-flex align-items-center">
-        <span class="me-3 text-muted">Welcome, {{ userEmail }}</span>
-        <button class="btn btn-outline-danger" @click="handleLogout">
-          <i class="bi bi-box-arrow-right"></i> Logout
-        </button>
-      </div>
     </div>
 
     <!-- Loading State with Bootstrap Spinner -->
@@ -246,10 +231,6 @@ export default {
 </template>
 
 <style scoped>
-/*
-  With Bootstrap, we need very little custom CSS!
-  The 'scoped' attribute ensures these styles only apply to this component.
-*/
 .list-group-item-action {
   cursor: pointer; /* Makes it clear the list items are clickable */
 }
