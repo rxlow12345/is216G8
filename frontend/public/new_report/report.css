@@ -51,6 +51,8 @@ p{
 .form-group {
     margin: 15px 0;
 }
+
+
 label {
     display: block;
     margin-bottom: 5px;
@@ -148,12 +150,12 @@ button:disabled {
 #submitBtn{
     background-color: #052507;
     color: white;
-    padding: 15px 30px;
+    padding: 15px 20px;
     border: none;
     border-radius: 15px;
     cursor: pointer;
     font-size: 26px;
-    width: 50%;
+    width: 40%;
     margin: 20px;
     transition: all 0.2s ease-in-out;
 
@@ -201,6 +203,7 @@ button:disabled {
       font-weight: 500;
       white-space: nowrap;
     }
+
 .step-pill .idx {
       width: 1.6rem; height: 1.6rem; display: inline-flex; align-items: center; justify-content: center;
       border-radius: 50%; border: 1px solid var(--bs-border-color); font-size: .9rem;
@@ -218,6 +221,11 @@ button:disabled {
     flex-basis: 45%;
   }}
 
+.progress {
+    height: 25px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+}
 .required { color: var(--bs-danger); }
    
 #osm-map { height: 300px; width: 100%; }
@@ -239,5 +247,24 @@ button:disabled {
 .btn:focus-visible {
   outline: 3px solid #4a9f40;
   outline-offset: 2px;
+}
+
+
+.severityLow {
+    background-color: #d4edda; /* Light green background */
+    border-color: #c3e6cb;
+    color: #155724; /* Dark green text */
+}
+
+.severityModerate {
+    background-color: #fff3cd; /* Light yellow background */
+    border-color: #ffeeba;
+    color: #856404; /* Dark yellow text */
+}
+
+.severityHigh {
+    background-color: #f8d7da; /* Light red background */
+    border-color: #f5c6cb;
+    color: #721c24; /* Dark red text */
 }
 
