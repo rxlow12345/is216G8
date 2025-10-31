@@ -22,7 +22,7 @@
     <div v-else>
       <div v-if="report">
         <div class="text-center mb-5">
-          <h2 class="fw-bold text-primary">🐾 Animal Rescue Report Status</h2>
+          <h2 class="fw-bold text-success">🐾 Animal Rescue Report Status</h2>
           <p class="text-muted">Tracking live rescue progress for report {{ report.reportId }}</p>
         </div>
 
@@ -41,7 +41,7 @@
             <!-- Details -->
             <div class="col-md-7">
               <div class="card-body">
-                <h4 class="card-title text-primary mb-3">
+                <h4 class="card-title text-success mb-3">
                   Incident: {{ capitalize(report.incidentType) }}
                 </h4>
 
@@ -96,7 +96,72 @@
               <p class="small">{{ stage }}</p>
             </div>
           </div>
+
+          <!-- Details -->
+          <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">{{ report.speciesName || 'Unnamed Species' }}</h5>
+                <span class="badge bg-light text-primary">
+                  {{ report.status || 'Unknown Status' }}
+                </span>
+              </div>
+
+              <div class="card-body">
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <p><strong>Incident Type:</strong> {{ report.incidentType }}</p>
+                    <p><strong>Severity:</strong> {{ report.severity }}</p>
+                    <p><strong>Priority:</strong> {{ report.priority }}</p>
+                  </div>
+                  <div class="col-md-6">
+                    <p><strong>Urgent:</strong>
+                      <span :class="report.isUrgent ? 'text-danger fw-bold' : 'text-muted'">
+                        {{ report.isUrgent ? 'Yes' : 'No' }}
+                      </span>
+                    </p>
+                    <p><strong>Moving Normally:</strong> {{ report.isMovingNormally }}</p>
+                    <p><strong>Location:</strong> {{ report.location }}</p>
+                  </div>
+                </div>
+
+                <p class="mb-3"><strong>Description:</strong></p>
+                <p class="text-muted">{{ report.description || 'No description provided.' }}</p>
+
+                <!-- Photos -->
+                <div v-if="report.photoURLs && report.photoURLs.length" class="mt-3">
+                  <h6>Photos</h6>
+                  <div class="d-flex flex-wrap gap-2">
+                    <img
+                      v-for="(url, index) in report.photoURLs"
+                      :key="index"
+                      :src="url"
+                      class="img-thumbnail"
+                      style="width: 120px; height: 120px; object-fit: cover;"
+                    />
+                  </div>
+                </div>
+
+                <!-- Active Summary Section -->
+                <div v-if="report.status === 'Active'" class="mt-4 p-3 border rounded bg-light">
+                  <h6 class="text-primary mb-3">Active Summary</h6>
+                  <p><strong>Reconciliation Status:</strong> {{ activeSummary.reconciliationStatus || '—' }}</p>
+                  <p><strong>Treatment Received:</strong> {{ activeSummary.treatmentReceived || '—' }}</p>
+                  <p><strong>Treatment Status:</strong> {{ activeSummary.treatmentStatus || '—' }}</p>
+                  <p><strong>Summary:</strong></p>
+                  <p class="text-muted">{{ activeSummary.treatmentSummary || 'No treatment summary available.' }}</p>
+                </div>
+
+                <!-- Meta info -->
+                <hr>
+                <small class="text-muted">
+                  <strong>Report ID:</strong> {{ report.reportId }}<br>
+                  <strong>Created:</strong> {{ report.createdAt || 'N/A' }}<br>
+                  <strong>Last Updated:</strong> {{ report.updatedAt || 'N/A' }}
+                </small>
+              </div>
         </div>
+
+        
+
       </div>
     </div>
   </div>
@@ -114,22 +179,27 @@ export default {
       error: null,
       // Dummy data (replace with your actual report later)
       report: {
-        createdAt: "2025-10-27T01:26:39+08:00",
-        description: "nil",
-        incidentType: "trapped",
-        isMovingNormally: "unknown",
+        createdAt: "",
+        description: "",
+        incidentType: "",
+        isMovingNormally: "",
         isUrgent: false,
-        location: "Clementi Avenue 6",
-        photoURLs: [
-          "http://localhost:4100/api/reports/images/83c1475f-1916-46dd-b7f7-59576ec6b989",
-        ],
-        priority: "low",
-        reportId: "WR-MH7ZDPF7-8ZJ8F",
-        severity: "low",
-        sightingDateTime: "2025-10-27T01:20:00+08:00",
-        speciesName: "nil",
-        status: "pending",
-        updatedAt: "2025-10-27T01:26:39+08:00",
+        location: "",
+        photoURLs: [],
+        priority: "",
+        reportId: "",
+        severity: "",
+        sightingDateTime: "",
+        speciesName: "",
+        status: "",
+        updatedAt: "",
+      },
+      activeSummary: {
+        "reconciliationStatus": "",
+        "treatmentReceived": "",
+        "treatmentStatus": "",
+        "treatmentSummary": "",
+        "reportId": ""
       },
       stages: ["Pending", "Rescue in Progress", "Completed"],
     };
@@ -156,11 +226,14 @@ export default {
     },
   },
   methods: {
-    async fetchReport(id) {
+    async fetchReport(reportId) {
       try {
         this.isLoading = true;
         this.error = null;
-        this.report = await api.getReportById(id);
+        this.report = await api.getReportByReportId(reportId);
+        if(this.report.status==='active'){
+          this.activeSummary = await api.getActiveSummary(reportId);
+        }
       } catch (e) {
         this.error = e.message;
       } finally {

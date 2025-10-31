@@ -7,8 +7,11 @@ import {
   identifySpecies,
   getAllReports,
   getReportById,
+  getReportByReportId,
   updateReportStatus,
-  deleteReport, 
+  getByGeoSpatial,
+  deleteReport,
+  getActiveSummary, 
 } from '../controllers/reportController.js';
 
 const router = express.Router();
@@ -32,11 +35,17 @@ router.post('/identify-species', identifySpecies);
 // Gets a single report document from Firestore by its ID.
 router.get('/getAllReports', getAllReports);
 
-// Gets a single report document from Firestore by its ID.
-router.get('/getReport/:id', getReportById);
+// Gets a single report document from Firestore by its report ID.
+router.get('/getReport/reportId/:id', getReportByReportId);
+
+// Gets a single report document from Firestore by its Firebase document ID.
+router.get('/getReport/docId/:id', getReportById);
 
 // Updates the status of a single report document in Firestore.
 router.post('/updateReport/:id', updateReportStatus);
+
+// Gets summary details of report by reportId
+router.get('/getReport/activeSummary/:id', getActiveSummary);
 
 export default router;
 

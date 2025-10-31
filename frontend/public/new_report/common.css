@@ -39,6 +39,7 @@
     background-color: #FEFAE0;
     transition: background-color 0.5s ease;
     box-shadow: 7px 7px 15px rgba(105, 105, 105, 0.5);
+    height:80px; 
 }
 
 .navbarLogo img {
@@ -125,4 +126,5 @@
 .nav-link {
     padding-left: 15px !important;
 } 
+
 

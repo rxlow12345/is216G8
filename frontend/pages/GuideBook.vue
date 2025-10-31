@@ -161,12 +161,21 @@
       »
     </button>
   </div>
+          <!-- Back to Top Button -->
+    <button 
+      v-show="showBackToTop" 
+      class="back-to-top" 
+      @click="scrollToTop"
+    >
+      ⬆️ Back to Top
+    </button>
 </div>
 </template>
 
 <script>
 import animalsData from '../src/public/guidebook.json'
 import '../pages/css/guidebook.css'
+import '../pages/css/common.css'
 import OtterCursor from '../src/components/OtterCursor.vue';
 
 export default {

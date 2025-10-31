@@ -481,7 +481,7 @@ export const getAllReports = async (req, res) => {
 };
 
 /**
- * Gets a single report document from Firestore by its ID.
+ * Gets a single report document from Firestore by its firebase ID.
  */
 export const getReportById = async (req, res) => {
   try {
@@ -513,6 +513,79 @@ export const getReportById = async (req, res) => {
   }
 };
 
+
+/**
+ * Gets a single report document from Firestore by its custom reportId field.
+ */
+export const getReportByReportId = async (req, res) => {
+  try {
+    const { id } = req.params; // this will be the reportId value
+
+    // Query for a document where reportId matches
+    const reportsRef = db.collection('incidentReports');
+    const snapshot = await reportsRef.where('reportId', '==', id).limit(1).get();
+
+    if (snapshot.empty) {
+      return res.status(404).json({
+        success: false,
+        message: 'Report not found: ' + id,
+      });
+    }
+
+    // Get the first matching document
+    const doc = snapshot.docs[0];
+    const data = doc.data();
+
+    res.status(200).json({
+      success: true,
+      data,
+    });
+
+  } catch (error) {
+    console.error('Error fetching report by reportId:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve report',
+    });
+  }
+};
+
+/**
+ * Gets the summary details when report is active
+ */
+export const getActiveSummary = async (req, res) => {
+  try {
+    const { id } = req.params; // this will be the reportId value
+
+    // Query for a document where reportId matches
+    const reportsRef = db.collection('activeStatusSummary');
+    const snapshot = await reportsRef.where('reportId', '==', id).limit(1).get();
+
+    if (snapshot.empty) {
+      return res.status(404).json({
+        success: false,
+        message: 'Report not found: ' + id,
+      });
+    }
+
+    // Get the first matching document
+    const doc = snapshot.docs[0];
+    const data = doc.data();
+
+    res.status(200).json({
+      success: true,
+      data,
+    });
+
+  } catch (error) {
+    console.error('Error fetching report by reportId:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve report',
+    });
+  }
+};
+
 /**
  * Updates the status of a single report document in Firestore.
  */
@@ -537,7 +610,7 @@ export const updateReportStatus = async (req, res) => {
       updatedAt: new Date()
     });
 
-    const updatedReport = { id: docRef.id, ...reportRef.data() };
+    const updatedReport = { id: id, ...reportRef.data };
 
     const io = req.app.get('io');
     if (io) {
@@ -553,7 +626,7 @@ export const updateReportStatus = async (req, res) => {
     console.error("Error updating report status:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to update report status'
+      message: 'Failed to update report status: '
     });
   }
 };
