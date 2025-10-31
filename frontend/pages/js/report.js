@@ -253,6 +253,7 @@ async function submitReport(event) {
         // Collect form data
         const reportData = {
             // Reporter Information
+            reporterId: window.currentUserId, // Firebase user UID
             reporterName: document.getElementById('reporterName').value,
             contactEmail: document.getElementById('contactEmail').value,
             contactPhone: document.getElementById('contactPhone').value,

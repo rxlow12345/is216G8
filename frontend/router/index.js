@@ -46,7 +46,7 @@ const routes = [
     path: '/map',
     name: 'Map',
     component: Map,
-    meta: { requiresAuth: false, roles: ['admin'] }
+    meta: { requiresAuth: true, roles: ['admin', 'volunteer'] }
   },
   {
     path:'/guidebook',
@@ -69,11 +69,13 @@ const routes = [
     path:'/report',
     name: 'Reporter Dashboard',
     component: ReporterDashboard,
+    meta: { requiresAuth: true, roles: ['reporter'] }
   },
   {
     path:'/volunteer/home',
     name: 'Volunteer Dashboard',
     component: VolunteerDashboard,
+    meta: { requiresAuth: true, roles: ['volunteer'] }
   },
   {
     path: '/donate',
