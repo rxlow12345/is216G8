@@ -101,5 +101,5 @@ app.get("/api/health", (req, res) => {
 
 // Static file serving disabled for development
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4100;
 app.listen(PORT, () => console.log(`🐾 Critter Connect running on port ${PORT}`));
