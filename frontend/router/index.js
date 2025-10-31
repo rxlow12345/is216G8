@@ -165,7 +165,7 @@ function handleAuthNavigation() {
   }
   
   // If user is logged in and trying to access login/signup or root, redirect to their dashboard
-  if (currentUser && (currentRoute.path === '/' || currentRoute.path === '/login' || currentRoute.path === '/signup')) {
+  if (currentUser && (currentRoute.path === '/login' || currentRoute.path === '/signup')) {
     switch (currentUser.role) {
       case 'admin':
         router.push('/status-update');
@@ -197,7 +197,7 @@ router.beforeEach(async (to, from, next) => {
   // If route doesn't require auth, allow access
   if (!requiresAuth) {
     // If user is logged in and trying to access root/login/signup, redirect to their dashboard
-    if (currentUser && (to.path === '/' || to.path === '/login' || to.path === '/signup')) {
+    if (currentUser && (to.path === '/login' || to.path === '/signup')) {
       switch (currentUser.role) {
         case 'admin':
           next('/status-update');
