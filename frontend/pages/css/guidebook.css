@@ -1,21 +1,26 @@
 * {
     padding: 0;
     margin: 0;
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 /*GuideBook Title*/ 
-h1 {
+.text-center h1 {
   color:rgb(254, 250, 224);
   font-family: Georgia, 'Times New Roman', Times, serif;
-  padding: 25px;
+  font-size: 48px;
+}
+
+.text-center p {
+  color:rgb(254, 250, 224);
+  font-size: 24px;
 }
 
 /*Logo & Top Banner*/
 #topBanner {
-  background-color: #285436;
+  background: linear-gradient(135deg, #086143 0%, #046949 100%);
   color: #fff;
-  padding: 40px 20px;
-  border-radius: 16px;
+  padding-top: 40px;
   text-align: center;
   overflow: hidden;
 }
