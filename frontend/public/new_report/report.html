@@ -95,7 +95,7 @@
             <div class="step-pill" data-step-pill="3"><span class="idx">3</span><span>Animal</span></div>
         </div>
         <div class="progress mb-4" role="progressbar" aria-label="Progress" aria-valuemin="0" aria-valuemax="100">
-            <div class="progress-bar" id="progressBar" style="width: 33%;">33%</div>
+            <div class="progress-bar bg-success" id="progressBar" style="width: 0%;">0%</div>
         </div>
 
         <!-- Wizard form -->
@@ -239,6 +239,34 @@
                     <div class="d-flex justify-content-end mt-3">
                         <button type="submit" id="submitBtn">Submit Report</button>
                         <div id="status"></div>
+                        <!-- Success Modal -->
+                        <div class="modal fade" id="submitSuccessModal" tabindex="-1"
+                            aria-labelledby="submitSuccessLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="submitSuccessLabel">Report Submitted</h5>
+                                        <button type="button" class="btn-close" aria-label="Close"
+                                            onclick="window.location.reload()">
+                                        </button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <!-- We'll inject the success HTML into this div -->
+                                        <!-- <div id="status"></div> -->
+                                        <div id="modalStatus"></div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline-secondary"
+                                            data-bs-dismiss="modal" onclick="window.location.href='/home'">Home</button>
+                                        <!-- If you use plain files, set href to your home page path -->
+                                        <a id="goHomeBtn" class="btn btn-primary" href="/home">Go to Status Page</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
             </section>

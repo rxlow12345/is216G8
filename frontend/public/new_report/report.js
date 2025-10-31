@@ -401,8 +401,8 @@ async function submitReport(event) {
     const statusDiv = document.getElementById('status');
 
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting...';
-    statusDiv.textContent = 'Submitting report...';
+    // submitBtn.textContent = 'Submitting...';
+    // statusDiv.textContent = 'Submitting report...';
 
     try {
         // Collect form data
@@ -475,6 +475,12 @@ async function submitReport(event) {
         });
 
         // Check if response is JSON
+        const form = document.getElementById('reportForm');
+        const modalEl = document.getElementById('submitSuccessModal');
+        const modalStatus = document.getElementById('modalStatus');
+        const modal = modalEl && typeof bootstrap !== 'undefined'
+            ? new bootstrap.Modal(modalEl)
+            : null;
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
             const text = await response.text();
@@ -483,22 +489,32 @@ async function submitReport(event) {
 
         const result = await response.json();
         if (response.ok && result.success) {
-            statusDiv.innerHTML = `
-                <div style="color: green; font-weight: bold;">
-                    ✅ Report submitted successfully!<br>
-                    Report ID: ${result.data.reportId}<br>
-                    Status: ${result.data.status}<br>
-                    Priority: ${result.data.priority}<br>
-                    <small>You will be contacted if further information is needed.</small>
-                </div>
-            `;
+            // statusDiv.innerHTML = `
+            //     <div style="color: green; font-weight: bold;">
+            //         ✅ Report submitted successfully!<br>
+            //         Report ID: ${result.data.reportId}<br>
+            //         Status: ${result.data.status}<br>
+            //         Priority: ${result.data.priority}<br>
+            //         <small>You will be contacted if further information is needed.</small>
+            //     </div>
+            // `;
 
-            // Reset form
-            document.getElementById('reportForm').reset();
-        } else {
-            throw new Error(result.message || 'Failed to submit report');
+            if (modal && modalStatus) {
+                modalStatus.innerHTML = `
+          <div class="fw-bold text-success">
+            ✅ Report submitted successfully!<br>
+            Report ID: ${result.data.reportId}<br>
+            Status: ${result.data.status}<br>
+            Priority: ${result.data.priority}<br>
+            <small>You will be contacted if further information is needed.</small>
+          </div>
+        `;
+                form.reset()
+                modal.show();
+            } else {
+                throw new Error(result.message || 'Failed to submit report');
+            }
         }
-
     } catch (error) {
         statusDiv.innerHTML = `
             <div style="color: red; font-weight: bold;">
@@ -620,7 +636,10 @@ function initStepper() {
             else if (idx === step) pill.classList.add('active');
         });
 
-        const pct = Math.round((step / total) * 100);
+        // const pct = Math.round((step / total) * 100);
+        let pct = Math.round(((step - 1) / total) * 100);
+        if (pct < 0) pct = 0;
+
         progressBar.style.width = pct + '%';
         progressBar.textContent = pct + '%';
 
@@ -657,8 +676,11 @@ function initStepper() {
         }
     });
 
-    form.addEventListener('submit', () => {
-        const valid = validateCurrentStep(); // run your validator
+    form.addEventListener('submit', async (e) => {
+        const valid = validateCurrentStep();
+        e.preventDefault();
+        e.stopPropagation();
+        // run your validator
 
         if (!valid) {
             e.preventDefault();
