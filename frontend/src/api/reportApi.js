@@ -55,12 +55,44 @@ const api = {
     return result;
   },
   /**
-   * Fetches a single report by its ID.
-   * @param {string} reportId - The ID of the report to fetch.
+   * Fetches a single report by its Firebase ID.
+   * @param {string} firebaseId - The ID of the report to fetch.
    * @returns {Promise<Object>} A promise that resolves to the report object.
    */
-  async getReportById(reportId) {
-    const response = await fetch(`${API_BASE_URL}/reports/getReport/${reportId}`);
+  async getReportById(firebaseId) {
+    const response = await fetch(`${API_BASE_URL}/reports/getReport/docId/${firebaseId}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok while fetching the report.');
+    }
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to get report from API.');
+    }
+    return result.data;
+  },
+  /**
+   * Fetches a single report by its report ID.
+   * @param {string} reportId - The report ID of the report to fetch.
+   * @returns {Promise<Object>} A promise that resolves to the report object.
+   */
+  async getReportByReportId(reportId) {
+    const response = await fetch(`${API_BASE_URL}/reports/getReport/reportId/${reportId}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok while fetching the report.');
+    }
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to get report from API.');
+    }
+    return result.data;
+  },
+  /**
+   * Gets the summary details of active report
+   * @param {string} reportId - The report ID of the report to fetch.
+   * @returns {Promise<Object>} A promise that resolves to the report object.
+   */
+  async getActiveSummary(reportId) {
+    const response = await fetch(`${API_BASE_URL}/reports/getReport/activeSummary/${reportId}`);
     if (!response.ok) {
       throw new Error('Network response was not ok while fetching the report.');
     }
