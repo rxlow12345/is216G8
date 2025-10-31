@@ -22,10 +22,6 @@ router.post('/upload-image', uploadImage);
 // Serve fallback images
 router.get('/images/:id', getFallbackImage);
 
-// Get incident via lat, lng, & radius
-// Function added on 28/10/2025 by Charlize
-router.get('/getByGeoSpatial', getByGeoSpatial)
-
 // Create a new incident report
 router.post('/', createReport);
 

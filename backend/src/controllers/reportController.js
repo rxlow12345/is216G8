@@ -84,7 +84,7 @@ export const identifySpecies = async (req, res) => {
           };
         }
       }
-      
+    
       res.json({
         success: true,
         data: {
@@ -346,6 +346,12 @@ export const createReport = async (req, res) => {
     // Save to Firestore
     const docRef = await db.collection('incidentReports').add(reportData);
 
+    const newReport = { id: docRef.id, ...reportData };
+
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('new-report', newReport);
+    }
 
     // Send response
     res.status(201).json({
@@ -371,15 +377,46 @@ export const createReport = async (req, res) => {
   }
 };
 
-//   deleteReport,
+// deleteReport
 export const deleteReport = async (req, res) => {
-  try{
+  try {
     const { id } = req.params;
-
-    const doc = await db.collection('incidentReports').doc(id).get();
+    
+    // Check if report exists first
+    const docRef = db.collection('incidentReports').doc(id);
+    const doc = await docRef.get();
+    
+    if (!doc.exists) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Report not found' 
+      });
+    }
+    
+    // Delete the document
+    await docRef.delete();
+    
+    // Broadcast deletion via WebSocket (if available)
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('report-deleted', docRef.id);
+    }
+    
+    console.log(`🗑️ Report deleted: ${id}`);
+    
+    res.json({ 
+      success: true,
+      message: 'Report deleted successfully',
+      id: id
+    });
   } catch (error) {
-
-  };
+    console.error('Error deleting report:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to delete report',
+      error: error.message 
+    });
+  }
 };
 
 // Helper functions
@@ -573,6 +610,13 @@ export const updateReportStatus = async (req, res) => {
       updatedAt: new Date()
     });
 
+    const updatedReport = { id: docRef.id, ...reportRef.data() };
+
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('report-updated', updatedReport);
+    }
+    
     res.status(200).json({
       success: true,
       message: `Report ${id} status successfully updated to '${status}'`

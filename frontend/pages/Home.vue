@@ -4,10 +4,11 @@
     <!-- Moving Cursor Component -->
     <OtterCursor animal="🦦" :speed="0.08" />
 
+
     <!-- Floating Animals Background -->
     <div class="floating-animals">
-      <div 
-        v-for="(animal, index) in floatingAnimals" 
+      <div
+        v-for="(animal, index) in floatingAnimals"
         :key="index"
         class="floating-animal"
         :style="getAnimalStyle(index)"
@@ -16,9 +17,11 @@
       </div>
     </div>
 
+
     <!-- Decorative Leaves -->
     <div class="leaf leaf-top">🍃</div>
     <div class="leaf leaf-bottom">🍃</div>
+
 
     <!-- Hero Section with Carousel -->
     <section class="hero-section">
@@ -29,7 +32,7 @@
         </div>
         <h1 class="hero-title">CritterConnect</h1>
         <p class="hero-subtitle">Join Us In Saving Singapore's Wildlife!</p>
-        
+       
         <!-- CTA Buttons -->
         <div class="hero-buttons">
           <router-link to="/login" class="btn btn-primary">
@@ -41,12 +44,14 @@
         </div>
       </div>
 
+
       <!-- Scroll Down Indicator -->
       <div class="scroll-indicator">
         <span>↓</span>
         <p>Scroll to learn more</p>
       </div>
     </section>
+
 
     <!-- ======================== About Section ======================== -->
     <section class="about-section">
@@ -55,7 +60,7 @@
           <div class="about-content">
             <div class="about-text">
               <h2 class="section-title">About CritterConnect</h2>
-              
+             
               <p class="about-description">
                 Based in the heart of <strong>Singapore</strong>, CritterConnect is a community-driven initiative
                 dedicated to helping our local wildlife thrive. Whether it's a wounded pigeon in your neighbourhood
@@ -63,11 +68,13 @@
                 and connect them with rescue organisations.
               </p>
 
+
               <p class="about-description">
                 Our <router-link to="/guidebook" class="guidebook-link">Guidebook</router-link> helps you identify and
                 learn about common species in Singapore — from squirrels to hornbills — so we can all
                 coexist with our city's amazing biodiversity.
               </p>
+
 
               <div class="about-actions">
                 <a href="/pages/new_report/report.html" class="btn-report" target="_self">
@@ -75,6 +82,7 @@
                 </a>
               </div>
             </div>
+
 
             <!-- Carousel inside About Image -->
             <div class="about-image">
@@ -94,9 +102,11 @@
                     </div>
                   </div>
 
+
                   <!-- Navigation arrows -->
                   <button class="carousel-btn prev" @click="prevSlide">❮</button>
                   <button class="carousel-btn next" @click="nextSlide">❯</button>
+
 
                   <!-- Dots -->
                   <div class="carousel-dots">
@@ -112,10 +122,12 @@
               </div>
             </div>
 
+
           </div>
         </div>
       </div>
     </section>
+
 
     <!-- ======================== Guidebook CTA Banner ======================== -->
     <section class="guidebook-cta-section">
@@ -128,17 +140,17 @@
             <span>🦉</span>
             <span>🦜</span>
           </div>
-          
+         
           <h2 class="banner-title">📚 Explore Our Wildlife Guidebook!</h2>
           <p class="banner-text">
-            Discover and learn about Singapore's amazing biodiversity. 
+            Discover and learn about Singapore's amazing biodiversity.
             <strong>No login required!</strong>
           </p>
-          
+         
           <router-link to="/guidebook" class="btn btn-guidebook-large">
             🔍 Browse Guidebook Now
           </router-link>
-          
+         
           <p class="banner-note">
             Learn to identify common species • Conservation tips • Fun facts
           </p>
@@ -146,25 +158,26 @@
       </div>
     </section>
 
+
     <!-- ======================== Features Section ======================== -->
     <section class="features-section">
       <div class="container">
         <h2 class="section-title text-center">Make a Difference with CritterConnect</h2>
         <p class="section-subtitle text-center">Report, learn, and receive live rescue updates about our critters</p>
-        
+       
         <div class="features-grid">
           <div class="feature-card">
             <div class="feature-icon">🦔</div>
             <h3>Report Wildlife</h3>
             <p>Spotted an injured animal? Report it instantly and connect with rescue organizations</p>
           </div>
-          
+         
           <div class="feature-card">
             <div class="feature-icon">📚</div>
             <h3>Learn & Identify</h3>
             <p>Access our comprehensive guidebook to identify local species and learn about them</p>
           </div>
-          
+         
           <div class="feature-card">
             <div class="feature-icon">📬</div>
             <h3>Track Rescues</h3>
@@ -174,21 +187,20 @@
       </div>
     </section>
 
+
     <!-- ======================== Final CTA Section ======================== -->
     <section class="final-cta-section">
       <div class="container">
         <div class="final-cta-card">
-          <h2>Ready to Make a Difference?</h2>
-          <p>Join CritterConnect today and help protect Singapore's wildlife</p>
-          
+          <h2>Want to Make a Difference?</h2>
+          <p>Donate to CritterConnect's Partners Today!</p>
+         
           <div class="cta-buttons">
-            <router-link to="/login" class="btn btn-signup-large">
-              🌲 Login
-            </router-link>
-            <router-link to="/signup" class="btn btn-login-outline">
-              🦊 Sign Up Now 
+            <router-link to="/donate" class="btn btn-donate">
+              Donate
             </router-link>
           </div>
+
 
           <!-- ======================== Footer Critters ======================== -->
           <div class="footer-critters">
@@ -204,13 +216,17 @@
   </div>
 </template>
 
+
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import '../pages/css/home.css'
+import '../pages/css/common.css'
 import OtterCursor from '../src/components/OtterCursor.vue';
+
 
 // ======================== Floating Animals Array ========================
 const floatingAnimals = ['🦊', '🦝', '🐿️', '🦔', '🦉', '🦌', '🐰', '🦫', '🐻', '🦅', '🐺', '🦜'];
+
 
 // ======================== Carousel Images ========================
 const carouselImages = [
@@ -221,9 +237,11 @@ const carouselImages = [
   { src: '/src/public/assets/chicken.jpg', alt: 'Chicken', caption: 'Chickens', emoji: '🐔' }
 ];
 
+
 const currentSlide = ref(0);
 const isTransitioning = ref(false);
 let autoRotateInterval = null;
+
 
 // ======================== Get random style for floating animals ========================
 function getAnimalStyle(index) {
@@ -235,6 +253,7 @@ function getAnimalStyle(index) {
   };
 }
 
+
 // ======================== Carousel Controls ========================
 function nextSlide() {
   if (isTransitioning.value) return;
@@ -243,12 +262,14 @@ function nextSlide() {
   setTimeout(() => { isTransitioning.value = false; }, 500);
 }
 
+
 function prevSlide() {
   if (isTransitioning.value) return;
   isTransitioning.value = true;
   currentSlide.value = currentSlide.value === 0 ? carouselImages.length - 1 : currentSlide.value - 1;
   setTimeout(() => { isTransitioning.value = false; }, 500);
 }
+
 
 function goToSlide(index) {
   if (isTransitioning.value) return;
@@ -257,6 +278,7 @@ function goToSlide(index) {
   setTimeout(() => { isTransitioning.value = false; }, 500);
 }
 
+
 // ======================== Auto-rotate ========================
 function startAutoRotate() {
   autoRotateInterval = setInterval(() => {
@@ -264,17 +286,21 @@ function startAutoRotate() {
   }, 4000);
 }
 
+
 function pauseCarousel() {
   clearInterval(autoRotateInterval);
 }
+
 
 function resumeCarousel() {
   startAutoRotate();
 }
 
+
 onMounted(() => {
   startAutoRotate();
 });
+
 
 onUnmounted(() => {
   clearInterval(autoRotateInterval);

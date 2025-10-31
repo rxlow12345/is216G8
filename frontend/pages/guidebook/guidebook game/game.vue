@@ -9,7 +9,7 @@ import OtterCursor from '../../../src/components/OtterCursor.vue';
       return {
         allAnimals: animalsData, 
         difficultyLevel: ['easy', 'medium', 'hard'],
-        selectedDifficulty: 'easy', 
+        selectedDifficulty: '', 
         gameAnimals: [],
         numberOfPairs: 8,
         rows: 4, 
@@ -75,7 +75,13 @@ import OtterCursor from '../../../src/components/OtterCursor.vue';
         this.matchedCardIDs = new Set();
         this.isProcessing = false;
         this.gameAnimals = [];
-        this.selectedDifficulty = 'easy';
+        if (this.selectedDifficulty == ''){
+          this.selectedDifficulty = 'easy';
+        }
+        if (this.selectedDifficulty == ''){
+          this.selectedDifficulty = 'easy';
+        }
+
       },
 
       generateGameAnimals() {
@@ -210,7 +216,7 @@ import OtterCursor from '../../../src/components/OtterCursor.vue';
   
   <div id="difficultyLevel" class="col-6">
     <p class="difficulty-label">Please select your difficulty level:</p>
-    <select name="difficulty" id="difficulty" v-model="selectedDifficulty" @click="restartGame()">
+    <select name="difficulty" id="difficulty" v-model="selectedDifficulty">
       <option value="easy">Easy</option>
       <option value="medium">Medium</option>
       <option value="hard">Hard</option>
@@ -220,15 +226,6 @@ import OtterCursor from '../../../src/components/OtterCursor.vue';
     <p class="subtitle" v-else-if="selectedDifficulty == 'medium'">Match animals to their description</p>
     <p class="subtitle" v-else-if="selectedDifficulty == 'hard'">Match animals to their scientific name</p>
   </div>
-
-  <!-- Selecting Board Size --> 
-   <div id="boardSize">
-        <p class = "difficulty-label"> Please select the size of your board: </p>
-        <select name="boardSize" id="board-size" v-model="numberOfPairs" @click="restartGame()">
-            <option value=""></option>
-        </select>
-
-   </div>
 
   <!-- Game Statistics -->
   <div class="gameStats col-6" v-if="gameStarted">
@@ -334,21 +331,20 @@ h1 {
 }
 
 /* Difficulty Selection */
-#boardCustomisation {
-/* , #difficultyLevel, #boardSize, #difficultyDisplay, .subtitle { */
+#difficultyLevel {
   text-align: center;
   margin: 30px auto;
   max-width: 600px;
 }
 
-.difficulty-label, .board-size {
+.difficulty-label {
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 15px;
   color: rgb(40, 54, 24);
 }
 
-#difficulty, #board {
+#difficulty {
   padding: 12px 24px;
   font-size: 18px;
   border: 2px solid rgb(40, 54, 24);
