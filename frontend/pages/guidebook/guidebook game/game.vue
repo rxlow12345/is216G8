@@ -6,7 +6,7 @@
       return {
         allAnimals: animalsData, 
         difficultyLevel: ['easy', 'medium', 'hard'],
-        selectedDifficulty: 'easy', 
+        selectedDifficulty: '', 
         gameAnimals: [],
         numberOfPairs: 8,
         rows: 4, 
@@ -72,7 +72,13 @@
         this.matchedCardIDs = new Set();
         this.isProcessing = false;
         this.gameAnimals = [];
-        this.selectedDifficulty = 'easy';
+        if (this.selectedDifficulty == ''){
+          this.selectedDifficulty = 'easy';
+        }
+        if (this.selectedDifficulty == ''){
+          this.selectedDifficulty = 'easy';
+        }
+
       },
 
       generateGameAnimals() {
@@ -201,19 +207,35 @@
     </header>
   </div>
 
-  <!-- Selecting Difficulty -->
-  
-  <div id="difficultyLevel" class="col-6">
-    <p class="difficulty-label">Please select your difficulty level:</p>
-    <select name="difficulty" id="difficulty" v-model="selectedDifficulty">
-      <option value="easy">Easy</option>
-      <option value="medium">Medium</option>
-      <option value="hard">Hard</option>
-    </select>
+  <div id="boardCustomisation">
+    <!-- Selecting Difficulty -->
+    <div id="difficultyLevel" class="col-6">
+      <p class="difficulty-label">Please select your difficulty level:</p>
+      <select name="difficulty" id="difficulty" v-model="selectedDifficulty" @click="restartGame">
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+      </select>
 
-    <p class="subtitle" v-if="selectedDifficulty == 'easy'">Match animals to their common name</p>
-    <p class="subtitle" v-else-if="selectedDifficulty == 'medium'">Match animals to their description</p>
-    <p class="subtitle" v-else-if="selectedDifficulty == 'hard'">Match animals to their scientific name</p>
+    </div>
+    
+    <!-- Selecting Board Size --> 
+    <div id="boardSize">
+      <p class = "board-size"> Please select the size of your board: </p>
+      <select name="boardSize" id="board" v-model="numberOfPairs" @click="restartGame()">
+        <option value="6">Easy - 4x3 Grid</option>
+        <option value="8">Classic - 4x4 Grid</option>
+        <option value="10">Medium - 4x5 Grid</option>
+        <option value="15">Hard - 5x6 Grid</option>
+        <option value="20">Expert - 5x8 Grid</option>
+      </select>
+      <p class="subtitle" v-if="selectedDifficulty == 'easy'">Match animals to their common name</p>
+      <p class="subtitle" v-else-if="selectedDifficulty == 'medium'">Match animals to their description</p>
+      <p class="subtitle" v-else-if="selectedDifficulty == 'hard'">Match animals to their scientific name</p>
+    </div>
+
+    <div id = "difficultyDisplay">
+    </div>
   </div>
 
   <!-- Game Statistics -->
@@ -320,20 +342,20 @@ h1 {
 }
 
 /* Difficulty Selection */
-#difficultyLevel {
+#difficultyLevel, #boardSize {
   text-align: center;
   margin: 30px auto;
   max-width: 600px;
 }
 
-.difficulty-label {
+.difficulty-label, .board-size  {
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 15px;
   color: rgb(40, 54, 24);
 }
 
-#difficulty {
+#difficulty, #board{
   padding: 12px 24px;
   font-size: 18px;
   border: 2px solid rgb(40, 54, 24);
