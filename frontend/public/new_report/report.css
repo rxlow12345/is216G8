@@ -16,12 +16,14 @@ p{
 #topBanner {
   background-color: #285436;
   color: #fff;
-  padding-top: 40px;
+  padding: 40px 20px;
+  border-radius: 16px;
   text-align: center;
   overflow: hidden;
+  border-radius: 0;
 }
 
-#topBanner h1{
+#topBanner h1 {
   opacity: 0;
   transform: translateY(20px);
   animation: fadeUp 1.2s ease forwards;
@@ -149,12 +151,12 @@ button:disabled {
 #submitBtn{
     background-color: #052507;
     color: white;
-    padding: 15px 20px;
+    padding: 10px 10px;
     border: none;
     border-radius: 15px;
     cursor: pointer;
     font-size: 26px;
-    width: 40%;
+    width: 260px;
     margin: 20px;
     transition: all 0.2s ease-in-out;
 
@@ -183,7 +185,8 @@ button:disabled {
 }
 
 #live-location-btn{
-    background-color:#064301
+    background-color:#064301;
+    padding: 10px 20px;
 }
 
 
