@@ -4,8 +4,10 @@
     <div class="container-fluid">
       <!-- Logo -->
       <router-link class="navbar-brand navbarLogo order-0" to="/">
-        <img src="../public/assets/logo.png" alt="Logo" class="d-inline-block align-text-top" style="height: 75px;">
+        <img src="../public/assets/NoWordLogo.png" alt="Logo" class="d-inline-block align-text-top" style="height: 75px;">
       </router-link>
+
+      <img src="../public/assets/Title.png" style="height:60px;">
 
       <!-- Welcome Message -->
       <span v-if="auth.uid" class="navbar-text me-auto ms-3 order-1">

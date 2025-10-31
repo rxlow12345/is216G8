@@ -62,7 +62,6 @@
   display: flex;
   gap: 20px;
   justify-content: center;
-  padding-right: 45px;
   flex-wrap: wrap;
 }
 
