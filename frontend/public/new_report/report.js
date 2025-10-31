@@ -634,7 +634,6 @@ function initStepper() {
 
         const inputs = Array.from(pane.querySelectorAll('input, select, textarea'));
         let valid = true;
-
         inputs.forEach(el => {
             if (!el.checkValidity()) {
                 el.classList.add('is-invalid');
@@ -647,6 +646,7 @@ function initStepper() {
         return valid;
     }
 
+
     nextBtn.addEventListener('click', () => {
         if (validateCurrentStep()) {
             showStep(step + 1);
@@ -656,6 +656,25 @@ function initStepper() {
             if (invalid) invalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     });
+
+    form.addEventListener('submit', () => {
+        const valid = validateCurrentStep(); // run your validator
+
+        if (!valid) {
+            e.preventDefault();
+            e.stopPropagation();
+            // Find the first invalid field in the current step
+            const invalid = Array.from(panes)
+                .find(pane => Number(pane.dataset.step) === step)
+                ?.querySelector('.is-invalid, :invalid');
+
+            if (invalid) {
+                invalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                invalid.focus();
+            }
+        }
+    });
+
 
     prevBtn.addEventListener('click', () => showStep(step - 1));
 
@@ -667,4 +686,16 @@ function initStepper() {
     });
 
     showStep(step);
+
+    // clicking anywhere on the calendar shows the calendar
+
+    const datetimeInput = document.getElementById('sightingDateTime');
+
+    // When user clicks anywhere on the input box, open the picker
+    datetimeInput.addEventListener('click', (e) => {
+        // Only open if browser supports it and it's not already open
+        if (datetimeInput.showPicker) {
+            datetimeInput.showPicker();
+        }
+    });
 }
