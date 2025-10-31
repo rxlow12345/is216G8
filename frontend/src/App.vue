@@ -6,6 +6,7 @@
       <router-link to="/status-update">Go to Status Update</router-link>
       <a href="../pages/report.html">Report</a>
     </nav> -->
+    
     <header>
       <NavBar></NavBar>
     </header>
@@ -29,6 +30,6 @@ export default {
 
 <style>
 main {
-  padding-top: 80px !important; /* Match navbar height */
+  padding-top: 90px !important; /* Match navbar height */
 }
 </style>

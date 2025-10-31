@@ -1,19 +1,6 @@
 <!-- frontend/src/pages/volunteer/Home.vue -->
 <template>
   <div class="container-fluid">
-    <!-- Header with Logout -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-warning mb-4">
-      <div class="container">
-        <span class="navbar-brand mb-0 h1">Volunteer Dashboard</span>
-        <div class="navbar-nav ms-auto">
-          <span class="navbar-text me-3">Welcome, {{ userEmail }}</span>
-          <button class="btn btn-outline-light" @click="handleLogout">
-            <i class="bi bi-box-arrow-right"></i> Logout
-          </button>
-        </div>
-      </div>
-    </nav>
-
     <!-- Main Content -->
     <div class="container">
       <div class="row">
@@ -65,19 +52,6 @@ onMounted(async () => {
   // Use the utility function for cleaner code
   await checkUserAuthAndRole(router, 'volunteer', { userEmail, currentUser });
 });
-
-/**
- * Handle logout
- */
-async function handleLogout() {
-  try {
-    await logout();
-    router.push('/login');
-  } catch (error) {
-    console.error('Logout error:', error);
-    alert('Logout failed. Please try again.');
-  }
-}
 </script>
 
 <style scoped>

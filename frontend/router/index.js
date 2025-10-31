@@ -5,6 +5,7 @@ import { onAuthStateChange } from '../src/api/auth.js';
 import App from '../src/App.vue'; // Default app
 import StatusUpdate from '../pages/orgAdmin/StatusUpdate.vue'; // StatusUpdate
 import Home from '../pages/Home.vue'
+import Donate from '../src/components/Donate.vue';
 import Login from '../pages/auth/Login.vue';
 import Signup from '../pages/auth/Signup.vue';
 import ReporterDashboard from '../pages/reporter/ReporterDashboard.vue';
@@ -13,13 +14,14 @@ import Game from '../pages/guidebook/guidebook game/game.vue';
 import GuideBook from '../pages/GuideBook.vue';
 import Map from '../pages/map/Map.vue';
 import Status from '../pages/reporter/Status.vue';
+import PastReports from '../pages/past_reports/PastReports.vue';
 
 // 1. Define your routes as an array of objects
 const routes = [
   {
     path: '/',
-    name: 'Login',
-    component: Login,
+    name: 'Home',
+    component: Home,
     meta: { requiresAuth: false }
   },
   {
@@ -53,11 +55,6 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
-    path: '/status-update',         // <-- THE URL FOR YOUR COMPONENT
-    name: 'StatusUpdate',            // <-- A UNIQUE NAME
-    component: StatusUpdate        // <-- THE COMPONENT VUE WILL RENDER
-  },
-  {
     path: '/status/:id',
     name: 'Status',       
     component: Status      
@@ -79,9 +76,15 @@ const routes = [
     component: VolunteerDashboard,
   },
   {
-    path: '/home',
-    name: 'Home',
-    component: Home,
+    path: '/donate',
+    name: 'Donate',
+    component: Donate,
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/past-reports',
+    name: 'Past Reports',
+    component: PastReports
   }
 ];
 
@@ -143,7 +146,7 @@ function handleAuthNavigation() {
     // Redirect based on user role
     switch (currentUser.role) {
       case 'admin':
-        router.push('/status-update');
+        router.push('/admin');
         break;
       case 'reporter':
         router.push('/report');
@@ -158,10 +161,10 @@ function handleAuthNavigation() {
   }
   
   // If user is logged in and trying to access login/signup or root, redirect to their dashboard
-  if (currentUser && (currentRoute.path === '/' || currentRoute.path === '/login' || currentRoute.path === '/signup')) {
+  if (currentUser && (currentRoute.path === '/login' || currentRoute.path === '/signup')) {
     switch (currentUser.role) {
       case 'admin':
-        router.push('/status-update');
+        router.push('/admin');
         break;
       case 'reporter':
         router.push('/report');
@@ -190,10 +193,10 @@ router.beforeEach(async (to, from, next) => {
   // If route doesn't require auth, allow access
   if (!requiresAuth) {
     // If user is logged in and trying to access root/login/signup, redirect to their dashboard
-    if (currentUser && (to.path === '/' || to.path === '/login' || to.path === '/signup')) {
+    if (currentUser && (to.path === '/login' || to.path === '/signup')) {
       switch (currentUser.role) {
         case 'admin':
-          next('/status-update');
+          next('/admin');
           break;
         case 'reporter':
           next('/report');
@@ -220,7 +223,7 @@ router.beforeEach(async (to, from, next) => {
   if (allowedRoles && !allowedRoles.includes(currentUser.role)) {
     switch (currentUser.role) {
       case 'admin':
-        next('/status-update');
+        next('/admin');
         break;
       case 'reporter':
         next('/report');

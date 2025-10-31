@@ -1,0 +1,191 @@
+<!-- Emergency strip -->
+<div class="emergency-strip py-3 px-3 px-md-4 text-white">
+  <div class="container d-flex flex-column flex-md-row align-items-center gap-3 justify-content-between">
+    <div class="d-flex align-items-start gap-2">
+      <span class="fs-4" aria-hidden="true"></span>
+      <div>
+        <div class="fw-semibold" id="em-title">Emergency Or Life-threatening?</div>
+        <small class="opacity-75" id="em-note">Keep a safe distance. Do not attempt to handle the animal.</small>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+      <a id="em-primary" class="btn btn-light btn-sm fw-semibold rounded-pill" href="#">
+        Life-threatening: 999
+      </a>
+      <a id="em-secondary" class="btn btn-outline-light btn-sm rounded-pill" href="#">
+        Ambulance/Fire: 995
+      </a>
+
+    </div>
+  </div>
+</div>
+
+<!-- Main footer -->
+<footer class="footer-body py-5">
+  <div class="container">
+    <div class="row g-4">
+      <!-- Brand / about -->
+      <div class="col-12 col-sm-6">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <img id="org-logo" src="../../src/public/assets/logo.png" alt="CritterConnect logo" style="height:40px;width:auto;" />
+          <h5 class="m-0" id="org-name">CritterConnect</h5>
+        </div>
+        <p class="text-muted mb-3">
+          Helping people and wildlife coexist through reporting, rescue coordination, and education.
+        </p>
+        <div class="d-flex gap-2">
+          <a id="soc-facebook" href="#" target="_blank" rel="noopener" class="btn btn-outline-success btn-sm rounded-pill" aria-label="Facebook">Facebook</a>
+          <a id="soc-instagram" href="#" target="_blank" rel="noopener" class="btn btn-outline-success btn-sm rounded-pill" aria-label="Instagram">Instagram</a>
+          <a id="soc-youtube" href="#" target="_blank" rel="noopener" class="btn btn-outline-success btn-sm rounded-pill" aria-label="YouTube">YouTube</a>
+          <a id="soc-tiktok" href="#" target="_blank" rel="noopener" class="btn btn-outline-success btn-sm rounded-pill" aria-label="TikTok">TikTok</a>
+        </div>
+      </div>
+
+      <!-- Contact -->
+      <div class="col-12 col-sm-6">
+        <h6 class="text-uppercase text-muted">Contact</h6>
+        <ul class="list-unstyled m-0">
+          <li id="c-email-wrap" class="my-2">
+            <a id="c-email" class="link-dark text-decoration-none" href="mailto:hello@critterconnect.org">hello@critterconnect.org</a>
+          </li>
+          <li id="c-phone-wrap" class="my-2">
+            <a id="c-phone" class="link-dark text-decoration-none" href="tel:"> </a>
+          </li>
+          <li id="c-address-wrap" class="my-2 text-muted"><span id="c-address"></span></li>
+          <li id="c-hours-wrap" class="my-2 text-muted"><span id="c-hours">Mon–Sun, 9am–6pm</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="my-4" />
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2">
+      <small class="text-muted">© <span id="year"></span> <span id="org-name-copy">CritterConnect</span>. All rights reserved.</small>
+      <small class="text-muted">
+        <a class="link-secondary text-decoration-none me-3" href="/privacy.html">Privacy</a>
+        <a class="link-secondary text-decoration-none" href="/terms.html">Terms</a>
+      </small>
+    </div>
+  </div>
+</footer>
+
+<style>
+  /* Keep styles unscoped so they apply anywhere you include this. */
+  .emergency-strip {
+    /* Solid brand color or a proper gradient */
+    background: #064301; /* fallback */
+    background: linear-gradient(90deg, #064301 0%, #0a6b05 100%);
+  }
+  .footer-body {
+    background: #f8faf8;
+  }
+</style>
+
+<script>
+  // Configure your content here (was props/meta in Vue)
+  const footerConfig = {
+    orgName: 'CritterConnect',
+    logoSrc: "../../src/public/assets/logo.png",
+    year: new Date().getFullYear(),
+    emergency: {
+      title: 'Emergency Or Life-threatening?',
+      note: 'Keep a safe distance. Do not attempt to handle the animal.',
+      primaryLabel: 'Life-threatening',
+      primaryNumber: '999',
+      secondaryLabel: 'Ambulance/Fire',
+      secondaryNumber: '995',
+
+    },
+    contact: {
+      email: 'thebest@critterconnect.org',
+      phone: '',            // leave empty to hide
+      address: '',          // leave empty to hide
+      hours: 'Mon–Sun, 9am–6pm'
+    },
+    socials: {
+      facebook: '',
+      instagram: '',
+      youtube: '',
+      tiktok: ''
+    }
+  };
+
+  (function applyFooter(cfg) {
+    // org / brand
+    document.getElementById('org-name').textContent = cfg.orgName;
+    document.getElementById('org-name-copy').textContent = cfg.orgName;
+    document.getElementById('org-logo').src = cfg.logoSrc;
+    document.getElementById('year').textContent = cfg.year;
+
+    // emergency
+    document.getElementById('em-title').textContent = cfg.emergency.title || '';
+    document.getElementById('em-note').textContent = cfg.emergency.note || '';
+    const primary = document.getElementById('em-primary');
+    const secondary = document.getElementById('em-secondary');
+    const wildlife = document.getElementById('em-wildlife');
+
+    if (cfg.emergency.primaryNumber) {
+      primary.href = 'tel:' + cfg.emergency.primaryNumber;
+      primary.textContent = `${cfg.emergency.primaryLabel || 'Primary'}: ${cfg.emergency.primaryNumber}`;
+    } else {
+      primary.style.display = 'none';
+    }
+
+    if (cfg.emergency.secondaryNumber) {
+      secondary.href = 'tel:' + cfg.emergency.secondaryNumber;
+      secondary.textContent = `${cfg.emergency.secondaryLabel || 'Secondary'}: ${cfg.emergency.secondaryNumber}`;
+    } else {
+      secondary.style.display = 'none';
+    }
+
+
+    // contact
+    const emailWrap = document.getElementById('c-email-wrap');
+    const phoneWrap = document.getElementById('c-phone-wrap');
+    const addressWrap = document.getElementById('c-address-wrap');
+    const hoursWrap = document.getElementById('c-hours-wrap');
+
+    if (cfg.contact.email) {
+      const email = document.getElementById('c-email');
+      email.href = 'mailto:' + cfg.contact.email;
+      email.textContent = cfg.contact.email;
+    } else {
+      emailWrap.style.display = 'none';
+    }
+
+    if (cfg.contact.phone) {
+      const phone = document.getElementById('c-phone');
+      phone.href = 'tel:' + cfg.contact.phone;
+      phone.textContent = cfg.contact.phone;
+    } else {
+      phoneWrap.style.display = 'none';
+    }
+
+    if (cfg.contact.address) {
+      document.getElementById('c-address').textContent = cfg.contact.address;
+    } else {
+      addressWrap.style.display = 'none';
+    }
+
+    if (cfg.contact.hours) {
+      document.getElementById('c-hours').textContent = cfg.contact.hours;
+    } else {
+      hoursWrap.style.display = 'none';
+    }
+
+    // socials
+    const soc = cfg.socials || {};
+    const showOrHide = (id, url) => {
+      const el = document.getElementById(id);
+      if (url) {
+        el.href = url;
+      } else {
+        el.style.display = 'none';
+      }
+    };
+    showOrHide('soc-facebook', soc.facebook);
+    showOrHide('soc-instagram', soc.instagram);
+    showOrHide('soc-youtube', soc.youtube);
+    showOrHide('soc-tiktok', soc.tiktok);
+  })(footerConfig);
+</script>

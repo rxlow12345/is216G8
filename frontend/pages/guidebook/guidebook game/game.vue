@@ -1,7 +1,10 @@
 <script>
-  import animalsData from '../../../src/public/guidebook.json'
+  //import { number } from 'mathjs';
+import animalsData from '../../../src/public/guidebook.json'
+import OtterCursor from '../../../src/components/OtterCursor.vue';
 
   export default {
+    components: {OtterCursor},
     data() {
       return {
         allAnimals: animalsData, 
@@ -200,6 +203,8 @@
 </script>
 
 <template>
+  <!-- Otter Cursor -->
+   <OtterCursor animal="🦦" :speed="0.08"/>
   <!-- Top Banner -->
   <div id="topBanner">
     <header class="text-center mb-2">
@@ -207,35 +212,19 @@
     </header>
   </div>
 
-  <div id="boardCustomisation">
-    <!-- Selecting Difficulty -->
-    <div id="difficultyLevel" class="col-6">
-      <p class="difficulty-label">Please select your difficulty level:</p>
-      <select name="difficulty" id="difficulty" v-model="selectedDifficulty" @click="restartGame">
-        <option value="easy">Easy</option>
-        <option value="medium">Medium</option>
-        <option value="hard">Hard</option>
-      </select>
+  <!-- Selecting Difficulty -->
+  
+  <div id="difficultyLevel" class="col-6">
+    <p class="difficulty-label">Please select your difficulty level:</p>
+    <select name="difficulty" id="difficulty" v-model="selectedDifficulty">
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+    </select>
 
-    </div>
-    
-    <!-- Selecting Board Size --> 
-    <div id="boardSize">
-      <p class = "board-size"> Please select the size of your board: </p>
-      <select name="boardSize" id="board" v-model="numberOfPairs" @click="restartGame()">
-        <option value="6">Easy - 4x3 Grid</option>
-        <option value="8">Classic - 4x4 Grid</option>
-        <option value="10">Medium - 4x5 Grid</option>
-        <option value="15">Hard - 5x6 Grid</option>
-        <option value="20">Expert - 5x8 Grid</option>
-      </select>
-      <p class="subtitle" v-if="selectedDifficulty == 'easy'">Match animals to their common name</p>
-      <p class="subtitle" v-else-if="selectedDifficulty == 'medium'">Match animals to their description</p>
-      <p class="subtitle" v-else-if="selectedDifficulty == 'hard'">Match animals to their scientific name</p>
-    </div>
-
-    <div id = "difficultyDisplay">
-    </div>
+    <p class="subtitle" v-if="selectedDifficulty == 'easy'">Match animals to their common name</p>
+    <p class="subtitle" v-else-if="selectedDifficulty == 'medium'">Match animals to their description</p>
+    <p class="subtitle" v-else-if="selectedDifficulty == 'hard'">Match animals to their scientific name</p>
   </div>
 
   <!-- Game Statistics -->
@@ -342,20 +331,20 @@ h1 {
 }
 
 /* Difficulty Selection */
-#difficultyLevel, #boardSize {
+#difficultyLevel {
   text-align: center;
   margin: 30px auto;
   max-width: 600px;
 }
 
-.difficulty-label, .board-size  {
+.difficulty-label {
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 15px;
   color: rgb(40, 54, 24);
 }
 
-#difficulty, #board{
+#difficulty {
   padding: 12px 24px;
   font-size: 18px;
   border: 2px solid rgb(40, 54, 24);
@@ -375,6 +364,7 @@ h1 {
   color: #666;
   font-style: italic;
   margin-top: 10px;
+  /* text-align: center; */
 }
 
 /* Game Statistics */

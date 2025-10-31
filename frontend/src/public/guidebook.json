@@ -80,6 +80,22 @@
     "learn_more_url": "https://en.wikipedia.org/wiki/paradoxurus_hermaphroditus"
   },
   {
+    "category": "Mammals",
+    "common_name": "Smooth Otter",
+    "scientific_name": "Lutrogale Perspicillata",
+    "description": "Often seen in coastal habitats, largely in mangroves and mudflats. Active during day and night, and mainly feeds on fish.",
+    "image_url": "/src/public/assets/SmoothOtter.png",
+    "learn_more_url": "https://en.wikipedia.org/wiki/Smooth_otter"
+  },
+  {
+    "category": "Mammals",
+    "common_name": "Plantain Squirrel",
+    "scientific_name": "Callosciurus Notatus",
+    "description": "Active both day and night. Feeds on a mixed of animal and plant material. Buids a spherical nest of twigs.",
+    "image_url": "/src/public/assets/PlantainSquirrel.png",
+    "learn_more_url":"https://www.nparks.gov.sg/florafaunaweb/fauna/4/8/488"
+  },
+  {
     "category": "Marine",
     "common_name": "Small Giant Clam",
     "scientific_name": "Tridacna Maxima",
@@ -91,7 +107,7 @@
     "category": "Marine",
     "common_name": "Hawksbill Sea Turtle",
     "scientific_name": "Eretmochelys imbricata",
-    "description": "Have been regularly sighted along the Singapore Strait. Females have been spotted coming ashore at East COast Park to lay eggs.",
+    "description": "Have been regularly sighted along the Singapore Strait. Females have been spotted coming ashore at East Coast Park to lay eggs.",
     "image_url": "/src/public/assets/HawksbillSeaTurtle.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Eretmochelys_imbricata"
   },
@@ -307,16 +323,16 @@
     "category": "Birds",
     "common_name": "Red Junglefowl",
     "scientific_name": "Gallus gallus domesticus",
-    "description": "Resembles the domestic chicken, but have grey feet and brighter plumage. Hybridisation between the wild junglfowl and domestic chicken is common in Singapore.",
+    "description": "Resembles the domestic chicken, but have grey feet and brighter plumage. Common around Singapore.",
     "image_url": "/src/public/assets/RedJunglefowl.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Chicken"
-  },
+  }, 
   {
-    "category": "Mammals",
-    "common_name": "Smooth Otter",
-    "scientific_name": "Lutrogale perspicillata",
-    "description": "Often seen in coastal habitats, largely in mangroves and mudflats. Active during day and night, and mainly feeds on fish.",
-    "image_url": "/src/public/assets/SmoothOtter.png",
-    "learn_more_url": "https://en.wikipedia.org/wiki/Smooth_otter"
+    "category": "Birds",
+    "common_name": "Common Myna",
+    "scientific_name": "Acridotheres Tritis",
+    "description": "Extremely common around Singapore. Nesting site can be anywhere including cracks in buildings.",
+    "image_url": "/src/public/assets/CommonMyna.png",
+    "learn_more_url": "https://www.nparks.gov.sg/publications-resources/articles/what-s-that-(black)-bird"
   }
 ]

@@ -25,7 +25,7 @@
             <span class="logo-icon">🦊</span>
             <span class="logo-icon">🌿</span>
           </div>
-          <h2 class="text-center mb-4">CritterConnects</h2>
+          <h2 class="text-center mb-4">CritterConnect</h2>
           <p class="subtitle">Welcome back to nature</p>
         </div>
         
@@ -222,7 +222,7 @@ async function handleLogin() {
     // Redirect based on user role
     switch (user.role) {
       case 'admin':
-        router.push('/status-update');
+        router.push('/admin');
         break;
       case 'reporter':
         router.push('/report');

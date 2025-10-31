@@ -249,9 +249,9 @@ export const createReport = async (req, res) => {
   try {
     const {
       // Reporter Information
-      reporterName,
-      contactEmail,
-      contactPhone,
+      // reporterName,
+      // contactEmail,
+      // contactPhone,
       
       // Incident Details
       incidentType,
@@ -263,23 +263,26 @@ export const createReport = async (req, res) => {
       
       // Animal Identification
       speciesName,
-      animalCondition,
+      // animalCondition,
       
       // Reporter Assessment
       isMovingNormally,
-      isInDanger,
-      rescueCalled,
-      stayingOnSite,
+      // isInDanger,
+      // rescueCalled,
+      // stayingOnSite,
       
       // Media (Firebase Storage URLs)
       photoURLs = []
     } = req.body;
 
     // Validate required fields
-    const requiredFields = [
-      'reporterName', 'contactEmail', 'incidentType', 'severity', 
-      'description', 'sightingDateTime', 'isMovingNormally', 
-      'isInDanger', 'rescueCalled', 'stayingOnSite'
+    // const requiredFields = [
+    //   'reporterName', 'contactEmail', 'incidentType', 'severity', 
+    //   'description', 'sightingDateTime', 'isMovingNormally', 
+    //   'isInDanger', 'rescueCalled', 'stayingOnSite'
+    // ];
+      const requiredFields = [
+      'incidentType', 'severity', 'sightingDateTime', 'description', 'isMovingNormally'
     ];
 
     const missingFields = requiredFields.filter(field => !req.body[field]);
@@ -301,9 +304,9 @@ export const createReport = async (req, res) => {
     // Prepare report data
     const reportData = {
       // Reporter Information
-      reporterName: reporterName.trim(),
-      contactEmail: contactEmail.trim().toLowerCase(),
-      contactPhone: contactPhone?.trim() || null,
+      // reporterName: reporterName.trim(),
+      // contactEmail: contactEmail.trim().toLowerCase(),
+      // contactPhone: contactPhone?.trim() || null,
       
       // Incident Details
       incidentType,
@@ -315,28 +318,29 @@ export const createReport = async (req, res) => {
       
       // Animal Identification
       speciesName: speciesName?.trim() || null,
-      animalCondition: animalCondition?.trim() || null,
+      // animalCondition: animalCondition?.trim() || null,
       
       // Reporter Assessment
-      assessment: {
+    
         isMovingNormally,
-        isInDanger,
-        rescueCalled,
-        stayingOnSite
-      },
+        // isInDanger,
+        // stayingOnSite
+      
       
     // Media (Firebase Storage URLs - no size limits needed)
     photoURLs: photoURLs.slice(0, 5), // Limit to 5 images max
     
     // Metadata
-    status: 'pending', // pending, in-progress, resolved, closed
-      priority: calculatePriority(severity, isInDanger, rescueCalled),
+      status: 'pending', // pending, in-progress, resolved, closed
+      // priority: calculatePriority(severity, isInDanger, rescueCalled),
+      priority: calculatePriority(severity),
       createdAt: new Date(),
       updatedAt: new Date(),
       
       // Auto-generated fields
       reportId: generateReportId(),
-      isUrgent: severity === 'urgent' || isInDanger === 'yes'
+      isUrgent: severity === 'urgent' 
+      // || isInDanger === 'yes'
     };
 
     // Save to Firestore
@@ -367,7 +371,8 @@ export const createReport = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to create report',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+      // error: error.message
     });
   }
 };
@@ -415,14 +420,24 @@ export const deleteReport = async (req, res) => {
 };
 
 // Helper functions
-function calculatePriority(severity, isInDanger, rescueCalled) {
-  if (severity === 'urgent' || isInDanger === 'yes') {
+// function calculatePriority(severity, isInDanger, rescueCalled) {
+//   if (severity === 'urgent' || isInDanger === 'yes') {
+//     return 'high';
+//   } else if (severity === 'moderate') {
+//     return 'medium';
+//   } else if (rescueCalled === 'yes') {
+//     return 'medium'; // Someone already called, but still needs follow-up
+//   } else {
+//     return 'low';
+//   }
+// }
+
+function calculatePriority(severity) {
+  if (severity === 'urgent') {
     return 'high';
   } else if (severity === 'moderate') {
-    return 'medium';
-  } else if (rescueCalled === 'yes') {
-    return 'medium'; // Someone already called, but still needs follow-up
-  } else {
+    return 'medium';}
+    else {
     return 'low';
   }
 }
