@@ -44,7 +44,7 @@
           @click="selectReport(report)"
         />
 
-        <div v-if="filteredReports.length === 0" class="empty-state">
+        <div v-if="filteredReports?.length === 0" class="empty-state">
           <p>No reports found</p>
         </div>
       </div>
@@ -162,10 +162,10 @@ export default {
       if (this.currentFilter === "all") {
         return this.reports;
       }
-      return this.reports.filter((r) => r.status === this.currentFilter);
+      return this.reports?.filter((r) => r.status === this.currentFilter);
     },
     selectedReport() {
-      return this.reports.find((r) => r.id === this.selectedReportId);
+      return this.reports?.find((r) => r.id === this.selectedReportId);
     },
   },
   async mounted() {
@@ -180,7 +180,8 @@ export default {
     async loadReports() {
       try {
         const response = await api.getReports();
-        this.reports = response.data;
+        console.log(response);
+        this.reports = response;
       } catch (error) {
         console.error("Error loading reports:", error);
         alert("Failed to load reports. Make sure backend is running!");
@@ -192,21 +193,21 @@ export default {
 
       // Listen for new reports
       socket.on("new-report", (report) => {
-        this.reports.unshift(report);
+        this.reports?.unshift(report);
         this.showNotification("New Report", `${report.animalType} needs help!`);
       });
 
       // Listen for report updates
       socket.on("report-updated", (updatedReport) => {
-        const index = this.reports.findIndex((r) => r.id === updatedReport.id);
+        const index = this.reports?.findIndex((r) => r.id === updatedReport.id);
         if (index !== -1) {
-          this.reports.splice(index, 1, updatedReport);
+          this.reports?.splice(index, 1, updatedReport);
         }
       });
 
       // Listen for deleted reports
       socket.on("report-deleted", (reportId) => {
-        this.reports = this.reports.filter((r) => r.id !== reportId);
+        this.reports = this.reports?.filter((r) => r.id !== reportId);
       });
 
       // Connection status
@@ -226,7 +227,7 @@ export default {
     setupGlobalFunctions() {
       // Allow map popup to call this function
       window.selectReport = (reportId) => {
-        const report = this.reports.find((r) => r.id === reportId);
+        const report = this.reports?.find((r) => r.id === reportId);
         if (report) this.selectReport(report);
       };
     },
@@ -269,8 +270,8 @@ export default {
     },
 
     getCount(filterValue) {
-      if (filterValue === "all") return this.reports.length;
-      return this.reports.filter((r) => r.status === filterValue).length;
+      if (filterValue === "all") return this.reports?.length;
+      return this.reports?.filter((r) => r.status === filterValue).length;
     },
 
     formatDateTime(date) {
