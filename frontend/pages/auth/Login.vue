@@ -222,7 +222,7 @@ async function handleLogin() {
     // Redirect based on user role
     switch (user.role) {
       case 'admin':
-        router.push('/status-update');
+        router.push('/admin');
         break;
       case 'reporter':
         router.push('/report');

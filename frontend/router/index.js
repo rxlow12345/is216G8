@@ -54,11 +54,6 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
-    path: '/status-update',         // <-- THE URL FOR YOUR COMPONENT
-    name: 'StatusUpdate',            // <-- A UNIQUE NAME
-    component: StatusUpdate        // <-- THE COMPONENT VUE WILL RENDER
-  },
-  {
     path: '/status/:id',
     name: 'Status',       
     component: Status      
@@ -150,7 +145,7 @@ function handleAuthNavigation() {
     // Redirect based on user role
     switch (currentUser.role) {
       case 'admin':
-        router.push('/status-update');
+        router.push('/admin');
         break;
       case 'reporter':
         router.push('/report');
@@ -168,7 +163,7 @@ function handleAuthNavigation() {
   if (currentUser && (currentRoute.path === '/login' || currentRoute.path === '/signup')) {
     switch (currentUser.role) {
       case 'admin':
-        router.push('/status-update');
+        router.push('/admin');
         break;
       case 'reporter':
         router.push('/report');
@@ -200,7 +195,7 @@ router.beforeEach(async (to, from, next) => {
     if (currentUser && (to.path === '/login' || to.path === '/signup')) {
       switch (currentUser.role) {
         case 'admin':
-          next('/status-update');
+          next('/admin');
           break;
         case 'reporter':
           next('/report');
@@ -227,7 +222,7 @@ router.beforeEach(async (to, from, next) => {
   if (allowedRoles && !allowedRoles.includes(currentUser.role)) {
     switch (currentUser.role) {
       case 'admin':
-        next('/status-update');
+        next('/admin');
         break;
       case 'reporter':
         next('/report');
