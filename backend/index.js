@@ -36,6 +36,7 @@ app.use("/api/reports", reportRoutes);
 app.use("/api/maps", mapRoutes);
 
 const server = http.createServer(app);
+// SOCKET 
 const io = new Server(server, {
   cors: {
     origin: process.env.FRONTEND_URL || 'http://localhost:5175',
@@ -43,6 +44,7 @@ const io = new Server(server, {
     credentials: true
   }
 });
+server.listen(3000, () => console.log('Server running on port 3000'));
 // Make io accessible in routes
 app.set('io', io);
 
@@ -102,4 +104,4 @@ app.get("/api/health", (req, res) => {
 // Static file serving disabled for development
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🐾 Critter Connect running on port ${PORT}`));
+// app.listen(PORT, () => console.log(`🐾 Critter Connect running on port ${PORT}`));

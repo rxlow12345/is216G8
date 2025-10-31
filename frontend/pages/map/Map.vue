@@ -4,8 +4,7 @@
     <div class="sidebar">
       <!-- Header -->
       <div class="header">
-        <h1>🐾 CritterConnect</h1>
-        <p class="subtitle">Real-time Animal Rescue</p>
+        <p class="subtitle"> {{ getCount(reports) }} reports pending... Accept a case now!</p>
 
         <!-- Connection Status -->
         <div class="connection-status">
@@ -15,36 +14,17 @@
         </div>
       </div>
 
-      <!-- Filter Buttons -->
-      <div class="filters">
-        <button
-          v-for="filter in filters"
-          :key="filter.value"
-          @click="currentFilter = filter.value"
-          :class="['filter-btn', { active: currentFilter === filter.value }]"
-        >
-          {{ filter.label }} ({{ getCount(filter.value) }})
-        </button>
-      </div>
-
       <!-- Reports List -->
       <div class="reports-list">
         <ReportCard
-          v-for="report in filteredReports"
-          :key="report.id"
-          :report="report"
-          :selected="selectedReportId === report.id"
-          @click="selectReport(report)"
-        />
-        <ReportCard
-          v-for="report in filteredReports"
+          v-for="report in reports"
           :key="report.id"
           :report="report"
           :selected="selectedReportId === report.id"
           @click="selectReport(report)"
         />
 
-        <div v-if="filteredReports?.length === 0" class="empty-state">
+        <div v-if="reports?.length === 0" class="empty-state">
           <p>No reports found</p>
         </div>
       </div>
@@ -52,7 +32,7 @@
 
     <!-- Right Side: Map -->
     <div class="map-container">
-      <MapView :reports="filteredReports" :center="mapCenter" />
+      <MapView :reports="reports" :center="mapCenter" />
     </div>
   </div>
 
@@ -145,28 +125,12 @@ export default {
     return {
       reports: [],
       selectedReportId: null,
-      currentFilter: "all",
       isConnected: false,
       activeUsers: 0,
       mapCenter: { lat: 1.3521, lng: 103.8198 }, // Singapore
-      filters: [
-        { label: "All", value: "all" },
-        { label: "Pending", value: "pending" },
-        { label: "Active", value: "in-progress" },
-        { label: "Resolved", value: "resolved" },
-      ],
     };
   },
   computed: {
-    filteredReports() {
-      if (this.currentFilter === "all") {
-        return this.reports;
-      }
-      return this.reports?.filter((r) => r.status === this.currentFilter);
-    },
-    selectedReport() {
-      return this.reports?.find((r) => r.id === this.selectedReportId);
-    },
   },
   async mounted() {
     await this.loadReports();
@@ -270,8 +234,9 @@ export default {
     },
 
     getCount(filterValue) {
-      if (filterValue === "all") return this.reports?.length;
-      return this.reports?.filter((r) => r.status === filterValue).length;
+      return this.reports?.length;
+      // if (filterValue === "all") return this.reports?.length;
+      // return this.reports?.filter((r) => r.status === filterValue).length;
     },
 
     formatDateTime(date) {
@@ -312,7 +277,7 @@ export default {
 
 .header {
   padding: 24px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: #046848;
   color: white;
 }
 
@@ -324,8 +289,7 @@ export default {
 
 .subtitle {
   margin: 0 0 16px;
-  font-size: 14px;
-  opacity: 0.9;
+  font-size: 22px;
 }
 
 .connection-status {
@@ -357,36 +321,6 @@ export default {
   }
 }
 
-.filters {
-  padding: 16px;
-  display: flex;
-  gap: 8px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f9fafb;
-  overflow-x: auto;
-}
-
-.filter-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 20px;
-  background: white;
-  color: #6b7280;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s;
-}
-
-.filter-btn:hover {
-  background: #e5e7eb;
-}
-
-.filter-btn.active {
-  background: #10b981;
-  color: white;
-}
 
 .reports-list {
   flex: 1;
