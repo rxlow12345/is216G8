@@ -214,13 +214,20 @@ import OtterCursor from '../../../src/components/OtterCursor.vue';
 
   <!-- Selecting Difficulty -->
   
-  <div id="difficultyLevel" class="col-6">
-    <p class="difficulty-label">Please select your difficulty level:</p>
-    <select name="difficulty" id="difficulty" v-model="selectedDifficulty">
+  <div id="customisation" class="col-6">
+    <p class="customisation-label">Please select your difficulty level:</p>
+    <select name="difficulty" id="difficulty" v-model="selectedDifficulty" @click="restartGame()">
       <option value="easy">Easy</option>
       <option value="medium">Medium</option>
       <option value="hard">Hard</option>
     </select>
+    <p class="customisation-label">Please select your board size:</p>
+    <select name="boardSize" id="boardSize" v-model="numberOfPairs" @click="restartGame()">
+      <option value="8">Easy - 4 x 4</option>
+      <option value="18">Medium - 6 x 6</option>
+      <option value="32">Hard - 8 x 8</option>
+    </select>
+
 
     <p class="subtitle" v-if="selectedDifficulty == 'easy'">Match animals to their common name</p>
     <p class="subtitle" v-else-if="selectedDifficulty == 'medium'">Match animals to their description</p>
@@ -331,20 +338,20 @@ h1 {
 }
 
 /* Difficulty Selection */
-#difficultyLevel {
+#customisation {
   text-align: center;
   margin: 30px auto;
   max-width: 600px;
 }
 
-.difficulty-label {
+.customisation-label {
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 15px;
   color: rgb(40, 54, 24);
 }
 
-#difficulty {
+#difficulty, #boardSize {
   padding: 12px 24px;
   font-size: 18px;
   border: 2px solid rgb(40, 54, 24);
