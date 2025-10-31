@@ -14,6 +14,7 @@ import Game from '../pages/guidebook/guidebook game/game.vue';
 import GuideBook from '../pages/GuideBook.vue';
 import Map from '../pages/map/Map.vue';
 import Status from '../pages/reporter/Status.vue';
+import PastReports from '../pages/past_reports/PastReports.vue';
 
 // 1. Define your routes as an array of objects
 const routes = [
@@ -74,16 +75,16 @@ const routes = [
     name: 'Volunteer Dashboard',
     component: VolunteerDashboard,
   },
-  // {
-  //   path: '/home',
-  //   name: 'Home',
-  //   component: Home,
-  // },
-    {
+  {
     path: '/donate',
     name: 'Donate',
     component: Donate,
     meta: { requiresAuth: false }
+  },
+  {
+    path: '/past-reports',
+    name: 'Past Reports',
+    component: PastReports
   }
 ];
 
