@@ -496,7 +496,7 @@
 
 
 .final-cta-card {
-  background-color:#285436;
+  background-color:rgba(40, 84, 54, 0.8);
   backdrop-filter: blur(20px);
   border-radius: 24px;
   padding: 80px 60px;

@@ -68,7 +68,7 @@
 }
 
 #searchBtn {
-  background-color: #285436;
+  background-color: rgba(40, 84, 54, 0.8);
   color: white;
   border: none;
   border-radius: 25px;
