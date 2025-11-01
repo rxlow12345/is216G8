@@ -13,7 +13,7 @@
     <div class="row">
       <div class="col-md-1"></div>
       <div class="col-md-10 d-flex justify-content-center">
-        <div class="container-lg my-5">
+        <div class="container-lg my-1">
           <!-- Loading State -->
           <div v-if="isLoading" class="d-flex justify-content-center align-items-center py-5">
             <div class="spinner-border" style="color: #086143;" role="status">
