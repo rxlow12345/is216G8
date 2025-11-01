@@ -6,6 +6,10 @@
   font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
+#topBanner h1 {
+  margin-bottom: 35px;
+}
+
 /* ===== Search Bar ===== */
 .searchBar {
   display: flex;
@@ -121,14 +125,12 @@
   padding: 16px;
 }
 
-/* Default colors */
 .reportTitle strong,
 .reportTitle .reportSubtitle {
-  color: #283618; /* your original text color */
+  color: #283618;
   transition: color 0.3s ease;
 }
 
-/* When report is expanded */
 .reportCard.expanded .reportTitle strong,
 .reportCard.expanded .reportTitle .reportSubtitle {
   color: white;
@@ -146,39 +148,34 @@
   color: white;
 }
 
-/* .tagSeverity {
-  background-color: #BC6C25;
-} */
-
-/* ===== Tags with earthy severity colors ===== */
 .tagLow {
-  background-color: #6B8E23; /* olive green */
+  background-color: #6B8E23;
   color: white;
 }
 
 .tagModerate {
-  background-color: #DDA15E; /* warm mustard/golden */
+  background-color: #DDA15E;
   color: white;
 }
 
 .tagUrgent {
-  background-color: #BC6C25; /* deep earthy red/orange */
+  background-color: #BC6C25;
   color: white;
 }
 
 /* Other tags (non-severity) */
 .tagPending {
-  background-color: #aaa; /* gray */
+  background-color: #aaa;
   color: white;
 }
 
 .tagActive {
-  background-color: #DDA15E; /* same warm mustard */
+  background-color: #DDA15E;
   color: white;
 }
 
 .tagResolved {
-  background-color: #6B8E23; /* muted green */
+  background-color: #6B8E23;
   color: white;
 }
 
