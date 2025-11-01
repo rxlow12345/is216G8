@@ -1,5 +1,5 @@
 /* ===== Global Page Styling ===== */
-.past-reports-page {
+.pastReportsPage {
   background-color: #FEFAE0;
   min-height: 100vh;
   color: #283618;
@@ -7,9 +7,10 @@
 }
 
 /* ===== Search Bar ===== */
-.search-bar {
+.searchBar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   background-color: #f6f8f3;
   border-radius: 40px;
   padding: 8px 16px;
@@ -17,138 +18,235 @@
   color: #2e4f2f;
   border: none;
   outline: none;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
-  width: 100%;
-  margin: 0 20px;
+  max-width: 600px;
+  width: calc(100% - 40px);
+  margin: 0 auto;
+  margin-top: 40px;
 }
 
-.search-bar::placeholder {
-  color: #6b7a68;
+.searchBar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  color: #283618;
 }
 
-.search-bar:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  transform: translateY(-2px);
+.searchBar button {
+  background-color: #606C38;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-/* ===== Dropdown Filters ===== */
-.filter-section {
+.searchBar button:hover {
+  background-color: #283618;
+}
+
+/* ===== Filter Section ===== */
+.filterSection {
   display: flex;
   gap: 12px;
-  justify-content: flex-start;
-  max-width: 800px;   /* keeps filters from touching edges */
-  margin: 0 auto;     
-  padding: 0 20px;    
-  box-sizing: border-box;
-  margin-bottom: 30px;
+  justify-content: center;
+  margin: 20px auto 30px auto;
+  max-width: 800px;
+  margin-bottom: 40px;
 }
 
-.filter-select {
-  border-radius: 30px;       /* more rounded select box */
-  padding: 10px 20px;
+.filterSelect {
+  border-radius: 30px;
+  padding: 10px 40px 10px 20px; /* extra space for arrow */
   background-color: #f6f8f3;
   border: none;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   cursor: pointer;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   transition: all 0.3s ease;
-  min-width: 160px;
-  padding-right: 40px;       /* space for arrow */
-  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"><polygon points="0,0 14,0 7,7" fill="%232e4f2f"/></svg>');
+  -webkit-appearance: none; /* Remove default arrow */
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg fill='black' height='12' viewBox='0 0 24 24' width='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 12px 12px;
+  background-position: right 12px center; /* controls spacing from right */
+  background-size: 25px;
 }
 
-.filter-select:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  transform: translateY(-2px);
-}
-
-.filter-select:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(40, 84, 54, 0.15);
+.filterSelect.open {
+  transform: rotate(180deg); /* rotates entire select; we can instead rotate just the arrow via pseudo-element */
 }
 
 /* ===== Reports Container ===== */
-#reportsContainer {
+.reportsContainer {
   display: flex;
   flex-direction: column;
-  gap: 1rem; /* Increased gap for better separation */
+  gap: 1rem;
   max-width: 800px;
   margin: 0 auto;
 }
 
-/* ===== Report Card ===== */
-.report-card {
-  background-color: #fff;
-  border-radius: 0.5rem;
-  border: 1px solid #ddd;
+.noResults {
+  text-align: center;
+  color: #6b7a68;
+}
+
+/* ===== Report Cards ===== */
+.reportCard {
+  background-color: white;
+  border-radius: 1rem;
   overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-  margin: 0px 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for separation */
+  transition: transform 0.2s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.report-card:hover {
+.reportCard:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  background-color: #f5dfc6;
 }
 
-.report-card img {
-  width: 100%;
-  height: auto;
-  object-fit: cover;
+.reportCard.expanded {
+  background-color: #DDA15E;
+  border: 2px solid #DDA15E;
 }
 
-/* ===== Expanded Report Details ===== */
-.report-details {
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.report-details p {
-  margin-bottom: 10px;
-  font-size: 0.95rem;
-  color: #333;
-}
-
-.report-details strong {
-  color: #606C38;  /* Header color for labels */
-}
-
-.photo-gallery {
+/* ===== Report Summary ===== */
+.reportSummary {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1rem;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
 }
 
-.photo-preview {
-  width: 120px;
-  height: 120px;
+/* Default colors */
+.reportTitle strong,
+.reportTitle .reportSubtitle {
+  color: #283618; /* your original text color */
+  transition: color 0.3s ease;
+}
+
+/* When report is expanded */
+.reportCard.expanded .reportTitle strong,
+.reportCard.expanded .reportTitle .reportSubtitle {
+  color: white;
+}
+
+/* ===== Tags ===== */
+.tag {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: capitalize;
+  margin-left: 6px;
+  color: white;
+}
+
+/* .tagSeverity {
+  background-color: #BC6C25;
+} */
+
+/* ===== Tags with earthy severity colors ===== */
+.tagLow {
+  background-color: #6B8E23; /* olive green */
+  color: white;
+}
+
+.tagModerate {
+  background-color: #DDA15E; /* warm mustard/golden */
+  color: white;
+}
+
+.tagUrgent {
+  background-color: #BC6C25; /* deep earthy red/orange */
+  color: white;
+}
+
+/* Other tags (non-severity) */
+.tagPending {
+  background-color: #aaa; /* gray */
+  color: white;
+}
+
+.tagActive {
+  background-color: #DDA15E; /* same warm mustard */
+  color: white;
+}
+
+.tagResolved {
+  background-color: #6B8E23; /* muted green */
+  color: white;
+}
+
+/* ===== Flip backgrounds on expanded report, keep text color the same ===== */
+.reportCard.expanded .tagLow,
+.reportCard.expanded .tagModerate,
+.reportCard.expanded .tagUrgent,
+.reportCard.expanded .tagPending,
+.reportCard.expanded .tagActive,
+.reportCard.expanded .tagResolved {
+  background-color: white; /* flip background */
+  border: 1px solid currentColor; /* subtle border using original text color */
+}
+
+/* Keep text color the same as original */
+.reportCard.expanded .tagLow { color: #6B8E23; }
+.reportCard.expanded .tagModerate { color: #DDA15E; }
+.reportCard.expanded .tagUrgent { color: #BC6C25; }
+.reportCard.expanded .tagPending { color: #aaa; }
+.reportCard.expanded .tagActive { color: #DDA15E; }
+.reportCard.expanded .tagResolved { color: rgba(40, 84, 54, 0.80); }
+
+/* Optional hover pop effect for expanded tags */
+.reportCard.expanded .tag:hover {
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
+
+/* ===== Report Details ===== */
+.reportDetails {
+  padding: 16px;
+  background-color: #F6F8F3;
+  border-top: 1px solid #ddd;
+}
+
+.reportDetailsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 16px;
+}
+
+.reportDetailsTable td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #ddd;
+  vertical-align: top;
+}
+
+.reportDetailsTable td:first-child {
+  font-weight: bold;
+  color: #606C38;
+}
+
+/* ===== Photo Gallery ===== */
+.photoPreview {
+  width: 100%;
   object-fit: cover;
-  border-radius: 0.5rem;
+  border-radius: 8px;
 }
 
-/* ===== Utility Animations ===== */
+/* ===== Animations ===== */
 .expand-enter-active, .expand-leave-active {
   transition: all 0.3s ease;
 }
 .expand-enter-from, .expand-leave-to {
   max-height: 0;
   opacity: 0;
-  padding: 0 1rem;
 }
 .expand-enter-to, .expand-leave-from {
   max-height: 1000px;
   opacity: 1;
-  padding: 1rem;
 }

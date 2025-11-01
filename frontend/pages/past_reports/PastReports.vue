@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid p-0 past-reports-page">
+  <div class="container-fluid p-0 pastReportsPage">
     <!-- Top Banner -->
     <div id="topBanner">
       <header class="text-center mb-2">
@@ -8,23 +8,21 @@
     </div>
 
     <!-- Loading State -->
-    <div v-if="isLoading" class="d-flex justify-content-center align-items-center py-5">
-      <div class="spinner-border text-success" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-      <span class="ms-3 fs-4">Loading your reports...</span>
+    <div v-if="isLoading" class="loadingState">
+      <div class="loadingSpinner"></div>
+      <span class="loadingText">Loading your reports...</span>
     </div>
 
     <!-- Error State -->
-    <div v-else-if="error" class="alert alert-danger text-center mt-4">
+    <div v-else-if="error" class="errorState">
       <p><strong>Error:</strong> {{ error }}</p>
     </div>
 
     <!-- Main Content -->
     <div v-else>
       <!-- Search Bar -->
-      <div class="search-section">
-        <div class="search-bar">
+      <div class="searchSection">
+        <div class="searchBar">
           <input
             id="searchInput"
             v-model="searchQuery"
@@ -36,36 +34,31 @@
         </div>
       </div>
 
-
       <!-- Filter Section -->
-      <div class="filter-section">
-        <select id="severityFilter" v-model="selectedSeverity" @change="filterReports" class="filter-select">
+      <div class="filterSection">
+        <select v-model="selectedSeverity" @change="filterReports" class="filterSelect">
           <option value="">All Severities</option>
           <option value="low">Low</option>
           <option value="moderate">Moderate</option>
           <option value="urgent">Urgent</option>
         </select>
 
-        <select id="statusFilter" v-model="selectedStatus" @change="filterReports" class="filter-select">
+        <select v-model="selectedStatus" @change="filterReports" class="filterSelect">
           <option value="">All Statuses</option>
           <option value="pending">Pending</option>
-          <option value="in-progress">In Progress</option>
+          <option value="active">Active</option>
           <option value="resolved">Resolved</option>
-          <option value="closed">Closed</option>
         </select>
 
-        <select id="sortFilter" v-model="sortOption" @change="sortReports" class="filter-select">
+        <select v-model="sortOption" @change="sortReports" class="filterSelect">
           <option value="newest">Newest First</option>
           <option value="oldest">Oldest First</option>
-          <!-- <option value="severityHigh">Severity (High → Low)</option>
-          <option value="severityLow">Severity (Low → High)</option> -->
         </select>
       </div>
 
-
       <!-- Reports List -->
-      <div id="reportsContainer">
-        <p v-if="filteredReports.length === 0" class="text-center text-muted mt-4">
+      <div id="reportsContainer" class="reportsContainer">
+        <p v-if="filteredReports.length === 0" class="noResults">
           No matching reports found.
         </p>
 
@@ -73,44 +66,76 @@
           <div
             v-for="report in filteredReports"
             :key="report.reportId"
-            class="report-card mb-2"
+            :class="['reportCard', 'mb-2', { expanded: expandedReport === report.reportId }]"
           >
-            <div
-              class="report-summary d-flex justify-content-between align-items-center p-3"
-              @click="toggleReport(report.reportId)"
-            >
-              <div>
-                <strong>{{ report.speciesName || 'Unknown Species' }}</strong> - 
-                {{ report.incidentType || 'Unknown Type' }}
+            <div class="reportSummary" @click="toggleReport(report.reportId)">
+              <div class="reportTitle">
+                <strong>{{ report.speciesName || 'Unknown Species' }}</strong>
+                <span class="reportSubtitle"> - {{ report.incidentType || 'Unknown Type' }}</span>
               </div>
-              <div>
-                <span class="badge bg-secondary me-2">{{ report.severity }}</span>
-                <span class="badge bg-success">{{ report.status }}</span>
-                <span v-if="expandedReport === report.reportId">▲</span>
-                <span v-else>▼</span>
+              <div class="reportTags">
+                <span
+                  class="tag"
+                  :class="{
+                    tagLow: report.severity === 'low',
+                    tagModerate: report.severity === 'moderate',
+                    tagUrgent: report.severity === 'urgent'
+                  }"
+                >
+                  {{ report.severity }}
+                </span>
+                <span
+                  class="tag"
+                  :class="{
+                    tagPending: report.status === 'pending',
+                    tagActive: report.status === 'active',
+                    tagResolved: report.status === 'resolved'
+                  }"
+                >
+                  {{ report.status }}
+                </span>
+                <span class="arrow" v-if="expandedReport === report.reportId">▲</span>
+                <span class="arrow" v-else>▼</span>
               </div>
             </div>
 
             <transition name="expand">
-              <div
-                v-if="expandedReport === report.reportId"
-                class="report-details p-3 border-top bg-light"
-              >
-                <p><strong>Description:</strong> {{ report.description || 'N/A' }}</p>
-                <p><strong>Location:</strong> {{ report.location || 'N/A' }}</p>
-                <p><strong>Incident Type:</strong> {{ report.incidentType || 'N/A' }}</p>
-                <p><strong>Severity:</strong> {{ report.severity }}</p>
-                <p><strong>Status:</strong> {{ report.status }}</p>
-                <p><strong>Priority:</strong> {{ report.priority || 'N/A' }}</p>
-                <p><strong>Sighting Date:</strong> {{ formatDate(report.sightingDateTime) }}</p>
-                <!-- <p><strong>Created At:</strong> {{ formatDate(report.createdAt) }}</p>
-                <p><strong>Updated At:</strong> {{ formatDate(report.updatedAt) }}</p> -->
-                <div class="photo-gallery mt-2" v-if="report.photoURLs?.length">
+              <div v-if="expandedReport === report.reportId" class="reportDetails">
+                <table class="reportDetailsTable">
+                  <tbody>
+                    <tr>
+                      <td><strong>Description</strong></td>
+                      <td>{{ report.description || 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Location</strong></td>
+                      <td>{{ report.location || 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Incident Type</strong></td>
+                      <td>{{ report.incidentType || 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Severity</strong></td>
+                      <td>{{ report.severity }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Status</strong></td>
+                      <td>{{ report.status }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Sighting Date</strong></td>
+                      <td>{{ formatDate(report.sightingDateTime) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="photoGallery" v-if="report.photoURLs?.length">
                   <img
                     v-for="(url, index) in report.photoURLs"
                     :key="index"
                     :src="url"
-                    class="photo-preview me-2 mb-2"
+                    class="photoPreview"
                     alt="Report image"
                   />
                 </div>
@@ -307,52 +332,4 @@ export default {
 </script>
 
 <style scoped>
-/* .report-card {
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-.report-card:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-}
-
-.report-summary {
-  background-color: #f8f9fa;
-}
-
-.report-details {
-  animation: fadeIn 0.3s ease forwards;
-}
-
-.photo-gallery img {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 4px;
-}
-
-.expand-enter-active, .expand-leave-active {
-  transition: all 0.3s ease;
-}
-.expand-enter-from, .expand-leave-to {
-  max-height: 0;
-  opacity: 0;
-  padding: 0 1rem;
-}
-.expand-enter-to, .expand-leave-from {
-  max-height: 1000px;
-  opacity: 1;
-  padding: 1rem;
-}
-
-.list-move {
-  transition: all 0.3s ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0 }
-  to { opacity: 1 }
-} */
 </style>
