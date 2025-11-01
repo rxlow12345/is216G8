@@ -44,7 +44,7 @@ const io = new Server(server, {
     credentials: true
   }
 });
-server.listen(3000, () => console.log('Server running on port 3000'));
+server.listen(4100, () => console.log('Server running on port 4100'));
 // Make io accessible in routes
 app.set('io', io);
 
@@ -104,4 +104,3 @@ app.get("/api/health", (req, res) => {
 // Static file serving disabled for development
 
 const PORT = process.env.PORT || 4100;
-app.listen(PORT, () => console.log(`🐾 Critter Connect running on port ${PORT}`));

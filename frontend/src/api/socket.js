@@ -7,7 +7,7 @@ class SocketService {
   }
 
   // Connect to WebSocket server
-  connect(url = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000') {
+  connect(url = import.meta.env.VITE_SOCKET_URL || 'http://localhost:4100') {
     if (this.socket?.connected) {
       console.log('Already connected');
       return;
