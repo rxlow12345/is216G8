@@ -57,8 +57,8 @@
         <select id="sortFilter" v-model="sortOption" @change="sortReports" class="filter-select">
           <option value="newest">Newest First</option>
           <option value="oldest">Oldest First</option>
-          <option value="severityHigh">Severity (High → Low)</option>
-          <option value="severityLow">Severity (Low → High)</option>
+          <!-- <option value="severityHigh">Severity (High → Low)</option>
+          <option value="severityLow">Severity (Low → High)</option> -->
         </select>
       </div>
 
@@ -103,8 +103,8 @@
                 <p><strong>Status:</strong> {{ report.status }}</p>
                 <p><strong>Priority:</strong> {{ report.priority || 'N/A' }}</p>
                 <p><strong>Sighting Date:</strong> {{ formatDate(report.sightingDateTime) }}</p>
-                <p><strong>Created At:</strong> {{ formatDate(report.createdAt) }}</p>
-                <p><strong>Updated At:</strong> {{ formatDate(report.updatedAt) }}</p>
+                <!-- <p><strong>Created At:</strong> {{ formatDate(report.createdAt) }}</p>
+                <p><strong>Updated At:</strong> {{ formatDate(report.updatedAt) }}</p> -->
                 <div class="photo-gallery mt-2" v-if="report.photoURLs?.length">
                   <img
                     v-for="(url, index) in report.photoURLs"
@@ -150,12 +150,13 @@ export default {
         this.isLoading = true
         this.error = null
 
+        // Wait for user authentication
         const user = await getCurrentUser()
         if (!user || !user.uid) throw new Error('User not authenticated.')
         this.userUid = user.uid
 
         const allReports = await api.getAllReports()
-        // Filter reports by user's uid
+        // Only include reports created by the current user
         this.reports = allReports.filter(r => r.uid === this.userUid)
         this.filteredReports = [...this.reports]
         this.sortReports()
@@ -201,16 +202,56 @@ export default {
       this.expandedReport = this.expandedReport === reportId ? null : reportId
     },
     formatDate(timestamp) {
-      if (!timestamp) return 'Unknown date'
-      const date = timestamp.seconds ? new Date(timestamp.seconds * 1000) : new Date(timestamp)
+      console.log("Raw Timestamp:", timestamp);
+      
+      if (!timestamp) return 'Unknown date';
+
+      let date;
+
+      // If the timestamp is a Proxy object (Vue reactivity)
+      if (timestamp && timestamp._seconds !== undefined) {
+        console.log("Firestore Proxy Timestamp detected with _seconds:", timestamp._seconds);
+        date = new Date(timestamp._seconds * 1000); // Use _seconds for the correct value
+      }
+      // If it's a Firestore Timestamp object
+      else if (timestamp && timestamp.seconds !== undefined) {
+        console.log("Firestore Timestamp detected with seconds:", timestamp.seconds);
+        date = new Date(timestamp.seconds * 1000);
+      } 
+      // If it's already a Date object
+      else if (timestamp instanceof Date) {
+        console.log("Date object detected");
+        date = timestamp;
+      } 
+      // If it's a string, try to parse it
+      else if (typeof timestamp === 'string') {
+        console.log("String detected");
+        date = new Date(timestamp);
+      } 
+      // If it's a number (like a timestamp)
+      else if (typeof timestamp === 'number') {
+        console.log("Number detected");
+        date = new Date(timestamp);
+      } 
+      else {
+        console.log("Invalid date type detected");
+        return 'Invalid date';
+      }
+
+      // Check if the conversion worked
+      if (isNaN(date.getTime())) {
+        console.log("Invalid date detected");
+        return 'Invalid date';
+      }
+
       return date.toLocaleDateString('en-SG', {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
-      })
-    },
+      });
+    }
   },
   async mounted() {
     await this.fetchReports()
