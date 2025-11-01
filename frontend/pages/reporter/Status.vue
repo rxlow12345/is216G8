@@ -127,7 +127,7 @@
               </div>
 
               <!-- Active Summary Section -->
-              <div v-if="report.status === 'active'" class="card custom-card border-0 shadow-sm rounded-4 mb-4">
+              <div v-if="report.status === 'active' || report.status === 'resolved'" class="card custom-card border-0 shadow-sm rounded-4 mb-4">
                 <div class="card-header custom-card-header-secondary text-white">
                   <h6 class="mb-0">📋 Active Treatment Summary</h6>
                 </div>
@@ -295,7 +295,7 @@ export default {
     this.isLoading = true;
     this.error = null;
     this.fetchReport(reportId);
-    if (this.report.status === 'active') {
+    if (this.report.status === 'active' || this.report.status === 'resolved') {
       await this.fetchActiveSummary(reportId);
     }
     this.isLoading = false;
