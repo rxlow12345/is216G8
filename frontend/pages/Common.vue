@@ -1,5 +1,10 @@
 <!-- Delete Before Submission, can put in slides if you want -->
 
+<!-- COLOUR GUIDELINES 
+ GREEN : #285436
+ WHITE YELLOW: rgb(254, 250, 224)
+--> 
+
 <script>
 //import '../pages/css/common.css'
 </script>
