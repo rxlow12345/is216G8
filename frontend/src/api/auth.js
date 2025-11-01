@@ -9,13 +9,14 @@ import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs
 import { auth, db } from '../firebase.js';
 
 /**
- * Sign up a new user with email, password, and role
+ * Sign up a new user with username, email, password, and role
+ * @param {string} username - User's username
  * @param {string} email - User's email
  * @param {string} password - User's password
  * @param {string} role - User's role ('admin', 'reporter', 'volunteer')
- * @returns {Promise<Object>} User object with uid and role
+ * @returns {Promise<Object>} User object with uid, username, and role
  */
-export async function signup(email, password, role) {
+export async function signup(username, email, password, role) {
   try {
     // Create user with Firebase Auth (Firebase Auth automatically prevents duplicate emails)
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -23,6 +24,8 @@ export async function signup(email, password, role) {
     
     // Save user profile to Firestore
     await setDoc(doc(db, 'users', user.uid), {
+      uid: user.uid, // Store UID as a field for easier querying
+      username: username,
       email: email,
       role: role,
       createdAt: serverTimestamp()
@@ -33,6 +36,7 @@ export async function signup(email, password, role) {
     
     return {
       uid: user.uid,
+      username: username,
       email: user.email,
       role: role
     };
@@ -71,6 +75,7 @@ export async function login(email, password) {
     const userData = userDoc.data();
     return {
       uid: user.uid,
+      username: userData.username,
       email: user.email,
       role: userData.role
     };
@@ -116,6 +121,7 @@ export async function getCurrentUser() {
         const userData = userDoc.data();
         resolve({
           uid: user.uid,
+          username: userData.username,
           email: user.email,
           role: userData.role
         });

@@ -33,8 +33,8 @@
         <h1 class="hero-title">CritterConnect</h1>
         <p class="hero-subtitle">Join Us In Saving Singapore's Wildlife!</p>
        
-        <!-- CTA Buttons -->
-        <div class="hero-buttons">
+        <!-- CTA Buttons - Only show if not logged in -->
+        <div v-if="!isLoggedIn" class="hero-buttons">
           <router-link to="/login" class="btn btn-primary">
             🌲 Login
           </router-link>
@@ -218,7 +218,8 @@
 
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { getCurrentUser } from '../src/api/auth.js';
 import '../pages/css/home.css'
 import '../pages/css/common.css'
 import OtterCursor from '../src/components/OtterCursor.vue';
@@ -227,6 +228,11 @@ import OtterCursor from '../src/components/OtterCursor.vue';
 // ======================== Floating Animals Array ========================
 const floatingAnimals = ['🦊', '🦝', '🐿️', '🦔', '🦉', '🦌', '🐰', '🦫', '🐻', '🦅', '🐺', '🦜'];
 
+// ======================== Auth State ========================
+const auth = ref(null);
+const isLoggedIn = computed(() => {
+  return auth.value && auth.value.uid;
+});
 
 // ======================== Carousel Images ========================
 const carouselImages = [
@@ -297,8 +303,15 @@ function resumeCarousel() {
 }
 
 
-onMounted(() => {
+onMounted(async () => {
   startAutoRotate();
+  // Fetch auth state
+  try {
+    auth.value = await getCurrentUser();
+  } catch (error) {
+    console.error('Error fetching auth:', error);
+    auth.value = null;
+  }
 });
 
 

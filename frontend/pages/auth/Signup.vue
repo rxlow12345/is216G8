@@ -51,6 +51,29 @@
           <input type="password" style="display: none;" autocomplete="off" />
           
           <div class="form-group">
+            <label for="username" class="form-label">Username</label>
+            <div class="input-wrapper">
+              <span class="input-icon">👤</span>
+              <input
+                type="text"
+                class="form-control"
+                :class="{ 'is-invalid': usernameBlurred && username.length < 3 && username.length > 0 }"
+                id="username"
+                v-model="username"
+                required
+                placeholder="Enter your username"
+                autocomplete="username"
+                @focus="usernameFocused = true"
+                @blur="usernameBlurred = true"
+              />
+            </div>
+            <div v-if="usernameBlurred && username.length < 3 && username.length > 0" class="field-error">
+              Username must be at least 3 characters long
+            </div>
+            <div v-else class="form-text">Choose a username (at least 3 characters).</div>
+          </div>
+
+          <div class="form-group">
             <label for="email" class="form-label">Email</label>
             <div class="input-wrapper">
               <span class="input-icon">✉️</span>
@@ -134,19 +157,6 @@
             </div>
           </div>
           
-          <div class="form-group">
-            <label for="role" class="form-label">Role</label>
-            <div class="input-wrapper">
-              <span class="input-icon">👤</span>
-              <select class="form-control form-select" id="role" v-model="role" required>
-                <option value="">Select your role</option>
-                <option value="reporter">🎯 Reporter</option>
-                <option value="volunteer">🤝 Volunteer</option>
-              </select>
-            </div>
-            <div class="form-text">Choose your role in the wildlife reporting system.</div>
-          </div>
-          
           <div class="d-grid">
             <button 
               type="submit" 
@@ -185,13 +195,16 @@ import { useRouter } from 'vue-router';
 import { signup } from '../../src/api/auth.js';
 
 // Reactive data
+const username = ref('');
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
-const role = ref('');
+const role = ref('reporter'); // Always set to reporter
 const loading = ref(false);
 const error = ref('');
 const success = ref('');
+const usernameFocused = ref(false);
+const usernameBlurred = ref(false);
 const emailFocused = ref(false);
 const emailBlurred = ref(false);
 const passwordFocused = ref(false);
@@ -208,13 +221,16 @@ const router = useRouter();
  * Clear all form data and reset states
  */
 function clearFormData() {
+  username.value = '';
   email.value = '';
   password.value = '';
   confirmPassword.value = '';
-  role.value = '';
+  role.value = 'reporter';
   loading.value = false;
   error.value = '';
   // Don't clear success message - let it persist
+  usernameFocused.value = false;
+  usernameBlurred.value = false;
   emailFocused.value = false;
   emailBlurred.value = false;
   passwordFocused.value = false;
@@ -245,10 +261,11 @@ onMounted(() => {
  * Computed property to validate form
  */
 const isFormValid = computed(() => {
-  return email.value && 
+  return username.value && 
+         username.value.length >= 3 &&
+         email.value && 
          password.value && 
          confirmPassword.value && 
-         role.value && 
          password.value === confirmPassword.value &&
          password.value.length >= 6;
 });
@@ -268,6 +285,17 @@ async function handleSignup() {
   // Clear previous messages
   error.value = '';
   success.value = '';
+  
+  // Validate username
+  if (!username.value.trim()) {
+    error.value = 'Username is required';
+    return;
+  }
+  
+  if (username.value.length < 3) {
+    error.value = 'Username must be at least 3 characters long';
+    return;
+  }
   
   // Validate email format
   if (!email.value.trim()) {
@@ -302,16 +330,10 @@ async function handleSignup() {
     return;
   }
   
-  // Validate role selection
-  if (!role.value) {
-    error.value = 'Please select your role';
-    return;
-  }
-  
   loading.value = true;
   
   try {
-    await signup(email.value, password.value, role.value);
+    await signup(username.value, email.value, password.value, role.value);
     success.value = 'Account created successfully! Redirecting to login...';
     
     // Redirect to login after 2 seconds

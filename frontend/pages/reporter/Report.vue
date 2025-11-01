@@ -108,7 +108,7 @@ onMounted(async () => {
   try {
     const user = await getCurrentUser();
     if (user) {
-      userEmail.value = user.email;
+      userEmail.value = user.username || user.email;
     }
   } catch (error) {
     console.error('Error getting user info:', error);

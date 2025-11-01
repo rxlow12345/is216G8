@@ -11,7 +11,7 @@
 
       <!-- Welcome Message -->
       <span v-if="auth.uid" class="navbar-text me-auto ms-3 order-1">
-        Welcome, {{ auth.email }}
+        Welcome, {{ auth.username || auth.email }}
       </span>
 
       <!-- Toggler -->
@@ -25,7 +25,8 @@
           <!-- Always visible links -->
           <li class="nav-item"><router-link class="nav-link navLink" to="/" exact-active-class="active" @click="collapseNavbar">Home</router-link></li>
           <li class="nav-item"><router-link class="nav-link navLink" to="/guidebook" exact-active-class="active" @click="collapseNavbar">Guidebook</router-link></li>
-          <li class="nav-item"><router-link class="nav-link navLink" to="/map" exact-active-class="active" @click="collapseNavbar">Map</router-link></li>
+          <!-- Map only visible to admin and volunteer -->
+          <li v-if="auth.role === 'admin' || auth.role === 'volunteer'" class="nav-item"><router-link class="nav-link navLink" to="/map" exact-active-class="active" @click="collapseNavbar">Map</router-link></li>
           <li class="nav-item"><router-link class="nav-link navLink" to="/donate" exact-active-class="active" @click="collapseNavbar">Donate</router-link></li>
         
 
@@ -57,14 +58,14 @@ export default {
   name: 'Navbar',
   data() {
     return {
-      auth: { email: null, role: null , uid: null},
+      auth: { email: null, role: null , uid: null, username: null},
     }
   },
   methods: {
     handleLogout() {
       try {
         logout();
-        this.auth = { email: null, role: null , uid: null};
+        this.auth = { email: null, role: null , uid: null, username: null};
         this.$router.push('/'); // redirect home
       } catch (err) {
         console.error(err);
@@ -77,7 +78,7 @@ export default {
           this.auth = auth;
         }
         else{
-          this.auth = { email: null, role: null , uid: null};
+          this.auth = { email: null, role: null , uid: null, username: null};
         }
       } catch (err) {
         console.error(err);
@@ -133,11 +134,14 @@ export default {
             this.auth = auth;
           }
           else{
-            this.auth = { email: null, role: null , uid: null};
+            this.auth = { email: null, role: null , uid: null, username: null};
           }
         } catch (error) {
           console.error('Error fetching user data:', error);
         }
+      } else {
+        // User signed out, clear auth data
+        this.auth = { email: null, role: null, uid: null, username: null };
       }
     });
   },

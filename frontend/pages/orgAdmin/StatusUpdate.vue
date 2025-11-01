@@ -75,7 +75,7 @@ export default {
     try {
       const user = await getCurrentUser();
       if (user) {
-        this.userEmail = user.email;
+        this.userEmail = user.username || user.email;
       }
     } catch (error) {
       console.error('Error getting user info:', error);

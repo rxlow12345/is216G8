@@ -249,6 +249,7 @@ export const createReport = async (req, res) => {
   try {
     const {
       // Reporter Information
+      reporterId, // Firebase user UID
       // reporterName,
       // contactEmail,
       // contactPhone,
@@ -304,6 +305,7 @@ export const createReport = async (req, res) => {
     // Prepare report data
     const reportData = {
       // Reporter Information
+      reporterId: reporterId || null, // Firebase user UID
       // reporterName: reporterName.trim(),
       // contactEmail: contactEmail.trim().toLowerCase(),
       // contactPhone: contactPhone?.trim() || null,
