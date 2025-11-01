@@ -182,21 +182,68 @@ export default {
       this.sortReports()
     },
     sortReports() {
-      const order = { urgent: 3, moderate: 2, low: 1 }
+      const order = { urgent: 3, moderate: 2, low: 1 };
+
+      // Log all reports' sightingDateTime
+      // this.filteredReports.forEach(report => {
+      //   console.log("Report ID:", report.reportId);
+      //   console.log("Sighting DateTime (Raw):", report.sightingDateTime);
+      //   console.log("Sighting DateTime (Parsed):", this.parseTimestamp(report.sightingDateTime));
+      // });
+
       switch (this.sortOption) {
         case 'newest':
-          this.filteredReports.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-          break
+          // Sort by sightingDateTime (most recent first)
+          this.filteredReports.sort((a, b) => {
+            const dateA = this.parseTimestamp(a.sightingDateTime);
+            const dateB = this.parseTimestamp(b.sightingDateTime);
+            
+            // console.log("DateA:", dateA, "DateB:", dateB);  // Log parsed dates
+
+            return dateB - dateA;  // Most recent first
+          });
+          break;
         case 'oldest':
-          this.filteredReports.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-          break
+          // Sort by sightingDateTime (oldest first)
+          this.filteredReports.sort((a, b) => {
+            const dateA = this.parseTimestamp(a.sightingDateTime);
+            const dateB = this.parseTimestamp(b.sightingDateTime);
+
+            // console.log("DateA:", dateA, "DateB:", dateB);  // Log parsed dates
+
+            return dateA - dateB;  // Oldest first
+          });
+          break;
         case 'severityHigh':
-          this.filteredReports.sort((a, b) => (order[b.severity] || 0) - (order[a.severity] || 0))
-          break
+          this.filteredReports.sort((a, b) => (order[b.severity] || 0) - (order[a.severity] || 0));
+          break;
         case 'severityLow':
-          this.filteredReports.sort((a, b) => (order[a.severity] || 0) - (order[b.severity] || 0))
-          break
+          this.filteredReports.sort((a, b) => (order[a.severity] || 0) - (order[b.severity] || 0));
+          break;
       }
+    },
+
+    // Helper function to parse Firestore Timestamp and convert it to a Date object
+    parseTimestamp(timestamp) {
+      if (!timestamp) return new Date(0); // Return a very old date if no timestamp
+
+      // If the timestamp is a Firestore Timestamp object
+      if (timestamp._seconds) {
+        return new Date(timestamp._seconds * 1000);  // Convert seconds to milliseconds
+      }
+
+      // If it's already a JavaScript Date object
+      if (timestamp instanceof Date) {
+        return timestamp;
+      }
+
+      // If it's a string, try to convert it
+      if (typeof timestamp === 'string') {
+        return new Date(timestamp);
+      }
+
+      // Default case: Return a default date if parsing fails
+      return new Date(0);  // Return the default Date if parsing fails
     },
     toggleReport(reportId) {
       this.expandedReport = this.expandedReport === reportId ? null : reportId
