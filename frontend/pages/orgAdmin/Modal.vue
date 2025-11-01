@@ -19,6 +19,13 @@ export default {
     },
     capitalise(val) {
       return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+    },
+    openStatusInNewTab(reportId) {
+      const routeData = this.$router.resolve({
+        name: 'Status', // The name of the route
+        params: { id: reportId } // The dynamic part of the URL
+      });
+      window.open(routeData.href, '_blank');
     }
   }
 }
@@ -31,19 +38,21 @@ export default {
     <div v-if="selectedReport" class="modal-mask">
       <!-- Modal -->
       <div v-if="selectedReport" class="modal fade show" style="display: block;" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down modal-lg">
           <div class="modal-content custom-modal shadow-lg">
             <div class="modal-header custom-modal-header">
               <h5 class="modal-title">
                 <i class="bi bi-file-earmark-check me-2"></i>
                 Report Details: {{ selectedReport.reportId }}
               </h5>
-              <button type="button" class="btn-close btn-close-white" @click="closeModal"></button>
+              <button type="button" class="btn-close btn-close-white" @click="$emit('close')"></button>
             </div>
             <div class="modal-body p-4">
-              <div class="row g-4">
-                <div class="col-md-5" v-if="selectedReport.photoURLs && selectedReport.photoURLs.length > 0">
-                  <img :src="selectedReport.photoURLs[0]" class="img-fluid rounded-4 modal-image" alt="Report Photo">
+              <div class="row g-4 flex-column flex-md-row">
+                <div class="col-12 col-md-5 d-flex justify-content-center"
+                  v-if="selectedReport.photoURLs && selectedReport.photoURLs.length > 0">
+                  <img :src="selectedReport.photoURLs[0]" class="img-fluid rounded-4 modal-image w-100"
+                    alt="Report Photo">
                 </div>
                 <div :class="selectedReport.photoURLs && selectedReport.photoURLs.length > 0 ? 'col-md-7' : 'col-12'">
                   <div class="modal-info-section">
@@ -73,7 +82,7 @@ export default {
                     <div class="info-row">
                       <i class="bi bi-calendar-event info-icon"></i>
                       <div>
-                        <strong>Sighting Time:</strong>
+                        <strong>Reported:</strong>
                         <span class="ms-2">{{ convertDate(selectedReport.sightingDateTime) }}</span>
                       </div>
                     </div>
@@ -81,16 +90,15 @@ export default {
                       <i class="bi bi-chat-left-text info-icon"></i>
                       <div>
                         <strong>Description:</strong>
-                        <p class="description-text mt-2 mb-0">{{ selectedReport.description }}</p>
                       </div>
                     </div>
+                    <p class="description-text mt-2 mb-0">{{ selectedReport.description }}</p>
                     <hr class="my-3">
                     <div class="info-row">
                       <i class="bi bi-person-circle info-icon"></i>
                       <div>
                         <strong>Reporter Contact:</strong>
-                        <span class="ms-2">{{ selectedReport.contactEmail }} | {{ selectedReport.contactPhone
-                        }}</span>
+                        <span class="ms-2">{{ selectedReport.contactEmail }} | {{ selectedReport.contactPhone }}</span>
                       </div>
                     </div>
                     <div class="info-row">
@@ -106,19 +114,35 @@ export default {
                 </div>
               </div>
             </div>
-            <div class="modal-footer custom-modal-footer">
-              <button type="button" class="btn btn-outline-secondary custom-btn-outline" @click="$emit('close')">
-                <i class="bi bi-x-circle me-2"></i>Close
-              </button>
-              <button type="button" class="btn custom-btn-active"
-                @click="$emit('statusChange',selectedReport.id, 'active')">
-                <i class="bi bi-play-circle me-2"></i>Set Active
-              </button>
-              <button type="button" class="btn custom-btn-resolved"
-                @click="$emit('statusChange',selectedReport.id, 'resolved')">
-                <i class="bi bi-check-circle me-2"></i>Set Resolved
-              </button>
+            <div class="modal-footer d-flex flex-wrap align-items-center gap-2 custom-modal-footer">
+              <!-- Close & View Details -->
+              <div class="d-flex flex-wrap gap-2 w-100 w-md-auto">
+                <button type="button" class="btn custom-btn-close flex-fill" @click="$emit('close')">
+                  <i class="bi bi-x-circle me-2"></i>Close
+                </button>
+                <button type="button" class="btn custom-btn-view-details flex-fill"
+                  @click="openStatusInNewTab(selectedReport.reportId)">
+                  <i class="bi bi-box-arrow-up-right me-2"></i>View Full Details
+                </button>
+              </div>
+
+              <!-- Status Buttons -->
+              <div class="d-flex flex-wrap gap-2 w-100 w-md-auto">
+                <button type="button" class="btn custom-btn-pending flex-fill"
+                  @click="$emit('statusChange', selectedReport.id, 'pending')">
+                  <i class="bi bi-pause-circle me-2"></i>Set Pending
+                </button>
+                <button type="button" class="btn custom-btn-active flex-fill"
+                  @click="$emit('statusChange', selectedReport.id, 'active')">
+                  <i class="bi bi-play-circle me-2"></i>Set Active
+                </button>
+                <button type="button" class="btn custom-btn-resolved flex-fill"
+                  @click="$emit('statusChange', selectedReport.id, 'resolved')">
+                  <i class="bi bi-check-circle me-2"></i>Set Resolved
+                </button>
+              </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -237,8 +261,12 @@ export default {
 .info-row {
   display: flex;
   gap: 1rem;
-  align-items: flex-start;
+  align-items: center;
   color: #606C38;
+}
+
+.description-row {
+  flex-basis: 100%;
 }
 
 .info-icon {
@@ -276,8 +304,50 @@ export default {
   color: white;
 }
 
+.custom-btn-close {
+  background: #A95C52;
+  color: white;
+  border: none;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.custom-btn-close:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(8, 97, 67, 0.4);
+}
+
+.custom-btn-view-details {
+  background: #3D4C53;
+  color: white;
+  border: none;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.custom-btn-view-details:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(8, 97, 67, 0.4);
+}
+
+.custom-btn-pending {
+  background: #BC6C25;
+  color: white;
+  border: none;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.custom-btn-pending:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(8, 97, 67, 0.4);
+}
+
 .custom-btn-active {
-  background: linear-gradient(135deg, #16cb59 0%, #15aa78 100%);
+  background: #15aa78;
   color: white;
   border: none;
   font-weight: 600;
@@ -291,7 +361,7 @@ export default {
 }
 
 .custom-btn-resolved {
-  background: linear-gradient(135deg, #086143 0%, #046949 100%);
+  background: #086143;
   color: white;
   border: none;
   font-weight: 600;

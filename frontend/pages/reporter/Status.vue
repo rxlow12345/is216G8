@@ -79,8 +79,12 @@
                   </div>
                   <!-- Photo -->
                   <div class="col-md-5 d-flex justify-content-center align-items-center">
-                    <img :src="report.photoURLs[0]" class="img-fluid rounded-start"
+                    <img v-if="report.photoURLs[0]" :src="report.photoURLs[0]" class="img-fluid rounded-start"
                       style="object-fit: cover; max-height: 400px; width: 100%;" alt="Animal photo" />
+                    <div v-else class="d-flex justify-content-center align-items-center bg-light rounded-start"
+                      style="height: 400px; width: 100%; color: #aaa; font-size: 1.2rem;">
+                      No photo available
+                    </div>
                   </div>
                 </div>
               </div>
@@ -127,7 +131,8 @@
               </div>
 
               <!-- Active Summary Section -->
-              <div v-if="report.status === 'active' || report.status === 'resolved'" class="card custom-card border-0 shadow-sm rounded-4 mb-4">
+              <div v-if="report.status === 'active' || report.status === 'resolved'"
+                class="card custom-card border-0 shadow-sm rounded-4 mb-4">
                 <div class="card-header custom-card-header-secondary text-white">
                   <h6 class="mb-0">📋 Active Treatment Summary</h6>
                 </div>
@@ -590,22 +595,31 @@ export default {
   }
 
   .status-steps-wrapper {
-    flex-direction: column; /* This is the key: stack items vertically */
-    gap: 1.25rem;          /* Add vertical space between the steps */
-    align-items: flex-start; /* Align all items to the left */
-    padding-left: 1rem !important;  /* Adjust padding for the new layout */
+    flex-direction: column;
+    /* This is the key: stack items vertically */
+    gap: 1.25rem;
+    /* Add vertical space between the steps */
+    align-items: flex-start;
+    /* Align all items to the left */
+    padding-left: 1rem !important;
+    /* Adjust padding for the new layout */
     padding-right: 1rem !important;
   }
 
   .status-step-item {
-    display: flex;         /* Make the item a flex row (icon + text) */
-    align-items: center;   /* Vertically align the icon and text */
-    text-align: left;      /* Ensure text is left-aligned */
-    flex: none !important; /* Override Bootstrap's flex-fill behavior */
+    display: flex;
+    /* Make the item a flex row (icon + text) */
+    align-items: center;
+    /* Vertically align the icon and text */
+    text-align: left;
+    /* Ensure text is left-aligned */
+    flex: none !important;
+    /* Override Bootstrap's flex-fill behavior */
   }
 
   .status-step-item .stage-circle {
-    margin: 0 1rem 0 0;    /* Remove default margins and add space to the right of the circle */
+    margin: 0 1rem 0 0;
+    /* Remove default margins and add space to the right of the circle */
   }
 }
 </style>

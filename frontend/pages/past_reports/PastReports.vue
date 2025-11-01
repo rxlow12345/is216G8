@@ -175,13 +175,11 @@ export default {
         this.isLoading = true
         this.error = null
 
-        // Wait for user authentication
         const user = await getCurrentUser()
         if (!user || !user.uid) throw new Error('User not authenticated.')
         this.userUid = user.uid
 
         const allReports = await api.getAllReports()
-        // Only include reports created by the current user
         this.reports = allReports.filter(r => r.uid === this.userUid)
         this.filteredReports = [...this.reports]
         this.sortReports()
@@ -208,34 +206,19 @@ export default {
     },
     sortReports() {
       const order = { urgent: 3, moderate: 2, low: 1 };
-
-      // Log all reports' sightingDateTime
-      // this.filteredReports.forEach(report => {
-      //   console.log("Report ID:", report.reportId);
-      //   console.log("Sighting DateTime (Raw):", report.sightingDateTime);
-      //   console.log("Sighting DateTime (Parsed):", this.parseTimestamp(report.sightingDateTime));
-      // });
-
+      
       switch (this.sortOption) {
         case 'newest':
-          // Sort by sightingDateTime (most recent first)
           this.filteredReports.sort((a, b) => {
             const dateA = this.parseTimestamp(a.sightingDateTime);
             const dateB = this.parseTimestamp(b.sightingDateTime);
-            
-            // console.log("DateA:", dateA, "DateB:", dateB);  // Log parsed dates
-
             return dateB - dateA;  // Most recent first
           });
           break;
         case 'oldest':
-          // Sort by sightingDateTime (oldest first)
           this.filteredReports.sort((a, b) => {
             const dateA = this.parseTimestamp(a.sightingDateTime);
             const dateB = this.parseTimestamp(b.sightingDateTime);
-
-            // console.log("DateA:", dateA, "DateB:", dateB);  // Log parsed dates
-
             return dateA - dateB;  // Oldest first
           });
           break;
@@ -247,89 +230,50 @@ export default {
           break;
       }
     },
-
-    // Helper function to parse Firestore Timestamp and convert it to a Date object
     parseTimestamp(timestamp) {
       if (!timestamp) return new Date(0); // Return a very old date if no timestamp
 
-      // If the timestamp is a Firestore Timestamp object
       if (timestamp._seconds) {
-        return new Date(timestamp._seconds * 1000);  // Convert seconds to milliseconds
+        return new Date(timestamp._seconds * 1000);
       }
-
-      // If it's already a JavaScript Date object
+      
       if (timestamp instanceof Date) {
         return timestamp;
       }
 
-      // If it's a string, try to convert it
       if (typeof timestamp === 'string') {
         return new Date(timestamp);
       }
 
-      // Default case: Return a default date if parsing fails
-      return new Date(0);  // Return the default Date if parsing fails
+      return new Date(0);
     },
     toggleReport(reportId) {
       this.expandedReport = this.expandedReport === reportId ? null : reportId
     },
     formatDate(timestamp) {
-      console.log("Raw Timestamp:", timestamp);
-      
       if (!timestamp) return 'Unknown date';
 
       let date;
 
-      // If the timestamp is a Proxy object (Vue reactivity)
       if (timestamp && timestamp._seconds !== undefined) {
-        console.log("Firestore Proxy Timestamp detected with _seconds:", timestamp._seconds);
-        date = new Date(timestamp._seconds * 1000); // Use _seconds for the correct value
-      }
-      // If it's a Firestore Timestamp object
-      else if (timestamp && timestamp.seconds !== undefined) {
-        console.log("Firestore Timestamp detected with seconds:", timestamp.seconds);
+        date = new Date(timestamp._seconds * 1000);
+      } else if (timestamp && timestamp.seconds !== undefined) {
         date = new Date(timestamp.seconds * 1000);
-      } 
-      // If it's already a Date object
-      else if (timestamp instanceof Date) {
-        console.log("Date object detected");
+      } else if (timestamp instanceof Date) {
         date = timestamp;
-      } 
-      // If it's a string, try to parse it
-      else if (typeof timestamp === 'string') {
-        console.log("String detected");
+      } else if (typeof timestamp === 'string') {
         date = new Date(timestamp);
-      } 
-      // If it's a number (like a timestamp)
-      else if (typeof timestamp === 'number') {
-        console.log("Number detected");
+      } else if (typeof timestamp === 'number') {
         date = new Date(timestamp);
-      } 
-      else {
-        console.log("Invalid date type detected");
-        return 'Invalid date';
       }
 
-      // Check if the conversion worked
-      if (isNaN(date.getTime())) {
-        console.log("Invalid date detected");
-        return 'Invalid date';
-      }
-
-      return date.toLocaleDateString('en-SG', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+      return date ? date.toLocaleDateString() : 'Invalid date';
     }
   },
-  async mounted() {
-    await this.fetchReports()
-  },
+  mounted() {
+    this.fetchReports()
+  }
 }
 </script>
-
 <style scoped>
 </style>
