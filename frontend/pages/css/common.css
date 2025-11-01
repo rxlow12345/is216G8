@@ -1,3 +1,10 @@
+/* STANDARDISATION
+background-color: #285436; GREEN
+color: rgb(254, 250, 224); WHITE YELLOW
+
+
+*/
+
 /**Common**/
 * {
     margin: 0;
@@ -47,7 +54,7 @@
 
 /* Buttons */
 .btn {
-    padding: 16px 32px;
+    padding: 16px 32px !important;
     border-radius: 12px;
     font-size: 18px;
     font-weight: 600;

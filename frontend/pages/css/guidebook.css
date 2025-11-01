@@ -142,7 +142,7 @@
     text-decoration: none !important;
 }
 
-/* Game Button */
+/* Buttons */
 .floating-game-btn {
   position: fixed;
   top: 35%;
@@ -170,6 +170,15 @@
 .floating-game-btn:hover {
   background: linear-gradient(135deg, #DDA15E, #E9C46A); 
   scale: 1.05;
+}
+
+.btn-learn-more {
+  padding: 5px 10px !important;
+}
+
+.btn-learn-more:hover {
+  background-color: green !important; /* change this green */
+  color: black;
 }
 
 /* Cards */
@@ -261,10 +270,10 @@
 
 #pagination button {
   border: none;
-  background-color: #285436;
-  color: white;
-  border-radius: 25px;
-  padding: 8px 16px;
+  background-color: #285436 !important;
+  color: white !important;
+  border-radius: 25px !important;
+  padding: 8px 16px !important;
   font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -272,24 +281,24 @@
 }
 
 #pagination button:hover:not(:disabled) {
-  background-color: #145c33;
+  background-color: #145c33 !important;
 }
 
 #pagination button:disabled {
-  background-color: #94d3a2;
+  background-color: #94d3a2 !important;
   cursor: not-allowed;
 }
 
 #pageIndicator {
   display: inline-block;
   padding: 8px 16px;
-  background-color: #eaf0df; 
-  color: #198754;           
+  background-color: #eaf0df !important; 
+  color: #198754 !important;           
   font-weight: 500;
   font-size: 0.9rem;
-  border-radius: 25px;
-  border: 1px solid #198754;
-  margin: 0 30px;             
+  border-radius: 25px !important;
+  border: 1px solid #198754 !important;
+  margin: 0 30px !important;             
 }
 
 /* Page Responsiveness */
