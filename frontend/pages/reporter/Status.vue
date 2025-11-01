@@ -221,7 +221,7 @@ export default {
         "treatmentSummary": "",
         "reportId": ""
       },
-      stages: ["Pending", "Active", "Completed"],
+      stages: ["Pending", "Active", "Resolved"],
     };
   },
   computed: {
