@@ -31,7 +31,7 @@
         <div class="row g-4 mb-5">
           <div class="col-md-6 col-xl-3">
             <div class="stat-card shadow-sm h-100">
-              <div class="stat-card-inner stat-total">
+              <div class="stat-card-inner stat-total" @click="filterAndScroll('all')">
                 <div class="stat-icon">
                   <i class="bi bi-clipboard-data"></i>
                 </div>
@@ -44,7 +44,7 @@
           </div>
           <div class="col-md-6 col-xl-3">
             <div class="stat-card shadow-sm h-100">
-              <div class="stat-card-inner stat-pending">
+              <div class="stat-card-inner stat-pending" @click="filterAndScroll('pending')">
                 <div class="stat-icon">
                   <i class="bi bi-clock-history"></i>
                 </div>
@@ -57,7 +57,7 @@
           </div>
           <div class="col-md-6 col-xl-3">
             <div class="stat-card shadow-sm h-100">
-              <div class="stat-card-inner stat-active">
+              <div class="stat-card-inner stat-active" @click="filterAndScroll('active')">
                 <div class="stat-icon">
                   <i class="bi bi-activity"></i>
                 </div>
@@ -70,7 +70,7 @@
           </div>
           <div class="col-md-6 col-xl-3">
             <div class="stat-card shadow-sm h-100">
-              <div class="stat-card-inner stat-resolved">
+              <div class="stat-card-inner stat-resolved" @click="filterAndScroll('resolved')">
                 <div class="stat-icon">
                   <i class="bi bi-check-circle"></i>
                 </div>
@@ -84,7 +84,7 @@
         </div>
 
         <!-- Filtering and Search -->
-        <div class="filter-card shadow-sm mb-4">
+        <div class="filter-card shadow-sm mb-4" ref="reportsSection">
           <div class="card-body p-4">
             <h5 class="filter-title mb-4">
               <i class="bi bi-funnel me-2"></i>Filter & Search Reports
@@ -97,10 +97,12 @@
                   <option value="pending">Pending</option>
                   <option value="active">Active</option>
                   <option value="resolved">Resolved</option>
-                  <option value="closed">Closed</option>
                 </select>
               </div>
-              <div class="col-md-7">
+              <div class="col-md-1">
+
+              </div>
+              <div class="col-md-6">
                 <label for="search-input" class="form-label custom-label">Search by Report ID or Species</label>
                 <div class="search-wrapper">
                   <i class="bi bi-search search-icon"></i>
@@ -116,33 +118,31 @@
         <div v-if="filteredReports.length > 0" class="reports-list">
           <div v-for="report in filteredReports" :key="report.id" @click="selectReport(report)"
             class="report-item shadow-sm">
-            <div class="report-header">
-              <div class="report-main-info">
-                <h5 class="report-id mb-2">
+            <div class="report-header position-relative">
+              <div class="report-main-info d-flex justify-content-between align-items-center">
+                <h5 class="report-id mb-2 mt-2">
                   <i class="bi bi-file-earmark-text me-2"></i>
                   {{ report.reportId || 'Unknown ID' }}
                 </h5>
                 <span :class="['status-badge', `status-${report.status}`]">
-                  {{ report.status }}
+                  {{ capitalise(report.status) }}
                 </span>
               </div>
             </div>
+
             <div class="report-details">
               <p class="report-info mb-1">
                 <i class="bi bi-award me-2"></i>
-                <strong>Species:</strong> {{ report.speciesName }}
+                <strong>Species: </strong> {{ report.speciesName }}
               </p>
               <p class="report-info mb-1">
                 <i class="bi bi-geo-alt me-2"></i>
-                <strong>Location:</strong> {{ report.location }}
+                <strong>Location: </strong> {{ report.location }}
               </p>
               <p class="report-date mb-0">
                 <i class="bi bi-calendar-event me-2"></i>
                 Reported on {{ formatDate(report.createdAt) }}
               </p>
-            </div>
-            <div class="report-arrow">
-              <i class="bi bi-chevron-right"></i>
             </div>
           </div>
         </div>
@@ -154,12 +154,10 @@
         </div>
       </div>
 
-       <!-- Modal -->
+      <!-- Modal -->
       <Teleport to="body">
         <!-- use the modal component, pass in the prop -->
-        <Modal  
-          :selectedReport="selectedReport"
-          @close="this.selectedReport=null"
+        <Modal :selectedReport="selectedReport" @close="this.selectedReport = null"
           @statusChange="this.handleStatusChange">
         </Modal>
       </Teleport>
@@ -345,7 +343,25 @@ export default {
     },
     handleScroll() {
       this.showBackToTop = window.scrollY > 300;
-    }
+    },
+    capitalise(val) {
+      return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+    },
+    filterAndScroll(status) {
+      this.statusFilter = status;
+
+      // Smooth scroll
+      const section = this.$refs.reportsSection;
+      if (section) {
+        const yOffset = -80; // adjust this to your navbar height or desired offset
+        const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+        window.scrollTo({
+          top: y,
+          behavior: 'smooth'
+        });
+      }
+    },
   },
   async mounted() {
     try {
@@ -377,40 +393,6 @@ export default {
 .dashboard-container {
   min-height: 100vh;
   background: linear-gradient(to bottom, #FEFAE0 0%, #f8f9fa 100%);
-}
-
-/* Top Banner */
-#topBanner {
-  background: linear-gradient(135deg, #285436 0%, #086143 100%);
-  color: #fff;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-#topBanner h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-
-#topBanner p {
-  font-size: 1.1rem;
-  opacity: 0.95;
-}
-
-.animate-fade-up {
-  animation: fadeUp 1s ease forwards;
-}
-
-.animate-fade-up-delay {
-  animation: fadeUp 1s ease 0.3s forwards;
-  opacity: 0;
-}
-
-@keyframes fadeUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* Stat Cards */
@@ -466,7 +448,7 @@ export default {
 
 /* Stat Card Variants */
 .stat-total {
-  background: linear-gradient(135deg, #285436 0%, #086143 100%);
+  background: #086143;
   color: white;
 }
 
@@ -475,7 +457,7 @@ export default {
 }
 
 .stat-pending {
-  background: linear-gradient(135deg, #DDA15E 0%, #BC6C25 100%);
+  background: #BC6C25;
   color: white;
 }
 
@@ -484,7 +466,7 @@ export default {
 }
 
 .stat-active {
-  background: linear-gradient(135deg, #16cb59 0%, #15aa78 100%);
+  background: #15aa78;
   color: white;
 }
 
@@ -493,7 +475,7 @@ export default {
 }
 
 .stat-resolved {
-  background: linear-gradient(135deg, #046949 0%, #086143 100%);
+  background: #086143;
   color: white;
 }
 
@@ -612,6 +594,17 @@ export default {
   font-size: 0.85rem;
   font-weight: 600;
   text-transform: capitalize;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-right: 0.5rem;
+}
+
+@media (max-width: 767.98px) {
+  .status-badge {
+    position: static;
+    display: inline-block;
+  }
 }
 
 .status-pending {
@@ -640,8 +633,6 @@ export default {
 
 .report-info {
   font-size: 0.95rem;
-  display: flex;
-  align-items: center;
 }
 
 .report-info i {
@@ -696,106 +687,6 @@ export default {
 .empty-text {
   color: #606C38;
   font-size: 1.05rem;
-}
-
-/* Custom Modal */
-.custom-modal {
-  border: none;
-  border-radius: 20px;
-  overflow: hidden;
-}
-
-.custom-modal-header {
-  background: linear-gradient(135deg, #086143 0%, #046949 100%);
-  color: white;
-  padding: 1.5rem;
-  border-bottom: none;
-}
-
-.custom-modal-header .modal-title {
-  font-weight: 600;
-  font-size: 1.25rem;
-}
-
-.modal-image {
-  border: 3px solid #086143;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.modal-info-section {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.info-row {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-  color: #606C38;
-}
-
-.info-icon {
-  color: #086143;
-  font-size: 1.25rem;
-  width: 24px;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.description-text {
-  background-color: #FEFAE0;
-  padding: 0.75rem;
-  border-radius: 8px;
-  border-left: 3px solid #086143;
-  line-height: 1.6;
-}
-
-.custom-modal-footer {
-  background-color: #f8f9fa;
-  border-top: 1px solid #dee2e6;
-  padding: 1.25rem 1.5rem;
-}
-
-.custom-btn-outline {
-  border: 2px solid #606C38;
-  color: #606C38;
-  font-weight: 600;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-}
-
-.custom-btn-outline:hover {
-  background-color: #606C38;
-  color: white;
-}
-
-.custom-btn-active {
-  background: linear-gradient(135deg, #16cb59 0%, #15aa78 100%);
-  color: white;
-  border: none;
-  font-weight: 600;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-}
-
-.custom-btn-active:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(22, 203, 89, 0.4);
-}
-
-.custom-btn-resolved {
-  background: linear-gradient(135deg, #086143 0%, #046949 100%);
-  color: white;
-  border: none;
-  font-weight: 600;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-}
-
-.custom-btn-resolved:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(8, 97, 67, 0.4);
 }
 
 /* Back to Top Button */
