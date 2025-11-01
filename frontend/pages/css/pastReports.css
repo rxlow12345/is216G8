@@ -50,6 +50,7 @@
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
   transition: all 0.3s ease;
   width: 100%;
+  margin: 0 20px;
 }
 
 .search-bar::placeholder {
@@ -74,22 +75,18 @@
 }
 
 .filter-select {
+  border-radius: 40px;       /* outer select box */
+  padding: 8px 16px;
+  background-color: #f6f8f3;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-color: #f6f8f3;
-  border: none;
-  border-radius: 40px;
-  padding: 8px 16px;
-  font-size: 1rem;
-  color: #2e4f2f;
-  font-weight: 500;
-  cursor: pointer;
   transition: all 0.3s ease;
   min-width: 160px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  /* Add space for arrow */
-  padding-right: 40px;
+  padding-right: 40px;       /* space for arrow */
   background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"><polygon points="0,0 14,0 7,7" fill="%232e4f2f"/></svg>');
   background-repeat: no-repeat;
   background-position: right 12px center;
@@ -117,7 +114,6 @@
     background-position: right 12px center; /* optional: keep arrow smaller */
   }
 }
-
 
 /* Responsive: vertical layout on small screens */
 @media (max-width: 600px) {
@@ -147,6 +143,7 @@
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin: 0px 20px;
 }
 
 .report-card:hover {
