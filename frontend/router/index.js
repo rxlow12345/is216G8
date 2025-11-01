@@ -15,9 +15,15 @@ import GuideBook from '../pages/GuideBook.vue';
 import Map from '../pages/map/Map.vue';
 import Status from '../pages/reporter/Status.vue';
 import PastReports from '../pages/past_reports/PastReports.vue';
+import Common from '../pages/Common.vue';
 
 // 1. Define your routes as an array of objects
 const routes = [
+  { //DELETE BEFORE SUBMISSION****
+    path: '/common',
+    name: 'Common',
+    component: Common
+  },
   {
     path: '/',
     name: 'Home',
