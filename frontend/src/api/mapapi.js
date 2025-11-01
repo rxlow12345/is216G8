@@ -5,7 +5,7 @@ const isDevelopment =
   window.location.hostname === '127.0.0.1';
 
 const API_BASE_URL = isDevelopment
-  ? `${window.location.protocol}//${window.location.hostname}:3000/api`
+  ? `${window.location.protocol}//${window.location.hostname}:4100/api`
   : '/api';
 
 const api = {
