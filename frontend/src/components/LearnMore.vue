@@ -1,12 +1,13 @@
 <template>
-    <div class="learn-more-page">
-        <!-- Hero Section -->
-        <section id="topBanner">
-            <div class="container">
-                <h1>Learn More About CritterConnect</h1>
-                <p class="lead">Your partner in wildlife rescue and conservation in Singapore</p>
-            </div>
-        </section>
+
+    <OtterCursor animal="🦦" :speed="0.08" />
+    <div id="topBanner">
+        <header class="text-center mb-2">
+            <h1>Resources</h1>
+            <p> Learn More about CritterConnect</p>
+        </header>
+    </div>
+    <div>
 
         <!-- FAQ Section -->
         <section class="container my-5">
@@ -64,9 +65,9 @@
         <section class="container my-5">
             <h2 class="text-success fw-bold text-center mb-4">Get In Touch</h2>
             <!-- Contact Info -->
-            
+
             <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
-                    <div class="row g-4">
+                <div class="row g-4">
                     <h4 class="fw-bold mb-4">📍 Visit Us</h4>
 
                     <div class="mb-4 col-6">
@@ -99,7 +100,7 @@
                             </a>
                         </p>
                     </div>
-              
+
                     <div class="mb-4 col-6">
                         <h6 class="fw-bold text-success mb-3">Follow Us</h6>
                         <div class="d-flex gap-3">
@@ -136,7 +137,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref } from 'vue';
+import OtterCursor from './OtterCursor.vue';
+
 
 const faqs = ref([
     {
@@ -193,10 +196,6 @@ const latestNews = ref([
 </script>
 
 <style scoped>
-.learn-more-page {
-    background-color: #faf8f3;
-}
-
 .cta-section {
     background: #064301;
     /* fallback */

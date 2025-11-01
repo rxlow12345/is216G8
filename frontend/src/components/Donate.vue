@@ -1,8 +1,10 @@
 <template>
+    <OtterCursor animal="🦦" :speed="0.08"/>
     <div id="topBanner">
-        <header class="text-center mb-2">
-            <h1> Donate to Our Partners </h1>
-        </header>
+      <header class="text-center mb-2">
+        <h1>Donate</h1>
+        <p>To Our Partners 💌</p>
+      </header>
     </div>
     <div>
         <section class="container my-4">
@@ -119,6 +121,9 @@
 </template>
 
 <script setup>
+import OtterCursor from './OtterCursor.vue';
+import '../../pages/css/common.css'
+
 const testimonials = ref([
     {
         name: 'Charlize',
