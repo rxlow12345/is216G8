@@ -29,22 +29,26 @@
             <small class="text-success fw-bold">Need S${{ fmt(goal - raised) }}</small>
           </div>
         </div>
-        <div class="card border-0 shadow-sm rounded-4 p-3 mt-3">
-          <div class="row text-center">
-            <div class="col-4">
-              <div class="fs-3 fw-bold text-success">{{ animated.rescues }}</div>
-              <div class="small text-muted">Rescues funded</div>
-            </div>
-            <div class="col-4">
-              <div class="fs-3 fw-bold text-success">{{ animated.treatments }}</div>
-              <div class="small text-muted">Animals treated</div>
-            </div>
-            <div class="col-4">
-              <div class="fs-3 fw-bold text-success">{{ animated.training }}</div>
-              <div class="small text-muted">Training hours</div>
+        <section ref="counterSection" class="stats">
+
+          <div class="card border-0 shadow-sm rounded-4 p-3 mt-3">
+            <div class="row text-center">
+              <div class="col-4">
+                <div class="fs-3 fw-bold text-success">{{ animated.rescues }}</div>
+                <div class="small text-muted">Rescues funded</div>
+              </div>
+              <div class="col-4">
+                <div class="fs-3 fw-bold text-success">{{ animated.treatments }}</div>
+                <div class="small text-muted">Animals treated</div>
+              </div>
+              <div class="col-4">
+                <div class="fs-3 fw-bold text-success">{{ animated.training }}</div>
+                <div class="small text-muted">Training hours</div>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
+
 
 
         <div class="text-center-custom mb-3 px-2">
@@ -118,7 +122,7 @@
 </template>
 
 <script setup>
-import { computed, reactive, onMounted, ref } from 'vue'
+import { computed, reactive, onMounted, ref, watch, onBeforeUnmount } from 'vue'
 // 1. State: Use ref to track the visibility state
 const isContentVisible = ref(false);
 
@@ -130,6 +134,13 @@ const toggleCollapse = () => {
 const props = defineProps({
   goal: { type: Number, default: 50000 },   // overall goal (SGD)
   raised: { type: Number, default: 31250 }, // current raised (SGD)
+  counters: {
+    type: Object,
+    default: () => ({ rescues: 0, treatments: 0, training: 0 })
+  },
+  durationMs: { type: Number, default: 2000 },
+  triggerOnce: { type: Boolean, default: true }, // set false to re-run on every re-entry
+
   breakdown: {
     type: Array,
     default: () => ([
@@ -170,21 +181,95 @@ function fmt(n) {
   return n.toLocaleString('en-SG', { maximumFractionDigits: 0 })
 }
 
-/* simple animated counters */
+
+const counterSection = ref(null)
 const animated = reactive({ rescues: 0, treatments: 0, training: 0 })
-onMounted(() => {
-  const duration = 3000
+
+let rafId = null
+let observer = null
+let hasRun = false
+let running = false
+
+function startAnimation() {
+  if (running) return
+  if (props.triggerOnce && hasRun) return
+  hasRun = true
+  running = true
+
   const start = performance.now()
-  const from = { ...animated }
-  const to = props.counters
-  function tick(t) {
-    const k = Math.min(1, (t - start) / duration)
-    animated.rescues = Math.round((to.rescues - from.rescues) * k)
-    animated.treatments = Math.round((to.treatments - from.treatments) * k)
-    animated.training = Math.round((to.training - from.training) * k)
-    if (k < 1) requestAnimationFrame(tick)
+  const asNum = (v, fallback = 0) => {
+    if (v == null) return fallback;
+    // strip commas/spaces and trailing plus sign
+    const cleaned = String(v).replace(/[, ]+/g, '').replace(/\+$/, '');
+    const n = Number(cleaned);
+    return Number.isFinite(n) ? n : fallback;
+  };
+
+  // when you snapshot
+  const from = {
+    rescues: asNum(animated.rescues),
+    treatments: asNum(animated.treatments),
+    training: asNum(animated.training),
+  };
+
+  const to = {
+    rescues: asNum(props.counters?.rescues),
+    treatments: asNum(props.counters?.treatments),
+    training: asNum(props.counters?.training),
+  };
+  const easeOutCubic = x => 1 - Math.pow(1 - x, 3)
+
+  const tick = t => {
+    const k = Math.min(1, Math.max(0, (t - start) / props.durationMs))
+    const e = easeOutCubic(k)
+    animated.rescues = Math.round(from.rescues + (to.rescues - from.rescues) * e)
+    animated.treatments = Math.round(from.treatments + (to.treatments - from.treatments) * e)
+    animated.training = Math.round(from.training + (to.training - from.training) * e)
+    if (k < 1) {
+      rafId = requestAnimationFrame(tick)
+    } else {
+      running = false
+    }
   }
-  requestAnimationFrame(tick)
+
+  rafId = requestAnimationFrame(tick)
+}
+
+onMounted(() => {
+  observer = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          startAnimation()
+          if (props.triggerOnce) observer.unobserve(entry.target)
+        }
+      })
+    },
+    {
+      // Start a bit before it fully enters
+      root: null,
+      rootMargin: '0px 0px -20% 0px',
+      threshold: 0.2,
+    }
+  )
+  if (counterSection.value) observer.observe(counterSection.value)
+})
+
+// If counters change while visible, re-run (respects triggerOnce)
+watch(
+  () => props.counters,
+  
+    (val) => {
+    if (!val) return;
+    // startAnimation() here, using the `from`/`to` built with asNum()
+  },
+  { immediate: true, deep: true }
+);
+
+onBeforeUnmount(() => {
+  if (rafId) cancelAnimationFrame(rafId)
+  if (observer && counterSection.value) observer.unobserve(counterSection.value)
+  observer?.disconnect()
 })
 </script>
 
@@ -236,44 +321,78 @@ onMounted(() => {
 }
 
 .image-slider-container {
-    display: flex; /* Arranges items in a row */
-    overflow-x: scroll; /* Enables horizontal scrolling */
-    scroll-snap-type: x mandatory; /* Makes it snap to individual items */
-    gap: 20px; /* Space between images */
-    padding: 20px; /* Padding around the entire scrolling area */
-    max-width: 100vw; /* Ensures it doesn't overflow the viewport */
-    box-sizing: border-box; /* Include padding in width */
-    -webkit-overflow-scrolling: touch; /* Improves scrolling performance on iOS */
+  display: flex;
+  /* Arranges items in a row */
+  overflow-x: scroll;
+  /* Enables horizontal scrolling */
+  scroll-snap-type: x mandatory;
+  /* Makes it snap to individual items */
+  gap: 20px;
+  /* Space between images */
+  padding: 20px;
+  /* Padding around the entire scrolling area */
+  max-width: 100vw;
+  /* Ensures it doesn't overflow the viewport */
+  box-sizing: border-box;
+  /* Include padding in width */
+  -webkit-overflow-scrolling: touch;
+  /* Improves scrolling performance on iOS */
 }
 
 /* Hide Scrollbar (Optional - common for sliders) */
 .image-slider-container::-webkit-scrollbar {
-    display: none; /* For Chrome, Safari, Opera */
+  display: none;
+  /* For Chrome, Safari, Opera */
 }
+
 .image-slider-container {
-    -ms-overflow-style: none;  /* For IE and Edge */
-    scrollbar-width: none;  /* For Firefox */
+  -ms-overflow-style: none;
+  /* For IE and Edge */
+  scrollbar-width: none;
+  /* For Firefox */
 }
 
 .image-slide {
-    flex: 0 0 auto; /* Prevent items from shrinking, let them take their natural width */
-    scroll-snap-align: center; /* Snap the center of the item to the center of the container */
-    
-    /* You might want to define a specific width for each slide, e.g.: */
-    width: calc(min(45vw, 280px)); /* Take up to 45% of viewport width, max 280px */
-    height: calc(min(45vw, 280px)); /* Keep it square */
-    
-    background-color: transparent; /* Card background is handled by the image's rounded corners */
-    display: flex; /* For centering content if needed, though img fills it */
-    justify-content: center;
-    align-items: center;
+  flex: 0 0 auto;
+  /* Prevent items from shrinking, let them take their natural width */
+  scroll-snap-align: center;
+  /* Snap the center of the item to the center of the container */
+
+  /* You might want to define a specific width for each slide, e.g.: */
+  width: calc(min(45vw, 280px));
+  /* Take up to 45% of viewport width, max 280px */
+  height: calc(min(45vw, 280px));
+  /* Keep it square */
+
+  background-color: transparent;
+  /* Card background is handled by the image's rounded corners */
+  display: flex;
+  /* For centering content if needed, though img fills it */
+  justify-content: center;
+  align-items: center;
 }
 
 .rounded-image {
-    width: 100%; /* Make image fill its parent .image-slide div */
-    height: 100%;
-    object-fit: cover; /* Ensures the image covers the area without distortion */
-    border-radius: 20px; /* Adjust this value for desired roundness */
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05); /* Optional subtle shadow */
+  width: 100%;
+  /* Make image fill its parent .image-slide div */
+  height: 100%;
+  object-fit: cover;
+  /* Ensures the image covers the area without distortion */
+  border-radius: 20px;
+  /* Adjust this value for desired roundness */
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+  /* Optional subtle shadow */
+}
+
+.counter-wrap {
+  min-height: 60px;
+  /* ensure it has height so it can intersect */
+  display: flex;
+  align-items: center;
+}
+
+.counter {
+  font-size: 2rem;
+  font-weight: 700;
 }
 </style>
