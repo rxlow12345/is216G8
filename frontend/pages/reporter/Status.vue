@@ -99,8 +99,8 @@
                 </div>
 
                 <!-- Status Steps -->
-                <div class="d-flex justify-content-between text-center px-3">
-                  <div v-for="(stage, index) in stages" :key="index" class="flex-fill">
+                <div class="d-flex justify-content-between text-center px-3 status-steps-wrapper">
+                  <div v-for="(stage, index) in stages" :key="index" class="flex-fill status-step-item">
                     <div class="stage-circle mx-auto mb-2" :class="{
                       'stage-active': index <= currentStageIndex,
                       'stage-inactive': index > currentStageIndex
@@ -587,6 +587,25 @@ export default {
 
   .custom-progress-bar {
     font-size: 0.8rem;
+  }
+
+  .status-steps-wrapper {
+    flex-direction: column; /* This is the key: stack items vertically */
+    gap: 1.25rem;          /* Add vertical space between the steps */
+    align-items: flex-start; /* Align all items to the left */
+    padding-left: 1rem !important;  /* Adjust padding for the new layout */
+    padding-right: 1rem !important;
+  }
+
+  .status-step-item {
+    display: flex;         /* Make the item a flex row (icon + text) */
+    align-items: center;   /* Vertically align the icon and text */
+    text-align: left;      /* Ensure text is left-aligned */
+    flex: none !important; /* Override Bootstrap's flex-fill behavior */
+  }
+
+  .status-step-item .stage-circle {
+    margin: 0 1rem 0 0;    /* Remove default margins and add space to the right of the circle */
   }
 }
 </style>
