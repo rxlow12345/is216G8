@@ -20,8 +20,7 @@ rgb(254, 250, 224); WHITE YELLOW
     font-weight: 600;
     color:rgb(254, 250, 224);
     text-shadow: 0 2px 5px rgb(254, 250, 224);
-    padding-top: 20px;
-    padding-bottom: 5px;
+    padding: 20px;
 }
 
 /** Back to Top **/

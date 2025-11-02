@@ -10,6 +10,10 @@
 </script>
 
 <template>
+    <div class = "banner">
+        <p class="banner-titles"> These are words with banners (usually title) </p>
+    </div>
+
     <div class = "button-styles">
         <button class = "btn green-btn-lg"> Green Filled Large Button </button>
         <button class = "btn unfilled-btn-lg"> Unfilled Large Button </button>
@@ -27,9 +31,6 @@
         <p class = "words anyotherwords"> Any other words should be between 18-20px</p>
         <p class = "words wordshadows"> These are words with shadows </p>
         <br>
-    </div>
-    <div class = "banner">
-        <p class="banner-titles"> These are words with banners (usually title) </p>
     </div>
         -------------------------------------------CARDS---------------------------------------------------------------------------------------------
 
@@ -94,8 +95,7 @@ rgb(254, 250, 224); WHITE YELLOW
     font-weight: 600;
     color:rgb(254, 250, 224);
     text-shadow: 2px 2px 5px rgb(254, 250, 224);
-    padding-top: 20px;
-    padding-bottom: 5px; /*padding different due to navbar */
+    padding: 20px;
 }
 /* MUST FOLLOW Common Button STYLE */
 .btn {
