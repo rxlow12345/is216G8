@@ -30,7 +30,12 @@
             type="text"
             placeholder="🔍 Search reports..."
           />
-          <button id="searchBtn" @click="filterReports">Search</button>
+          <button
+            id="searchBtn"
+            @click="handleSearchButtonClick"
+          >
+            {{ searchQuery ? 'Clear' : 'Search' }}
+          </button>
         </div>
       </div>
 
@@ -190,10 +195,12 @@ export default {
         this.reports = allReports.filter(r => r.uid === this.userUid)
         this.filteredReports = [...this.reports]
         this.sortReports()
-      } catch (err) {
+      }
+      catch (err) {
         console.error('Failed to fetch reports:', err)
         this.error = err.message || 'Failed to fetch reports.'
-      } finally {
+      }
+      finally {
         this.isLoading = false
       }
     },
@@ -210,6 +217,15 @@ export default {
         return matchesSearch && matchesSeverity && matchesStatus
       })
       this.sortReports()
+    },
+    handleSearchButtonClick() {
+      if (this.searchQuery) {
+        this.searchQuery = ''
+        this.filterReports()
+      }
+      else {
+        this.filterReports()
+      }
     },
     sortReports() {
       const order = { urgent: 3, moderate: 2, low: 1 };
@@ -264,13 +280,17 @@ export default {
 
       if (timestamp && timestamp._seconds !== undefined) {
         date = new Date(timestamp._seconds * 1000);
-      } else if (timestamp && timestamp.seconds !== undefined) {
+      }
+      else if (timestamp && timestamp.seconds !== undefined) {
         date = new Date(timestamp.seconds * 1000);
-      } else if (timestamp instanceof Date) {
+      }
+      else if (timestamp instanceof Date) {
         date = timestamp;
-      } else if (typeof timestamp === 'string') {
+      }
+      else if (typeof timestamp === 'string') {
         date = new Date(timestamp);
-      } else if (typeof timestamp === 'number') {
+      }
+      else if (typeof timestamp === 'number') {
         date = new Date(timestamp);
       }
 
@@ -282,5 +302,6 @@ export default {
   }
 }
 </script>
+
 <style scoped>
 </style>
