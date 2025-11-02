@@ -17,28 +17,16 @@
 
     <!-- Button Section with Images -->
     <div class="buttonSections">
-      <div class="buttonItemLeft animateIn">
-        <img src="../../src/public/assets/duck.jpg" alt="Duck" class="sectionImg">
+      <div
+        v-for="(item, index) in buttonItems"
+        :key="index"
+        :class="['buttonItem', item.align === 'left' ? 'buttonItemLeft' : 'buttonItemRight']"
+        ref="sectionElements"
+      >
+        <img :src="item.imgSrc" :alt="item.imgAlt" class="sectionImg">
         <div class="content">
-          <a href="/new_report/report.html" class="btn brownBtn">Create New Report</a>
-          <p class="buttonDescription">Report a new wildlife incident</p>
-        </div>
-      </div>
-
-      <div class="buttonItemRight animateIn">
-        <img src="../../src/public/assets/monkey.jpg" alt="Monkey" class="sectionImg">
-        <div class="content">
-          <!-- <a :href="'/status/' + userId" class="btn greenBtnLg">Check Report Status</a> -->
-          <a href="/all-reports" class="btn greenBtnLg">Check Report Status</a>
-          <p class="buttonDescription">Track the status of your existing reports</p>
-        </div>
-      </div>
-
-      <div class="buttonItemLeft animateIn">
-        <img src="../../src/public/assets/eagle.jpg" alt="Eagle" class="sectionImg">
-        <div class="content">
-          <a href="/past-reports" class="btn brownBtn">View Past Reports</a>
-          <p class="buttonDescription">View reports you've submitted previously</p>
+          <a :href="item.link" class="btn" :class="item.buttonClass">{{ item.buttonText }}</a>
+          <p class="buttonDescription">{{ item.description }}</p>
         </div>
       </div>
     </div>
@@ -50,9 +38,38 @@ import { ref, onMounted } from 'vue';
 import { getCurrentUser } from '../../src/api/auth.js';
 import '../css/common.css'
 
-// Reactive data
 const userEmail = ref('');
 const userId = ref('');
+
+const buttonItems = ref([
+  {
+    imgSrc: '../../src/public/assets/duck.jpg',
+    imgAlt: 'Duck',
+    buttonText: 'Create New Report',
+    buttonClass: 'brownBtn',
+    description: 'Report a new wildlife incident',
+    link: '/new_report/report.html',
+    align: 'left'
+  },
+  {
+    imgSrc: '../../src/public/assets/monkey.jpg',
+    imgAlt: 'Monkey',
+    buttonText: 'Check Report Status',
+    buttonClass: 'greenBtnLg',
+    description: 'Track the status of your existing reports',
+    link: '/all-reports',
+    align: 'right'
+  },
+  {
+    imgSrc: '../../src/public/assets/eagle.jpg',
+    imgAlt: 'Eagle',
+    buttonText: 'View Past Reports',
+    buttonClass: 'brownBtn',
+    description: 'View reports you\'ve submitted previously',
+    link: '/past-reports',
+    align: 'left'
+  }
+]);
 
 // Get current user info on component mount
 onMounted(async () => {
@@ -66,8 +83,8 @@ onMounted(async () => {
     console.error('Error getting user info:', error);
   }
 
-  // IntersectionObserver for fade-in effect
-  const elements = document.querySelectorAll('.animateIn');
+  const sectionElements = document.querySelectorAll('.buttonItem');
+
   const options = {
     root: null,
     threshold: 0.2
@@ -82,7 +99,7 @@ onMounted(async () => {
     });
   }, options);
 
-  elements.forEach(element => observer.observe(element));
+  sectionElements.forEach(element => observer.observe(element));
 });
 </script>
 
@@ -123,10 +140,6 @@ onMounted(async () => {
   margin-bottom: 60px;
 }
 
-.buttonSections img {
-  border-radius: 10px;
-}
-
 .buttonItemLeft,
 .buttonItemRight {
   display: flex;
@@ -138,9 +151,9 @@ onMounted(async () => {
   background-color: white;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.5s ease-in-out;
   opacity: 0;
   transform: translateY(30px);
+  transition: opacity 1s ease, transform 1s ease;
 }
 
 .buttonItemLeft {
@@ -181,9 +194,8 @@ onMounted(async () => {
   margin: 25px 0px;
 }
 
-/* Button Styling */
 .buttonItem .btn {
-  width: 100%;
+  width: 240px;
   padding: 12px;
   font-size: 16px;
   font-weight: 600;
@@ -202,7 +214,6 @@ onMounted(async () => {
   color: #333;
 }
 
-/* Color scheme buttons */
 .greenBtnLg {
   background-color: #285436;
   color: rgb(254, 250, 224);
@@ -267,10 +278,6 @@ onMounted(async () => {
     width: 100%;
   }
 
-  .content a {
-    width: 240px;
-  }
-
   .content p {
     margin-bottom: 25px;
   }
@@ -290,20 +297,9 @@ onMounted(async () => {
   }
 }
 
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* Fade-in effect */
 .fadeIn {
   opacity: 1 !important;
   transform: translateY(0) !important;
-  animation: fadeIn 1s ease-out forwards;
 }
 </style>
