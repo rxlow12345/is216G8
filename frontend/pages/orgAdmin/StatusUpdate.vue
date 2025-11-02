@@ -4,8 +4,10 @@
   <div class="dashboard-container">
 
     <!-- Top Banner -->
-    <div id="topBanner" class="text-center py-5">
-      <h1 class="animate-fade-up">Report Dashboard</h1>
+    <div id="topBanner" class="bannerTitles">
+      <header class="text-center mb-2">
+        <h1>Admin Dashboard</h1>
+      </header>
     </div>
 
     <div class="container my-5">
@@ -352,7 +354,8 @@
 <script>
 import api from '../../src/api/reportApi.js';
 import { logout, getCurrentUser } from '../../src/api/auth.js';
-import Modal from './Modal.vue'
+import Modal from './Modal.vue';
+import '../css/common.css'
 
 export default {
   name: 'StatusUpdate',
