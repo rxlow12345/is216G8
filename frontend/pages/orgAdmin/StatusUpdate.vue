@@ -1,11 +1,14 @@
 <!-- src/components/StatusUpdate.vue -->
 <template>
   <!-- Main container -->
-  <div class="dashboard-container">
+  <div class="container-fluid p-0">
 
     <!-- Top Banner -->
-    <div id="topBanner" class="text-center py-5">
-      <h1 class="animate-fade-up">Report Dashboard</h1>
+    <div class="bannerTitles">
+      <header class="text-center mb-2">
+        <h1>🌿 Reports Dashboard 🌿</h1>
+        <p>A Comprehensive View Of All Reports</p>
+      </header>
     </div>
 
     <div class="container my-5">
@@ -27,61 +30,6 @@
 
       <!-- Main Content -->
       <div v-else>
-        <!-- Dashboard Stats -->
-        <!-- <div class="row g-4 mb-5">
-          <div class="col-md-6 col-xl-3">
-            <div class="stat-card shadow-sm">
-              <div class="stat-card-inner stat-total" @click="filterAndScroll('all')">
-                <div class="stat-icon">
-                  <i class="bi bi-clipboard-data"></i>
-                </div>
-                <div class="stat-content">
-                  <h3 class="stat-number">{{ totalReports }}</h3>
-                  <p class="stat-label">Total Reports</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 col-xl-3">
-            <div class="stat-card shadow-sm">
-              <div class="stat-card-inner stat-pending" @click="filterAndScroll('pending')">
-                <div class="stat-icon">
-                  <i class="bi bi-clock-history"></i>
-                </div>
-                <div class="stat-content">
-                  <h3 class="stat-number">{{ pendingReports }}</h3>
-                  <p class="stat-label">Pending</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 col-xl-3">
-            <div class="stat-card shadow-sm">
-              <div class="stat-card-inner stat-active" @click="filterAndScroll('active')">
-                <div class="stat-icon">
-                  <i class="bi bi-activity"></i>
-                </div>
-                <div class="stat-content">
-                  <h3 class="stat-number">{{ activeReports }}</h3>
-                  <p class="stat-label">Active</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 col-xl-3">
-            <div class="stat-card shadow-sm">
-              <div class="stat-card-inner stat-resolved" @click="filterAndScroll('resolved')">
-                <div class="stat-icon">
-                  <i class="bi bi-check-circle"></i>
-                </div>
-                <div class="stat-content">
-                  <h3 class="stat-number">{{ resolvedReports }}</h3>
-                  <p class="stat-label">Resolved</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> -->
         <!-- Dashboard Stats -->
         <div class="row gx-4 gy-4 mb-5">
           <!-- Total Reports -->
@@ -305,8 +253,7 @@
                       <i class="bi bi-person-circle info-icon"></i>
                       <div>
                         <strong>Reporter Contact:</strong>
-                        <span class="ms-2">{{ selectedReport.contactEmail }} | {{ selectedReport.contactPhone
-                        }}</span>
+                        <span class="ms-2">{{ selectedReport.contactEmail }} | {{ selectedReport.contactPhone }}</span>
                       </div>
                     </div>
                     <div class="info-row">
@@ -485,16 +432,6 @@ export default {
 
 <style scoped>
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css');
-
-* {
-  margin: 0;
-  padding: 0;
-}
-
-.dashboard-container {
-  min-height: 100vh;
-  background: linear-gradient(to bottom, #FEFAE0 0%, #f8f9fa 100%);
-}
 
 /* Stat Cards */
 .stat-card {
@@ -722,6 +659,26 @@ export default {
     position: static;
     display: inline-block;
   }
+}
+
+.status-pending {
+  background-color: #DDA15E;
+  color: white;
+}
+
+.status-active {
+  background-color: #16cb59;
+  color: white;
+}
+
+.status-resolved {
+  background-color: #086143;
+  color: white;
+}
+
+.status-closed {
+  background-color: #6c757d;
+  color: white;
 }
 
 .report-details {
