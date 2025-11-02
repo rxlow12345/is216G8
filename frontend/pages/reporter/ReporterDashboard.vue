@@ -11,7 +11,7 @@
     <div class="welcomeMessage">
       <div class="alertCustom">
         <h5 class="alertHeading">Welcome to your Dashboard</h5>
-        <p>Use the options below to view past reports, create a new report, or track the status of existing reports.</p>
+        <p>Use the options below to create a new report, track the status of existing reports, or view past reports.</p>
       </div>
     </div>
 
