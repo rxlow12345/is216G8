@@ -44,6 +44,29 @@
   </div>
 </template>
 
+<script setup>
+import { ref, onMounted } from 'vue';
+import { getCurrentUser } from '../../src/api/auth.js';
+import '../css/common.css'
+
+// Reactive data
+const userEmail = ref('');
+const userId = ref('');
+
+// Get current user info on component mount
+onMounted(async () => {
+  try {
+    const user = await getCurrentUser();
+    if (user) {
+      userEmail.value = user.username || user.email;
+      userId.value = user.uid; // Assuming user.uid is the Firebase user ID
+    }
+  } catch (error) {
+    console.error('Error getting user info:', error);
+  }
+});
+</script>
+
 <style scoped>
 .welcomeMessage {
   text-align: center;
