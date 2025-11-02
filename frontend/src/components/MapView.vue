@@ -80,10 +80,10 @@ export default {
         // Create Leaflet map
         this.map = L.map(this.$refs.mapContainer).setView(
           [this.center.lat, this.center.lng],
-          12, // zoom level
+          10, // zoom level
         )
 
-        // Add OpenStreetMap tiles (FREE!)
+        // Add OpenStreetMap tiles 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '© OpenStreetMap contributors',
           maxZoom: 19,
@@ -106,9 +106,14 @@ export default {
 
       // Add new markers
       this.reports.forEach((report) => {
+        const coords = report.coordinates;
+        if (!coords || typeof coords.lat !== 'number' || typeof coords.lng !== 'number'){
+          console.log(`Report ${report.id} skipped due to invalid coordinates`, report);
+          return;
+        }
         const icon = this.createCustomIcon(report)
 
-        const marker = L.marker([report.location.lat, report.location.lng], { icon }).addTo(
+        const marker = L.marker([coords.lat, coords.lng], { icon }).addTo(
           this.map,
         )
 
@@ -116,7 +121,15 @@ export default {
         const popupContent = this.createPopupContent(report)
         marker.bindPopup(popupContent)
 
-        // Add click event
+        marker.on('popupopen', () => {
+          const button = document.getElementById(`accept-btn-${report.id}`);
+          if (button) {
+            button.addEventListener('click', () => {
+              this.handleAcceptCase(report);
+            });
+          }
+        });
+
         marker.on('click', () => {
           this.$emit('marker-click', report)
         })
@@ -130,21 +143,37 @@ export default {
         this.map.fitBounds(group.getBounds().pad(0.1))
       }
     },
+    severityColor(report){
+      // colour of icon determined based on severity
+      let color = {'background':'#6B7280', 'text':''} // light, dark
+  
+      if (report.severity === 'urgent') {
+        color = {'background':'#fee2e2', 'text':'#991b1b'}
+      } else if (report.severity === 'moderate') {
+        color = {'background':'#fef3cf', 'text':'#92400e'}
+      } else {
+        color = {'background':'#bbf7d0', 'text':'#065f46'}
+      }
+      return color;
+    },
+    incidentColor(report){
+      // colour of icon determined based on severity
+      let color = {'background':'#6B7280', 'text':''} // light, dark
+  
+      if (report.incidentType=== 'dead') {
+        color = {'background':'#fee2e2', 'text':'#991b1b'}
+      } else if (report.incidentType === 'injured') {
+        color = {'background':'#fef3cf', 'text':'#92400e'}
+      } else if (report.incidentType === 'trapped') {
+        color = {'background':'#fef3c7', 'text':'#78350f'}
+      } else {
+        color = {'background':'#ede9fe', 'text':'#6b21a8'}
+      }
+      return color;
+    },
 
     createCustomIcon(report) {
-      // Choose color based on status and urgency
-      let color = '#6B7280' // Default gray
-
-      if (report.status === 'pending') {
-        if (report.urgency === 'high') color = '#DC2626'
-        else if (report.urgency === 'medium') color = '#F59E0B'
-        else color = '#10B981'
-      } else if (report.status === 'in-progress') {
-        color = '#FBBF24'
-      } else if (report.status === 'resolved') {
-        color = '#059669'
-      }
-
+      let color = this.severityColor(report).text;
       // Create custom map pin icon
       const svgIcon = `
         <svg width="30" height="40" xmlns="http://www.w3.org/2000/svg">
@@ -165,31 +194,49 @@ export default {
       })
     },
 
-    createPopupContent(report) {
-      const statusColors = {
-        pending: '#EF4444',
-        'in-progress': '#F59E0B',
-        resolved: '#10B981',
-      }
+    handleAcceptCase(report){
+      this.$emit('acceptCase', report);
+    },
 
+    createPopupContent(report) {
       return `
         <div style="min-width: 250px; padding: 8px;">
           <h3 style="margin: 0 0 8px; color: #1F2937; font-size: 16px; font-weight: 600;">
-            ${report.animalType}
+            ${report.speciesName}
           </h3>
           
           <div style="margin: 6px 0;">
-            <span style="font-weight: 500; color: #6B7280; font-size: 13px;">Status:</span>
+            <span style="font-weight: 500; color: #1F2937 ; font-size: 13px;">Severity:</span>
             <span style="
-              padding: 3px 8px;
-              border-radius: 10px;
+              padding: 4px 12px;
+              border-radius: 16px;
               font-size: 11px;
-              font-weight: 600;
-              background: ${statusColors[report.status]};
-              color: white;
+              font-weight: 700;
+              letter-spacing: 0.5px;
+              white-space: nowrap;
+              flex-shrink: 0;
+              background: ${this.severityColor(report).background};
+              color: ${this.severityColor(report).text};
               margin-left: 6px;
             ">
-              ${report.status.toUpperCase()}
+              ${report.severity.toUpperCase()}
+            </span>
+          </div>
+          <div style="margin: 6px 0;">
+            <span style="font-weight: 500; color: #1F2937 ; font-size: 13px;">Incident Type:</span>
+            <span style="
+              padding: 4px 12px;
+              border-radius: 16px;
+              font-size: 11px;
+              font-weight: 700;
+              letter-spacing: 0.5px;
+              white-space: nowrap;
+              flex-shrink: 0;
+              background: ${this.incidentColor(report).background} ;
+              color: ${this.incidentColor(report).text} ;
+              margin-left: 6px;
+            ">
+              ${report.incidentType.toUpperCase()}
             </span>
           </div>
 
@@ -198,15 +245,15 @@ export default {
           </p>
 
           <p style="margin: 6px 0; color: #9CA3AF; font-size: 12px;">
-            📍 ${report.address}
+            📍 ${report.location}
           </p>
 
           <p style="margin: 6px 0; color: #9CA3AF; font-size: 12px;">
-            🕐 ${this.formatDate(report.reportedAt)}
+            🕐 ${this.formatReportTime(report.createdAt)}
           </p>
 
           <button 
-            onclick="window.selectReport(${report.id})"
+            id = "accept-btn-${report}"
             style="
               width: 100%;
               margin-top: 10px;
@@ -220,7 +267,8 @@ export default {
               font-size: 13px;
             "
           >
-            View Details
+            <span style="font-size: 16px; font-weight: bold;" >✓</span>
+            Accept Case
           </button>
         </div>
       `
@@ -261,13 +309,26 @@ export default {
       }
     },
 
-    formatDate(date) {
-      if (!date) return 'Unknown'
-      const d = new Date(date)
-      return d.toLocaleString('en-SG', {
-        dateStyle: 'short',
-        timeStyle: 'short',
-      })
+    toDate(timestamp) {
+      if (!timestamp || typeof timestamp._seconds !== "number") {
+        return null;
+      }
+      // Convert seconds to milliseconds
+      return new Date(timestamp._seconds * 1000);
+    },
+    // makes timing readable
+    formatReportTime(firestoreTimestamp) {
+      const date = this.toDate(firestoreTimestamp);
+      if (!date) return "Invalid Date";
+
+      return new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      }).format(date);
     },
   },
 }

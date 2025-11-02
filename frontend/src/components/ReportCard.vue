@@ -8,31 +8,40 @@
     ]"
     @click="$emit('click', report)"
   >
-    <!-- TODO decide if still want icon  -->
-    <!-- Status Icon -->
-    <div class="status-icon" :class="`status-${report.status}`">⏳</div>
-
     <!-- Report Content -->
     <div class="report-content">
-      <div class="report-header">
-        <h3 class="animal-type">{{ report.speciesName }}</h3>
-        <span class="severity-badge" :class="`severity-${report.severity}`">
-          {{ report.severity }}
+      <!-- Header Section -->
+      <div class="card-header">
+        <div class="title-row">
+          <h3 class="animal-type">{{ report.speciesName }}</h3>
+          <span class="severity-badge" :class="`severity-${report.severity}`">
+            {{ report.severity }}
+          </span>
+        </div>
+        <span class="incident-badge" :class="`incident-${report.incidentType?.toLowerCase()}`">
+          {{ report.incidentType }}
         </span>
-        <p class="timestamp"> {{ formatReportTime(report.createdAt) }} </p>
       </div>
 
-      <!-- todo - create css class for incidenttype -->
-      <p class="incidentType">{{ report.incidentType }}</p>
+      <!-- Description -->
       <p class="description">{{ report.description }}</p>
 
+      <!-- Meta Info -->
       <div class="report-meta">
-        <span class="location">📍 {{ report.location }}</span>
-        <span class="time">🕐 {{ timeAgo(report.createdAt) }}</span>
+        <div class="meta-item">
+          <span class="icon">📍</span>
+          <span class="text">{{ report.location }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="icon">🕐</span>
+          <span class="text">{{ timeAgo(report.createdAt) }}, on {{ formatReportTime(report.createdAt) }}</span>
+        </div>
       </div>
 
+      <!-- Accept Button -->
       <button @click.stop="handleAcceptCase" class="accept-button">
-         Accept Case 
+        <span class="button-icon">✓</span>
+        Accept Case
       </button>
     </div>
   </div>
@@ -115,22 +124,20 @@ export default {
 
 <style scoped>
 .report-card {
-  padding: 16px;
-  border-left: 4px solid #e5e7eb;
-  background: white;
+  padding: 0;
+  border-left: 5px solid #E5E7E8; 
+  background:#F5F5F5;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
-  gap: 12px;
-}
+  overflow: hidden;
+  border-bottom: 2px solid #f3f4f6;
 
-.report-card:hover {
-  background: #f9fafb;
-}
-
-.report-card.selected {
-  background: #ecfdf5;
-  border-left-color: #10b981;
+  &:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+    background: #f9fafb;
+  }
 }
 
 /* severity border colors */
@@ -146,102 +153,174 @@ export default {
   border-left-color: #10b981;
 }
 
-.status-icon {
-  font-size: 24px;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.status-icon.status-pending {
-  background: #fee2e2;
-}
-
-.status-icon.status-in-progress {
-  background: #fef3c7;
-}
-
-.status-icon.status-resolved {
-  background: #d1fae5;
-}
-
 .report-content {
   flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   min-width: 0;
 }
 
+/* Header */
 .report-header {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 8px;
+  /* justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 8px; */
+}
+
+.title-row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .animal-type {
   margin: 0;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   color: #1f2937;
+  line-height: 1.2;
 }
 
-.accept-button {
-  margin-top: 12px;
-  width: 100%;
-  padding: 8px 16px;
-  background: #10B981;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
+/* badges */
 
-.accept-button:hover {
-  background: #059669;
-}
 
-.severity-badge {
-  padding: 4px 10px;
-  border-radius: 12px;
+.severity-badge, .incident-badge {
+  padding: 4px 12px;
+  border-radius: 16px;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.incident-badge {
+  align-self: flex-start;
+  font-size: 10px;
+  padding: 3px 10px;
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+.severity-badge {
+  flex-shrink: 0;
 }
 
 .severity-badge.severity-urgent {
   background: #fee2e2;
   color: #991b1b;
+  border: 1px solid #fecaca;
+  
 }
 
 .severity-badge.severity-moderate {
   background: #fef3c7;
   color: #92400e;
+  border: 1px solid #eacc55;
 }
 
 .severity-badge.severity-low {
+  border: 1px solid #bbf7d0;
   background: #d1fae5;
   color: #065f46;
 }
 
+.incident-badge.incident-dead {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.incident-badge.incident-injured {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.incident-badge.incident-trapped {
+  background: #fef3c7;
+  color: #78350f;
+  border-color: #fde047;
+}
+
+.incident-badge.incident-misplaced {
+  background: #ede9fe;
+  color: #6b21a8;
+  border-color: #ddd6fe;
+}
+
 .description {
-  margin: 8px 0;
+  margin: 0;
   font-size: 14px;
   color: #4b5563;
-  line-height: 1.4;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
+
+.accept-button {
+  margin-top: 4px;
+  width: 100%;
+  padding: 10px 16px;
+  background: #10B981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.accept-button:hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+.accept-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.button-icon {
+  font-size: 16px;
+  font-weight: bold;
+}
+
 
 .report-meta {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-top: 8px;
+  gap: 6px;
 }
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.meta-item .icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.meta-item .text {
+  line-height: 1.4;
+}
+
 
 .location,
 .time {

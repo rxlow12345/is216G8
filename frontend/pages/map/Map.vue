@@ -23,7 +23,7 @@
           :key="report.id"
           :report="report"
           :selected="selectedReportId === report.id"
-          @click="selectReport(report)"
+          @click="selectReport"
           @acceptCase="acceptCaseFromCard"
         />
 
@@ -40,7 +40,7 @@
   </div>
 
   <!-- Report Details Modal TOD0 NOT APPEARING -->
-  <div v-if="selectedReport" class="modal-overlay" @click="closeModal">
+  <div v-if="selectedReportId" class="modal-overlay" @click="closeModal">
     <div class="modal" @click.stop>
       <button class="close-btn" @click="closeModal">×</button>
 
@@ -117,6 +117,7 @@ import MapView from "../../src/components/MapView.vue";
 import ReportCard from "../../src/components/ReportCard.vue";
 import api from "../../src/api/mapapi";
 import socket from "../../src/api/socket";
+import { map } from "leaflet";
 
 export default {
   name: "RescueMap",
@@ -128,13 +129,13 @@ export default {
     return {
       reports: [],
       selectedReportId: null,
+      selectReportCoordinates: { lat: null, lng: null },
       isConnected: false,
       activeUsers: 0,
       mapCenter: { lat: 1.3521, lng: 103.8198 }, // Singapore
     };
   },
-  computed: {
-  },
+  computed: {},
   async mounted() {
     await this.loadReports();
     this.connectWebSocket();
@@ -147,12 +148,80 @@ export default {
     async loadReports() {
       try {
         const response = await api.getReports();
-        const filteredReports = response.filter(report => report.status === "pending");
+        const filteredReports = response.filter(
+          (report) => report.status === "pending"
+        );
+
+        for (const report of filteredReports) {
+          if (report.location == null) {
+            report.location = "Singapore Management University";
+          }
+          // to handle geocoding errors
+          try {
+            const coordinates = await this.geocode(report.location);
+            report.coordinates = coordinates;
+          } catch (geocodeError) {
+            console.log(
+              `Report ID ${report.id} failed to geocode location`,
+              geocodeError.message
+            );
+            report.coordinates = this.mapCenter;
+          }
+        }
         this.reports = filteredReports;
+        console.log('Reports:', this.filteredReports);
       } catch (error) {
         console.error("Error loading reports:", error);
         alert("Failed to load reports. Make sure backend is running!");
       }
+    },
+
+    async geocode(address) {
+      const OPENCAGE_API_KEY = import.meta.env.VITE_OPENCAGE_API_KEY;
+      const OPENCAGE_BASE_URL = "https://api.opencagedata.com/geocode/v1/json";
+      const url = `${OPENCAGE_BASE_URL}?q=${address}&key=${OPENCAGE_API_KEY}`;
+
+      try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error(
+            `OpenCage API request failed with status: ${response.status}`
+          );
+        }
+
+        const data = await response.json();
+
+        if (
+          !data.results ||
+          data.results.length == 0 ||
+          !data.results[0].geometry
+        ) {
+          throw new Error("Geocoding service returned no valid results");
+        }
+
+        const lat = data.results[0].geometry.lat;
+        const lng = data.results[0].geometry.lng;
+        return { lat: lat, lng: lng };
+      } catch (error) {
+        console.error("Geocoding Error:", error);
+        throw new Error("Failed to connect to the geocoding service.");
+      }
+    },
+
+    async acceptCaseFromCard(report) {
+      this.selectedReportId = report.id;
+      this.selectReport;
+
+      try {
+        this.selectReportCoordinates = await this.geocode(report.location);
+      } catch (error) {
+        console.error("Failed to geocode location on case acceptance:", error);
+        this.selectReportCoordinates = this.mapCenter;
+      }
+      
+      console.log("coordinates", this.selectReportCoordinates);
+      console.log("Case Accepted", report.id);
     },
 
     connectWebSocket() {
@@ -196,18 +265,8 @@ export default {
       window.selectReport = (reportId) => {
         const report = this.reports?.find((r) => r.id === reportId);
         if (report) this.selectReport(report);
-        console.log("Case selected")
+        console.log("Case selected");
       };
-    },
-
-    async acceptCaseFromCard(report) {
-      this.selectedReportId = report.id;
-      this.selectReport(report);
-      console.log('Case Accepted', report.id)
-    },
-
-    selectReport(report) {
-      return this.reports?.find(r => r.id === this.selectedReportId);
     },
 
     closeModal() {
@@ -223,9 +282,9 @@ export default {
         // - Special equipment required
         // - Additional notes
         // - Team member assignments
-
+        
         const confirmAccept = confirm(
-          `Accept this case?\n\nAnimal: ${this.selectedReport.speciesName}\nLocation: ${this.selectedReport.location}\n\n(TODO: Replace this with a proper form modal)`
+          `Accept this case?\n\nAnimal: ${this.selectedReport.animalType}\nLocation: ${this.selectedReport.location}\n\n(TODO: Replace this with a proper form modal)`
         );
 
         if (!confirmAccept) return;
@@ -237,7 +296,9 @@ export default {
         );
 
         // Remove from list since we're only showing pending
-        this.reports = this.reports.filter(r => r.id !== this.selectedReportId);
+        this.reports = this.reports.filter(
+          (r) => r.id !== this.selectedReportId
+        );
 
         alert("Case accepted successfully!");
         this.closeModal();
@@ -246,20 +307,6 @@ export default {
         alert("Failed to accept case");
       }
     },
-
-    // async acceptCase() {
-    //   try {
-    //     await api.updateReportStatus(
-    //       this.selectedReportId,
-    //       "in-progress",
-    //       "Current User" // TODO: Replace with actual user name
-    //     );
-    //     alert("Case accepted successfully!");
-    //   } catch (error) {
-    //     console.error("Error accepting case:", error);
-    //     alert("Failed to accept case");
-    //   }
-    // },
 
     async resolveCase() {
       try {
@@ -299,6 +346,11 @@ export default {
       }
     },
   },
+  computed: {
+    selectReport() {
+      return this.reports?.find((r) => r.id === this.selectedReportId);
+    },
+  },
 };
 </script>
 
@@ -312,7 +364,7 @@ export default {
 }
 
 .sidebar {
-  background: white;
+  background: #046848;
   display: flex;
   flex-direction: column;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);

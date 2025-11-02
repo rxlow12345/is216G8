@@ -419,8 +419,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Wraps the Geolocation API in a Promise.
 
 // --- NEW CONCEPTUAL FUNCTION: Reverse Geocoding ---
-
-const OPENCAGE_API_KEY = "9047284f3fca4d20a801c1c973198406";
+const OPENCAGE_API_KEY = import.meta.env.VITE_OPENCAGE_API_KEY
 const OPENCAGE_BASE_URL = "https://api.opencagedata.com/geocode/v1/json";
 
 // Helper function (remains the same)
