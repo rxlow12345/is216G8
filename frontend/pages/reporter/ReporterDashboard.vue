@@ -239,17 +239,22 @@ onMounted(async () => {
   }
 
   .buttonItemLeft img {
-    margin: 17px;
+    margin: 15px;
   }
 
   .buttonItemRight img {
-    margin: 17px;
+    margin: 15px;
   }
 
   .buttonItemLeft .sectionImg,
   .buttonItemRight .sectionImg {
     width: 95%;
     height: auto;
+  }
+
+  .buttonItemLeft .sectionImg:hover,
+  .buttonItemRight .sectionImg:hover {
+    transform: scale(1.05);
   }
 
   .buttonItem {
@@ -264,6 +269,10 @@ onMounted(async () => {
   .content a {
     width: 240px;
   }
+
+  .content p {
+    margin-bottom: 25px;
+  }
 }
 
 @media (max-width: 520px) {
@@ -272,11 +281,11 @@ onMounted(async () => {
   }
 
   .buttonItemLeft img {
-    margin: 12px;
+    margin: 10px;
   }
 
   .buttonItemRight img {
-    margin: 12px;
+    margin: 10px;
   }
 }
 
