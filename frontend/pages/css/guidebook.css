@@ -5,15 +5,14 @@
 }
 
 /*GuideBook Title*/ 
-.text-center h1 {
+.bannerTitles p {
+  font-weight: 200 !important;
   color:rgb(254, 250, 224);
-  font-family: Georgia, 'Times New Roman', Times, serif;
-  font-size: 48px;
+  font-size: 20px !important;
 }
 
-.text-center p {
-  color:rgb(254, 250, 224);
-  font-size: 18px !important;
+body .bannerTitles {
+  padding-bottom: 10px !important;
 }
 
 @keyframes fadeUp {
