@@ -7,6 +7,9 @@
     <!-- Floating Background -->
      <FloatingBackground/>
 
+    <!-- Back To Top -->
+     <BackToTop/>
+
     <!-- Top Banner -->
     <div class="bannerTitles">
       <header class="text-center mb-2">
@@ -30,7 +33,7 @@
     </div>
 
     <!-- Game Button -->
-    <RouterLink to="/guidebook/game" class="floating-game-btn">🎮 Play Game!</RouterLink>
+    <RouterLink to="/guidebook/game" class="floating-game-btn">🎮 Play Game! 🎮</RouterLink>
 
 
     <!-- Category Tabs -->
@@ -131,7 +134,7 @@
           <h5 class="card-title">{{ animal.common_name }}</h5>
           <p class="scientific-name">{{ animal.scientific_name }}</p>
           <p class="card-text">{{ animal.description }}</p>
-          <a :href="animal.learn_more_url" target="__blank" class="btn btn-learn-more btn-sm"> 
+          <a :href="animal.learn_more_url" target="__blank" class="learnMoreBtn"> 
             Learn More
           </a>
         </div>
@@ -163,28 +166,21 @@
     <button class="btn btn-outline-success ms-2" @click="goToLastPage" :disabled="currentPage === totalPages">
       »
     </button>
-  </div>
-          <!-- Back to Top Button -->
-    <button 
-      v-show="showBackToTop" 
-      class="back-to-top" 
-      @click="scrollToTop"
-    >
-      ⬆️ Back to Top
-    </button>
+</div>
 </div>
 </template>
 
 <script>
 import animalsData from '../src/public/guidebook.json'
-import '../pages/css/guidebook.css'
 import '../pages/css/common.css'
+import '../pages/css/guidebook.css'
 import OtterCursor from '../src/components/OtterCursor.vue';
 import FloatingBackground from '../src/components/FloatingBackground.vue';
+import BackToTop from '../src/components/BackToTop.vue';
 
 export default {
   name: 'Guidebook',
-  components:{OtterCursor, FloatingBackground},
+  components:{OtterCursor, FloatingBackground, BackToTop},
   data() {
     return {
       allAnimals: animalsData,
