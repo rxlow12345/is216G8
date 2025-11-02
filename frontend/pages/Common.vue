@@ -15,6 +15,7 @@
         <button class = "btn unfilled-btn-lg"> Unfilled Large Button </button>
         <br>
         <button class = "btn linear-btn"> Linear Button </button>
+        <button class = "btn brown-btn"> Brown buttons </button>
         <p class = "hello-need-to-say-smth"> If your buttons are different, please use the 'Learn More' button convention in guidebook.css</p>
         <br>
         ------------------------------------------ Word section ------------------------------------------------------------------------------------
@@ -24,8 +25,32 @@
         <p class = "words titles">Titles should be 40px, 600 font weight</p>
         <p class = "words subtitles"> Subtitles should be 26px, 400 font weight </p>
         <p class = "words anyotherwords"> Any other words should be between 18-20px</p>
-        <p class = "words wordshadows"></p>
+        <p class = "words wordshadows"> These are words with shadows </p>
+        <br>
+        -------------------------------------------CARDS---------------------------------------------------------------------------------------------
     </div>
+
+    <section class="about-section">
+      <div class="container">
+        <div class="about-card">
+          <div class="about-content">
+            <div class="about-text">
+              <h2 class="section-title">Some notes</h2>
+             
+              <p class="about-description">
+                If you feel your thing <br>
+                look kind of ugly <br>
+                just put it in this <br>
+                Put your carousel next to words here <br>
+                Looks good, if not sure, check Home.vue 
+              </p>
+
+
+            </div>
+                </div>
+              </div>
+            </div>
+    </section>
     <!-- Standardising naming conventions 
      CAMEL CASE: helloAllThisIsCamelCase
      Please name all your classes and all in camel casing, change it please
@@ -36,12 +61,28 @@
         2. in template add this <OtterCursor animal="🦦" :speed="0.08"/>
     -->
 
-    <!-- MAKE MOVING BG-->
+    <!-- MAKE Floating Animals BG
+        1. Create this in template
+        <div class="home-wrapper">
+             <FloatingBackground />
+        </div>
+
+        2. import FloatingBackground
+        3. export default components: FloatingBackground
+    -->
 
 
 </template>
 
 <style scoped>
+/* Colour palette
+#606C38; Lighter GREEN
+#285436; Dark GREEN
+rgb(254, 250, 224); WHITE YELLOW
+#DDA15E; light brown
+#BC6C25; Darker brown
+*/
+
 /* MUST FOLLOW Common Button STYLE */
 .btn {
     padding: 16px 32px;
@@ -61,12 +102,12 @@
     cursor: pointer;
     background-color: #285436;
     color: rgb(254, 250, 224);
-    border: none;
+    border: 1px solid #285436;
     min-width: 250px; /*if you have two buttons you want same length, add this */
 }
 
 .green-btn-lg:hover {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);;
+    background: #606C38;
     color: #fff;
     border: 1px solid #285436;
 }
@@ -78,14 +119,14 @@
     font-size: 18px;
     font-weight: 600;
     cursor: pointer;
-    border: 2px solid #285436;
+    border: 1px solid #285436;
     color: #285436;
     background-color: rgb(254, 250, 224);
     min-width: 250px; /* add if you hv 2 buttons uw same size */
 }
 
 .unfilled-btn-lg:hover {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);;
+    background: #606C38;/*linear-gradient(135deg, #10b981 0%, #059669 100%);*/
     color: #fff;
     border: 1px solid #285436;
 }
@@ -104,9 +145,18 @@
 }
 
 .linear-btn:hover {
-    background: rgb(254, 250, 224);
-    color: #285436;
-    border: 2px solid #285436;
+    background: #606C38;;
+    color: white;
+}
+
+/* Brown btn & hover */
+.brown-btn {
+    background-color: #BC6C25;
+    color: rgb(254, 250, 224);
+}
+
+.brown-btn:hover {
+    background-color: #DDA15E;
 }
 
 .words {
@@ -125,6 +175,13 @@
 
 .anyotherwords {
     font-size: 18px;
+}
+
+.wordshadows {
+    font-size: 40px;
+    font-weight: 600;
+    color:#285436;
+    text-shadow: 0 4px 20px rgba(11, 155, 23, 0.3);
 }
 
 </style>

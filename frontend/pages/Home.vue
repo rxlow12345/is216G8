@@ -6,22 +6,7 @@
 
 
     <!-- Floating Animals Background -->
-    <div class="floating-animals">
-      <div
-        v-for="(animal, index) in floatingAnimals"
-        :key="index"
-        class="floating-animal"
-        :style="getAnimalStyle(index)"
-      >
-        {{ animal }}
-      </div>
-    </div>
-
-
-    <!-- Decorative Leaves -->
-    <div class="leaf leaf-top">🍃</div>
-    <div class="leaf leaf-bottom">🍃</div>
-
+    <FloatingBackground/>
 
     <!-- Hero Section with Carousel -->
     <section class="hero-section">
@@ -197,7 +182,7 @@
          
           <div class="cta-buttons">
             <router-link to="/donate" class="btn btn-donate">
-              Donate
+              Learn More About Our Partners
             </router-link>
           </div>
 
@@ -223,10 +208,8 @@ import { getCurrentUser } from '../src/api/auth.js';
 import '../pages/css/home.css'
 import '../pages/css/common.css'
 import OtterCursor from '../src/components/OtterCursor.vue';
+import FloatingBackground from '../src/components/FloatingBackground.vue';
 
-
-// ======================== Floating Animals Array ========================
-const floatingAnimals = ['🦊', '🦝', '🐿️', '🦔', '🦉', '🦌', '🐰', '🦫', '🐻', '🦅', '🐺', '🦜'];
 
 // ======================== Auth State ========================
 const auth = ref(null);
@@ -247,18 +230,6 @@ const carouselImages = [
 const currentSlide = ref(0);
 const isTransitioning = ref(false);
 let autoRotateInterval = null;
-
-
-// ======================== Get random style for floating animals ========================
-function getAnimalStyle(index) {
-  return {
-    left: `${Math.random() * 100}%`,
-    top: `${Math.random() * 100}%`,
-    animationDelay: `${Math.random() * 5}s`,
-    animationDuration: `${15 + Math.random() * 10}s`
-  };
-}
-
 
 // ======================== Carousel Controls ========================
 function nextSlide() {
