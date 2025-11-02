@@ -724,26 +724,6 @@ export default {
   }
 }
 
-.status-pending {
-  background-color: #DDA15E;
-  color: white;
-}
-
-.status-active {
-  background-color: #16cb59;
-  color: white;
-}
-
-.status-resolved {
-  background-color: #086143;
-  color: white;
-}
-
-.status-closed {
-  background-color: #6c757d;
-  color: white;
-}
-
 .report-details {
   color: #606C38;
 }
@@ -766,22 +746,6 @@ export default {
 
 .report-date i {
   color: #BC6C25;
-}
-
-.report-arrow {
-  position: absolute;
-  right: 1.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #086143;
-  font-size: 1.25rem;
-  opacity: 0;
-  transition: all 0.3s ease;
-}
-
-.report-item:hover .report-arrow {
-  opacity: 1;
-  right: 1rem;
 }
 
 /* Empty State */
