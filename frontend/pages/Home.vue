@@ -8,6 +8,9 @@
     <!-- Floating Animals Background -->
     <FloatingBackground/>
 
+    <!-- Back To Top Button -->
+     <BackToTop/>
+
     <!-- Hero Section with Carousel -->
     <section class="hero-section">
       <div class="hero-content">
@@ -20,10 +23,10 @@
        
         <!-- CTA Buttons - Only show if not logged in -->
         <div v-if="!isLoggedIn" class="hero-buttons">
-          <router-link to="/login" class="btn btn-primary">
+          <router-link to="/login" class="btn brown-btn">
             Login
           </router-link>
-          <router-link to="/signup" class="btn btn-secondary">
+          <router-link to="/signup" class="btn green-btn-lg">
             🦊 Sign Up Now
           </router-link>
         </div>
@@ -45,27 +48,16 @@
           <div class="about-content">
             <div class="about-text">
               <h2 class="section-title">About CritterConnect</h2>
-             
               <p class="about-description">
-                Based in the heart of <strong>Singapore</strong>, CritterConnect is a community-driven initiative
-                dedicated to helping our local wildlife thrive. Whether it's a wounded pigeon in your neighbourhood
-                or a stray kitten by the park, we make it easy for anyone to <strong>report injured animals</strong>
-                and connect them with rescue organisations.
+                  Based in the heart of <strong>Singapore</strong>, CritterConnect is a community-driven initiative
+                  dedicated to helping our local critters thrive. 
+                  <br><br>
+                  Our <router-link to="/guidebook" class="description-link">Guidebook</router-link> helps you identify and
+                  learn about common species in Singapore and you can even test your knowledge with our <strong>"Match the Card"</strong> game.
+                  <br><br>
+                  Spotted an injured critter? 
+                  <router-link to='/login' class = "description-link">Log in</router-link> now to <strong>submit a report</strong> and <strong>gain access to more features</strong> designed to help you stay connected and informed.
               </p>
-
-
-              <p class="about-description">
-                Our <router-link to="/guidebook" class="guidebook-link">Guidebook</router-link> helps you identify and
-                learn about common species in Singapore — from squirrels to hornbills — so we can all
-                coexist with our city's amazing biodiversity.
-              </p>
-
-
-              <div class="about-actions">
-                <a href="/pages/new_report/report.html" class="btn-report" target="_self">
-                  📝 Report an Animal
-                </a>
-              </div>
             </div>
 
 
@@ -126,13 +118,13 @@
             <span>🦜</span>
           </div>
          
-          <h2 class="banner-title">📚 Explore Our Wildlife Guidebook!</h2>
+          <h2 class="banner-title">📚 Explore Our Critter Guidebook!</h2>
           <p class="banner-text">
-            Discover and learn about Singapore's amazing biodiversity.
+            Discover and play games to learn about Singapore's amazing biodiversity. <br>
             <strong>No login required!</strong>
           </p>
          
-          <router-link to="/guidebook" class="btn btn-guidebook-large">
+          <router-link to="/guidebook" class="btn linear-btn">
             🔍 Browse Guidebook Now
           </router-link>
          
@@ -148,32 +140,40 @@
     <section class="features-section">
       <div class="container">
         <h2 class="section-title text-center">Make a Difference with CritterConnect</h2>
-        <p class="section-subtitle text-center">Report, learn, and receive live rescue updates about our critters</p>
+        <p class="feature-card-note">
+  💡      Tap on a card to explore the page
+        </p>
        
         <div class="features-grid">
+        <router-link to="/login" class="feature-card-link">
           <div class="feature-card">
             <div class="feature-icon">🦔</div>
-            <h3>Report Wildlife</h3>
-            <p>Spotted an injured animal? Report it instantly and connect with rescue organizations</p>
+            <h3>Report Critters</h3>
+            <p>Spotted an injured critter? Log in and report to get live updates from our rescue organisationss</p>
           </div>
+        </router-link>
          
+        <router-link to="/guidebook" class="feature-card-link">
           <div class="feature-card">
             <div class="feature-icon">📚</div>
             <h3>Learn & Identify</h3>
             <p>Access our comprehensive guidebook to identify local species and learn about them</p>
           </div>
-         
+        </router-link>
+          
+        <router-link to="/donate" class="feature-card-link">
           <div class="feature-card">
-            <div class="feature-icon">📬</div>
-            <h3>Track Rescues</h3>
-            <p>Receive live updates of the critter you have rescued and celebrate their recovery journey</p>
+            <div class="feature-icon">🤝</div>
+            <h3>Help Our Partners</h3>
+            <p>Join us in empowering our partners to continue their vital work in rescuing and caring for our critters.</p>
           </div>
-        </div>
+        </router-link>
+      </div>
       </div>
     </section>
 
 
-    <!-- ======================== Final CTA Section ======================== -->
+    <!--======================== Final CTA Section ========================
     <section class="final-cta-section">
       <div class="container">
         <div class="final-cta-card">
@@ -187,7 +187,7 @@
           </div>
 
 
-          <!-- ======================== Footer Critters ======================== -->
+          
           <div class="footer-critters">
             <span class = "critter">🦔</span>
             <span class = "critter">🦅</span>
@@ -198,6 +198,7 @@
         </div>
       </div>
     </section>
+  -->
   </div>
 </template>
 
@@ -209,6 +210,7 @@ import '../pages/css/home.css'
 import '../pages/css/common.css'
 import OtterCursor from '../src/components/OtterCursor.vue';
 import FloatingBackground from '../src/components/FloatingBackground.vue';
+import BackToTop from '../src/components/BackToTop.vue';
 
 
 // ======================== Auth State ========================

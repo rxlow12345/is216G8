@@ -76,6 +76,12 @@
         3. export default components: FloatingBackground
     -->
 
+    <!-- Back To Top button 
+      1. Import BackToTop from BackToTop.vue
+      2. Call this in template <BackToTop/>
+      3. add this in components: BackToTop
+    -->
+
 
 </template>
 

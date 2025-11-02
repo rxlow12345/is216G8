@@ -57,16 +57,73 @@ rgb(254, 250, 224); WHITE YELLOW
 
 /* Buttons */
 .btn {
-    padding: 16px 32px !important;
-    border-radius: 12px;
+    padding: 16px 32px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Green Filled button & HOVER */
+.green-btn-lg {
+    padding: 16px 32px;
+    border-radius: 15px;
     font-size: 18px;
     font-weight: 600;
-    text-decoration: none;
-    display: inline-block;
-    transition: all 0.3s;
     cursor: pointer;
-    border: none;
+    background-color: #285436;
+    color: rgb(254, 250, 224);
+    border: 1px solid #285436;
+    min-width: 250px; /*if you have two buttons you want same length, add this */
 }
+
+.green-btn-lg:hover {
+    background: #606C38;
+    color: #fff;
+    border: 1px solid #285436;
+}
+
+/* Unfilled Button & HOVER */
+.unfilled-btn-lg {
+    padding: 16px 32px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid #285436;
+    color: #285436;
+    background-color: rgb(254, 250, 224);
+    min-width: 250px; /* add if you hv 2 buttons uw same size */
+}
+
+.unfilled-btn-lg:hover {
+    background: #606C38;/*linear-gradient(135deg, #10b981 0%, #059669 100%);*/
+    color: #fff;
+    border: 1px solid #285436;
+}
+
+/* Linear Btn & HOVER */
+.linear-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #fff;
+}
+
+.linear-btn:hover {
+    background: linear-gradient(135deg, #10b981 40%, #059669 60%);
+    color: white;
+}
+
+/* Brown btn & hover */
+.brown-btn {
+    background-color: #BC6C25;
+    color: rgb(254, 250, 224);
+    font-weight: 600;
+}
+
+.brown-btn:hover {
+    background-color: #DDA15E;
+}
+
 
 .btn-donate {
     padding: 10px 100px;
@@ -228,4 +285,10 @@ rgb(254, 250, 224); WHITE YELLOW
     background-color: #FEFAE0;
     color: #606C38;
     font-size: 0.95rem;
+}
+
+@media (max-width: 520px){
+    * {
+        padding-top: 15px !important;
+    }
 }
