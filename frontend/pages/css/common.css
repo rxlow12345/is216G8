@@ -246,7 +246,7 @@ rgb(254, 250, 224); WHITE YELLOW
 }
 
 .nav-link {
-    padding-left: 15px !important;
+    padding-left: 15px;
 }
 
 /* ======================== Scroll to Top ======================== */
@@ -289,6 +289,6 @@ rgb(254, 250, 224); WHITE YELLOW
 
 @media (max-width: 520px){
     * {
-        padding-top: 15px !important;
+        padding-top: 15px;
     }
 }

@@ -101,13 +101,20 @@ body .bannerTitles {
     border: 2px solid #a8c686; 
     border-radius: 12px;       
     padding: 0.5rem 1rem;    
-    font-weight: 600;
-    height: 70px;         
+    font-weight: 600;     
     display: flex;
-    width: 120px;
     align-items: center;
     justify-content: center;
     transition: all 0.3s;
+}
+
+@media (max-width: 768px) {
+  #categoryTabs .nav-link {
+    width: auto !important;
+    min-width: 90px;
+    height: auto;
+    padding: 0.4rem 0.6rem;
+  }
 }
 
 .tab-content {
@@ -302,7 +309,7 @@ body .bannerTitles {
   font-size: 0.9rem;
   border-radius: 25px !important;
   border: 1px solid #198754 !important;
-  margin: 0 30px !important;             
+  margin: 0 30px;             
 }
 
 /* Page Responsiveness */
@@ -324,12 +331,12 @@ body .bannerTitles {
     }
 
     #categoryTabs .nav-item {
-        flex: unset;
+        flex: unset !important;
     }
 
     #categoryTabs .nav-link {
-        width: auto;
-        padding: 0.5rem 0.8rem;
+        width: 100% !important;
+        padding: 0.5rem 0.5rem;
     }
 
     /* 2 cards per row for mobile */

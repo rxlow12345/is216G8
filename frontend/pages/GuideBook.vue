@@ -2,10 +2,10 @@
   <div class="container-fluid p-0">
 
     <!--Moving Cursor-->
-    <OtterCursor animal="🦦" :speed="0.08"/>
+    <OtterCursor animal="🦦" :speed="0.08" />
 
     <!-- Floating Background -->
-     <FloatingBackground/>
+    <FloatingBackground />
 
     <!-- Back To Top -->
      <BackToTop/>
@@ -18,16 +18,11 @@
       </header>
     </div>
 
-     <!-- Search Box -->
+    <!-- Search Box -->
     <div class="search-section">
       <div class="search-bar">
-        <input
-          v-model="searchQuery"
-          @input="filterBySearch"
-          type="text"
-          id="searchInput"
-          placeholder="🔍 Search for a species..."
-        >
+        <input v-model="searchQuery" @input="filterBySearch" type="text" id="searchInput"
+          placeholder="🔍 Search for a species...">
         <button @click="filterBySearch" id="searchBtn">Search</button>
       </div>
     </div>
@@ -39,135 +34,133 @@
     <!-- Category Tabs -->
     <ul class="nav nav-tabs justify-content-center mb-4" id="categoryTabs">
       <li class="nav-item">
-        <a 
-          class="nav-link" 
-          :class="{ active: selectedCategory === 'All' }"
-          href="#" 
-          @click.prevent="filterByCategory('All')"
-        >
-        <span class="tab-content">
-          <span class="tab-emoji">🌍</span>
-          <span class="tab-text">All</span>
-        </span>
+        <a class="nav-link" :class="{ active: selectedCategory === 'All' }" href="#"
+          @click.prevent="filterByCategory('All')">
+          <span class="tab-content">
+            <span class="tab-emoji">🌍</span>
+            <span class="tab-text">All</span>
+          </span>
         </a>
       </li>
       <li class="nav-item">
-        <a 
-          class="nav-link" 
-          :class="{ active: selectedCategory === 'Mammals' }"
-          href="#" 
-          @click.prevent="filterByCategory('Mammals')"
-        >
-        <span class="tab-content">
-          <span class="tab-emoji">🦊</span>
-          <span class="tab-text">Mammals</span>
-        </span>
+        <a class="nav-link" :class="{ active: selectedCategory === 'Mammals' }" href="#"
+          @click.prevent="filterByCategory('Mammals')">
+          <span class="tab-content">
+            <span class="tab-emoji">🦊</span>
+            <span class="tab-text">Mammals</span>
+          </span>
         </a>
       </li>
       <li class="nav-item">
-        <a 
-          class="nav-link" 
-          :class="{ active: selectedCategory === 'Birds' }"
-          href="#" 
-          @click.prevent="filterByCategory('Birds')"
-        >
-        <span class="tab-content">
-          <span class="tab-emoji">🦜</span>
-          <span class="tab-text">Birds</span>
-        </span>
+        <a class="nav-link" :class="{ active: selectedCategory === 'Birds' }" href="#"
+          @click.prevent="filterByCategory('Birds')">
+          <span class="tab-content">
+            <span class="tab-emoji">🦜</span>
+            <span class="tab-text">Birds</span>
+          </span>
         </a>
       </li>
       <li class="nav-item">
-        <a 
-          class="nav-link" 
-          :class="{ active: selectedCategory === 'Reptiles' }"
-          href="#" 
-          @click.prevent="filterByCategory('Reptiles')"
-        >
-        <span class="tab-content">
-          <span class="tab-emoji">🦎</span>
-          <span class="tab-text">Reptiles</span>
-        </span>
+        <a class="nav-link" :class="{ active: selectedCategory === 'Reptiles' }" href="#"
+          @click.prevent="filterByCategory('Reptiles')">
+          <span class="tab-content">
+            <span class="tab-emoji">🦎</span>
+            <span class="tab-text">Reptiles</span>
+          </span>
 
         </a>
       </li>
       <li class="nav-item">
-        <a 
-          class="nav-link" 
-          :class="{ active: selectedCategory === 'Amphibians' }"
-          href="#" 
-          @click.prevent="filterByCategory('Amphibians')"
-        >
-        <span class="tab-content">
-          <span class="tab-emoji">🐸</span>
-          <span class="tab-text">Amphibians</span>
-        </span>
+        <a class="nav-link" :class="{ active: selectedCategory === 'Amphibians' }" href="#"
+          @click.prevent="filterByCategory('Amphibians')">
+          <span class="tab-content">
+            <span class="tab-emoji">🐸</span>
+            <span class="tab-text">Amphibians</span>
+          </span>
         </a>
       </li>
       <li class="nav-item">
-        <a 
-          class="nav-link" 
-          :class="{ active: selectedCategory === 'Marine' }"
-          href="#" 
-          @click.prevent="filterByCategory('Marine')"
-        >
-        <span class="tab-content">
-          <span class="tab-emoji">🐙</span>
-          <span class="tab-text">Marine</span>
-        </span>
+        <a class="nav-link" :class="{ active: selectedCategory === 'Marine' }" href="#"
+          @click.prevent="filterByCategory('Marine')">
+          <span class="tab-content">
+            <span class="tab-emoji">🐙</span>
+            <span class="tab-text">Marine</span>
+          </span>
         </a>
       </li>
     </ul>
 
-    <!-- Cards Container -->
-    <div id="cardsContainer">
-      <p v-if="filteredAnimals.length === 0" class="text-center text-muted">
-        No animals found.
-      </p>
-      <div 
-        v-for="animal in paginatedAnimals" 
-        :key="animal.scientific_name" 
-        class="card"
-      >
-        <img :src="animal.image_url" :alt="animal.common_name">
+    <div id="cardsContainer" class="cards-flex-container">
+      <div v-for="animal in paginatedAnimals" :key="animal.scientific_name" class="card animal-card">
+        <img :src="animal.image_url" :alt="animal.common_name" class="card-img-top">
         <div class="card-body">
           <h5 class="card-title">{{ animal.common_name }}</h5>
           <p class="scientific-name">{{ animal.scientific_name }}</p>
           <p class="card-text">{{ animal.description }}</p>
-          <a :href="animal.learn_more_url" target="__blank" class="learnMoreBtn"> 
-            Learn More
-          </a>
+          <a :href="animal.learn_more_url" target="__blank" class="btn btn-learn-more btn-sm">Learn More</a>
         </div>
       </div>
     </div>
-    
-  <!-- Pagination -->
-  <div 
-    id="pagination" 
-    class="pagination-buttons d-flex justify-content-center align-items-center mt-4"
-    v-show="showPagination"
-  >
-    <button class="btn btn-outline-success me-2" @click="goToFirstPage" :disabled="currentPage === 1">
-      «
-    </button>
 
-    <button class="btn btn-outline-success me-2" @click="prevPage" :disabled="currentPage === 1">
-      ‹ Prev
-    </button>
 
-    <span id="pageIndicator" class="mx-2">
-      Page {{ currentPage }} of {{ totalPages }}
-    </span>
+    <!-- Pagination -->
+    <!-- <div id="pagination" class="pagination-buttons d-flex justify-content-center align-items-center mt-4"
+      v-if="shouldShowPagination">
+      <button class="btn btn-outline-success mx-2" @click="goToFirstPage" :disabled="isFirstPage">
+        « First
+      </button>
 
-    <button class="btn btn-outline-success ms-2" @click="nextPage" :disabled="currentPage === totalPages">
-      › Next
-    </button>
+      <button class="btn btn-outline-success me-2" @click="prevPage" :disabled="isFirstPage">
+        ‹ Prev
+      </button>
 
-    <button class="btn btn-outline-success ms-2" @click="goToLastPage" :disabled="currentPage === totalPages">
-      »
+      <span id="pageIndicator" class="mx-0 mx-sm-2 px-3 py-2">
+        <span class="page-label">Page </span>{{ currentPage }} of {{ totalPages }}
+      </span>
+
+      <button class="btn btn-outline-success ms-2" @click="nextPage" :disabled="isLastPage">
+        Next ›
+      </button>
+
+      <button class="btn btn-outline-success mx-2" @click="goToLastPage" :disabled="isLastPage">
+        Last »
+      </button>
+    </div> -->
+    <!-- Pagination -->
+    <div id="pagination" class="pagination-buttons d-flex justify-content-center align-items-center mt-4"
+      v-if="shouldShowPagination">
+
+      <!-- First Page -->
+      <button class="btn btn-outline-success mx-2" @click="goToFirstPage" :disabled="isFirstPage">
+        « <span class="btn-text">First</span>
+      </button>
+
+      <!-- Previous Page -->
+      <button class="btn btn-outline-success me-2" @click="prevPage" :disabled="isFirstPage">
+        ‹ <span class="btn-text">Prev</span>
+      </button>
+
+      <!-- Page Indicator -->
+      <span id="pageIndicator" class="mx-0 mx-sm-2 px-3 py-2">
+        <span class="page-label">Page </span>{{ currentPage }} of {{ totalPages }}
+      </span>
+
+      <!-- Next Page -->
+      <button class="btn btn-outline-success ms-2" @click="nextPage" :disabled="isLastPage">
+        <span class="btn-text">Next</span> ›
+      </button>
+
+      <!-- Last Page -->
+      <button class="btn btn-outline-success mx-2" @click="goToLastPage" :disabled="isLastPage">
+        <span class="btn-text">Last</span> »
+      </button>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button v-show="showBackToTop" class="back-to-top" @click="scrollToTop">
+      ⬆️ Back to Top
     </button>
-</div>
-</div>
+  </div>
 </template>
 
 <script>
@@ -180,33 +173,32 @@ import BackToTop from '../src/components/BackToTop.vue';
 
 export default {
   name: 'Guidebook',
-  components:{OtterCursor, FloatingBackground, BackToTop},
+  components: { OtterCursor, FloatingBackground },
+
   data() {
     return {
       allAnimals: animalsData,
       filteredAnimals: animalsData,
       currentPage: 1,
-      animalsPerPage: 9,
+      animalsPerPage: 12,
       selectedCategory: 'All',
       searchQuery: '',
-      showPagination: false,
     }
   },
+
   computed: {
     totalPages() {
-      if (this.selectedCategory === 'All') return 1
       return Math.ceil(this.filteredAnimals.length / this.animalsPerPage) || 1
     },
+
     paginatedAnimals() {
-      if (this.selectedCategory === 'All') {
-        return this.filteredAnimals
-      }
+      // Slice for paginated categories
       const start = (this.currentPage - 1) * this.animalsPerPage
       return this.filteredAnimals.slice(start, start + this.animalsPerPage)
     },
 
     shouldShowPagination() {
-      return this.selectedCategory !== 'All' && this.showPagination && this.totalPages > 1
+      return this.totalPages > 1
     },
 
     isFirstPage() {
@@ -217,55 +209,61 @@ export default {
       return this.currentPage === this.totalPages
     }
   },
+
   methods: {
     filterByCategory(category) {
       this.selectedCategory = category
       this.searchQuery = ''
-      
-      if (category === 'All') {
-        this.filteredAnimals = this.allAnimals
-      } else {
-        this.filteredAnimals = this.allAnimals.filter(a => a.category === category)
-      }
+
+      this.filteredAnimals =
+        category === 'All'
+          ? this.allAnimals
+          : this.allAnimals.filter(a => a.category === category)
+
       this.currentPage = 1
-      this.showPagination = false
     },
 
     filterBySearch() {
       const query = this.searchQuery.trim().toLowerCase()
-      
-      let animals = this.selectedCategory === 'All' 
-        ? this.allAnimals 
+
+      let animals = this.selectedCategory === 'All'
+        ? this.allAnimals
         : this.allAnimals.filter(a => a.category === this.selectedCategory)
-      
+
       if (query) {
         animals = animals.filter(
           a => a.common_name.toLowerCase().includes(query) ||
-               a.scientific_name.toLowerCase().includes(query)
+            a.scientific_name.toLowerCase().includes(query)
         )
       }
-      
+
       this.filteredAnimals = animals
       this.currentPage = 1
     },
 
     updateAnimalsPerPage() {
       const width = window.innerWidth
-      if (width <= 520) {
-        this.animalsPerPage = 6  
+      let newCount = 10
+      if (width <= 500) {
+        newCount = 4       // very small screens → 1 card per page
+      } else if (width <= 768) {
+        newCount = 8       // small screens → 2 cards per page
       } else if (width <= 1027) {
-        this.animalsPerPage = 9  
-      } else {
-        this.animalsPerPage = 12 
+        newCount = 12      // medium screens → 6 cards per page
+      }
+
+      if (this.animalsPerPage !== newCount) {
+        this.animalsPerPage = newCount
+        this.currentPage = 1 // reset page
       }
     },
 
-    goToFirstPage(){
+    goToFirstPage() {
       this.currentPage = 1
       window.scrollTo({ top: 0, behavior: 'smooth' })
     },
 
-    goToLastPage(){
+    goToLastPage() {
       this.currentPage = this.totalPages
       window.scrollTo({ top: 0, behavior: 'smooth' })
     },
@@ -285,6 +283,15 @@ export default {
     },
   },
 
+  watch: {
+    filteredAnimals() {
+      if (this.currentPage > this.totalPages) this.currentPage = this.totalPages
+    },
+    animalsPerPage() {
+      if (this.currentPage > this.totalPages) this.currentPage = this.totalPages
+    }
+  },
+
   mounted() {
     this.updateAnimalsPerPage()
     window.addEventListener('resize', this.updateAnimalsPerPage)
@@ -292,7 +299,79 @@ export default {
 
   beforeUnmount() {
     window.removeEventListener('resize', this.updateAnimalsPerPage)
-    document.removeEventListener('mousemove', this.handleMouseMove)
   }
 }
 </script>
+
+<style>
+.cards-flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  /* spacing between cards */
+  justify-content: center;
+  /* This will now correctly center the non-stretched cards */
+  padding: 0 1rem;
+  /* Add some padding to the container for better spacing on edges */
+}
+
+.animal-card {
+  /* Mobile-first: 1 per row. flex-grow is 0. */
+  flex: 0 1 100% !important;
+  max-width: 100%;
+}
+
+/* Medium screens: 2 per row */
+@media (min-width: 576px) {
+  .animal-card {
+    flex: 0 1 calc(50% - 1rem);
+    max-width: calc(50% - 1rem);
+  }
+}
+
+/* Medium-large screens: 3 per row */
+@media (min-width: 768px) {
+  .animal-card {
+    flex: 0 1 calc(33.333% - 1rem);
+    max-width: calc(33.333% - 1rem);
+  }
+}
+
+/* Large screens: 4 per row */
+@media (min-width: 1024px) {
+  .animal-card {
+    flex: 0 1 calc(25% - 1rem);
+    max-width: calc(25% - 1rem);
+  }
+}
+
+#pagination button.btn {
+  font-size: 18px !important;
+}
+
+#pagination #pageIndicator {
+  font-size: 18px !important;
+}
+
+/* Extra small screens */
+@media (max-width:576px) {
+  #pagination .btn-text {
+    display: none;
+  }
+
+  #pagination button.btn {
+    font-size: 1rem !important;
+    /* padding: 0.2rem 0.4rem !important; */
+  }
+
+  #pagination #pageIndicator {
+    font-size: 1rem !important;
+    text-wrap: nowrap;
+    margin: 0;
+  }
+
+  #pagination .page-label {
+    display: none;
+  }
+}
+</style>

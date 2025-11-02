@@ -37,12 +37,12 @@ h1{
 #categoryTabs {
     padding-bottom: 10px;
     justify-content: center;
-    display: flex;
+    flex-wrap: wrap;
     gap: 8px;
 }
 
 #categoryTabs .nav-item {
-    flex: 0 0 auto;
+    flex: 1 1 auto;
     text-align: center;
 }
 
@@ -75,3 +75,17 @@ h1{
 }
 
 
+@media (max-width: 576px) {
+  #categoryTabs .nav-link {
+    padding: 0.25rem 0.5rem; /* smaller padding */
+    font-size: 0.8rem;       /* smaller font */
+  }
+
+  #categoryTabs .tab-emoji {
+    font-size: 1rem;          /* smaller emoji */
+  }
+
+  #categoryTabs .tab-text {
+    display: block;           /* put text below emoji */
+  }
+}
