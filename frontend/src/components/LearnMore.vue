@@ -1,9 +1,9 @@
 <template>
 
     <OtterCursor animal="🦦" :speed="0.08" />
-    <div id="topBanner">
-        <header class="text-center mb-2">
-            <h1>Resources</h1>
+    <div class="bannerTitles">
+      <header class="text-center mb-2">
+            <h1>📝 Resources 📝</h1>
             <p> Learn More about CritterConnect</p>
         </header>
     </div>

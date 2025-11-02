@@ -106,16 +106,24 @@
                 <div :id="`story-${s.id}`" class="accordion-collapse collapse" :class="{ show: i === 0 }"
                   data-bs-parent="#impactStories">
                   <div class="accordion-body">
-                    <p class="mb-2">{{ s.body }}</p>
-                    <small class="text-muted">Funded by {{ s.fundedBy }} · {{ s.date }}</small>
+                    <div class="row g-3">
+                      <div class="col-md-4" v-if="s.image">
+                        <img :src="s.image" :alt="s.title" class="img-fluid rounded"
+                          style="width: 100%; height: 200px; object-fit: cover;">
+                      </div>
+                      <div :class="s.image ? 'col-md-8' : 'col-12'">
+                        <p class="mb-2">{{ s.body }}</p>
+                        <small class="text-muted">Funded by {{ s.fundedBy }} · {{ s.date }}</small>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+            </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
 
   </section>
@@ -144,18 +152,18 @@ const props = defineProps({
   breakdown: {
     type: Array,
     default: () => ([
-      { key: 'medical', label: 'Medical Care', emoji: '', goal: 20000, raised: 14000, short: 'Vet bills, meds, supplies' },
-      { key: 'response', label: 'Field Response', emoji: '', goal: 18000, raised: 12000, short: 'Transport, equipment, fuel' },
-      { key: 'edu', label: 'Community Education', emoji: '', goal: 12000, raised: 5250, short: 'Workshops, materials' },
+      { key: 'medical', label: 'Medical Care', emoji: '🧰', goal: 20000, raised: 14000, short: 'Vet bills, meds, supplies' },
+      { key: 'response', label: 'Field Response', emoji: '📑', goal: 18000, raised: 12000, short: 'Transport, equipment, fuel' },
+      { key: 'edu', label: 'Community Education', emoji: '📚', goal: 12000, raised: 5250, short: 'Workshops, materials' },
     ])
   },
   stories: {
     type: Array,
     default: () => ([
-      { id: 'pangolin', title: 'Pangolin safely released', body: 'Your donations funded rehab and a GPS tag to ensure post-release monitoring.', fundedBy: '52 donors', date: 'Oct 2025' },
-      { id: 'owl', title: 'Rescuing an Injured Owl', body: 'Swift response and care led to a full recovery.', fundedBy: '11 donors', date: 'Sep 2025' },
-      { id: 'hornbill', title: 'Hornbill wing recovery', body: 'Micro-surgery and physiotherapy covered by the medical fund.', fundedBy: '31 donors', date: 'Sep 2025' },
-      { id: 'civet', title: 'Civet family relocation', body: 'Field team humanely relocated a family from a risky construction site.', fundedBy: '24 donors', date: 'Aug 2025' },
+      { id: 'pangolin', title: 'Pangolin safely released', body: 'Your donations funded rehab and a GPS tag to ensure post-release monitoring.', fundedBy: '22 donors', date: 'Oct 2025', image: '../src/public/assets/SundaPangolin.png' },
+      { id: 'deer', title: 'Rescuing an Injured Deer', body: 'Swift response and care led to a full recovery.', fundedBy: '12 donors', date: 'Sep 2025', image: '../src/public/assets/GreaterMouseDeer.png' },
+      { id: 'junglefowl', title: 'Red Junglefowl wing recovery', body: 'Micro-surgery and physiotherapy covered by the medical fund.', fundedBy: '11 donors', date: 'Sep 2025', image: '../src/public/assets/RedJunglefowl.png' },
+      { id: 'otter', title: 'Otter family relocation', body: 'Field team humanely relocated a family from a risky construction site.', fundedBy: '22 donors', date: 'Aug 2025', image: '../src/public/assets/SmoothOtter.png' },
     ])
   },
   counters: {
@@ -258,8 +266,8 @@ onMounted(() => {
 // If counters change while visible, re-run (respects triggerOnce)
 watch(
   () => props.counters,
-  
-    (val) => {
+
+  (val) => {
     if (!val) return;
     // startAnimation() here, using the `from`/`to` built with asNum()
   },
@@ -285,37 +293,37 @@ onBeforeUnmount(() => {
 }
 
 .collapse-content.visible {
-  max-height: 700px;
+  max-height: none;
   /* Needs to be larger than the content */
 }
 
 .custom-collapse-btn {
-    /* Color Properties (Matching your image) */
-    background-color: #5a511e;
-    /* Light tan/khaki background */
-    color: #ffffff;
-    /* Darker olive text color */
+  /* Color Properties (Matching your image) */
+  background-color: #5a511e;
+  /* Light tan/khaki background */
+  color: #ffffff;
+  /* Darker olive text color */
 
-    /* Shape and Sizing */
-    border: none;
-    padding: 16px 32px;
-    /* Increased horizontal padding for the pill shape */
-    font-size: 18px;
-    font-weight: 600;
-    border-radius: 15px;
-    /* Large border-radius creates the pill shape */
- 
-    /* Interaction & Display */
-    cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    display: inline-block;
+  /* Shape and Sizing */
+  border: none;
+  padding: 16px 32px;
+  /* Increased horizontal padding for the pill shape */
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 15px;
+  /* Large border-radius creates the pill shape */
+
+  /* Interaction & Display */
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  display: inline-block;
 }
 
 .custom-collapse-btn:hover {
-    background-color: #d1ccb0;
-    /* Slightly darker background on hover */
-    /* Optional: Add a subtle shadow on hover */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #d1ccb0;
+  /* Slightly darker background on hover */
+  /* Optional: Add a subtle shadow on hover */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .image-slider-container {
