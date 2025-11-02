@@ -1,32 +1,31 @@
-.logo-section {
-    background:#fbffd0;
+/* .logo-section {
+    background: #fbffd0;
     background: linear-gradient(90deg, #fbffd0 0%, #d6eba5 100%);
     padding: 40px;
     width: 100%;
     margin: auto;
     text-align: center;
     position: relative
+} */
 
-}
-
-.navbar{
+.navbar {
     background-color: transparent;
 }
 
-.nav-link.navLink.active {
+.nav-link .navLink .active {
     /* color: #283618 !important; */
     color: #BC6C25 !important;
     text-decoration: underline;
     text-underline-offset: 5px;
 }
 
-.logo-section img{
+/* .logo-section img {
     height: 200px;
     width: 200px;
-}
+} */
 
 .title-section {
-    background-color: rgb(40,54,24);
+    background-color: rgb(40, 54, 24);
     color: white;
     padding: 30px;
     width: 100%;
@@ -35,11 +34,17 @@
 }
 
 
+/* .customNavbar {
+    background-color: #FEFAE0;
+    transition: background-color 0.5s ease;
+    box-shadow: 7px 7px 15px rgba(105, 105, 105, 0.5);
+
+} */
+
 .customNavbar {
     background-color: #FEFAE0;
     transition: background-color 0.5s ease;
     box-shadow: 7px 7px 15px rgba(105, 105, 105, 0.5);
-    height:80px; 
 }
 
 .navbarLogo img {
@@ -65,7 +70,7 @@
 }
 
 .navbarLogo img:hover {
-  transform: scale(1.1);
+    transform: scale(1.1);
 }
 
 .navbarNav {
@@ -86,7 +91,21 @@
     text-underline-offset: 5px;
 }
 
+@media (max-width: 767px) {
+    #navbarToggleBurger {
+        width: 28px;
+    }
+}
 
+#navbarToggleBurger {
+    width: 30px;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+@media (max-width: 576px) {
+    #navbarToggleBurger {
+        width: 25px;
+    }
+}
 .navbar-toggler:focus {
     border: 0 !important;
     box-shadow: none !important;
@@ -96,35 +115,39 @@
     border: 0 !important;
 }
 
-#navbarToggleBurger {
-  width: 30px;
-  transition: opacity 0.15s ease, transform 0.15s ease;
-}
-
-@media (max-width: 767px) {
-    #navbarToggleBurger {
-        width: 28px;
-    }
-}
-
-@media (max-width: 576px) {
-    #navbarToggleBurger {
-        width: 25px;
-    }
-}
-
 .navFadeOut {
     opacity: 0;
     transform: scale(0.8);
-}
+    transition: opacity 0.2s, transform 0.2s;
+} 
 
 .navFadeIn {
     opacity: 1;
     transform: scale(1);
+    transition: opacity 0.2s, transform 0.2s;
 }
 
 .nav-link {
     padding-left: 15px !important;
+    color: #333;
+    text-decoration: none;
+}
+
+.navLink:hover {
+    color: #5a7c5e;
+}
+
+.navLink.active {
+    color: #BC6C25 !important;
+    text-decoration: underline;
+    text-underline-offset: 5px;
 } 
 
-
+.btn {
+    padding: 16px 32px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    margin: 12px 12px; /*use margin to change positioning of button (only if need) */
+}

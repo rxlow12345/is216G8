@@ -1,3 +1,138 @@
+import { getCurrentUser, logout, onAuthStateChange } from '../../src/api/auth.js';
+
+
+    // Import your Firebase auth functions if using Firebase
+    // Adjust the path to match your project structure
+
+    let currentAuth = { email: null, role: null, uid: null, username: null };
+
+    // Handle logout - make it global so onclick can access it
+    window.handleLogout = async function (event) {
+        event.preventDefault();
+        try {
+            await logout();
+            currentAuth = { email: null, role: null, uid: null, username: null };
+            updateNavbar();
+            window.location.href = '/';
+        } catch (err) {
+            console.error('Logout error:', err);
+        }
+    }
+
+    // Update navbar based on auth state
+    function updateNavbar() {
+        const welcomeMsg = document.getElementById('welcomeMessage');
+        const usernameSpan = document.getElementById('username');
+        const loginLink = document.getElementById('loginLink');
+        const logoutLink = document.getElementById('logoutLink');
+        const mapLink = document.getElementById('mapLink');
+        const volunteerLink = document.getElementById('volunteerLink');
+        const reporterLink = document.getElementById('reporterLink');
+        const adminLink = document.getElementById('adminLink');
+
+        if (currentAuth.uid) {
+            // User is logged in
+            welcomeMsg.style.display = 'block';
+            usernameSpan.textContent = currentAuth.username || currentAuth.email;
+            loginLink.style.display = 'none';
+            logoutLink.style.display = 'block';
+
+            // Show appropriate dashboard link
+            if (currentAuth.role === 'volunteer') {
+                volunteerLink.style.display = 'block';
+                mapLink.style.display = 'block';
+            } else if (currentAuth.role === 'reporter') {
+                reporterLink.style.display = 'block';
+            } else if (currentAuth.role === 'admin') {
+                adminLink.style.display = 'block';
+                mapLink.style.display = 'block';
+            }
+        } else {
+            // User is not logged in
+            welcomeMsg.style.display = 'none';
+            loginLink.style.display = 'block';
+            logoutLink.style.display = 'none';
+            mapLink.style.display = 'none';
+            volunteerLink.style.display = 'none';
+            reporterLink.style.display = 'none';
+            adminLink.style.display = 'none';
+        }
+    }
+
+    // Fetch current user on page load
+    async function initAuth() {
+        try {
+            const auth = await getCurrentUser();
+            if (auth) {
+                currentAuth = auth;
+            }
+            updateNavbar();
+        } catch (err) {
+            console.error('Error fetching user:', err);
+        }
+
+        // Listen to auth state changes
+        onAuthStateChange(async (user) => {
+            if (user) {
+                const auth = await getCurrentUser();
+                if (auth) {
+                    currentAuth = auth;
+                }
+            } else {
+                currentAuth = { email: null, role: null, uid: null, username: null };
+            }
+            updateNavbar();
+        });
+    }
+
+    // Initialize navbar animation
+    function initNavbarAnimation() {
+        const navbarBurger = document.getElementById("navbarToggleBurger");
+        const navbarClose = document.getElementById("navbarNav");
+
+        if (navbarBurger && navbarClose) {
+            navbarClose.addEventListener("shown.bs.collapse", () => {
+                navbarBurger.classList.add("navFadeOut");
+                setTimeout(() => {
+                    navbarBurger.src = "../../src/public/assets/navClose.svg";
+                    navbarBurger.classList.remove("navFadeOut");
+                    navbarBurger.classList.add("navFadeIn");
+                }, 100);
+            });
+
+            navbarClose.addEventListener("hidden.bs.collapse", () => {
+                navbarBurger.classList.add("navFadeOut");
+                setTimeout(() => {
+                    navbarBurger.src = "../../src/public/assets/navBurger.svg";
+                    navbarBurger.classList.remove("navFadeOut");
+                    navbarBurger.classList.add("navFadeIn");
+                }, 100);
+            });
+        }
+    }
+
+    // Auto-collapse navbar when clicking links
+    function initNavbarCollapse() {
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                const navbar = document.querySelector('#navbarNav');
+                const bsCollapse = bootstrap.Collapse.getInstance(navbar);
+                if (bsCollapse && navbar.classList.contains('show')) {
+                    bsCollapse.hide();
+                }
+            });
+        });
+    }
+
+    // Initialize everything when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+        initAuth();
+        initNavbarAnimation();
+        initNavbarCollapse();
+
+        // Your existing report.js code goes here...
+    });
+    
 // Backend API configuration, automatically detect environment
 // if in production, frontend and backend would host together whereas development would separate
 // Check if we are running the app locally (on our own computer)

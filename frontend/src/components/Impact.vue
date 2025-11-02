@@ -51,7 +51,7 @@
 
 
 
-        <div class="text-center-custom mb-3 px-2">
+        <div class="text-center-custom mb-3 px-1 py-5">
           <button type="button" class="custom-collapse-btn" @click="toggleCollapse">
             {{ isContentVisible ? 'Show Less' : 'Show Full Impact' }}
           </button>
@@ -289,35 +289,33 @@ onBeforeUnmount(() => {
   /* Needs to be larger than the content */
 }
 
-/* Replace the existing .custom-collapse-btn styles with these */
 .custom-collapse-btn {
-  /* Color Properties (Matching your image) */
-  background-color: #5a511e;
-  /* Light tan/khaki background */
-  color: #ffffff;
-  /* Darker olive text color */
+    /* Color Properties (Matching your image) */
+    background-color: #5a511e;
+    /* Light tan/khaki background */
+    color: #ffffff;
+    /* Darker olive text color */
 
-  /* Shape and Sizing */
-  border: none;
-  padding: 15px 30px;
-  margin-top: 30px;
-  /* Increased horizontal padding for the pill shape */
-  font-size: 1.25rem;
-  font-weight: bold;
-  border-radius: 50px;
-  /* Large border-radius creates the pill shape */
-
-  /* Interaction & Display */
-  cursor: pointer;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  display: inline-block;
+    /* Shape and Sizing */
+    border: none;
+    padding: 16px 32px;
+    /* Increased horizontal padding for the pill shape */
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 15px;
+    /* Large border-radius creates the pill shape */
+ 
+    /* Interaction & Display */
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    display: inline-block;
 }
 
 .custom-collapse-btn:hover {
-  background-color: #d1ccb0;
-  /* Slightly darker background on hover */
-  /* Optional: Add a subtle shadow on hover */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #d1ccb0;
+    /* Slightly darker background on hover */
+    /* Optional: Add a subtle shadow on hover */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .image-slider-container {
