@@ -11,7 +11,7 @@
 
       <!-- Welcome Message -->
       <span v-if="auth.uid" class="navbar-text me-auto ms-3 order-1">
-        Welcome, {{ auth.username || auth.email }}
+        Welcome, {{ displayName }}
       </span>
 
       <!-- Toggler -->
@@ -59,6 +59,16 @@ export default {
   data() {
     return {
       auth: { email: null, role: null , uid: null, username: null},
+    }
+  },
+  computed: {
+    displayName() {
+      // Extract username from email or use username field
+      let name = this.auth.username || this.auth.email || '';
+      if (name.includes('@')) {
+        return name.split('@')[0]; // Get only the part before @
+      }
+      return name;
     }
   },
   methods: {
