@@ -647,3 +647,52 @@ export const updateReportStatus = async (req, res) => {
     });
   }
 };
+
+/**
+ * Updates one or more fields of a single report document in Firestore.
+ */
+export const updateReportFields = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body; // Expects a JSON body like { "status": "in-progress", "priority": "high" }
+
+    // Validate that there is at least one field to update
+    if (!updates || Object.keys(updates).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one field must be provided in the request body'
+      });
+    }
+
+    const reportRef = db.collection('incidentReports').doc(id);
+
+    // Add updatedAt timestamp automatically
+    updates.updatedAt = new Date();
+
+    // Perform the update
+    await reportRef.update(updates);
+
+    // Fetch updated document data (optional)
+    const updatedDoc = await reportRef.get();
+    const updatedReport = { id: updatedDoc.id, ...updatedDoc.data() };
+
+    // Emit the update event if using Socket.io
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('report-updated', updatedReport);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Report ${id} successfully updated`,
+      data: updatedReport
+    });
+
+  } catch (error) {
+    console.error("Error updating report:", error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to update report'
+    });
+  }
+};

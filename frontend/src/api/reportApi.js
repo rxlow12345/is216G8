@@ -54,6 +54,38 @@ const api = {
     }
     return result;
   },
+
+  /**
+   * Updates one or more fields of a specific report.
+   * @param {string} reportId - The ID of the report to update.
+   * @param {Object} updates - An object containing the fields to update, e.g., { status: 'approved', priority: 'high' }.
+   * @returns {Promise<Object>} A promise that resolves to the API response.
+   */
+  async updateReportFields(reportId, updates) {
+    if (!updates || Object.keys(updates).length === 0) {
+      throw new Error('At least one field must be provided to update.');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/reports/updateReportFields/${reportId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updates),
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok while updating report.');
+    }
+
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to update report via API.');
+    }
+
+    return result;
+  },
+
   /**
    * Fetches a single report by its Firebase ID.
    * @param {string} firebaseId - The ID of the report to fetch.
