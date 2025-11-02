@@ -3,7 +3,7 @@
   <FloatingBackground/>
   <OtterCursor animal="🦦" :speed="0.08"/>
   <div class="login-wrapper">
-    <div class="container">
+    <div class="loginContainer">
       <div class="auth-card">
         <!-- Header with Logo -->
         <div class="header">
