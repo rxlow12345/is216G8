@@ -49,7 +49,7 @@
                                 <h5 class="card-title fw-bold">{{ news.title }}</h5>
                                 <p class="card-text text-muted">{{ news.excerpt }}</p>
                                 <p class="text-muted">{{ news.date }}</p>
-                                <div>
+                                <div class="mt-auto">
                                     <a :href="news.link" target="_blank" class="btn custom-collapse-btn">
                                         Read More →
                                     </a>
@@ -220,6 +220,15 @@ const latestNews = ref([
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body .mt-auto{
+    margin-top: auto;
+}
+
 .card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15) !important;
@@ -272,7 +281,7 @@ const latestNews = ref([
     border: none;
     padding: 15px 30px;
     /* Increased horizontal padding for the pill shape */
-    font-size: 1.25rem;
+    font-size: 1rem;
     font-weight: bold;
     border-radius: 50px;
     /* Large border-radius creates the pill shape */
