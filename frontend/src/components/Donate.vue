@@ -327,13 +327,13 @@ const goToDashboard = () => {
 
     /* Shape and Sizing */
     border: none;
-    padding: 15px 30px;
+    padding: 16px 32px;
     /* Increased horizontal padding for the pill shape */
-    font-size: 1.25rem;
-    font-weight: bold;
-    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 15px;
     /* Large border-radius creates the pill shape */
-
+ 
     /* Interaction & Display */
     cursor: pointer;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;

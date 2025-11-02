@@ -13,13 +13,15 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <!-- Your styles (keep order so your overrides win) -->
-    <link rel="stylesheet" href="common.css">
     <link rel="stylesheet" href="report.css">
+    <link rel="stylesheet" href="common.css">
+    <!-- <link rel="stylesheet" href="../../pages/css/common.css"> -->
+
 
 </head>
 
 
-<body class="bg-light">
+<body>
 
     <!-- Top bar / logo -->
     <!-- <div class="logo-section text-center py-2 border-bottom">
@@ -44,32 +46,63 @@
             </div>
         </nav>
     </div> -->
-    <nav class="navbar navbar-expand-md fixed-top customNavbar">
+    <nav class="navbar navbar-expand-lg fixed-top customNavbar py-1">
         <div class="container-fluid">
             <a class="navbar-brand navbarLogo" href="/home">
-                <img src="../../src/public/assets/logo.png" alt="Logo">
+                <img src="../../src/public/assets/NoWordLogo.png" alt="Logo" class="d-inline-block align-text-top"
+                    style="height: 75px;">
             </a>
-            <button class="navbar-toggler navbarToggle" id="navbarToggle" type="button" data-bs-toggle="collapse"
+            <!-- <img src="../../src/public/assets/logo.png" alt="Logo"> -->
+            <img src="../../src/public/assets/Title.png" style="height:60px;">
+            <span id="welcomeMessage" class="navbar-text me-auto ms-3 order-1" style="display: none;">
+                Welcome, <span id="username"></span>
+            </span>
+            <button class="navbar-toggler navbarToggle order-2" id="navbarToggle" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
                 aria-label="Toggle navigation">
                 <img id="navbarToggleBurger" src="../../src/public/assets/navBurger.svg" alt="menu">
             </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <div class="collapse navbar-collapse justify-content-end order-2" id="navbarNav">
                 <ul class="navbar-nav navbarNav">
-                    <button class="navbar-toggler navbarToggle" id="navbarToggle" type="button"
-                        data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                        <!-- <img id="navbarToggleBurger" src="../../src/public/assets/navBurger.svg" alt="menu"> -->
-                    </button>
-                    <li class="nav-item"><a class="nav-link navLink" href="/home">Home</a></li>
+                    <!-- Always visible links -->
+                    <li class="nav-item">
+                        <a class="nav-link navLink" href="/">Home</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link navLink" href="/guidebook">Guidebook</a>
-                    <li class="nav-item"><a class="nav-link navLink" href="/map">Map</a></li>
                     </li>
-                    <li class="nav-item"><a class="nav-link navLink" href="/donate">Donate</a></li>
-                    <li class="nav-item"><a class="nav-link navLink" href="/report">Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link navLink" href="#">Logout</a></li>
-                    <!-- <li class="nav-item"><a class="nav-link navLink" href="#">Login</a></li> -->
+                    <!-- Map (shown dynamically for admin/volunteer) -->
+                    <li class="nav-item" id="mapLink" style="display: none;">
+                        <a class="nav-link navLink" href="/map">Map</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link navLink" href="/donate">Donate</a>
+                    </li>
+                    
+                    <!-- Login (shown when not logged in) -->
+                    <li class="nav-item" id="loginLink">
+                        <a class="nav-link navLink" href="/login">Login</a>
+                    </li>
+
+                    <!-- Volunteer Dashboard -->
+                    <li class="nav-item" id="volunteerLink" style="display: none;">
+                        <a class="nav-link navLink" href="/volunteer/home">Dashboard</a>
+                    </li>
+                    
+                    <!-- Reporter Dashboard -->
+                    <li class="nav-item" id="reporterLink" style="display: none;">
+                        <a class="nav-link navLink" href="/report">Dashboard</a>
+                    </li>
+                    
+                    <!-- Admin Dashboard -->
+                    <li class="nav-item" id="adminLink" style="display: none;">
+                        <a class="nav-link navLink" href="/admin">Admin</a>
+                    </li>
+                    
+                    <!-- Logout -->
+                    <li class="nav-item" id="logoutLink" style="display: none;">
+                        <a class="nav-link navLink" href="#" onclick="handleLogout(event)">Logout</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -125,10 +158,10 @@
                                 placeholder="e.g., Orchard Road, Singapore Botanic Gardens" required>
                             <div class="invalid-feedback">Please provide a location.</div>
 
-                            <button type="button" id="live-location-btn" class="btn btn-secondary btn-sm mt-2">
+                            <button type="button" id="live-location-btn" class="btn btn-secondary btn-sm mt-3">
                                 <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
                                     aria-hidden="true"></span>
-                                Select Live Location
+                                <span style="font-weight: 600"> Live Location </span>
                             </button>
 
                             <div id="map-container" class="mt-3" style="display:none;">
@@ -258,8 +291,8 @@
                                     </div>
 
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-outline-secondary"
-                                            data-bs-dismiss="modal" onclick="window.location.href='/home'">Home</button>
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                                            onclick="window.location.href='/home'">Home</button>
                                         <!-- If you use plain files, set href to your home page path -->
                                         <a id="goHomeBtn" class="btn btn-primary" href="/home">Go to Status Page</a>
                                     </div>
@@ -332,10 +365,9 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <!-- Your existing report logic -->
-    <script src="report.js"></script>
+    <script type='module' src="report.js"></script>
 
 
 </body>
-
 
 </html>

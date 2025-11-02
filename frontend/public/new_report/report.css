@@ -9,31 +9,32 @@ body {
     color: red;
 } */
 
-p{
+p {
     padding: 10px;
 }
 
 #topBanner {
-  background-color: #285436;
-  color: #fff;
-  padding: 40px 20px;
-  border-radius: 16px;
-  text-align: center;
-  overflow: hidden;
-  border-radius: 0;
+    margin-top: 97px;
+    background-color: #285436;
+    color: #fff;
+    padding: 40px 20px;
+    border-radius: 16px;
+    text-align: center;
+    overflow: hidden;
+    border-radius: 0;
 }
 
 #topBanner h1 {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeUp 1.2s ease forwards;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 1.2s ease forwards;
 }
 
 @keyframes fadeUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .form-section {
@@ -41,14 +42,16 @@ p{
     padding: 20px;
     margin: 10px 0;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .form-section h3 {
     margin-top: 0;
     color: #333;
     border-bottom: 2px solid #4CAF50;
     padding-bottom: 10px;
 }
+
 .form-group {
     margin: 15px 0;
 }
@@ -61,7 +64,10 @@ label {
     font-weight: bold;
     color: #555;
 }
-input, select, textarea {
+
+input,
+select,
+textarea {
     width: 100%;
     padding: 14px;
     background-color: transparent;
@@ -70,15 +76,18 @@ input, select, textarea {
     font-size: 16px;
     box-sizing: border-box;
 }
+
 textarea {
     height: 80px;
     resize: vertical;
 }
+
 .radio-group {
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
 }
+
 .radio-item {
     display: flex;
     align-items: center;
@@ -87,7 +96,7 @@ textarea {
     border-radius: 10px;
     padding-left: 20px;
     padding: 10px 10px 10px 20px;
-    
+
 
 }
 
@@ -98,8 +107,9 @@ textarea {
 
 .radio-item:has(input[type="radio"]:checked) {
     /* Set the new background color */
-    background-color: #4CAF50; 
-    border-color: #2e2501; /* Example: A primary blue border */
+    background-color: #4CAF50;
+    border-color: #2e2501;
+    /* Example: A primary blue border */
 }
 
 .radio-item input[type="radio"] {
@@ -111,44 +121,50 @@ textarea {
 #submitBtn:hover {
     background-color: #30953f;
     transform: translateY(-3px);
-    color:black;
+    color: black;
     box-shadow: 0 8px 10px rgba(182, 6, 6, 0.3);
-    
+
 }
+
 button:disabled {
     background-color: #cccccc;
     cursor: not-allowed;
 }
-.species-name{
+
+.species-name {
     background-color: #052507;
     color: white;
     padding: 2px;
     border-radius: 3px;
     font-size: 20px;
 }
+
 .required {
     color: red;
 }
+
 .status {
     margin: 20px 0;
     padding: 15px;
     border-radius: 4px;
     text-align: center;
 }
+
 .hidden {
     display: none;
 }
 
-.button1{
+.button1 {
     text-align: center;
     /* putting text-align on the parent container so that ur children, an inline-block
     will be center!  */
 }
-#icon{
-    max-width:80px;
+
+#icon {
+    max-width: 80px;
 }
 
-#submitBtn{
+#submitBtn {
     background-color: #052507;
     color: white;
     padding: 10px 10px;
@@ -162,7 +178,7 @@ button:disabled {
 
 }
 
-#photos{
+#photos {
     width: 0.1px;
     height: 0.1px;
     opacity: 0;
@@ -171,7 +187,7 @@ button:disabled {
     z-index: -1;
 }
 
-.custom-file-upload{
+.custom-file-upload {
     display: block;
     padding: 5px 10px;
     cursor: pointer;
@@ -184,89 +200,148 @@ button:disabled {
     transition: background-color 0.2s ease;
 }
 
-#live-location-btn{
-    background-color:#064301;
-    padding: 10px 20px;
+#live-location-btn {
+    background-color: #064301;
+    padding: 16px 32px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-left: 2px;
+}
+
+#live-location-btn:hover {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);;
+    color: #fff;
+    border: 1px solid #285436;
 }
 
 
-    /* Minimal wizard styling (feel free to move into report.css) */
+/* Minimal wizard styling (feel free to move into report.css) */
 .stepper {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: .5rem;
-      margin-bottom: 1rem;
-    }
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: .5rem;
+    margin-bottom: 1rem;
+}
+
 .step-pill {
-      display: flex; align-items: center; gap: .5rem;
-      padding: .5rem .75rem; border-radius: 999px;
-      border: 1px solid var(--bs-border-color);
-      background: var(--bs-body-bg);
-      font-weight: 500;
-      white-space: nowrap;
-    }
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .5rem .75rem;
+    border-radius: 999px;
+    border: 1px solid var(--bs-border-color);
+    background: var(--bs-body-bg);
+    font-weight: 500;
+    white-space: nowrap;
+}
 
 .step-pill .idx {
-      width: 1.6rem; height: 1.6rem; display: inline-flex; align-items: center; justify-content: center;
-      border-radius: 50%; border: 1px solid var(--bs-border-color); font-size: .9rem;
-      background: var(--bs-body-bg);
-    }
-.step-pill.active { background: var(--bs-primary-bg-subtle); border-color: var(--bs-primary); color: var(--bs-primary-text-emphasis); }
-.step-pill.active .idx { background: var(--bs-primary); color: #fff; border-color: var(--bs-primary); }
-.step-pill.done { background: var(--bs-success-bg-subtle); border-color: var(--bs-success); color: var(--bs-success-text-emphasis); }
-.step-pill.done .idx { background: var(--bs-success); color: #fff; border-color: var(--bs-success); }
+    width: 1.6rem;
+    height: 1.6rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--bs-border-color);
+    font-size: .9rem;
+    background: var(--bs-body-bg);
+}
 
-.step-pane { display: none; }
-.step-pane.active { display: block; }
+.step-pill.active {
+    background: var(--bs-primary-bg-subtle);
+    border-color: var(--bs-primary);
+    color: var(--bs-primary-text-emphasis);
+}
+
+.step-pill.active .idx {
+    background: var(--bs-primary);
+    color: #fff;
+    border-color: var(--bs-primary);
+}
+
+.step-pill.done {
+    background: var(--bs-success-bg-subtle);
+    border-color: var(--bs-success);
+    color: var(--bs-success-text-emphasis);
+}
+
+.step-pill.done .idx {
+    background: var(--bs-success);
+    color: #fff;
+    border-color: var(--bs-success);
+}
+
+.step-pane {
+    display: none;
+}
+
+.step-pane.active {
+    display: block;
+}
+
 @media (max-width: 576px) {
-  .step-pill {
-    flex-basis: 45%;
-  }}
+    .step-pill {
+        flex-basis: 45%;
+    }
+}
 
 .progress {
     height: 25px;
     font-size: 1.1rem;
     border-radius: 10px;
 }
-.required { color: var(--bs-danger); }
-   
-#osm-map { height: 300px; width: 100%; }
+
+.required {
+    color: var(--bs-danger);
+}
+
+#osm-map {
+    height: 300px;
+    width: 100%;
+}
 
 .btn-outline-success:hover,
 .btn-outline-danger:hover,
 .btn-outline-secondary:hover {
-  filter: brightness(85%);
-  transition: filter 0.2s ease;
+    filter: brightness(85%);
+    transition: filter 0.2s ease;
 }
 
-.btn-check:checked + .btn {
-  
-  color: white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-  font-weight: 600;
+.btn-check:checked+.btn {
+
+    color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    font-weight: 600;
 }
 
 .btn:focus-visible {
-  outline: 3px solid #4a9f40;
-  outline-offset: 2px;
+    outline: 3px solid #4a9f40;
+    outline-offset: 2px;
 }
 
 
 .severityLow {
-    background-color: #d4edda; /* Light green background */
+    background-color: #d4edda;
+    /* Light green background */
     border-color: #c3e6cb;
-    color: #155724; /* Dark green text */
+    color: #155724;
+    /* Dark green text */
 }
 
 .severityModerate {
-    background-color: #fff3cd; /* Light yellow background */
+    background-color: #fff3cd;
+    /* Light yellow background */
     border-color: #ffeeba;
-    color: #856404; /* Dark yellow text */
+    color: #856404;
+    /* Dark yellow text */
 }
 
 .severityHigh {
-    background-color: #f8d7da; /* Light red background */
+    background-color: #f8d7da;
+    /* Light red background */
     border-color: #f5c6cb;
-    color: #721c24; /* Dark red text */
+    color: #721c24;
+    /* Dark red text */
 }
-
