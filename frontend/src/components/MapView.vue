@@ -122,7 +122,7 @@ export default {
         marker.bindPopup(popupContent)
 
         marker.on('popupopen', () => {
-          const button = document.getElementById(`accept-btn-${report.id}`);
+          const button = document.getElementById(`accept-btn-${report}`);
           if (button) {
             button.addEventListener('click', () => {
               this.handleAcceptCase(report);
@@ -199,26 +199,27 @@ export default {
     },
 
     createPopupContent(report) {
+      const species = report.speciesName || 'Unknown';
       return `
-        <div style="min-width: 250px; padding: 8px;">
-          <h3 style="margin: 0 0 8px; color: #1F2937; font-size: 16px; font-weight: 600;">
-            ${report.speciesName}
+        <div style="min-width: 280px; padding: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+          <h3 style="margin: 0 0 12px; color: #065f46; font-size: 18px; font-weight: 700; letter-spacing: -0.5px;">
+            ${species}
           </h3>
           
-          <div style="margin: 6px 0;">
-            <span style="font-weight: 500; color: #1F2937 ; font-size: 13px;">Severity:</span>
+          <div style="margin: 8px 0; display: flex; align-items: center;">
+            <span style="font-weight: 600; color: #374151; font-size: 13px;">Severity:</span>
             <span style="
               padding: 4px 12px;
-              border-radius: 16px;
+              border-radius: 12px;
               font-size: 11px;
               font-weight: 700;
               letter-spacing: 0.5px;
               white-space: nowrap;
-              flex-shrink: 0;
               background: ${this.severityColor(report).background};
               color: ${this.severityColor(report).text};
-              margin-left: 6px;
+              margin-left: 8px;
             ">
+
               ${report.severity.toUpperCase()}
             </span>
           </div>
@@ -240,34 +241,45 @@ export default {
             </span>
           </div>
 
-          <p style="margin: 8px 0; color: #4B5563; font-size: 13px;">
-            ${report.description}
-          </p>
+          <div style="margin: 12px 0 8px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
+            <p style="margin: 0 0 4px; color: #4B5563; font-size: 13px; line-height: 1.5;">
+              ${report.description}
+            </p>
+          </div>
+            
+            
+          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #f3f4f6;">
+            <p style="margin: 0 0 3px; color: #6b7280; font-size: 12px; display: flex; align-items: center;">
+              <span style="margin-right: 6px;">📍</span>
+              <span>${report.location}</span>
+            </p>
 
-          <p style="margin: 6px 0; color: #9CA3AF; font-size: 12px;">
-            📍 ${report.location}
-          </p>
+            <p style="margin: 3px 0 0; color: #9ca3af; font-size: 11px; display: flex; align-items: center;">
+              <span style="margin-right: 6px;">🕐</span>
+              <span>${this.formatReportTime(report.createdAt)}</span>
+            </p>
+          </div>
 
-          <p style="margin: 6px 0; color: #9CA3AF; font-size: 12px;">
-            🕐 ${this.formatReportTime(report.createdAt)}
-          </p>
-
-          <button 
-            id = "accept-btn-${report}"
+         <button 
+            id="accept-btn-${report}"
             style="
               width: 100%;
-              margin-top: 10px;
-              padding: 8px;
-              background: #10B981;
+              margin-top: 14px;
+              padding: 10px;
+              background: #059669;
               color: white;
               border: none;
-              border-radius: 6px;
+              border-radius: 8px;
               cursor: pointer;
               font-weight: 600;
-              font-size: 13px;
+              font-size: 14px;
+              box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+              transition: all 0.2s ease;
             "
+            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(16, 185, 129, 0.4)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(16, 185, 129, 0.3)';"
           >
-            <span style="font-size: 16px; font-weight: bold;" >✓</span>
+            <span style="font-size: 16px; font-weight: bold; margin-right: 6px;">✓</span>
             Accept Case
           </button>
         </div>
@@ -406,4 +418,37 @@ export default {
   background: none;
   border: none;
 }
+:deep(.leaflet-popup-content-wrapper) {
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  padding: 0;
+}
+
+:deep(.leaflet-popup-content) {
+  margin: 0;
+  width: auto !important;
+}
+
+:deep(.leaflet-popup-close-button) {
+  font-size: 28px !important;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  color: #6b7280 !important;
+  font-weight: 300 !important;
+  right: 8px !important;
+  top: 8px !important;
+  transition: all 0.2s ease;
+}
+
+:deep(.leaflet-popup-close-button:hover) {
+  color: #1f2937 !important;
+  background: #f3f4f6 !important;
+  border-radius: 6px;
+}
+
+:deep(.leaflet-popup-tip-container) {
+  display: none;
+}
+
 </style>

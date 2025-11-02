@@ -30,7 +30,7 @@
       <div class="report-meta">
         <div class="meta-item">
           <span class="icon">📍</span>
-          <span class="text">{{ report.location }}</span>
+          <span class="text">{{ handleLocation(report) }}</span>
         </div>
         <div class="meta-item">
           <span class="icon">🕐</span>
@@ -61,6 +61,13 @@ export default {
     },
   },
   methods: {
+    handleLocation(report){
+      if (typeof report.location === 'object'){
+        return report.location.address
+      } else {
+        return report.location
+      }
+    },
     toDate(timestamp) {
       if (!timestamp || typeof timestamp._seconds !== "number") {
         return null;
