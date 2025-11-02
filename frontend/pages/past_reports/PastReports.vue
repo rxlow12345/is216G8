@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid p-0 pastReportsPage">
     <!-- Top Banner -->
-    <div id="topBanner">
+    <div id="topBanner" class="bannerTitles">
       <header class="text-center mb-2">
         <h1>Past Wildlife Reports</h1>
       </header>
@@ -28,7 +28,7 @@
             v-model="searchQuery"
             @input="filterReports"
             type="text"
-            placeholder="Search reports..."
+            placeholder="🔍 Search reports..."
           />
           <button id="searchBtn" @click="filterReports">Search</button>
         </div>
@@ -152,6 +152,7 @@
 import api from '../../src/api/reportApi.js'
 import { getCurrentUser } from '../../src/api/auth.js'
 import '../css/pastReports.css'
+import '../css/common.css'
 
 export default {
   name: 'PastReports',

@@ -24,14 +24,14 @@ rgb(254, 250, 224); WHITE YELLOW
     padding: 20px;
 }
 
+.bannerTitles h1 {
+    margin-top: 20px;
+}
+
 .bannerTitles h1, .bannerTitles p {
   opacity: 0;
   transform: translateY(20px);
   animation: fadeUp 1.2s ease forwards;
-}
-
-#topBanner p {
-  animation-delay: 0.4s;
 }
 
 /** Back to Top **/
