@@ -1,17 +1,46 @@
 <template>
+    <!-- Otter Cursor -->
     <OtterCursor animal="🦦" :speed="0.08"/>
+
+    <!--Back to top -->
+    <BackToTop/>
+
     <div class="bannerTitles">
       <header class="text-center mb-2">
         <h1>🌿 Support Our Partners 🌿</h1>
         <p> Discover how you can help our cause </p>
       </header>
     </div>
-    <div>
-        <section class="container my-4">
-            <div class="row">
+    
+    <section class="container my-4">
+        <div class="row">
+            <div class="donationWrapper">
+                <!-- Left Column: Text Content -->
+                <div class="mx-auto col-lg-6 helpColumn">
+                    <div>
+                        <h2 class="helpTitle">Make a Difference<br></h2>
 
-                <!-- <DonateCarousel :slides="slides" id="donateHero" /> -->
-                <!-- Carousel inside About Image -->
+                        <p class="helpDescription">
+                            Every year, countless wild animals in Singapore are injured or displaced due to <b>urban
+                                development, road accidents, or human-wildlife conflict.</b>
+                            <br><br>
+                            Your donation will directly support <b>rescues, rehabilitation, and awareness programmes</b>
+                            that gives our wildlife a second chance to return to the wild where they belong.
+                            <br><br>
+                            Together, we can make Singapore a <b>safer home</b> for everyone.
+                            Support our mission to connect both the rescue organisation and the public!
+                        </p>
+                    </div>
+
+                    <!-- Button at bottom left -->
+                    <div class="mt-4">
+                        <router-link to="/learn-more" class="btn green-btn-lg">
+                            More about CritterConnect
+                        </router-link>
+                    </div>
+                </div>
+
+                <!-- Right Column: Carousel -->
                 <div class="d-flex justify-content-center col-lg-6">
                     <div class="about-image" style="width: 100%; max-width: 100%;">
                         <div class="carousel-wrapper" @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
@@ -40,90 +69,36 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="mx-auto col-lg-6">
-                    <h2 class="fw-bold text-center text-success mt-4">Why Should You Help?</h2>
+        <!-- your partner cards go here below -->
+        <DonatePartners />
 
-                    <p>
-                        Every year, countless wild animals in Singapore are injured or displaced due to <b>urban
-                            development, road accidents, or human-wildlife conflict.</b>
-                    </p>
-
-                    <!-- <div class="text-center-custom mb-3 px-4">
-                        <button type="button" class="custom-collapse-btn" @click="toggleCollapse">
-                            {{ isContentVisible ? 'Show Less' : 'Learn More' }}
-                        </button>
-                    </div> -->
-
-                    <!-- <div class="collapse-content" :class="{ 'visible': isContentVisible }"> -->
-
-                    <p>
-                        Your donation will directly support <b>rescues, rehabilitation, and awareness programmes</b>
-                        that gives our wildlife a second chance to return to the wild where they belong.
-                    </p>
-                    <p>
-                        Together, we can make Singapore a <b>safer home</b> for everyone.
-                        Support our mission to connect both the rescue organisation and the public!
-                    </p>
-                </div>
-
-                <section class="testimonial-section">
-                    <div ref="slider" class="testimonial-slider" @mouseenter="pauseAuto" @mouseleave="resumeAuto"
-                        @touchstart.passive="pauseAuto" @touchend.passive="resumeAuto">
-                        <div v-for="(testimonial, index) in testimonials" :key="index" class="testimonial-card">
-                            <div class="avatar-container">
-                                <img :src="testimonial.image" :alt="testimonial.name + ' Avatar'" class="avatar-img" />
-                            </div>
-                            <h3 class="name">{{ testimonial.name }}</h3>
-                            <span class="check-mark">Donated {{ testimonial.amount }}</span>
-                            <p class="quote">{{ testimonial.quote }}</p>
-                        </div>
+        <section class="testimonial-section">
+            <div ref="slider" class="testimonial-slider" @mouseenter="pauseAuto" @mouseleave="resumeAuto"
+                @touchstart.passive="pauseAuto" @touchend.passive="resumeAuto">
+                <div v-for="(testimonial, index) in testimonials" :key="index" class="testimonial-card">
+                    <div class="avatar-container">
+                        <img :src="testimonial.image" :alt="testimonial.name + ' Avatar'" class="avatar-img" />
                     </div>
-                </section>
-
-                <!-- <button link> -->
-                <div class="text-center-custom mb-3 px-4">
-                    <!-- Changed type from 'button' to 'a' or kept as 'button' for Vue navigation -->
-                    <router-link to="/learn-more" class="btn custom-collapse-btn">
-                        Learn More?
-                    </router-link>
+                    <h3 class="name">{{ testimonial.name }}</h3>
+                    <span class="check-mark">Donated {{ testimonial.amount }}</span>
+                    <p class="quote">{{ testimonial.quote }}</p>
                 </div>
             </div>
-
-            <!-- your partner cards go here below -->
-            <DonatePartners />
-            <Impact :goal="50000" :raised="31250" :counters="{ rescues: 168, treatments: 342, training: 890 }" />
         </section>
 
+        <Impact :goal="50000" :raised="31250" :counters="{ rescues: 168, treatments: 342, training: 890 }" />
 
-    </div>
-    <!-- <Footer :emergency="{
-        title: 'Emergency / Life Threatening?',
-        primaryLabel: 'Police',
-        primaryNumber: '999',
-        secondaryLabel: 'Ambulance/Fire',
-        secondaryNumber: '995',
-        wildlifeLabel: 'Wildlife Hotline',
-        wildlifeNumber: '' // put your partner hotline here if applicable
-        }" :contact="{
-            email: 'contact@critterconnect.org',
-            phone: '+65 6201 1026',
-            address: '123 Green Street, Singapore',
-            hours: 'Mon–Sun, 9am–6pm'
-            }" :socials="{
-                instagram: 'https://instagram.com/yourhandle',
-                facebook: 'https://facebook.com/yourpage',
-                tiktok: 'https://tiktok.com/yourpage'
-                
-                }" /> -->
-    <!-- <Footer /> -->
-
+    </section>
 </template>
 
 <script setup>
 import OtterCursor from './OtterCursor.vue';
 import '../../pages/css/common.css'
 import '../../pages/css/donate.css'
+import BackToTop from './BackToTop.vue';
 
 const testimonials = ref([
     {

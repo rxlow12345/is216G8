@@ -1,7 +1,48 @@
+*{
+    padding: 0;
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
 body .bannerTitles {
     padding-top: 20px !important;
 }
 
+
+.donationWrapper {
+    display: flex;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 60px;
+    border: 1px solid rgba(255, 255, 255, 0);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    
+}
+
+.donationWrapper .helpColumn {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.donationWrapper .helpColumn .helpButton {
+    margin-top: auto;
+    align-self: flex-start;
+}
+
+.helpTitle {
+    font-size: 48px;
+    font-weight: 600;
+    color: #285436;
+    margin-top: 20px;
+}
+
+.helpDescription {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #285436;
+}
 .carousel-img {
     width: 100%;
     height: 100%;
@@ -36,51 +77,15 @@ body .bannerTitles {
     /* Needs to be larger than the content */
 }
 
-/* Replace the existing .custom-collapse-btn styles with these */
-.custom-collapse-btn {
-    /* Color Properties (Matching your image) */
-    background-color: #5a511e;
-    /* Light tan/khaki background */
-    color: #ffffff;
-    /* Darker olive text color */
 
-    /* Shape and Sizing */
-    border: none;
-    padding: 16px 32px;
-    /* Increased horizontal padding for the pill shape */
-    font-size: 18px;
-    font-weight: 600;
-    border-radius: 15px;
-    /* Large border-radius creates the pill shape */
- 
-    /* Interaction & Display */
-    cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    display: inline-block;
-}
 
-.custom-collapse-btn:hover {
-    background-color: #d1ccb0;
-    /* Slightly darker background on hover */
-    /* Optional: Add a subtle shadow on hover */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* --- 1. SLIDER CONTAINER (The Scrolling Viewport) --- */
 .testimonial-slider {
-    /* Enables horizontal scrolling and hides scrollbar */
     display: flex;
     overflow-x: scroll;
     padding: 50px 0;
-    /* Vertical padding */
     gap: 20px;
-    /* Space between cards */
-
-    /* Scroll Snap Properties: Essential for the "slide" effect */
     scroll-snap-type: x mandatory;
-    /* Forces scroll to stop only on snap points */
     -webkit-overflow-scrolling: touch;
-    /* Better scrolling on iOS */
     scroll-behavior: smooth;
 }
 
@@ -92,56 +97,36 @@ body .bannerTitles {
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
-    /* smooth snapping */
 }
 
 
-
-/* Hide Scrollbar (Optional, but common for sliders) */
 .testimonial-slider::-webkit-scrollbar {
     display: none;
 }
 
 .testimonial-slider {
     -ms-overflow-style: none;
-    /* IE and Edge */
     scrollbar-width: none;
-    /* Firefox */
 }
 
-/* --- 2. INDIVIDUAL CARDS --- */
+/* INDIVIDUAL CARDS */
 .testimonial-card {
-    /* Define size and prevent shrinking */
     flex: 0 0 80vw;
-    /* Take 80% of the viewport width */
     max-width: 350px;
-    /* Maximum width for larger screens */
     height: auto;
-    /* Example fixed height */
-
-    /* Styling to match the image */
     background-color: #fcfcfc;
-    /* Very light, off-white background */
     border-radius: 20px;
-    /* Rounded corners */
     padding: 30px;
-
-    /* Snap point: Locks the card to the start of the viewport when scrolling stops */
     scroll-snap-align: center;
-
-    /* Shadow/Subtle Border (Based on the image) */
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
     border: 1px solid rgba(0, 0, 0, 0.05);
-
     text-align: center;
     transition: transform 0.3s ease;
 }
 
 /* --- 3. CENTERED CARD STYLES --- */
 .centered-card {
-    /* Specific styles for the card in the middle of the view */
     background-color: #fefefe;
-    /* Slightly whiter background for contrast */
 }
 
 /* Avatar and Text Styling */
@@ -153,7 +138,6 @@ body .bannerTitles {
     width: 60px;
     height: 60px;
     border-radius: 10px;
-    /* Rounded square corners */
     object-fit: cover;
     margin-bottom: 10px;
 }
@@ -165,8 +149,7 @@ body .bannerTitles {
 }
 
 .check-mark {
-    color: #6d6943;
-    /* Similar olive tone from the button image */
+    color: #285436;
     font-size: 1.5em;
     display: block;
     margin-bottom: 15px;
