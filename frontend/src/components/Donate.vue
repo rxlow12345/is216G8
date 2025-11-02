@@ -1,9 +1,9 @@
 <template>
     <OtterCursor animal="🦦" :speed="0.08"/>
-    <div id="topBanner">
+    <div class="bannerTitles">
       <header class="text-center mb-2">
-        <h1>Donate</h1>
-        <p>To Our Partners 💌</p>
+        <h1>🌿 Support Our Partners 🌿</h1>
+        <p> Discover how you can help our cause </p>
       </header>
     </div>
     <div>
@@ -123,6 +123,7 @@
 <script setup>
 import OtterCursor from './OtterCursor.vue';
 import '../../pages/css/common.css'
+import '../../pages/css/donate.css'
 
 const testimonials = ref([
     {
@@ -174,6 +175,7 @@ import DonatePartners from './DonatePartners.vue'
 // import Common from './Common.vue'
 // import Footer from './Footer.vue'
 import Impact from './Impact.vue'
+
 const slider = ref(null)
 let autoTimer = null
 let paused = false
@@ -281,181 +283,3 @@ const goToDashboard = () => {
 };
 
 </script>
-
-<style>
-.carousel-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.carousel-wrapper,
-.carousel-container {
-    position: relative;
-    overflow: hidden;
-    border-radius: 20px;
-    width: 100%;
-    object-fit: cover;
-}
-
-.about-image {
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
-}
-
-/* Inside your <style scoped> block */
-.collapse-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease-in-out;
-}
-
-.collapse-content.visible {
-    max-height: 700px;
-    /* Needs to be larger than the content */
-}
-
-/* Replace the existing .custom-collapse-btn styles with these */
-.custom-collapse-btn {
-    /* Color Properties (Matching your image) */
-    background-color: #5a511e;
-    /* Light tan/khaki background */
-    color: #ffffff;
-    /* Darker olive text color */
-
-    /* Shape and Sizing */
-    border: none;
-    padding: 16px 32px;
-    /* Increased horizontal padding for the pill shape */
-    font-size: 18px;
-    font-weight: 600;
-    border-radius: 15px;
-    /* Large border-radius creates the pill shape */
- 
-    /* Interaction & Display */
-    cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    display: inline-block;
-}
-
-.custom-collapse-btn:hover {
-    background-color: #d1ccb0;
-    /* Slightly darker background on hover */
-    /* Optional: Add a subtle shadow on hover */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* --- 1. SLIDER CONTAINER (The Scrolling Viewport) --- */
-.testimonial-slider {
-    /* Enables horizontal scrolling and hides scrollbar */
-    display: flex;
-    overflow-x: scroll;
-    padding: 50px 0;
-    /* Vertical padding */
-    gap: 20px;
-    /* Space between cards */
-
-    /* Scroll Snap Properties: Essential for the "slide" effect */
-    scroll-snap-type: x mandatory;
-    /* Forces scroll to stop only on snap points */
-    -webkit-overflow-scrolling: touch;
-    /* Better scrolling on iOS */
-    scroll-behavior: smooth;
-}
-
-.testimonial-slider {
-    display: flex;
-    overflow-x: auto;
-    gap: 20px;
-    padding: 50px 0;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-    /* smooth snapping */
-}
-
-
-
-/* Hide Scrollbar (Optional, but common for sliders) */
-.testimonial-slider::-webkit-scrollbar {
-    display: none;
-}
-
-.testimonial-slider {
-    -ms-overflow-style: none;
-    /* IE and Edge */
-    scrollbar-width: none;
-    /* Firefox */
-}
-
-/* --- 2. INDIVIDUAL CARDS --- */
-.testimonial-card {
-    /* Define size and prevent shrinking */
-    flex: 0 0 80vw;
-    /* Take 80% of the viewport width */
-    max-width: 350px;
-    /* Maximum width for larger screens */
-    height: auto;
-    /* Example fixed height */
-
-    /* Styling to match the image */
-    background-color: #fcfcfc;
-    /* Very light, off-white background */
-    border-radius: 20px;
-    /* Rounded corners */
-    padding: 30px;
-
-    /* Snap point: Locks the card to the start of the viewport when scrolling stops */
-    scroll-snap-align: center;
-
-    /* Shadow/Subtle Border (Based on the image) */
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-
-    text-align: center;
-    transition: transform 0.3s ease;
-}
-
-/* --- 3. CENTERED CARD STYLES --- */
-.centered-card {
-    /* Specific styles for the card in the middle of the view */
-    background-color: #fefefe;
-    /* Slightly whiter background for contrast */
-}
-
-/* Avatar and Text Styling */
-.avatar-container {
-    padding-bottom: 10px;
-}
-
-.avatar-img {
-    width: 60px;
-    height: 60px;
-    border-radius: 10px;
-    /* Rounded square corners */
-    object-fit: cover;
-    margin-bottom: 10px;
-}
-
-.name {
-    font-size: 1.2em;
-    font-weight: 600;
-    margin: 5px 0 5px 0;
-}
-
-.check-mark {
-    color: #6d6943;
-    /* Similar olive tone from the button image */
-    font-size: 1.5em;
-    display: block;
-    margin-bottom: 15px;
-}
-
-.quote {
-    font-size: 1em;
-    line-height: 1.5;
-    color: #333;
-}
-</style>
