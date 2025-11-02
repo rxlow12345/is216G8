@@ -315,11 +315,6 @@ export default {
 <style scoped>
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css');
 
-.status-update-container {
-  min-height: 100vh;
-  background: linear-gradient(to bottom, #FEFAE0 0%, #f8f9fa 100%);
-}
-
 /* Top Banner */
 #topBanner {
   background: linear-gradient(135deg, #285436 0%, #086143 100%);
@@ -341,11 +336,6 @@ export default {
 
 .animate-fade-up {
   animation: fadeUp 1s ease forwards;
-}
-
-.animate-fade-up-delay {
-  animation: fadeUp 1s ease 0.3s forwards;
-  opacity: 0;
 }
 
 @keyframes fadeUp {
@@ -406,12 +396,6 @@ export default {
 }
 
 /* Progress Bar */
-/* .custom-progress {
-  height: 35px;
-  border-radius: 20px;
-  background-color: #e9ecef;
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
-} */
 .custom-progress {
   width: 100%;
   max-width: 100%;
@@ -447,18 +431,14 @@ export default {
 
 .stage-circle>* {
   display: flex;
-  /* make the child a flex container */
   align-items: center;
-  /* vertically center */
   justify-content: center;
-  /* horizontally center */
   width: 100%;
   height: 100%;
 }
 
 .stage-circle span {
   line-height: 1;
-  /* prevents vertical misalignment of numbers */
 }
 
 .stage-circle i,
@@ -519,14 +499,6 @@ export default {
 .meta-info {
   color: #606C38;
   font-size: 0.9rem;
-}
-
-.meta-info code {
-  background-color: #FEFAE0;
-  color: #BC6C25;
-  padding: 0.25rem 0.5rem;
-  border-radius: 5px;
-  font-family: 'Courier New', monospace;
 }
 
 /* Back to Top Button */
@@ -596,30 +568,21 @@ export default {
 
   .status-steps-wrapper {
     flex-direction: column;
-    /* This is the key: stack items vertically */
     gap: 1.25rem;
-    /* Add vertical space between the steps */
     align-items: flex-start;
-    /* Align all items to the left */
     padding-left: 1rem !important;
-    /* Adjust padding for the new layout */
     padding-right: 1rem !important;
   }
 
   .status-step-item {
     display: flex;
-    /* Make the item a flex row (icon + text) */
     align-items: center;
-    /* Vertically align the icon and text */
     text-align: left;
-    /* Ensure text is left-aligned */
     flex: none !important;
-    /* Override Bootstrap's flex-fill behavior */
   }
 
   .status-step-item .stage-circle {
     margin: 0 1rem 0 0;
-    /* Remove default margins and add space to the right of the circle */
   }
 }
 </style>

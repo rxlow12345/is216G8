@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid p-0 pastReportsPage">
     <!-- Top Banner -->
-    <div id="topBanner">
+    <div id="topBanner" class="bannerTitles">
       <header class="text-center mb-2">
         <h1>Past Wildlife Reports</h1>
       </header>
@@ -28,32 +28,34 @@
             v-model="searchQuery"
             @input="filterReports"
             type="text"
-            placeholder="Search reports..."
+            placeholder="🔍 Search reports..."
           />
           <button id="searchBtn" @click="filterReports">Search</button>
         </div>
       </div>
 
       <!-- Filter Section -->
-      <div class="filterSection">
-        <select v-model="selectedSeverity" @change="filterReports" class="filterSelect">
-          <option value="">All Severities</option>
-          <option value="low">Low</option>
-          <option value="moderate">Moderate</option>
-          <option value="urgent">Urgent</option>
-        </select>
+      <div class="filterSpace">
+        <div class="filterSection">
+          <select v-model="selectedSeverity" @change="filterReports" class="filterSelect">
+            <option value="">All Severities</option>
+            <option value="low">Low</option>
+            <option value="moderate">Moderate</option>
+            <option value="urgent">Urgent</option>
+          </select>
 
-        <select v-model="selectedStatus" @change="filterReports" class="filterSelect">
-          <option value="">All Statuses</option>
-          <option value="pending">Pending</option>
-          <option value="active">Active</option>
-          <option value="resolved">Resolved</option>
-        </select>
+          <select v-model="selectedStatus" @change="filterReports" class="filterSelect">
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="active">Active</option>
+            <option value="resolved">Resolved</option>
+          </select>
 
-        <select v-model="sortOption" @change="sortReports" class="filterSelect">
-          <option value="newest">Newest First</option>
-          <option value="oldest">Oldest First</option>
-        </select>
+          <select v-model="sortOption" @change="sortReports" class="filterSelect">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+          </select>
+        </div>
       </div>
 
       <!-- Reports List -->
@@ -104,6 +106,10 @@
                 <table class="reportDetailsTable">
                   <tbody>
                     <tr>
+                      <td><strong>Report ID</strong></td>
+                      <td>{{ report.reportId || 'N/A' }}</td>
+                    </tr>
+                    <tr>
                       <td><strong>Description</strong></td>
                       <td>{{ report.description || 'N/A' }}</td>
                     </tr>
@@ -113,15 +119,15 @@
                     </tr>
                     <tr>
                       <td><strong>Incident Type</strong></td>
-                      <td>{{ report.incidentType || 'N/A' }}</td>
+                      <td class="capitalise">{{ report.incidentType || 'N/A' }}</td>
                     </tr>
                     <tr>
                       <td><strong>Severity</strong></td>
-                      <td>{{ report.severity }}</td>
+                      <td class="capitalise">{{ report.severity }}</td>
                     </tr>
                     <tr>
                       <td><strong>Status</strong></td>
-                      <td>{{ report.status }}</td>
+                      <td class="capitalise">{{ report.status }}</td>
                     </tr>
                     <tr>
                       <td><strong>Sighting Date</strong></td>
@@ -152,6 +158,7 @@
 import api from '../../src/api/reportApi.js'
 import { getCurrentUser } from '../../src/api/auth.js'
 import '../css/pastReports.css'
+import '../css/common.css'
 
 export default {
   name: 'PastReports',

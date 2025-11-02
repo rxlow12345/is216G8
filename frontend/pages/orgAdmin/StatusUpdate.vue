@@ -28,9 +28,9 @@
       <!-- Main Content -->
       <div v-else>
         <!-- Dashboard Stats -->
-        <div class="row g-4 mb-5">
+        <!-- <div class="row g-4 mb-5">
           <div class="col-md-6 col-xl-3">
-            <div class="stat-card shadow-sm h-100">
+            <div class="stat-card shadow-sm">
               <div class="stat-card-inner stat-total" @click="filterAndScroll('all')">
                 <div class="stat-icon">
                   <i class="bi bi-clipboard-data"></i>
@@ -43,7 +43,7 @@
             </div>
           </div>
           <div class="col-md-6 col-xl-3">
-            <div class="stat-card shadow-sm h-100">
+            <div class="stat-card shadow-sm">
               <div class="stat-card-inner stat-pending" @click="filterAndScroll('pending')">
                 <div class="stat-icon">
                   <i class="bi bi-clock-history"></i>
@@ -56,7 +56,7 @@
             </div>
           </div>
           <div class="col-md-6 col-xl-3">
-            <div class="stat-card shadow-sm h-100">
+            <div class="stat-card shadow-sm">
               <div class="stat-card-inner stat-active" @click="filterAndScroll('active')">
                 <div class="stat-icon">
                   <i class="bi bi-activity"></i>
@@ -69,7 +69,69 @@
             </div>
           </div>
           <div class="col-md-6 col-xl-3">
-            <div class="stat-card shadow-sm h-100">
+            <div class="stat-card shadow-sm">
+              <div class="stat-card-inner stat-resolved" @click="filterAndScroll('resolved')">
+                <div class="stat-icon">
+                  <i class="bi bi-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                  <h3 class="stat-number">{{ resolvedReports }}</h3>
+                  <p class="stat-label">Resolved</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> -->
+        <!-- Dashboard Stats -->
+        <div class="row gx-4 gy-4 mb-5">
+          <!-- Total Reports -->
+          <div class="col-12 col-md-6 col-xl-3">
+            <div class="stat-card shadow-sm">
+              <div class="stat-card-inner stat-total" @click="filterAndScroll('all')">
+                <div class="stat-icon">
+                  <i class="bi bi-clipboard-data"></i>
+                </div>
+                <div class="stat-content">
+                  <h3 class="stat-number">{{ totalReports }}</h3>
+                  <p class="stat-label">Total Reports</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pending Reports -->
+          <div class="col-12 col-md-6 col-xl-3">
+            <div class="stat-card shadow-sm">
+              <div class="stat-card-inner stat-pending" @click="filterAndScroll('pending')">
+                <div class="stat-icon">
+                  <i class="bi bi-clock-history"></i>
+                </div>
+                <div class="stat-content">
+                  <h3 class="stat-number">{{ pendingReports }}</h3>
+                  <p class="stat-label">Pending</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Reports -->
+          <div class="col-12 col-md-6 col-xl-3">
+            <div class="stat-card shadow-sm">
+              <div class="stat-card-inner stat-active" @click="filterAndScroll('active')">
+                <div class="stat-icon">
+                  <i class="bi bi-activity"></i>
+                </div>
+                <div class="stat-content">
+                  <h3 class="stat-number">{{ activeReports }}</h3>
+                  <p class="stat-label">Active</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Resolved Reports -->
+          <div class="col-12 col-md-6 col-xl-3">
+            <div class="stat-card shadow-sm">
               <div class="stat-card-inner stat-resolved" @click="filterAndScroll('resolved')">
                 <div class="stat-icon">
                   <i class="bi bi-check-circle"></i>
@@ -83,14 +145,17 @@
           </div>
         </div>
 
+
+
         <!-- Filtering and Search -->
         <div class="filter-card shadow-sm mb-4" ref="reportsSection">
           <div class="card-body p-4">
             <h5 class="filter-title mb-4">
               <i class="bi bi-funnel me-2"></i>Filter & Search Reports
             </h5>
-            <div class="row g-3">
-              <div class="col-md-5">
+            <div class="row g-4">
+              <!-- Status Filter -->
+              <div class="col-md-4 mt-2">
                 <label for="status-filter" class="form-label custom-label">Filter by Status</label>
                 <select id="status-filter" class="form-select custom-select" v-model="statusFilter">
                   <option value="all">All Statuses</option>
@@ -99,10 +164,28 @@
                   <option value="resolved">Resolved</option>
                 </select>
               </div>
-              <div class="col-md-1">
 
+              <!-- Urgency Filter -->
+              <div class="col-md-4 mt-2">
+                <label for="urgency-filter" class="form-label custom-label">Filter by Urgency</label>
+                <select id="urgency-filter" class="form-select custom-select" v-model="urgencyFilter">
+                  <option value="all">All Reports</option>
+                  <option value="urgent">Urgent Only</option>
+                  <option value="non-urgent">Non-Urgent</option>
+                </select>
               </div>
-              <div class="col-md-6">
+
+              <!-- Sort by Time -->
+              <div class="col-md-4 mt-2">
+                <label for="sort-filter" class="form-label custom-label">Sort by Reporting Time</label>
+                <select id="sort-filter" class="form-select custom-select" v-model="sortOrder">
+                  <option value="desc">Newest First</option>
+                  <option value="asc">Oldest First</option>
+                </select>
+              </div>
+
+              <!-- Search -->
+              <div class="col-12 mt-2">
                 <label for="search-input" class="form-label custom-label">Search by Report ID or Species</label>
                 <div class="search-wrapper">
                   <i class="bi bi-search search-icon"></i>
@@ -284,19 +367,37 @@ export default {
       searchQuery: '',
       selectedReport: null,
       userEmail: '',
-      showBackToTop: false
+      showBackToTop: false,
+      sortOrder: 'desc',
+      urgencyFilter: 'all'
     };
   },
   computed: {
     filteredReports() {
-      return this.reports.filter(report => {
+      let filtered = this.reports.filter(report => {
         const statusMatch = this.statusFilter === 'all' || report.status === this.statusFilter;
+        const urgencyMatch =
+          this.urgencyFilter === 'all' ||
+          (this.urgencyFilter === 'urgent' && report.isUrgent) ||
+          (this.urgencyFilter === 'non-urgent' && !report.isUrgent);
+
         const searchLower = this.searchQuery.toLowerCase();
         const speciesName = report.speciesName || 'Unknown Species';
-        const searchMatch = report.reportId.toLowerCase().includes(searchLower) ||
+        const searchMatch =
+          (report.reportId && report.reportId.toLowerCase().includes(searchLower)) ||
           speciesName.toLowerCase().includes(searchLower);
-        return statusMatch && searchMatch;
+
+        return statusMatch && urgencyMatch && searchMatch;
       });
+
+      // Sort by report date
+      filtered.sort((a, b) => {
+        const dateA = a.createdAt?._seconds || 0;
+        const dateB = b.createdAt?._seconds || 0;
+        return this.sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+      });
+
+      return filtered;
     },
     totalReports() { return this.reports.length; },
     pendingReports() { return this.reports.filter(r => r.status === 'pending').length; },
@@ -402,6 +503,8 @@ export default {
   overflow: hidden;
   transition: all 0.3s ease;
   cursor: pointer;
+    /* Add manual gaps */
+  margin: 0.5rem;
 }
 
 .stat-card:hover {
@@ -414,7 +517,13 @@ export default {
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  height: 100%;
+}
+
+@media (max-width: 576px) {
+  .stat-card-inner {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 
 .stat-icon {
@@ -506,8 +615,16 @@ export default {
   border: 2px solid #a8c686;
   border-radius: 10px;
   padding: 0.65rem;
+  width: 95%;
+  box-sizing: border-box;
   color: #285436;
   transition: all 0.3s ease;
+}
+
+@media (max-width: 576px){
+  .custom-select {
+    width: 100%;
+  }
 }
 
 .custom-select:focus {
@@ -607,26 +724,6 @@ export default {
   }
 }
 
-.status-pending {
-  background-color: #DDA15E;
-  color: white;
-}
-
-.status-active {
-  background-color: #16cb59;
-  color: white;
-}
-
-.status-resolved {
-  background-color: #086143;
-  color: white;
-}
-
-.status-closed {
-  background-color: #6c757d;
-  color: white;
-}
-
 .report-details {
   color: #606C38;
 }
@@ -649,22 +746,6 @@ export default {
 
 .report-date i {
   color: #BC6C25;
-}
-
-.report-arrow {
-  position: absolute;
-  right: 1.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #086143;
-  font-size: 1.25rem;
-  opacity: 0;
-  transition: all 0.3s ease;
-}
-
-.report-item:hover .report-arrow {
-  opacity: 1;
-  right: 1rem;
 }
 
 /* Empty State */

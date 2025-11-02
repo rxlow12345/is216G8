@@ -34,7 +34,7 @@
             :href="org.url"
             target="_blank"
             rel="noopener"
-            class="btn btn-success flex-fill rounded-pill"
+            class="btn btn-donate2 flex-fill"
             @click="trackClick(org.name)"
           >
             Donate
@@ -43,7 +43,7 @@
             :href="org.urlMain"
             target="_blank"
             rel="noopener"
-            class="btn btn-outline-success rounded-pill flex-fill"
+            class="btn btn-learn flex-fill"
             @click="trackClick(org.name)"
           >
             Learn
@@ -113,4 +113,38 @@ const orgs = ref([
 .partner-card { transition: transform .25s ease, box-shadow .25s ease; background: linear-gradient(145deg,#f7fff7,#ecf8ee);
 display: flex; flex-direction:column; overflow:hidden  }
 .partner-card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(25,135,84,.15); }
+
+.btn-donate2 {
+    padding: 16px 32px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    background-color: #285436;
+    color: rgb(254, 250, 224);
+    border: none;
+}
+
+.btn-donate2:hover{
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);;
+    color: #fff;
+    border: 1px solid #285436;
+}
+
+.btn-learn {
+    padding: 16px 32px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid #285436;
+    color: #285436;
+    background-color: rgb(254, 250, 224);
+}
+
+.btn-learn:hover{
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);;
+    color: #fff;
+    border: 1px solid #285436;
+}
 </style>

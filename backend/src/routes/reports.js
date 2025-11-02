@@ -9,6 +9,7 @@ import {
   getReportById,
   getReportByReportId,
   updateReportStatus,
+  updateReportFields,
   getByGeoSpatial,
   deleteReport,
   getActiveSummary, 
@@ -43,6 +44,9 @@ router.get('/getReport/docId/:id', getReportById);
 
 // Updates the status of a single report document in Firestore.
 router.post('/updateReport/:id', updateReportStatus);
+
+// Updates the fields of a single report document in Firestore.
+router.post('/updateReportFields/:id', updateReportFields);
 
 // Gets summary details of report by reportId
 router.get('/getReport/activeSummary/:id', getActiveSummary);

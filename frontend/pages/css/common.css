@@ -1,14 +1,37 @@
-/* STANDARDISATION
-background-color: #285436; GREEN
-color: rgb(254, 250, 224); WHITE YELLOW
-
-
+/* Colour palette
+#606C38; Lighter GREEN
+#285436; Dark GREEN
+rgb(254, 250, 224); WHITE YELLOW
+#DDA15E; light brown
+#BC6C25; Darker brown
 */
 
 /**Common**/
 * {
     margin: 0;
     padding: 0;
+}
+
+/* Banner Titles */
+.bannerTitles{
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    background-color: #285436;
+    text-align: center;
+    font-size: 48px;
+    font-weight: 600;
+    color:rgb(254, 250, 224);
+    text-shadow: 0 5px 50px rgb(254, 250, 224);
+    padding: 20px;
+}
+
+.bannerTitles h1 {
+    margin-top: 20px;
+}
+
+.bannerTitles h1, .bannerTitles p {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 1.2s ease forwards;
 }
 
 /** Back to Top **/
@@ -23,7 +46,6 @@ color: rgb(254, 250, 224); WHITE YELLOW
   border-radius: 50px;
   font-size: 16px;
   cursor: pointer;
- /* box-shadow: 0 15px 40px rgba(16,185,129,0.6); */
   transition: all 0.3s ease;
   z-index: 1000;
 }
@@ -33,37 +55,75 @@ color: rgb(254, 250, 224); WHITE YELLOW
   box-shadow: 0 15px 40px rgba(16,185,129,0.6);
 }
 
-/*Logo & Top Banner*/
-#topBanner {
-  background-color: #285436;
-  color: #fff;
-  padding-top: 40px;
-  text-align: center;
-  overflow: hidden;
-}
-
-#topBanner h1, #topBanner p {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeUp 1.2s ease forwards;
-}
-
-#topBanner p {
-  animation-delay: 0.4s;
-}
-
 /* Buttons */
 .btn {
-    padding: 16px 32px !important;
-    border-radius: 12px;
+    padding: 16px 32px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Green Filled button & HOVER */
+.green-btn-lg {
+    padding: 16px 32px;
+    border-radius: 15px;
     font-size: 18px;
     font-weight: 600;
-    text-decoration: none;
-    display: inline-block;
-    transition: all 0.3s;
     cursor: pointer;
-    border: none;
+    background-color: #285436;
+    color: rgb(254, 250, 224);
+    border: 1px solid #285436;
+    min-width: 250px; /*if you have two buttons you want same length, add this */
 }
+
+.green-btn-lg:hover {
+    background: #606C38;
+    color: #fff;
+    border: 1px solid #285436;
+}
+
+/* Unfilled Button & HOVER */
+.unfilled-btn-lg {
+    padding: 16px 32px;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid #285436;
+    color: #285436;
+    background-color: rgb(254, 250, 224);
+    min-width: 250px; /* add if you hv 2 buttons uw same size */
+}
+
+.unfilled-btn-lg:hover {
+    background: #606C38;/*linear-gradient(135deg, #10b981 0%, #059669 100%);*/
+    color: #fff;
+    border: 1px solid #285436;
+}
+
+/* Linear Btn & HOVER */
+.linear-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #fff;
+}
+
+.linear-btn:hover {
+    background: linear-gradient(135deg, #10b981 40%, #059669 60%);
+    color: white;
+}
+
+/* Brown btn & hover */
+.brown-btn {
+    background-color: #BC6C25;
+    color: rgb(254, 250, 224);
+    font-weight: 600;
+}
+
+.brown-btn:hover {
+    background-color: #DDA15E;
+}
+
 
 .btn-donate {
     padding: 10px 100px;
@@ -186,7 +246,7 @@ color: rgb(254, 250, 224); WHITE YELLOW
 }
 
 .nav-link {
-    padding-left: 15px !important;
+    padding-left: 15px;
 }
 
 /* ======================== Scroll to Top ======================== */
@@ -225,4 +285,10 @@ color: rgb(254, 250, 224); WHITE YELLOW
     background-color: #FEFAE0;
     color: #606C38;
     font-size: 0.95rem;
+}
+
+@media (max-width: 520px){
+    * {
+        padding-top: 15px;
+    }
 }

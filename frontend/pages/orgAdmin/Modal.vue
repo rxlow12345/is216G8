@@ -116,7 +116,7 @@ export default {
             </div>
             <div class="modal-footer d-flex flex-wrap align-items-center gap-2 custom-modal-footer">
               <!-- Close & View Details -->
-              <div class="d-flex flex-wrap gap-2 w-100 w-md-auto">
+              <div class="d-flex flex-wrap gap-2 w-100 w--auto">
                 <button type="button" class="btn custom-btn-close flex-fill" @click="$emit('close')">
                   <i class="bi bi-x-circle me-2"></i>Close
                 </button>
@@ -127,7 +127,7 @@ export default {
               </div>
 
               <!-- Status Buttons -->
-              <div class="d-flex flex-wrap gap-2 w-100 w-md-auto">
+              <div class="d-flex justify-content-center gap-2 flex-wrap w-100">
                 <button type="button" class="btn custom-btn-pending flex-fill"
                   @click="$emit('statusChange', selectedReport.id, 'pending')">
                   <i class="bi bi-pause-circle me-2"></i>Set Pending
@@ -147,24 +147,7 @@ export default {
         </div>
       </div>
       <!-- Backdrop for the modal -->
-      <!-- <div v-if="selectedReport" class="modal-backdrop fade show"></div> -->
-
-      <div class="modal-container">
-        <div class="modal-header">
-          <slot name="header">default header</slot>
-        </div>
-
-        <div class="modal-body">
-          <slot name="body">default body</slot>
-        </div>
-
-        <div class="modal-footer">
-          <slot name="footer">
-            default footer
-            <button class="modal-default-button" @click="$emit('close')">OK</button>
-          </slot>
-        </div>
-      </div>
+      <div v-if="selectedReport" class="modal-backdrop fade show"></div>
     </div>
   </Transition>
 </template>
@@ -203,6 +186,20 @@ export default {
 
 .modal-default-button {
   float: right;
+}
+
+/* Media query for tablet-sized screens and up */
+@media (min-width: 768px) {
+  .modal-dialog.modal-lg {
+    max-width: 90%; /* You can adjust this percentage */
+  }
+}
+
+/* Media query for tablet-sized screens and up */
+@media (min-width: 992px) {
+  .modal-dialog.modal-lg {
+    max-width: 75%; /* You can adjust this percentage */
+  }
 }
 
 /*
@@ -307,9 +304,13 @@ export default {
 .custom-btn-close {
   background: #A95C52;
   color: white;
-  border: none;
+  padding: 16px 32px;
+  border-radius: 15px;
+  font-size: 18px;
   font-weight: 600;
+  cursor: pointer;
   border-radius: 10px;
+  border: none;
   transition: all 0.3s ease;
 }
 
@@ -321,9 +322,13 @@ export default {
 .custom-btn-view-details {
   background: #3D4C53;
   color: white;
-  border: none;
+  padding: 16px 32px;
+  border-radius: 15px;
+  font-size: 18px;
   font-weight: 600;
+  cursor: pointer;
   border-radius: 10px;
+  border: none;
   transition: all 0.3s ease;
 }
 
@@ -335,9 +340,13 @@ export default {
 .custom-btn-pending {
   background: #BC6C25;
   color: white;
-  border: none;
+  padding: 16px 32px;
+  border-radius: 15px;
+  font-size: 18px;
   font-weight: 600;
+  cursor: pointer;
   border-radius: 10px;
+  border: none;
   transition: all 0.3s ease;
 }
 
@@ -349,9 +358,13 @@ export default {
 .custom-btn-active {
   background: #15aa78;
   color: white;
-  border: none;
+  padding: 16px 32px;
+  border-radius: 15px;
+  font-size: 18px;
   font-weight: 600;
+  cursor: pointer;
   border-radius: 10px;
+  border: none;
   transition: all 0.3s ease;
 }
 
@@ -363,9 +376,13 @@ export default {
 .custom-btn-resolved {
   background: #086143;
   color: white;
-  border: none;
+  padding: 16px 32px;
+  border-radius: 15px;
+  font-size: 18px;
   font-weight: 600;
+  cursor: pointer;
   border-radius: 10px;
+  border: none;
   transition: all 0.3s ease;
 }
 

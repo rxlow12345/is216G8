@@ -2,9 +2,12 @@
   //import { number } from 'mathjs';
 import animalsData from '../../../src/public/guidebook.json'
 import OtterCursor from '../../../src/components/OtterCursor.vue';
+import FloatingBackground from '../../../src/components/FloatingBackground.vue';
+import '../../css/common.css'
+import '../../css/game.css'
 
   export default {
-    components: {OtterCursor},
+    components: {OtterCursor, FloatingBackground},
     data() {
       return {
         allAnimals: animalsData, 
@@ -205,10 +208,15 @@ import OtterCursor from '../../../src/components/OtterCursor.vue';
 <template>
   <!-- Otter Cursor -->
    <OtterCursor animal="🦦" :speed="0.08"/>
+
+  <!-- Floating Background -->
+   <FloatingBackground/>
+
   <!-- Top Banner -->
-  <div id="topBanner">
+  <div class="bannerTitles">
     <header class="text-center mb-2">
-      <h1>🌿 Wildlife Guidebook Game 🌿</h1>
+      <h1>🌿 Match the Critter 🌿</h1>
+      <p> Select difficulty level and match the cards! </p>
     </header>
   </div>
 
@@ -252,10 +260,10 @@ import OtterCursor from '../../../src/components/OtterCursor.vue';
 
   <!-- Start/Restart Game Button -->
   <div class="button-container">
-    <button v-if="!gameStarted" class="start-button" @click="startGame">
+    <button v-if="!gameStarted" class="btn green-btn-lg" @click="startGame">
       Start Game
     </button>
-    <button v-else class="start-button" @click="restartGame">
+    <button v-else class="btn green-btn-lg" @click="restartGame">
       Restart Game
     </button>
   </div>
@@ -307,275 +315,3 @@ import OtterCursor from '../../../src/components/OtterCursor.vue';
     </div>
   </div>
 </template>
-
-<style scoped>
-* {
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: Georgia, 'Times New Roman', Times, serif;
-}
-
-/* Top Banner */
-h1 {
-  color: rgb(254, 250, 224);
-  font-family: Georgia, 'Times New Roman', Times, serif;
-}
-
-#topBanner {
-  width: 100%;
-  background-color: rgb(40, 54, 24);
-  color: white;
-  padding: 15px;
-  margin-bottom: 15px;
-}
-
-#topBanner h1 {
-  font-size: 35px;
-}
-
-/* Difficulty Selection */
-#customisation {
-  text-align: center;
-  margin: 30px auto;
-  max-width: 600px;
-}
-
-.customisation-label {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  color: rgb(40, 54, 24);
-}
-
-#difficulty, #boardSize {
-  padding: 12px 24px;
-  font-size: 18px;
-  border: 2px solid rgb(40, 54, 24);
-  border-radius: 8px;
-  background-color: white;
-  cursor: pointer;
-  margin-bottom: 15px;
-}
-
-#difficulty:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.subtitle {
-  font-size: 16px;
-  color: #666;
-  font-style: italic;
-  margin-top: 10px;
-  /* text-align: center; */
-}
-
-/* Game Statistics */
-.gameStats {
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  margin: 30px auto;
-  padding: 20px;
-  background-color: rgb(254, 250, 224);
-  border-radius: 12px;
-  max-width: 800px;
-}
-
-.stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-}
-
-.stat .label {
-  font-size: 18px;
-  font-weight: bold;
-  color: rgb(40, 54, 24);
-}
-
-.stat .value {
-  font-size: 24px;
-  color: rgb(60, 80, 40);
-}
-
-/* Button */
-.button-container {
-  text-align: center;
-  margin: 30px auto;
-}
-
-.start-button {
-  padding: 15px 40px;
-  font-size: 20px;
-  font-weight: bold;
-  background-color: rgb(40, 54, 24);
-  color: rgb(254, 250, 224);
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.start-button:hover {
-  background-color: rgb(60, 80, 40);
-  transform: scale(1.05);
-}
-
-.start-button:active {
-  transform: scale(0.98);
-}
-
-/* Game Board */
-.generatingGameBoard {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-  max-width: 1000px;
-  margin: 30px auto;
-  padding: 20px;
-}
-
-/* Game Card */
-.gameCard {
-  aspect-ratio: 1;
-  perspective: 1000px;
-  cursor: pointer;
-}
-
-.gameCard.clickable:hover {
-  transform: scale(1.02);
-}
-
-.card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
-}
-
-.gameCard.flipped .card-inner {
-  transform: rotateY(180deg);
-}
-
-.card-back,
-.card-front {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 15px;
-}
-
-.card-back {
-  background: linear-gradient(135deg, rgb(40, 54, 24), rgb(60, 80, 40));
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.card-back-icon {
-  font-size: 60px;
-}
-
-.card-front {
-  background-color: rgb(254, 250, 224);
-  border: 3px solid rgb(40, 54, 24);
-  transform: rotateY(180deg);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.gameCard.matched .card-front {
-  opacity: 0.6;
-  border-color: #4ade80;
-  background-color: #f0fdf4;
-}
-
-/* Card Content */
-.card-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 8px;
-}
-
-.card-text {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  overflow: hidden;
-}
-
-.common-name {
-  font-size: 18px;
-  font-weight: bold;
-  color: rgb(40, 54, 24);
-}
-
-.scientific-name {
-  font-size: 16px;
-  font-style: italic;
-  color: rgb(60, 80, 40);
-}
-
-.description {
-  font-size: 14px;
-  line-height: 1.4;
-  color: rgb(40, 54, 24);
-  overflow-y: auto;
-  max-height: 100%;
-  padding: 5px;
-}
-
-/* Initial Message */
-.initial-message {
-  text-align: center;
-  margin: 50px auto;
-  padding: 30px;
-  background-color: rgb(254, 250, 224);
-  border-radius: 12px;
-  max-width: 600px;
-}
-
-.initial-message p {
-  font-size: 20px;
-  color: rgb(40, 54, 24);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .generatingGameBoard {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-    padding: 15px;
-  }
-
-  .gameStats {
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  #topBanner h1 {
-    font-size: 28px;
-  }
-}
-
-@media (max-width: 480px) {
-  .generatingGameBoard {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    padding: 10px;
-  }
-}
-</style>
