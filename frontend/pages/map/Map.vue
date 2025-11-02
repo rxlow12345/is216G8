@@ -4,7 +4,9 @@
     <div class="sidebar">
       <!-- Header -->
       <div class="header">
-        <p class="subtitle"> {{ getCount(reports) }} reports pending... Accept a case now!</p>
+        <p class="subtitle">
+          {{ getCount(reports) }} reports pending... Accept a case now!
+        </p>
 
         <!-- Connection Status -->
         <div class="connection-status">
@@ -22,6 +24,7 @@
           :report="report"
           :selected="selectedReportId === report.id"
           @click="selectReport(report)"
+          @acceptCase="acceptCaseFromCard"
         />
 
         <div v-if="reports?.length === 0" class="empty-state">
@@ -36,7 +39,7 @@
     </div>
   </div>
 
-  <!-- Report Details Modal -->
+  <!-- Report Details Modal TOD0 NOT APPEARING -->
   <div v-if="selectedReport" class="modal-overlay" @click="closeModal">
     <div class="modal" @click.stop>
       <button class="close-btn" @click="closeModal">×</button>
@@ -144,8 +147,8 @@ export default {
     async loadReports() {
       try {
         const response = await api.getReports();
-        console.log(response);
-        this.reports = response;
+        const filteredReports = response.filter(report => report.status === "pending");
+        this.reports = filteredReports;
       } catch (error) {
         console.error("Error loading reports:", error);
         alert("Failed to load reports. Make sure backend is running!");
@@ -193,11 +196,18 @@ export default {
       window.selectReport = (reportId) => {
         const report = this.reports?.find((r) => r.id === reportId);
         if (report) this.selectReport(report);
+        console.log("Case selected")
       };
     },
 
-    selectReport(report) {
+    async acceptCaseFromCard(report) {
       this.selectedReportId = report.id;
+      this.selectReport(report);
+      console.log('Case Accepted', report.id)
+    },
+
+    selectReport(report) {
+      return this.reports?.find(r => r.id === this.selectedReportId);
     },
 
     closeModal() {
@@ -206,17 +216,50 @@ export default {
 
     async acceptCase() {
       try {
+        // TODO: Show a form modal here to collect additional details from user
+        // Details to collect:
+        // - Estimated arrival time
+        // - Resources needed
+        // - Special equipment required
+        // - Additional notes
+        // - Team member assignments
+
+        const confirmAccept = confirm(
+          `Accept this case?\n\nAnimal: ${this.selectedReport.speciesName}\nLocation: ${this.selectedReport.location}\n\n(TODO: Replace this with a proper form modal)`
+        );
+
+        if (!confirmAccept) return;
+
         await api.updateReportStatus(
           this.selectedReportId,
           "in-progress",
           "Current User" // TODO: Replace with actual user name
         );
+
+        // Remove from list since we're only showing pending
+        this.reports = this.reports.filter(r => r.id !== this.selectedReportId);
+
         alert("Case accepted successfully!");
+        this.closeModal();
       } catch (error) {
         console.error("Error accepting case:", error);
         alert("Failed to accept case");
       }
     },
+
+    // async acceptCase() {
+    //   try {
+    //     await api.updateReportStatus(
+    //       this.selectedReportId,
+    //       "in-progress",
+    //       "Current User" // TODO: Replace with actual user name
+    //     );
+    //     alert("Case accepted successfully!");
+    //   } catch (error) {
+    //     console.error("Error accepting case:", error);
+    //     alert("Failed to accept case");
+    //   }
+    // },
 
     async resolveCase() {
       try {
@@ -279,6 +322,7 @@ export default {
   padding: 24px;
   background: #046848;
   color: white;
+  /* position: fixed; */
 }
 
 .header h1 {
@@ -320,7 +364,6 @@ export default {
     opacity: 0.5;
   }
 }
-
 
 .reports-list {
   flex: 1;
@@ -498,7 +541,7 @@ export default {
 }
 @media (min-width: 1024px) {
   .rescuemapwrapper {
-    grid-template-columns: 1fr 1fr;
-  };
+    grid-template-columns: 2fr 3fr;
+  }
 }
 </style>

@@ -2,6 +2,7 @@ import { db, storage } from '../firebase.js'; // Storage is firebase cloud stora
 import { v4 as uuidv4 } from 'uuid'; // Generate random ID
 import axios from 'axios';
 import FormData from 'form-data';
+// import { messaging } from 'firebase-admin';
 
 // SpeciesNet API configuration - using the working remote API
 const SPECIESNET_API_URL = process.env.SPECIESNET_API_URL || 'http://34.126.93.66:8000';
@@ -231,16 +232,18 @@ export const getFallbackImage = async (req, res) => {
 // getByGeoSpatial,
 export const getByGeoSpatial = async (req, res) => {
   try {
-    // const { lat, lng, radius } = req.query;
-    // const userLat = parseFloat(lat);
-    // const userLng = parseFloat(lng);
-    // const userRadius = parseFloat(radius); 
-    // const snapshot = await db.collection("reports").get();
-
-
-
-  } catch(error){
-
+    const OPENCAGE_API_URL = process.env.VITE_OPENCAGE_API_KEY
+    const response = await axios.get(`https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${apiKey}&limit=1&countrycode=sg`
+    );
+    
+    if (response.data.results.length > 0) {
+      const { lat, lng } = response.data.results[0].geometry;
+      return { lat, lng };
+    }
+    return null;
+  } catch (error) {
+    console.error('Geocoding error:', error);
+    return null;
   }
 };
 
@@ -286,6 +289,14 @@ export const createReport = async (req, res) => {
       'incidentType', 'severity', 'sightingDateTime', 'description', 'isMovingNormally'
     ];
 
+      const coordinates = await getByGeoSpatial(location);
+      if (!coordinates) {
+        return res.status(400).json({
+          success: false, 
+          message: "Unable to geocode the provided location"
+        });
+      }
+
     const missingFields = requiredFields.filter(field => !req.body[field]);
     if (missingFields.length > 0) {
       return res.status(400).json({
@@ -315,7 +326,11 @@ export const createReport = async (req, res) => {
       incidentTypeOther: incidentType === 'others' ? incidentTypeOther?.trim() : null,
       severity,
       description: description.trim(),
-      location: location.trim(),
+      location: {
+        address: location.trim(),
+        lat: coordinates.lat, 
+        lng: coordinates.lng
+      },
       sightingDateTime: new Date(sightingDateTime),
       
       // Animal Identification
