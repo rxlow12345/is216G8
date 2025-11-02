@@ -307,9 +307,13 @@ export default {
 .custom-btn-close {
   background: #A95C52;
   color: white;
-  border: none;
+  padding: 16px 32px;
+  border-radius: 15px;
+  font-size: 18px;
   font-weight: 600;
+  cursor: pointer;
   border-radius: 10px;
+  border: none;
   transition: all 0.3s ease;
 }
 
@@ -321,9 +325,13 @@ export default {
 .custom-btn-view-details {
   background: #3D4C53;
   color: white;
-  border: none;
+  padding: 16px 32px;
+  border-radius: 15px;
+  font-size: 18px;
   font-weight: 600;
+  cursor: pointer;
   border-radius: 10px;
+  border: none;
   transition: all 0.3s ease;
 }
 
@@ -335,9 +343,13 @@ export default {
 .custom-btn-pending {
   background: #BC6C25;
   color: white;
-  border: none;
+  padding: 16px 32px;
+  border-radius: 15px;
+  font-size: 18px;
   font-weight: 600;
+  cursor: pointer;
   border-radius: 10px;
+  border: none;
   transition: all 0.3s ease;
 }
 
@@ -349,9 +361,13 @@ export default {
 .custom-btn-active {
   background: #15aa78;
   color: white;
-  border: none;
+  padding: 16px 32px;
+  border-radius: 15px;
+  font-size: 18px;
   font-weight: 600;
+  cursor: pointer;
   border-radius: 10px;
+  border: none;
   transition: all 0.3s ease;
 }
 
@@ -363,9 +379,13 @@ export default {
 .custom-btn-resolved {
   background: #086143;
   color: white;
-  border: none;
+  padding: 16px 32px;
+  border-radius: 15px;
+  font-size: 18px;
   font-weight: 600;
+  cursor: pointer;
   border-radius: 10px;
+  border: none;
   transition: all 0.3s ease;
 }
 
