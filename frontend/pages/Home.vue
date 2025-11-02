@@ -27,8 +27,8 @@
     <section class="hero-section">
       <div class="hero-content">
         <div class="logo-large">
+          <span class="logo-icon">🐾</span>
           <span class="logo-icon">🦊</span>
-          <span class="logo-icon">🌿</span>
         </div>
         <h1 class="hero-title">CritterConnect</h1>
         <p class="hero-subtitle">Join Us In Saving Singapore's Wildlife!</p>
@@ -36,7 +36,7 @@
         <!-- CTA Buttons - Only show if not logged in -->
         <div v-if="!isLoggedIn" class="hero-buttons">
           <router-link to="/login" class="btn btn-primary">
-            🌲 Login
+            Login
           </router-link>
           <router-link to="/signup" class="btn btn-secondary">
             🦊 Sign Up Now
@@ -192,8 +192,8 @@
     <section class="final-cta-section">
       <div class="container">
         <div class="final-cta-card">
-          <h2>Want to Make a Difference?</h2>
-          <p>Donate to CritterConnect's Partners Today!</p>
+          <h2>Help Us Make a Difference!</h2>
+          <p>Donate to CritterConnect's Partners Today</p>
          
           <div class="cta-buttons">
             <router-link to="/donate" class="btn btn-donate">

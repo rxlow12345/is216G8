@@ -128,7 +128,7 @@
           <h5 class="card-title">{{ animal.common_name }}</h5>
           <p class="scientific-name">{{ animal.scientific_name }}</p>
           <p class="card-text">{{ animal.description }}</p>
-          <a :href="animal.learn_more_url" target="__blank" class="btn btn-success btn-sm"> 
+          <a :href="animal.learn_more_url" target="__blank" class="btn btn-learn-more btn-sm"> 
             Learn More
           </a>
         </div>

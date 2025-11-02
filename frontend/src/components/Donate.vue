@@ -1,109 +1,92 @@
 <template>
+    <OtterCursor animal="🦦" :speed="0.08"/>
     <div id="topBanner">
-        <header class="text-center mb-2">
-            <h1> Donate to Our Partners </h1>
-        </header>
+      <header class="text-center mb-2">
+        <h1>Donate</h1>
+        <p>To Our Partners 💌</p>
+      </header>
     </div>
     <div>
         <section class="container my-4">
-            <!-- <DonateCarousel :slides="slides" id="donateHero" /> -->
-            <!-- Carousel inside About Image -->
-            <div class="d-flex justify-content-center">
-                <div class="about-image">
-                    <div class="carousel-wrapper" @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
-                        <div class="carousel-container">
-                            <div class="carousel-track">
-                                <div v-for="(slide, index) in carouselImages" :key="index" class="carousel-slide"
-                                    :class="{ active: index === currentSlide }">
-                                    <img :src="slide.src" :alt="slide.alt" class="carousel-img" />
-                                    <div class="image-overlay">
-                                        <span class="image-caption">{{ slide.emoji }} {{ slide.caption }}</span>
+            <div class="row">
+
+                <!-- <DonateCarousel :slides="slides" id="donateHero" /> -->
+                <!-- Carousel inside About Image -->
+                <div class="d-flex justify-content-center col-lg-6">
+                    <div class="about-image" style="width: 100%; max-width: 100%;">
+                        <div class="carousel-wrapper" @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
+                            <div class="carousel-container" style="overflow: hidden; border-radius: 20px;">
+                                <div class="carousel-track">
+                                    <div v-for="(slide, index) in carouselImages" :key="index" class="carousel-slide"
+                                        :class="{ active: index === currentSlide }">
+                                        <img :src="slide.src" :alt="slide.alt" class="carousel-img"
+                                            style="width: 100%; height: 100%; object-fit: cover;" />
+                                        <div class="image-overlay">
+                                            <span class="image-caption">{{ slide.emoji }} {{ slide.caption }}</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <!-- Navigation arrows -->
-                            <button class="carousel-btn prev" @click="prevSlide">❮</button>
-                            <button class="carousel-btn next" @click="nextSlide">❯</button>
+                                <!-- Navigation arrows -->
+                                <button class="carousel-btn prev" @click="prevSlide">❮</button>
+                                <button class="carousel-btn next" @click="nextSlide">❯</button>
 
-                            <!-- Dots -->
-                            <div class="carousel-dots">
-                                <span v-for="(slide, index) in carouselImages" :key="'dot-' + index" class="dot"
-                                    :class="{ active: index === currentSlide }" @click="goToSlide(index)"></span>
+                                <!-- Dots -->
+                                <div class="carousel-dots">
+                                    <span v-for="(slide, index) in carouselImages" :key="'dot-' + index" class="dot"
+                                        :class="{ active: index === currentSlide }" @click="goToSlide(index)"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="mx-auto">
-                <h2 class="fw-bold text-center text-success mt-4">Why Should You Help?</h2>
+                <div class="mx-auto col-lg-6">
+                    <h2 class="fw-bold text-center text-success mt-4">Why Should You Help?</h2>
 
-                <p>
-                    Every year, countless wild animals in Singapore are injured or displaced due to <b>urban
-                        development, road accidents, or human-wildlife conflict.</b>
-                </p>
+                    <p>
+                        Every year, countless wild animals in Singapore are injured or displaced due to <b>urban
+                            development, road accidents, or human-wildlife conflict.</b>
+                    </p>
 
-                <!-- <div class="text-center-custom mb-3 px-4">
-                    <button type="button" class="custom-collapse-btn" @click="toggleCollapse">
-                        {{ isContentVisible ? 'Show Less' : 'Learn More' }}
-                    </button>
-                </div> -->
-
-                <!-- <div class="collapse-content" :class="{ 'visible': isContentVisible }"> -->
-
-                <p>
-                    Your donation will directly support <b>rescues, rehabilitation, and awareness programmes</b>
-                    that gives our wildlife a second chance to return to the wild where they belong.
-                </p>
-                <p>
-                    Together, we can make Singapore a <b>safer home</b> for everyone.
-                    Support our mission to connect both the rescue organisation and the public!
-                </p>
-
-                <div class="testimonial-slider">
-                    <div class="testimonial-card">
-
-                        <div class="avatar-container">
-                            <img src="../public/assets/Charlize.png" alt="Ravi S. Avatar" class="avatar-img">
-                        </div>
-                        <h3 class="name">Charlize</h3>
-                        <span class="check-mark">Donated $50</span>
-                        <p class="quote">
-                            I love animals and I feel good knowing my contribution directly helps local wildlife!
-                        </p>
-                    </div>
-                    <div class="testimonial-card centered-card">
-                        <div class="avatar-container">
-                            <img src="../public/assets/Amelia.png" alt="Ravi S. Avatar" class="avatar-img">
-                        </div>
-                        <h3 class="name">Amelia Soh</h3>
-                        <span class="check-mark">Donated $20</span>
-                        <p class="quote">
-                            A small donation can go a long way. This website makes it simple to support
-                            the organisation that helps the local wildlife. Thank you!
-                        </p>
-                    </div>
-
-                    <div class="testimonial-card">
-                        <div class="avatar-container">
-                            <img src="../public/assets/Ruixuan.png" alt="Ravi S. Avatar" class="avatar-img">
-                        </div>
-                        <h3 class="name">Rui Xuan</h3>
-                        <span class="check-mark">Donated $40</span>
-                        <p class="quote">
-                            These animals deserve a second chance. I am happy to support Critterconnect's mission and
-                            seeing the rescued birds are heartwarming.
-                        </p>
-                    </div>
-                </div>
-
-                    <!-- <button link> -->
-                    <div class="text-center-custom mb-3 px-4">
-                        <!-- Changed type from 'button' to 'a' or kept as 'button' for Vue navigation -->
-                        <button type="button" class="btn custom-collapse-btn" @click="goToDashboard">
-                            Learn More?
+                    <!-- <div class="text-center-custom mb-3 px-4">
+                        <button type="button" class="custom-collapse-btn" @click="toggleCollapse">
+                            {{ isContentVisible ? 'Show Less' : 'Learn More' }}
                         </button>
+                    </div> -->
+
+                    <!-- <div class="collapse-content" :class="{ 'visible': isContentVisible }"> -->
+
+                    <p>
+                        Your donation will directly support <b>rescues, rehabilitation, and awareness programmes</b>
+                        that gives our wildlife a second chance to return to the wild where they belong.
+                    </p>
+                    <p>
+                        Together, we can make Singapore a <b>safer home</b> for everyone.
+                        Support our mission to connect both the rescue organisation and the public!
+                    </p>
+                </div>
+
+                <section class="testimonial-section">
+                    <div ref="slider" class="testimonial-slider" @mouseenter="pauseAuto" @mouseleave="resumeAuto"
+                        @touchstart.passive="pauseAuto" @touchend.passive="resumeAuto">
+                        <div v-for="(testimonial, index) in testimonials" :key="index" class="testimonial-card">
+                            <div class="avatar-container">
+                                <img :src="testimonial.image" :alt="testimonial.name + ' Avatar'" class="avatar-img" />
+                            </div>
+                            <h3 class="name">{{ testimonial.name }}</h3>
+                            <span class="check-mark">Donated {{ testimonial.amount }}</span>
+                            <p class="quote">{{ testimonial.quote }}</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- <button link> -->
+                <div class="text-center-custom mb-3 px-4">
+                    <!-- Changed type from 'button' to 'a' or kept as 'button' for Vue navigation -->
+                    <router-link to="/learn-more" class="btn custom-collapse-btn">
+                        Learn More?
+                    </router-link>
                 </div>
             </div>
 
@@ -133,31 +116,104 @@
                 tiktok: 'https://tiktok.com/yourpage'
                 
                 }" /> -->
-    <Footer />
+    <!-- <Footer /> -->
 
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import OtterCursor from './OtterCursor.vue';
+import '../../pages/css/common.css'
+
+const testimonials = ref([
+    {
+        name: 'Charlize',
+        amount: '$50',
+        image: new URL('../public/assets/Charlize.png', import.meta.url).href,
+        quote:
+            'I love animals and I feel good knowing my contribution directly helps local wildlife!',
+    },
+    {
+        name: 'Amelia Soh',
+        amount: '$20',
+        image: new URL('../public/assets/Amelia.png', import.meta.url).href,
+        quote:
+            'A small donation can go a long way. This website makes it simple to support the organisation that helps the local wildlife. Thank you :D',
+    },
+    {
+        name: 'Rui Xuan',
+        amount: '$40',
+        image: new URL('../public/assets/Ruixuan.png', import.meta.url).href,
+        quote:
+            "These animals deserve a second chance. I am happy to support Critterconnect's mission and seeing the rescued birds are heartwarming.",
+    },
+    {
+        name: 'Ryan',
+        amount: '$30',
+        image: new URL('../public/assets/Ryan.png', import.meta.url).href,
+        quote:
+            "I used to be overwhelmed on what to do when I witness a distress animal. With Critterconnect, I know what to do now!",
+    },
+    {
+        name: 'Haoyue',
+        amount: '$60',
+        image: new URL('../public/assets/Haoyue.png', import.meta.url).href,
+        quote:
+            "I reported a case and was glad to be notified of the status of the animal I rescued.",
+    },
+    {
+        name: 'Jessica',
+        amount: '$40',
+        image: new URL('../public/assets/Jessica.png', import.meta.url).href,
+        quote:
+            "Critterconnect is amazing and I'm motivated to help out more animals!",
+    },
+])
+
+import { ref, onMounted, onUnmounted, onBeforeUnmount } from 'vue';
 import DonatePartners from './DonatePartners.vue'
 // import Common from './Common.vue'
-import Footer from './Footer.vue'
+// import Footer from './Footer.vue'
 import Impact from './Impact.vue'
+const slider = ref(null)
+let autoTimer = null
+let paused = false
 
+function autoAdvance() {
+    const el = slider.value
+    if (!el) return
+    const card = el.querySelector('.testimonial-card')
+    if (!card) return
+    const gap = parseFloat(getComputedStyle(el).gap || 0)
+    const scrollAmount = card.offsetWidth + gap
+    const nearEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - scrollAmount
+    const nextLeft = nearEnd ? 0 : el.scrollLeft + scrollAmount
+    el.scrollTo({ left: nextLeft, behavior: 'smooth' })
+}
 
-// 1. State: Use ref to track the visibility state
-const isContentVisible = ref(false);
+function startAuto() {
+    autoTimer = setInterval(() => {
+        if (!paused) autoAdvance()
+    }, 4000)
+}
+function stopAuto() {
+    clearInterval(autoTimer)
+    autoTimer = null
+}
+function pauseAuto() {
+    paused = true
+}
+function resumeAuto() {
+    paused = false
+}
 
-// 2. Method: Function to flip the state when the button is clicked
-const toggleCollapse = () => {
-    isContentVisible.value = !isContentVisible.value;
-};
+onMounted(() => startAuto())
+onBeforeUnmount(() => stopAuto())
 
 
 const carouselImages = [
     { src: '../src/public/assets/carousel1.png', alt: 'Otter', caption: "Otters", emoji: '🦦' },
     { src: '../src/public/assets/carousel2.jpg', alt: 'Cat', caption: 'Community Cats', emoji: '🐱' },
-    { src: '../src/public/assets/carousel3.jpg', alt: 'Squirrel', caption: 'Turtles', emoji: '🐢' },
+    { src: '../src/public/assets/carousel3.jpg', alt: 'Turtle', caption: 'Turtles', emoji: '🐢' },
 ]
 
 const currentSlide = ref(0);
@@ -218,7 +274,7 @@ const goToDashboard = () => {
     // emit('change-page', 'Dashboard'); 
 
     // If using plain JavaScript for a multi-page site:
-    window.location.href = '/home'; 
+    window.location.href = '/home';
     //change later 
 
     console.log("Navigating to resources...");
@@ -230,20 +286,23 @@ const goToDashboard = () => {
 .carousel-img {
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    object-fit: cover;
+    display: block;
 }
 
 .carousel-wrapper,
 .carousel-container {
-    /* Reduce the width */
-    width: 600px;
-    /* Adjust this value */
-    /* Reduce the height if needed */
-    height: 400px;
-    /* Adjust this value */
-    /* Ensure the container only shows one slide at a time */
+    position: relative;
     overflow: hidden;
-    align-items: center;
+    border-radius: 20px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.about-image {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 /* Inside your <style scoped> block */
@@ -303,7 +362,21 @@ const goToDashboard = () => {
     /* Forces scroll to stop only on snap points */
     -webkit-overflow-scrolling: touch;
     /* Better scrolling on iOS */
+    scroll-behavior: smooth;
 }
+
+.testimonial-slider {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding: 50px 0;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    /* smooth snapping */
+}
+
+
 
 /* Hide Scrollbar (Optional, but common for sliders) */
 .testimonial-slider::-webkit-scrollbar {
@@ -342,6 +415,7 @@ const goToDashboard = () => {
     border: 1px solid rgba(0, 0, 0, 0.05);
 
     text-align: center;
+    transition: transform 0.3s ease;
 }
 
 /* --- 3. CENTERED CARD STYLES --- */

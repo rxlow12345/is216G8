@@ -15,9 +15,16 @@ import GuideBook from '../pages/GuideBook.vue';
 import Map from '../pages/map/Map.vue';
 import Status from '../pages/reporter/Status.vue';
 import PastReports from '../pages/past_reports/PastReports.vue';
+import Common from '../pages/Common.vue';
+import LearnMore from '../src/components/LearnMore.vue';
 
 // 1. Define your routes as an array of objects
 const routes = [
+  { //DELETE BEFORE SUBMISSION****
+    path: '/common',
+    name: 'Common',
+    component: Common
+  },
   {
     path: '/',
     name: 'Home',
@@ -87,7 +94,13 @@ const routes = [
     path: '/past-reports',
     name: 'Past Reports',
     component: PastReports
-  }
+  }, 
+  {
+    path: '/learn-more',
+    name: 'LearnMore',
+    component: LearnMore,
+    meta: { requiresAuth: false }
+  },
 ];
 
 // 2. Create the router instance

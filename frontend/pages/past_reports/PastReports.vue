@@ -1,113 +1,156 @@
 <template>
-  <div class="container-fluid p-0 past-reports-page">
+  <div class="container-fluid p-0 pastReportsPage">
     <!-- Top Banner -->
     <div id="topBanner">
       <header class="text-center mb-2">
         <h1>Past Wildlife Reports</h1>
-        <!-- <p>Review and track all submitted wildlife incident reports</p> -->
       </header>
     </div>
 
-    <!-- Search Bar -->
-    <div class="search-section">
-        <div class="search-bar">
-            <input
-                v-model="searchQuery"
-                @input="filterReports"
-                type="text"
-                id="searchInput"
-                placeholder="Search reports..."
-            />
-            <button @click="filterReports" id="searchBtn">Search</button>
-        </div>
+    <!-- Loading State -->
+    <div v-if="isLoading" class="loadingState">
+      <div class="loadingSpinner"></div>
+      <span class="loadingText">Loading your reports...</span>
     </div>
 
-    <!-- Filter Section -->
-    <div class="filter-section">
-        <select v-model="selectedSeverity" @change="filterReports" class="filter-select">
-            <option value="">All Severities</option>
-            <option value="low">Low</option>
-            <option value="moderate">Moderate</option>
-            <option value="urgent">Urgent</option>
-        </select>
-
-        <select v-model="selectedStatus" @change="filterReports" class="filter-select">
-            <option value="">All Statuses</option>
-            <option value="pending">Pending</option>
-            <option value="in-progress">In Progress</option>
-            <option value="resolved">Resolved</option>
-            <option value="closed">Closed</option>
-        </select>
-
-        <select v-model="sortOption" @change="sortReports" class="filter-select">
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="severityHigh">Severity (High → Low)</option>
-            <option value="severityLow">Severity (Low → High)</option>
-        </select>
+    <!-- Error State -->
+    <div v-else-if="error" class="errorState">
+      <p><strong>Error:</strong> {{ error }}</p>
     </div>
 
-    <!-- Reports Grid -->
-    <div id="reportsContainer">
-      <p v-if="filteredReports.length === 0" class="text-center text-muted mt-4">
-        No matching reports found.
-      </p>
-
-      <div
-        v-for="report in paginatedReports"
-        :key="report.id"
-        class="report-card"
-        @click="viewReport(report)"
-      >
-        <img
-          v-if="report.photoURLs && report.photoURLs.length"
-          :src="report.photoURLs[0]"
-          alt="Report image"
-        />
-        <div class="report-body">
-          <h5>{{ report.speciesName || 'Unknown Species' }}</h5>
-          <p><strong>Severity:</strong> {{ report.severity }}</p>
-          <p><strong>Status:</strong> {{ report.status }}</p>
-          <p><strong>Date:</strong> {{ formatDate(report.createdAt) }}</p>
+    <!-- Main Content -->
+    <div v-else>
+      <!-- Search Bar -->
+      <div class="searchSection">
+        <div class="searchBar">
+          <input
+            id="searchInput"
+            v-model="searchQuery"
+            @input="filterReports"
+            type="text"
+            placeholder="Search reports..."
+          />
+          <button id="searchBtn" @click="filterReports">Search</button>
         </div>
       </div>
-    </div>
 
-    <!-- Pagination -->
-    <div
-      id="pagination"
-      v-show="filteredReports.length > reportsPerPage"
-      class="pagination-buttons d-flex justify-content-center align-items-center mt-4"
-    >
-      <button @click="prevPage" :disabled="currentPage === 1">‹ Prev</button>
-      <span id="pageIndicator">Page {{ currentPage }} of {{ totalPages }}</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages">Next ›</button>
-    </div>
+      <!-- Filter Section -->
+      <div class="filterSection">
+        <select v-model="selectedSeverity" @change="filterReports" class="filterSelect">
+          <option value="">All Severities</option>
+          <option value="low">Low</option>
+          <option value="moderate">Moderate</option>
+          <option value="urgent">Urgent</option>
+        </select>
 
-    <!-- Report Detail View -->
-    <div v-if="selectedReport" class="report-detail p-4">
-      <button class="btn btn-outline-success mb-3" @click="selectedReport = null">← Back</button>
-      <h2>{{ selectedReport.speciesName || 'Unknown Species' }}</h2>
-      <p><strong>Severity:</strong> {{ selectedReport.severity }}</p>
-      <p><strong>Status:</strong> {{ selectedReport.status }}</p>
-      <p><strong>Description:</strong> {{ selectedReport.description }}</p>
-      <p><strong>Location:</strong> {{ selectedReport.location }}</p>
+        <select v-model="selectedStatus" @change="filterReports" class="filterSelect">
+          <option value="">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="active">Active</option>
+          <option value="resolved">Resolved</option>
+        </select>
 
-      <div class="photo-gallery mt-3">
-        <img
-          v-for="(url, index) in selectedReport.photoURLs"
-          :key="index"
-          :src="url"
-          class="photo-preview"
-          alt="Report image"
-        />
+        <select v-model="sortOption" @change="sortReports" class="filterSelect">
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+        </select>
+      </div>
+
+      <!-- Reports List -->
+      <div id="reportsContainer" class="reportsContainer">
+        <p v-if="filteredReports.length === 0" class="noResults">
+          No matching reports found.
+        </p>
+
+        <transition-group name="list" tag="div">
+          <div
+            v-for="report in filteredReports"
+            :key="report.reportId"
+            :class="['reportCard', 'mb-2', { expanded: expandedReport === report.reportId }]"
+          >
+            <div class="reportSummary" @click="toggleReport(report.reportId)">
+              <div class="reportTitle">
+                <strong>{{ report.speciesName || 'Unknown Species' }}</strong>
+                <span class="reportSubtitle"> - {{ report.incidentType || 'Unknown Type' }}</span>
+              </div>
+              <div class="reportTags">
+                <span
+                  class="tag"
+                  :class="{
+                    tagLow: report.severity === 'low',
+                    tagModerate: report.severity === 'moderate',
+                    tagUrgent: report.severity === 'urgent'
+                  }"
+                >
+                  {{ report.severity }}
+                </span>
+                <span
+                  class="tag"
+                  :class="{
+                    tagPending: report.status === 'pending',
+                    tagActive: report.status === 'active',
+                    tagResolved: report.status === 'resolved'
+                  }"
+                >
+                  {{ report.status }}
+                </span>
+                <span class="arrow" v-if="expandedReport === report.reportId">▲</span>
+                <span class="arrow" v-else>▼</span>
+              </div>
+            </div>
+
+            <transition name="expand">
+              <div v-if="expandedReport === report.reportId" class="reportDetails">
+                <table class="reportDetailsTable">
+                  <tbody>
+                    <tr>
+                      <td><strong>Description</strong></td>
+                      <td>{{ report.description || 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Location</strong></td>
+                      <td>{{ report.location || 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Incident Type</strong></td>
+                      <td>{{ report.incidentType || 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Severity</strong></td>
+                      <td>{{ report.severity }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Status</strong></td>
+                      <td>{{ report.status }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Sighting Date</strong></td>
+                      <td>{{ formatDate(report.sightingDateTime) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="photoGallery" v-if="report.photoURLs?.length">
+                  <img
+                    v-for="(url, index) in report.photoURLs"
+                    :key="index"
+                    :src="url"
+                    class="photoPreview"
+                    alt="Report image"
+                  />
+                </div>
+              </div>
+            </transition>
+          </div>
+        </transition-group>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+import api from '../../src/api/reportApi.js'
+import { getCurrentUser } from '../../src/api/auth.js'
 import '../css/pastReports.css'
 
 export default {
@@ -116,32 +159,35 @@ export default {
     return {
       reports: [],
       filteredReports: [],
-      selectedReport: null,
+      expandedReport: null,
       searchQuery: '',
       selectedSeverity: '',
       selectedStatus: '',
       sortOption: 'newest',
-      currentPage: 1,
-      reportsPerPage: 9
-    }
-  },
-  computed: {
-    totalPages() {
-      return Math.ceil(this.filteredReports.length / this.reportsPerPage)
-    },
-    paginatedReports() {
-      const start = (this.currentPage - 1) * this.reportsPerPage
-      return this.filteredReports.slice(start, start + this.reportsPerPage)
+      isLoading: true,
+      error: null,
+      userUid: '',
     }
   },
   methods: {
     async fetchReports() {
       try {
-        const res = await axios.get('/api/reports')
-        this.reports = res.data.data
-        this.filteredReports = this.reports
+        this.isLoading = true
+        this.error = null
+
+        const user = await getCurrentUser()
+        if (!user || !user.uid) throw new Error('User not authenticated.')
+        this.userUid = user.uid
+
+        const allReports = await api.getAllReports()
+        this.reports = allReports.filter(r => r.uid === this.userUid)
+        this.filteredReports = [...this.reports]
+        this.sortReports()
       } catch (err) {
         console.error('Failed to fetch reports:', err)
+        this.error = err.message || 'Failed to fetch reports.'
+      } finally {
+        this.isLoading = false
       }
     },
     filterReports() {
@@ -157,34 +203,71 @@ export default {
         return matchesSearch && matchesSeverity && matchesStatus
       })
       this.sortReports()
-      this.currentPage = 1
     },
     sortReports() {
-      if (this.sortOption === 'newest') {
-        this.filteredReports.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-      } else if (this.sortOption === 'oldest') {
-        this.filteredReports.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-      } else if (this.sortOption === 'severityHigh') {
-        const order = { urgent: 3, moderate: 2, low: 1 }
-        this.filteredReports.sort((a, b) => (order[b.severity] || 0) - (order[a.severity] || 0))
-      } else if (this.sortOption === 'severityLow') {
-        const order = { urgent: 3, moderate: 2, low: 1 }
-        this.filteredReports.sort((a, b) => (order[a.severity] || 0) - (order[b.severity] || 0))
+      const order = { urgent: 3, moderate: 2, low: 1 };
+      
+      switch (this.sortOption) {
+        case 'newest':
+          this.filteredReports.sort((a, b) => {
+            const dateA = this.parseTimestamp(a.sightingDateTime);
+            const dateB = this.parseTimestamp(b.sightingDateTime);
+            return dateB - dateA;  // Most recent first
+          });
+          break;
+        case 'oldest':
+          this.filteredReports.sort((a, b) => {
+            const dateA = this.parseTimestamp(a.sightingDateTime);
+            const dateB = this.parseTimestamp(b.sightingDateTime);
+            return dateA - dateB;  // Oldest first
+          });
+          break;
+        case 'severityHigh':
+          this.filteredReports.sort((a, b) => (order[b.severity] || 0) - (order[a.severity] || 0));
+          break;
+        case 'severityLow':
+          this.filteredReports.sort((a, b) => (order[a.severity] || 0) - (order[b.severity] || 0));
+          break;
       }
     },
-    viewReport(report) {
-      this.selectedReport = report
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+    parseTimestamp(timestamp) {
+      if (!timestamp) return new Date(0); // Return a very old date if no timestamp
+
+      if (timestamp._seconds) {
+        return new Date(timestamp._seconds * 1000);
+      }
+      
+      if (timestamp instanceof Date) {
+        return timestamp;
+      }
+
+      if (typeof timestamp === 'string') {
+        return new Date(timestamp);
+      }
+
+      return new Date(0);
     },
-    nextPage() {
-      if (this.currentPage < this.totalPages) this.currentPage++
-    },
-    prevPage() {
-      if (this.currentPage > 1) this.currentPage--
+    toggleReport(reportId) {
+      this.expandedReport = this.expandedReport === reportId ? null : reportId
     },
     formatDate(timestamp) {
-      return new Date(timestamp.seconds ? timestamp.seconds * 1000 : timestamp)
-        .toLocaleDateString('en-SG', { year: 'numeric', month: 'short', day: 'numeric' })
+      if (!timestamp) return 'Unknown date';
+
+      let date;
+
+      if (timestamp && timestamp._seconds !== undefined) {
+        date = new Date(timestamp._seconds * 1000);
+      } else if (timestamp && timestamp.seconds !== undefined) {
+        date = new Date(timestamp.seconds * 1000);
+      } else if (timestamp instanceof Date) {
+        date = timestamp;
+      } else if (typeof timestamp === 'string') {
+        date = new Date(timestamp);
+      } else if (typeof timestamp === 'number') {
+        date = new Date(timestamp);
+      }
+
+      return date ? date.toLocaleDateString() : 'Invalid date';
     }
   },
   mounted() {
@@ -192,6 +275,5 @@ export default {
   }
 }
 </script>
-
 <style scoped>
 </style>

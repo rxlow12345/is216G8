@@ -75,7 +75,7 @@
               
               <!-- Action Buttons -->
               <div class="mt-4">
-                <a href="/pages/new_report/report.html" class="btn btn-success btn-lg me-3">
+                <a href="/new_report/report.html" class="btn btn-success btn-lg me-3">
                   <i class="bi bi-plus-circle"></i> Create New Report
                 </a>
                 <a href="/pages/report.html" class="btn btn-outline-primary btn-lg">

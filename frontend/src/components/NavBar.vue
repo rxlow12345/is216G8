@@ -1,6 +1,6 @@
 <template>
   <!-- Navigation Bar -->
-  <nav class="navbar navbar-expand-md fixed-top customNavbar py-1">
+  <nav class="navbar navbar-expand-lg fixed-top customNavbar py-1">
     <div class="container-fluid">
       <!-- Logo -->
       <router-link class="navbar-brand navbarLogo order-0" to="/">
@@ -38,7 +38,7 @@
           <!-- Reporter role -->
           <li v-if="auth.role === 'reporter'" class="nav-item"><router-link class="nav-link navLink" to="/report" exact-active-class="active" @click="collapseNavbar">Dashboard</router-link></li>
           <!-- Admin role -->
-          <li v-if="auth.role === 'admin'" class="nav-item"><router-link class="nav-link navLink" to="/admin" exact-active-class="active" @click="collapseNavbar">Admin Panel</router-link></li>
+          <li v-if="auth.role === 'admin'" class="nav-item"><router-link class="nav-link navLink" to="/admin" exact-active-class="active" @click="collapseNavbar">Admin</router-link></li>
           <!-- Logout -->
           <li v-if="auth.uid" class="nav-item"><a class="nav-link navLink" href="#" @click.prevent="handleLogoutAndCollapse" exact-active-class="active">Logout</a></li>
         </ul>
