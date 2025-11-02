@@ -1,4 +1,4 @@
-/* ===== Global Page Styling ===== */
+/* ======================== Global Page Styling ======================== */
 .pastReportsPage {
   background-color: #FEFAE0;
   min-height: 100vh;
@@ -10,7 +10,7 @@
   margin-bottom: 35px;
 }
 
-/* ===== Search Bar ===== */
+/* ======================== Search Bar ======================== */
 .searchBar {
   display: flex;
   align-items: center;
@@ -53,7 +53,7 @@
   background-color: #283618;
 }
 
-/* ===== Filter Section ===== */
+/* ======================== Filter Section ======================== */
 .filterSection {
   display: flex;
   gap: 12px;
@@ -65,18 +65,18 @@
 
 .filterSelect {
   border-radius: 30px;
-  padding: 10px 40px 10px 20px; /* extra space for arrow */
+  padding: 10px 40px 10px 20px;
   background-color: #f6f8f3;
   border: none;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   cursor: pointer;
   transition: all 0.3s ease;
-  -webkit-appearance: none; /* Remove default arrow */
+  -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg fill='black' height='12' viewBox='0 0 24 24' width='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center; /* controls spacing from right */
+  background-position: right 12px center;
   background-size: 25px;
 }
 
@@ -116,18 +116,16 @@
   color: #435c11;
 }
 
-/* Optional: Hover for dropdown options (if supported by browser) */
 .filterSelect option:hover {
   filter: brightness(0.9);
 }
 
-/* Ensure the select stays rounded and text visible */
 .filterSelect:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(85, 139, 47, 0.4);
 }
 
-/* ===== Reports Container ===== */
+/* ======================== Reports Container ======================== */
 .reportsContainer {
   display: flex;
   flex-direction: column;
@@ -141,7 +139,7 @@
   color: #6b7a68;
 }
 
-/* ===== Report Cards ===== */
+/* ======================== Report Cards ======================== */
 .reportCard {
   background-color: white;
   border-radius: 1rem;
@@ -160,12 +158,17 @@
   border: 2px solid #DDA15E;
 }
 
-/* ===== Report Summary ===== */
+/* ======================== Report Summary ======================== */
 .reportSummary {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  text-transform: capitalize;
   padding: 16px;
+}
+
+.reportTitle {
+  margin-right: 6px;
 }
 
 .reportTitle strong,
@@ -179,7 +182,7 @@
   color: white;
 }
 
-/* ===== Tags ===== */
+/* ======================== Tags ======================== */
 .tag {
   display: inline-block;
   padding: 5px 10px;
@@ -187,7 +190,7 @@
   font-size: 0.85rem;
   font-weight: bold;
   text-transform: capitalize;
-  margin-left: 6px;
+  margin-right: 6px;
   color: white;
 }
 
@@ -206,7 +209,6 @@
   color: white;
 }
 
-/* Other tags (non-severity) */
 .tagPending {
   background-color: #aaa;
   color: white;
@@ -222,18 +224,16 @@
   color: white;
 }
 
-/* ===== Flip backgrounds on expanded report, keep text color the same ===== */
 .reportCard.expanded .tagLow,
 .reportCard.expanded .tagModerate,
 .reportCard.expanded .tagUrgent,
 .reportCard.expanded .tagPending,
 .reportCard.expanded .tagActive,
 .reportCard.expanded .tagResolved {
-  background-color: white; /* flip background */
-  border: 1px solid currentColor; /* subtle border using original text color */
+  background-color: white; 
+  border: 1px solid currentColor; 
 }
 
-/* Keep text color the same as original */
 .reportCard.expanded .tagLow { color: #6B8E23; }
 .reportCard.expanded .tagModerate { color: #DDA15E; }
 .reportCard.expanded .tagUrgent { color: #BC6C25; }
@@ -241,13 +241,12 @@
 .reportCard.expanded .tagActive { color: #DDA15E; }
 .reportCard.expanded .tagResolved { color: rgba(40, 84, 54, 0.80); }
 
-/* Optional hover pop effect for expanded tags */
 .reportCard.expanded .tag:hover {
   transform: scale(1.1);
   transition: transform 0.2s ease;
 }
 
-/* ===== Report Details ===== */
+/* ======================== Report Details ======================== */
 .reportDetails {
   padding: 16px;
   background-color: #F6F8F3;
@@ -257,7 +256,7 @@
 .reportDetailsTable {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 16px;
+  margin-bottom: 15px;
 }
 
 .reportDetailsTable td {
@@ -271,14 +270,13 @@
   color: #606C38;
 }
 
-/* ===== Photo Gallery ===== */
 .photoPreview {
   width: 100%;
   object-fit: cover;
   border-radius: 8px;
 }
 
-/* ===== Animations ===== */
+/* ======================== Animations ======================== */
 .expand-enter-active, .expand-leave-active {
   transition: all 0.3s ease;
 }
