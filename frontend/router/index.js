@@ -17,6 +17,7 @@ import Status from '../pages/reporter/Status.vue';
 import PastReports from '../pages/past_reports/PastReports.vue';
 import Common from '../pages/Common.vue';
 import LearnMore from '../src/components/LearnMore.vue';
+import AllReporterReports from '../pages/reporter/AllReporterReports.vue';
 
 // 1. Define your routes as an array of objects
 const routes = [
@@ -100,6 +101,11 @@ const routes = [
     name: 'LearnMore',
     component: LearnMore,
     meta: { requiresAuth: false }
+  },
+  {
+    path: '/all-reports',
+    name: 'All Reporter Reports',
+    component: AllReporterReports
   },
 ];
 

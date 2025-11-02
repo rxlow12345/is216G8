@@ -28,7 +28,8 @@
       <div class="buttonItemRight animateIn">
         <img src="../../src/public/assets/monkey.jpg" alt="Monkey" class="sectionImg">
         <div class="content">
-          <a :href="'/status/' + userId" class="btn greenBtnLg">Check Report Status</a>
+          <!-- <a :href="'/status/' + userId" class="btn greenBtnLg">Check Report Status</a> -->
+          <a href="/all-reports" class="btn greenBtnLg">Check Report Status</a>
           <p class="buttonDescription">Track the status of your existing reports</p>
         </div>
       </div>

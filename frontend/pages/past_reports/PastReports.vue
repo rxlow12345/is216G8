@@ -104,6 +104,10 @@
                 <table class="reportDetailsTable">
                   <tbody>
                     <tr>
+                      <td><strong>Report ID</strong></td>
+                      <td>{{ report.reportId || 'N/A' }}</td>
+                    </tr>
+                    <tr>
                       <td><strong>Description</strong></td>
                       <td>{{ report.description || 'N/A' }}</td>
                     </tr>
@@ -113,15 +117,15 @@
                     </tr>
                     <tr>
                       <td><strong>Incident Type</strong></td>
-                      <td>{{ report.incidentType || 'N/A' }}</td>
+                      <td class="capitalise">{{ report.incidentType || 'N/A' }}</td>
                     </tr>
                     <tr>
                       <td><strong>Severity</strong></td>
-                      <td>{{ report.severity }}</td>
+                      <td class="capitalise">{{ report.severity }}</td>
                     </tr>
                     <tr>
                       <td><strong>Status</strong></td>
-                      <td>{{ report.status }}</td>
+                      <td class="capitalise">{{ report.status }}</td>
                     </tr>
                     <tr>
                       <td><strong>Sighting Date</strong></td>

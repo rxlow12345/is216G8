@@ -182,6 +182,11 @@
   color: white;
 }
 
+/* ======================== Capitalisation (in Report) ======================== */
+.capitalise {
+  text-transform: capitalize;
+}
+
 /* ======================== Tags ======================== */
 .tag {
   display: inline-block;
