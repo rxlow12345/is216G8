@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 <!DOCTYPE html>
 <html lang="en">
 
@@ -108,7 +109,8 @@
         </div>
     </nav>
 
-    <div id="topBanner">
+    <!-- Top Banner removed to match other pages style -->
+    <div id="topBanner" style="display: none !important;">
         <header class="text-center mb-2">
             <h1>Report Wildlife</h1>
         </header>
@@ -330,30 +332,26 @@
 </div> -->
 
     </main>
-    <div id="footer"></div>
-    <script>
-        // Dynamically load the footer
-        fetch('footer.html')
-            .then(response => {
-                if (!response.ok) throw new Error('Failed to load footer');
-                return response.text();
-            })
-            .then(html => {
-                document.getElementById('footer').innerHTML = html;
-
-                // Re-run any scripts inside footer.html
-                document
-                    .getElementById('footer')
-                    .querySelectorAll('script')
-                    .forEach(oldScript => {
-                        const newScript = document.createElement('script');
-                        if (oldScript.src) newScript.src = oldScript.src;
-                        else newScript.textContent = oldScript.textContent;
-                        document.body.appendChild(newScript);
-                    });
-            })
-            .catch(err => console.error(err));
-    </script>
+    <!-- Footer removed - matching Vue component style -->
+    <style>
+        /* Remove footer and emergency strip */
+        footer, .emergency-strip, .footer-body, #footer, [class*="footer"], [class*="emergency"] {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
+        
+        /* Remove any top banners */
+        .bannerTitles, #topBanner {
+            display: none !important;
+        }
+        
+        /* Match other pages background */
+        body {
+            background-color: #FEFAE0 !important;
+        }
+    </style>
 
 
 

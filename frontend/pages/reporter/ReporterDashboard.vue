@@ -48,7 +48,7 @@ const buttonItems = ref([
     buttonText: 'Create New Report',
     buttonClass: 'brownBtn',
     description: 'Report a new wildlife incident',
-    link: '/new_report/report.html',
+    link: '/new-report',
     align: 'left'
   },
   {
