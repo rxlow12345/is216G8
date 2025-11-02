@@ -1,12 +1,5 @@
 <template>
   <div id="app">
-    <!-- Example router links -->
-    <!-- <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/status-update">Go to Status Update</router-link>
-      <a href="../pages/report.html">Report</a>
-    </nav> -->
-
     <header>
       <NavBar></NavBar>
     </header>

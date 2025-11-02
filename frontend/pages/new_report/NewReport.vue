@@ -598,13 +598,12 @@ onMounted(async () => {
       const url = args[0];
       if (typeof url === 'string' && (url.includes('footer.html') || url.includes('Footer'))) {
         // Block the fetch and return empty response
-        console.log('Blocked footer.html fetch');
         return Promise.resolve(new Response('', { status: 200, statusText: 'OK' }));
       }
       return originalFetch.apply(this, args);
     };
   } catch (e) {
-    console.log('Could not intercept fetch:', e);
+    // Silently handle fetch interception errors
   }
   
   // Also prevent any script that tries to load footer
@@ -786,8 +785,7 @@ onMounted(async () => {
   // Automatically get current location on mount (non-blocking)
   // This runs independently and won't block image upload/processing
   handleLiveLocation().catch(error => {
-    console.log('Could not get current location automatically:', error);
-    // Don't show alert on automatic failure, just log it
+    // Silently handle automatic location failure - user can click button manually
   });
 });
 
@@ -2115,20 +2113,28 @@ textarea:focus {
 .button-group {
   display: flex;
   justify-content: space-between;
+  gap: 1rem;
   margin-top: 2rem;
   padding-top: 2rem;
   border-top: 1px solid #f0ebe0;
 }
 
-.btn {
-  padding: 0.9rem 2rem;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: none;
-  font-size: 1rem;
-  line-height: 1.6;
+.button-group .btn {
+  flex: 0 1 auto !important;
+  min-width: 120px !important;
+  max-width: 200px !important;
+  width: auto !important;
+}
+
+.new-report-page .btn {
+  padding: 0.9rem 2rem !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  border: none !important;
+  font-size: 1rem !important;
+  line-height: 1.6 !important;
 }
 
 .btn-secondary {
@@ -2295,8 +2301,9 @@ div:not(.button-group):not(.content-card):not(.form-group):not(.form-row) {
     gap: 1rem;
   }
   
-  .btn {
+  .button-group .btn {
     width: 100%;
+    max-width: 100%;
     justify-content: center;
   }
 

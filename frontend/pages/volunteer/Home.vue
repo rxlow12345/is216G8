@@ -61,7 +61,7 @@
                           <div class="card-body">
                             <h6 class="card-title">Submit Report</h6>
                             <p class="card-text small">Create a new wildlife incident report</p>
-                            <a href="/pages/new_report/report.html" class="btn btn-sm btn-success">Create Report</a>
+                            <router-link to="/new-report" class="btn btn-sm btn-success">Create Report</router-link>
                           </div>
                         </div>
                       </div>

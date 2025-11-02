@@ -30,11 +30,9 @@ try {
       "client_x509_cert_url": process.env.FIREBASE_CLIENT_X509_CERT_URL,
       "universe_domain": "googleapis.com"
     };
-    console.log("[Firebase Init] Using environment variables for Firebase configuration");
   } else if (fs.existsSync(defaultPath)) {
     // Use service account file
     serviceAccount = JSON.parse(fs.readFileSync(defaultPath, "utf8"));
-    console.log("[Firebase Init] Using service-account.json for Firebase configuration");
   } else {
     throw new Error(`Firebase configuration not found. Please either:
 1. Set Firebase environment variables (FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, etc.)
@@ -44,27 +42,16 @@ try {
   console.error("[Firebase Init] Error loading Firebase configuration:", error.message);
   throw error;
 }
-
-// if (!fs.existsSync(serviceAccountPath)) {
-//   console.error(`Error: [Firebase Init] service-account.json not found at: ${serviceAccountPath}`);
-//   process.exit(1);
-// }
-
-// const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, "utf8"));
-
 if (!getApps().length) {
   try {
     initializeApp({
       credential: admin.credential.cert(serviceAccount),
       storageBucket: serviceAccount.project_id + '.appspot.com'
     });
-    console.log(`[Firebase Init] Firebase Admin initialized with Storage (Project: ${serviceAccount.project_id})`);
   } catch (error) {
     console.error("[Firebase Init] Failed to initialize Firebase:", error.message);
     throw error;
   }
-} else {
-  console.log("[Firebase Init] Firebase Admin already initialized");
 }
 
 export const db = getFirestore();

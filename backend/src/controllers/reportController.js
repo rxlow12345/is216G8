@@ -503,7 +503,6 @@ export const deleteReport = async (req, res) => {
       io.emit('report-deleted', docRef.id);
     }
     
-    console.log(`🗑️ Report deleted: ${id}`);
     
     res.json({ 
       success: true,
