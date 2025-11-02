@@ -90,7 +90,8 @@
               <i class="bi bi-funnel me-2"></i>Filter & Search Reports
             </h5>
             <div class="row g-3">
-              <div class="col-md-5">
+              <!-- Status Filter -->
+              <div class="col-md-4">
                 <label for="status-filter" class="form-label custom-label">Filter by Status</label>
                 <select id="status-filter" class="form-select custom-select" v-model="statusFilter">
                   <option value="all">All Statuses</option>
@@ -99,10 +100,28 @@
                   <option value="resolved">Resolved</option>
                 </select>
               </div>
-              <div class="col-md-1">
 
+              <!-- Urgency Filter -->
+              <div class="col-md-4">
+                <label for="urgency-filter" class="form-label custom-label">Filter by Urgency</label>
+                <select id="urgency-filter" class="form-select custom-select" v-model="urgencyFilter">
+                  <option value="all">All Reports</option>
+                  <option value="urgent">Urgent Only</option>
+                  <option value="non-urgent">Non-Urgent</option>
+                </select>
               </div>
-              <div class="col-md-6">
+
+              <!-- Sort by Time -->
+              <div class="col-md-4">
+                <label for="sort-filter" class="form-label custom-label">Sort by Reporting Time</label>
+                <select id="sort-filter" class="form-select custom-select" v-model="sortOrder">
+                  <option value="desc">Newest First</option>
+                  <option value="asc">Oldest First</option>
+                </select>
+              </div>
+
+              <!-- Search -->
+              <div class="col-12">
                 <label for="search-input" class="form-label custom-label">Search by Report ID or Species</label>
                 <div class="search-wrapper">
                   <i class="bi bi-search search-icon"></i>
@@ -284,19 +303,37 @@ export default {
       searchQuery: '',
       selectedReport: null,
       userEmail: '',
-      showBackToTop: false
+      showBackToTop: false,
+      sortOrder: 'desc',
+      urgencyFilter: 'all'
     };
   },
   computed: {
     filteredReports() {
-      return this.reports.filter(report => {
+      let filtered = this.reports.filter(report => {
         const statusMatch = this.statusFilter === 'all' || report.status === this.statusFilter;
+        const urgencyMatch =
+          this.urgencyFilter === 'all' ||
+          (this.urgencyFilter === 'urgent' && report.isUrgent) ||
+          (this.urgencyFilter === 'non-urgent' && !report.isUrgent);
+
         const searchLower = this.searchQuery.toLowerCase();
         const speciesName = report.speciesName || 'Unknown Species';
-        const searchMatch = report.reportId.toLowerCase().includes(searchLower) ||
+        const searchMatch =
+          (report.reportId && report.reportId.toLowerCase().includes(searchLower)) ||
           speciesName.toLowerCase().includes(searchLower);
-        return statusMatch && searchMatch;
+
+        return statusMatch && urgencyMatch && searchMatch;
       });
+
+      // Sort by report date
+      filtered.sort((a, b) => {
+        const dateA = a.createdAt?._seconds || 0;
+        const dateB = b.createdAt?._seconds || 0;
+        return this.sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+      });
+
+      return filtered;
     },
     totalReports() { return this.reports.length; },
     pendingReports() { return this.reports.filter(r => r.status === 'pending').length; },
