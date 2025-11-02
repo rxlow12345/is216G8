@@ -22,13 +22,17 @@
     </div>
 
     <div class = "word-styles">
-        <p class = "words titles">Titles should be 40px, 600 font weight</p>
-        <p class = "words subtitles"> Subtitles should be 26px, 400 font weight </p>
+        <p class = "words titles">Titles should be 48px, 600 font weight</p>
+        <p class = "words subtitles"> Subtitles should be 30px, 400 font weight </p>
         <p class = "words anyotherwords"> Any other words should be between 18-20px</p>
         <p class = "words wordshadows"> These are words with shadows </p>
         <br>
-        -------------------------------------------CARDS---------------------------------------------------------------------------------------------
     </div>
+    <div class = "banner">
+        <p class="banner-titles"> These are words with banners (usually title) </p>
+    </div>
+        -------------------------------------------CARDS---------------------------------------------------------------------------------------------
+
 
     <section class="about-section">
       <div class="container">
@@ -83,6 +87,16 @@ rgb(254, 250, 224); WHITE YELLOW
 #BC6C25; Darker brown
 */
 
+.banner-titles{
+    background-color: #285436;
+    text-align: center;
+    font-size: 48px;
+    font-weight: 600;
+    color:rgb(254, 250, 224);
+    text-shadow: 2px 2px 5px rgb(254, 250, 224);
+    padding-top: 20px;
+    padding-bottom: 5px; /*padding different due to navbar */
+}
 /* MUST FOLLOW Common Button STYLE */
 .btn {
     padding: 16px 32px;
@@ -145,7 +159,7 @@ rgb(254, 250, 224); WHITE YELLOW
 }
 
 .linear-btn:hover {
-    background: #606C38;;
+    background: linear-gradient(135deg, #10b981 30%, #059669 70%);
     color: white;
 }
 
@@ -164,17 +178,17 @@ rgb(254, 250, 224); WHITE YELLOW
 }
 
 .titles {
-    font-size: 40px;
+    font-size: 48px;
     font-weight: 600;
 }
 
 .subtitles {
-    font-size: 26px;
+    font-size: 30px;
     font-weight: 400;
 }
 
 .anyotherwords {
-    font-size: 18px;
+    font-size: 20px;
 }
 
 .wordshadows {

@@ -4,8 +4,11 @@
     <!--Moving Cursor-->
     <OtterCursor animal="🦦" :speed="0.08"/>
 
+    <!-- Floating Background -->
+     <FloatingBackground/>
+
     <!-- Top Banner -->
-    <div id="topBanner">
+    <div class="bannerTitles">
       <header class="text-center mb-2">
         <h1>🌿 Wildlife Guidebook 🌿</h1>
         <p>Discover the amazing biodiversity of Singapore</p>
@@ -177,10 +180,11 @@ import animalsData from '../src/public/guidebook.json'
 import '../pages/css/guidebook.css'
 import '../pages/css/common.css'
 import OtterCursor from '../src/components/OtterCursor.vue';
+import FloatingBackground from '../src/components/FloatingBackground.vue';
 
 export default {
   name: 'Guidebook',
-  components:{OtterCursor},
+  components:{OtterCursor, FloatingBackground},
   data() {
     return {
       allAnimals: animalsData,

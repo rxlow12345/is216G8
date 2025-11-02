@@ -2,9 +2,10 @@
   //import { number } from 'mathjs';
 import animalsData from '../../../src/public/guidebook.json'
 import OtterCursor from '../../../src/components/OtterCursor.vue';
+import FloatingBackground from '../../../src/components/FloatingBackground.vue';
 
   export default {
-    components: {OtterCursor},
+    components: {OtterCursor, FloatingBackground},
     data() {
       return {
         allAnimals: animalsData, 
@@ -205,6 +206,10 @@ import OtterCursor from '../../../src/components/OtterCursor.vue';
 <template>
   <!-- Otter Cursor -->
    <OtterCursor animal="🦦" :speed="0.08"/>
+
+  <!-- Floating Background -->
+   <FloatingBackground/>
+
   <!-- Top Banner -->
   <div id="topBanner">
     <header class="text-center mb-2">

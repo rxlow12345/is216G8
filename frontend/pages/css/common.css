@@ -12,6 +12,18 @@ rgb(254, 250, 224); WHITE YELLOW
     padding: 0;
 }
 
+/* Banner Titles */
+.bannerTitles{
+    background-color: #285436;
+    text-align: center;
+    font-size: 40px;
+    font-weight: 600;
+    color:rgb(254, 250, 224);
+    text-shadow: 0 2px 5px rgb(254, 250, 224);
+    padding-top: 20px;
+    padding-bottom: 5px;
+}
+
 /** Back to Top **/
 .back-to-top {
   position: fixed;
