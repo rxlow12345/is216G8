@@ -20,7 +20,7 @@
       <div class="buttonItemLeft">
         <img src="../../src/public/assets/duck.jpg" alt="Duck" class="sectionImg">
         <div class="content">
-          <a href="/new_report/report.html" class="btn linearBtn">Create New Report</a>
+          <a href="/new_report/report.html" class="btn brownBtn">Create New Report</a>
           <p class="buttonDescription">Report a new wildlife incident</p>
         </div>
       </div>
@@ -28,7 +28,7 @@
       <div class="buttonItemRight">
         <img src="../../src/public/assets/monkey.jpg" alt="Monkey" class="sectionImg">
         <div class="content">
-          <a :href="'/status/' + userId" class="btn brownBtn">Check Report Status</a>
+          <a :href="'/status/' + userId" class="btn greenBtnLg">Check Report Status</a>
           <p class="buttonDescription">Track the status of your existing reports</p>
         </div>
       </div>
@@ -36,7 +36,7 @@
       <div class="buttonItemLeft">
         <img src="../../src/public/assets/eagle.jpg" alt="Eagle" class="sectionImg">
         <div class="content">
-          <a href="/past-reports" class="btn greenBtnLg">View Past Reports</a>
+          <a href="/past-reports" class="btn brownBtn">View Past Reports</a>
           <p class="buttonDescription">View reports you've submitted previously</p>
         </div>
       </div>
@@ -44,35 +44,11 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue';
-import { getCurrentUser } from '../../src/api/auth.js';
-import '../css/common.css'
-
-// Reactive data
-const userEmail = ref('');
-const userId = ref('');
-
-// Get current user info on component mount
-onMounted(async () => {
-  try {
-    const user = await getCurrentUser();
-    if (user) {
-      userEmail.value = user.username || user.email;
-      userId.value = user.uid; // Assuming user.uid is the Firebase user ID
-    }
-  } catch (error) {
-    console.error('Error getting user info:', error);
-  }
-});
-</script>
-
 <style scoped>
 .welcomeMessage {
   text-align: center;
   padding: 10px 0;
-  margin-top: 30px;
-  margin-bottom: 10px;
+  margin: 40px 10px 20px 10px;
 }
 
 .alertCustom {
@@ -98,47 +74,62 @@ onMounted(async () => {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 40px;
   align-items: center;
   min-height: 60vh;
-  margin-bottom: 30px;
+  margin-bottom: 60px;
 }
 
 .buttonSections img {
   border-radius: 10px;
 }
 
-/* Alternate Image Section Styling */
 .buttonItemLeft,
 .buttonItemRight {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
   width: 100%;
-  max-width: 800px;
-  background-color: #FEFAE0;
+  max-width: 950px;
+  background-color: white;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
 }
 
-/* Position the images */
+.buttonItemLeft {
+  flex-direction: row;
+}
+
+.buttonItemRight {
+  flex-direction: row-reverse;
+}
+
+.buttonItemLeft img{
+  margin: 15px 0px 15px 15px;
+}
+
+.buttonItemRight img{
+  margin: 15px 15px 15px 0px;
+}
+
 .buttonItemLeft .sectionImg,
 .buttonItemRight .sectionImg {
-  width: 45%;
+  width: 48%;
   height: auto;
   object-fit: cover;
 }
 
 .content {
-  width: 55%;
+  width: 52%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin: 25px 0px;
 }
 
+/* Button Styling */
 .buttonItem .btn {
   width: 100%;
   padding: 12px;
@@ -153,7 +144,9 @@ onMounted(async () => {
 
 .buttonDescription {
   margin-top: 10px;
-  font-size: 14px;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+  font-size: 15px;
   color: #333;
 }
 
@@ -166,11 +159,6 @@ onMounted(async () => {
 
 .greenBtnLg:hover {
   background-color: #606C38;
-}
-
-.linearBtn {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: #fff;
 }
 
 .linearBtn:hover {
@@ -186,7 +174,12 @@ onMounted(async () => {
   background-color: #DDA15E;
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
+  .welcomeMessage {
+    margin: 40px 10px 0px 10px;
+  }
+
   .buttonSections {
     width: 100%;
     padding: 20px;
@@ -200,17 +193,27 @@ onMounted(async () => {
 
   .buttonItemLeft .sectionImg,
   .buttonItemRight .sectionImg {
-    width: 80%;
+    width: 95%;
     height: auto;
-  }
-
-  .alertCustom {
-    width: 90%;
   }
 
   .buttonItem {
     width: 100%;
     padding: 20px;
+  }
+
+  .content {
+    width: 100%;
+  }
+
+  .content a {
+    width: 240px;
+  }
+}
+
+@media (max-width: 520px) {
+  .welcomeMessage {
+    margin: 10px 10px 0px 10px;
   }
 }
 </style>
