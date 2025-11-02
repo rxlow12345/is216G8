@@ -35,25 +35,27 @@
       </div>
 
       <!-- Filter Section -->
-      <div class="filterSection">
-        <select v-model="selectedSeverity" @change="filterReports" class="filterSelect">
-          <option value="">All Severities</option>
-          <option value="low">Low</option>
-          <option value="moderate">Moderate</option>
-          <option value="urgent">Urgent</option>
-        </select>
+      <div class="filterSpace">
+        <div class="filterSection">
+          <select v-model="selectedSeverity" @change="filterReports" class="filterSelect">
+            <option value="">All Severities</option>
+            <option value="low">Low</option>
+            <option value="moderate">Moderate</option>
+            <option value="urgent">Urgent</option>
+          </select>
 
-        <select v-model="selectedStatus" @change="filterReports" class="filterSelect">
-          <option value="">All Statuses</option>
-          <option value="pending">Pending</option>
-          <option value="active">Active</option>
-          <option value="resolved">Resolved</option>
-        </select>
+          <select v-model="selectedStatus" @change="filterReports" class="filterSelect">
+            <option value="">All Statuses</option>
+            <option value="pending">Pending</option>
+            <option value="active">Active</option>
+            <option value="resolved">Resolved</option>
+          </select>
 
-        <select v-model="sortOption" @change="sortReports" class="filterSelect">
-          <option value="newest">Newest First</option>
-          <option value="oldest">Oldest First</option>
-        </select>
+          <select v-model="sortOption" @change="sortReports" class="filterSelect">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+          </select>
+        </div>
       </div>
 
       <!-- Reports List -->
