@@ -89,7 +89,7 @@
             <h5 class="filter-title mb-4">
               <i class="bi bi-funnel me-2"></i>Filter & Search Reports
             </h5>
-            <div class="row g-3">
+            <div class="row g-4">
               <!-- Status Filter -->
               <div class="col-md-4">
                 <label for="status-filter" class="form-label custom-label">Filter by Status</label>
@@ -121,7 +121,7 @@
               </div>
 
               <!-- Search -->
-              <div class="col-12">
+              <div class="col-12 mt-2">
                 <label for="search-input" class="form-label custom-label">Search by Report ID or Species</label>
                 <div class="search-wrapper">
                   <i class="bi bi-search search-icon"></i>
