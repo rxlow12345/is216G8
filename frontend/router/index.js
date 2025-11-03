@@ -16,7 +16,6 @@ import Game from '../pages/guidebook/guidebook game/game.vue';
 import GuideBook from '../pages/GuideBook.vue';
 import Map from '../pages/map/Map.vue';
 import Status from '../pages/reporter/Status.vue';
-import PastReports from '../pages/past_reports/PastReports.vue';
 import Common from '../pages/Common.vue';
 import LearnMore from '../src/components/LearnMore.vue';
 import AllReporterReports from '../pages/reporter/AllReporterReports.vue';
@@ -106,11 +105,6 @@ const routes = [
     component: Donate,
     meta: { requiresAuth: false }
   },
-  {
-    path: '/past-reports',
-    name: 'Past Reports',
-    component: PastReports
-  }, 
   {
     path: '/learn-more',
     name: 'LearnMore',

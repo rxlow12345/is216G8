@@ -16,6 +16,7 @@
     "canvas-confetti": "^1.9.4",
     "firebase": "^12.4.0",
     "leaflet": "^1.9.4",
+    "mathjs": "^15.0.0",
     "socket.io-client": "^4.8.1",
     "vue": "^3.4.0",
     "vue-router": "^4.6.3"

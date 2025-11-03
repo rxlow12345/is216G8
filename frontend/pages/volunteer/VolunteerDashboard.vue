@@ -18,7 +18,7 @@
 
     <div class="buttonSections">
       <div class="buttonItem buttonItemLeft">
-        <img src="../../src/public/assets/duck.jpg" alt="Map" class="sectionImg">
+        <img src="../../src/public/assets/eagle.jpg" alt="Map" class="sectionImg">
         <div class="content">
           <router-link to="/map" class="btn greenBtnLg">Open Map</router-link>
           <p class="buttonDescription">View live reports on the operations map</p>
@@ -26,7 +26,7 @@
       </div>
 
       <div class="buttonItem buttonItemRight">
-        <img src="../../src/public/assets/monkey.jpg" alt="Active" class="sectionImg">
+        <img src="../../src/public/assets/squirrel2.jpg" alt="Active" class="sectionImg">
         <div class="content">
           <router-link to="/volunteer/active" class="btn brownBtn">Active Reports</router-link>
           <p class="buttonDescription">See reports you are currently handling</p>
@@ -34,7 +34,7 @@
       </div>
 
       <div class="buttonItem buttonItemLeft">
-        <img src="../../src/public/assets/duck.jpg" alt="Past" class="sectionImg">
+        <img src="../../src/public/assets/turtle.jpg" alt="Past" class="sectionImg">
         <div class="content">
           <router-link to="/volunteer/past" class="btn greenBtnLg">Past Reports</router-link>
           <p class="buttonDescription">Browse completed reports</p>
