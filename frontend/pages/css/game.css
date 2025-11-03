@@ -2,12 +2,14 @@
   box-sizing: border-box !important;
 }
 
-/* Top Banner */
+/* body .bannerTitles {
+  margin-top: 97px;
+} */
+
 h1 {
   color: rgb(254, 250, 224);
   font-family: Georgia, 'Times New Roman', Times, serif;
 }
-
 
 /* Difficulty Selection */
 #customisation {

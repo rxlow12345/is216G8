@@ -1,31 +1,20 @@
 <!-- frontend/src/pages/Signup.vue -->
 <template>
-  <div class="signup-wrapper">
+  <div class="wrapper">
     <!-- Floating Animals Background -->
-    <div class="floating-animals">
-      <div 
-        v-for="(animal, index) in floatingAnimals" 
-        :key="index"
-        class="floating-animal"
-        :style="getAnimalStyle(index)"
-      >
-        {{ animal }}
-      </div>
-    </div>
+    <FloatingBackground/>
 
-    <!-- Decorative Leaves -->
-    <div class="leaf leaf-top">🍃</div>
-    <div class="leaf leaf-bottom">🍃</div>
+    <OtterCursor animal="🦦" :speed="0.08"/>
 
-    <div class="container">
+    <div class="loginContainer">
       <div class="auth-card">
         <!-- Header with Logo -->
         <div class="header">
           <div class="logo">
+            <span class="logo-icon">🐾</span>
             <span class="logo-icon">🦊</span>
-            <span class="logo-icon">🌿</span>
           </div>
-          <h2 class="text-center mb-4">CritterConnect</h2>
+          <h2 class="title">CritterConnect</h2>
           <p class="subtitle">Join our wildlife community</p>
         </div>
         
@@ -149,7 +138,7 @@
                 @click="showConfirmPassword = !showConfirmPassword"
                 :title="showConfirmPassword ? 'Hide password' : 'Show password'"
               >
-                {{ showConfirmPassword ? '🙈' : '👁️' }}
+                {{ showConfirmPassword ? '👁️‍🗨️' : '👁️' }}
               </button>
             </div>
             <div v-if="confirmPasswordBlurred && password !== confirmPassword && confirmPassword.length > 0" class="field-error">
@@ -160,7 +149,7 @@
           <div class="d-grid">
             <button 
               type="submit" 
-              class="btn btn-primary"
+              class="btn green-btn-lg"
               :disabled="loading || !isFormValid"
             >
               <span v-if="loading" class="spinner"></span>
@@ -193,6 +182,11 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { signup } from '../../src/api/auth.js';
+import OtterCursor from '../../src/components/OtterCursor.vue';
+import FloatingBackground from '../../src/components/FloatingBackground.vue';
+import '../css/common.css'
+import '../css/login.css'
+import confetti from 'canvas-confetti';
 
 // Reactive data
 const username = ref('');
@@ -335,6 +329,8 @@ async function handleSignup() {
   try {
     await signup(username.value, email.value, password.value, role.value);
     success.value = 'Account created successfully! Redirecting to login...';
+
+    celebrateSignup();
     
     // Redirect to login after 2 seconds
     setTimeout(() => {
@@ -356,73 +352,14 @@ async function handleSignup() {
     loading.value = false;
   }
 }
+
+function celebrateSignup() {
+  confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+  confetti({ particleCount: 50, spread: 120, origin: { y: 0.7 } });
+}
 </script>
 
 <style scoped>
-.signup-wrapper {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-}
-
-/* Floating Animals */
-.floating-animals {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.floating-animal {
-  position: absolute;
-  font-size: 40px;
-  opacity: 0.2;
-  animation: float 20s infinite ease-in-out;
-}
-
-@keyframes float {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  25% { transform: translate(30px, -30px) rotate(10deg); }
-  50% { transform: translate(-20px, 20px) rotate(-10deg); }
-  75% { transform: translate(40px, 10px) rotate(5deg); }
-}
-
-/* Decorative Leaves */
-.leaf {
-  position: absolute;
-  font-size: 80px;
-  opacity: 0.15;
-  color: #10b981;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.leaf-top {
-  top: 40px;
-  left: 40px;
-}
-
-.leaf-bottom {
-  bottom: 40px;
-  right: 40px;
-  transform: rotate(180deg);
-}
-
-/* Container */
-.container {
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  max-width: 440px;
-}
-
 /* Auth Card */
 .auth-card {
   background: rgba(255, 255, 255, 0.1);
@@ -438,52 +375,11 @@ async function handleSignup() {
   transform: translateY(-5px);
 }
 
-/* Header */
-.header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.logo {
-  font-size: 50px;
-  margin-bottom: 16px;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-}
-
-.logo-icon {
-  animation: bounce 2s infinite;
-}
-
-.logo-icon:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-h2 {
-  color: #fff;
-  font-size: 36px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  letter-spacing: -0.5px;
-}
-
-.subtitle {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 15px;
-  margin: 0;
-}
-
 /* Alert Messages - Made MORE VISIBLE */
 .alert-danger {
   background: rgba(220, 38, 38, 0.9) !important;
   border: 2px solid #ef4444 !important;
-  color: #ffffff !important;
+  color: black !important;
   padding: 16px;
   border-radius: 12px;
   margin-bottom: 20px;
@@ -495,7 +391,7 @@ h2 {
 .alert-success {
   background: rgba(5, 150, 105, 0.9) !important;
   border: 2px solid #10b981 !important;
-  color: #ffffff !important;
+  color: #285436 !important;
   padding: 16px;
   border-radius: 12px;
   margin-bottom: 20px;
@@ -526,7 +422,7 @@ h2 {
 
 .form-label {
   display: block;
-  color: rgba(255, 255, 255, 0.9);
+  color: #285436;
   font-size: 14px;
   font-weight: 500;
   margin-bottom: 8px;
@@ -552,16 +448,16 @@ h2 {
   width: 100%;
   padding: 14px 50px 14px 44px;
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid  #285436;
   border-radius: 12px;
-  color: #fff;
+  color: black;
   font-size: 15px;
   transition: all 0.3s;
   outline: none;
 }
 
 .form-control::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+  color: #285436;
 }
 
 .form-control:focus {
@@ -578,32 +474,16 @@ h2 {
 
 /* Field-level Error Messages */
 .field-error {
-  color: #fca5a5;
+  color: #ef4444;
   font-size: 13px;
   margin-top: 6px;
   font-weight: 500;
 }
 
-/* Select dropdown */
-.form-select {
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  background-size: 16px;
-  cursor: pointer;
-}
-
-.form-select option {
-  background: #065f46;
-  color: #fff;
-  padding: 10px;
-}
-
 /* Form Helper Text */
 .form-text {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
+  color: #606C38;
   margin-top: 6px;
   display: block;
 }
@@ -634,13 +514,14 @@ h2 {
   margin-top: 24px;
 }
 
-.btn-primary {
+.green-btn-lg {
   width: 100%;
-  padding: 16px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  padding: 16px 32px;
+  border-radius: 15px;
+  background-color: #285436;
+  color: rgb(254, 250, 224);
   border: none;
   border-radius: 12px;
-  color: #fff;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -648,17 +529,19 @@ h2 {
   box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
 }
 
-.btn-primary:hover:not(:disabled) {
+.green-btn-lg:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 12px 28px rgba(16, 185, 129, 0.4);
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  background-color: #606C38;
+  color: #fff;
+  border: 1px solid #285436;
 }
 
-.btn-primary:active:not(:disabled) {
+.green-btn-lg:active:not(:disabled) {
   transform: translateY(0);
 }
 
-.btn-primary:disabled {
+.green-btn-lg:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -692,8 +575,12 @@ h2 {
 }
 
 .login-text {
-  color: rgba(255, 255, 255, 0.95);
+  background-color: rgb(254, 250, 224);
+  border: 1px solid #285436;
+  border-radius: 12px;
+  color: #285436;
   font-size: 15px;
+  padding: 5px;
   margin: 0;
   font-weight: 500;
 }
@@ -709,26 +596,6 @@ h2 {
 .login-link:hover {
   color: #6ee7b7;
   text-decoration: underline;
-}
-
-/* Footer Critters */
-.footer-critters {
-  text-align: center;
-  font-size: 36px;
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 24px;
-}
-
-.critter {
-  display: inline-block;
-  transition: transform 0.3s;
-  cursor: pointer;
-}
-
-.critter:hover {
-  transform: scale(1.5) rotate(30deg);
 }
 
 /* Responsive */

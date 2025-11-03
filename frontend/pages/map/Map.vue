@@ -1,4 +1,5 @@
 <template>
+  <BackToTop/>
   <!-- Left Sidebar -->
   <div class="rescuemapwrapper">
     <div class="sidebar">
@@ -59,6 +60,7 @@ import reportApi from "../../src/api/reportApi";
 import socket from "../../src/api/socket";
 import { map } from "leaflet";
 import acceptCaseModal from "../../src/components/acceptCaseModal.vue";
+import BackToTop from "../../src/components/BackToTop.vue";
 
 
 export default {
@@ -67,6 +69,7 @@ export default {
     MapView,
     ReportCard,
     acceptCaseModal,
+    BackToTop
   },
   data() {
     return {

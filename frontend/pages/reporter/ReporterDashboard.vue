@@ -1,4 +1,6 @@
 <template>
+  <BackToTop/>
+  <FloatingBackground/>
   <div class="container-fluid p-0 reporterDashboard">
     <!-- Top Banner -->
     <div id="topBanner" class="bannerTitles">
@@ -37,6 +39,8 @@
 import { ref, onMounted } from 'vue';
 import { getCurrentUser } from '../../src/api/auth.js';
 import '../css/common.css'
+import BackToTop from '../../src/components/BackToTop.vue';
+import FloatingBackground from '../../src/components/FloatingBackground.vue';
 
 const userEmail = ref('');
 const userId = ref('');
@@ -48,26 +52,17 @@ const buttonItems = ref([
     buttonText: 'Create New Report',
     buttonClass: 'brownBtn',
     description: 'Report a new wildlife incident',
-    link: '/new_report/report.html',
+    link: '/new-report',
     align: 'left'
   },
   {
     imgSrc: '../../src/public/assets/monkey.jpg',
     imgAlt: 'Monkey',
-    buttonText: 'Check Report Status',
+    buttonText: 'View All Reports',
     buttonClass: 'greenBtnLg',
-    description: 'Track the status of your existing reports',
+    description: 'View reports you\'ve submitted previously',
     link: '/all-reports',
     align: 'right'
-  },
-  {
-    imgSrc: '../../src/public/assets/eagle.jpg',
-    imgAlt: 'Eagle',
-    buttonText: 'View Past Reports',
-    buttonClass: 'brownBtn',
-    description: 'View reports you\'ve submitted previously',
-    link: '/past-reports',
-    align: 'left'
   }
 ]);
 

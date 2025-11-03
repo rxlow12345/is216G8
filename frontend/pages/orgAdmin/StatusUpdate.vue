@@ -299,7 +299,8 @@
 <script>
 import api from '../../src/api/reportApi.js';
 import { logout, getCurrentUser } from '../../src/api/auth.js';
-import Modal from './Modal.vue'
+import Modal from './Modal.vue';
+import '../css/common.css'
 
 export default {
   name: 'StatusUpdate',

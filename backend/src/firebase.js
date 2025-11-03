@@ -12,33 +12,46 @@ const __dirname = path.dirname(__filename);
 
 // Prefer env, fallback to default path
 const defaultPath = path.join(__dirname, "../service-account.json");
-const serviceAccount = process.env.FIREBASE_PROJECT_ID ? {
-  "type": "service_account",
-  "project_id": process.env.FIREBASE_PROJECT_ID,
-  "private_key_id": process.env.FIREBASE_PRIVATE_KEY_ID,
-  "private_key": process.env.FIREBASE_PRIVATE_KEY,
-  "client_email": process.env.FIREBASE_CLIENT_EMAIL,
-  "client_id": process.env.FIREBASE_CLIENT_ID,
-  "auth_uri": process.env.FIREBASE_AUTH_URI,
-  "token_uri": process.env.FIREBASE_TOKEN_URI,
-  "auth_provider_x509_cert_url": process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
-  "client_x509_cert_url": process.env.FIREBASE_CLIENT_X509_CERT_URL,
-  "universe_domain": "googleapis.com"
-} : JSON.parse(fs.readFileSync(defaultPath, "utf8"));
+let serviceAccount;
 
-// if (!fs.existsSync(serviceAccountPath)) {
-//   console.error(`Error: [Firebase Init] service-account.json not found at: ${serviceAccountPath}`);
-//   process.exit(1);
-// }
-
-// const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, "utf8"));
-
+try {
+  if (process.env.FIREBASE_PROJECT_ID) {
+    // Use environment variables
+    serviceAccount = {
+      "type": "service_account",
+      "project_id": process.env.FIREBASE_PROJECT_ID,
+      "private_key_id": process.env.FIREBASE_PRIVATE_KEY_ID,
+      "private_key": process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'), // Handle escaped newlines
+      "client_email": process.env.FIREBASE_CLIENT_EMAIL,
+      "client_id": process.env.FIREBASE_CLIENT_ID,
+      "auth_uri": process.env.FIREBASE_AUTH_URI || "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": process.env.FIREBASE_TOKEN_URI || "https://oauth2.googleapis.com/token",
+      "auth_provider_x509_cert_url": process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
+      "client_x509_cert_url": process.env.FIREBASE_CLIENT_X509_CERT_URL,
+      "universe_domain": "googleapis.com"
+    };
+  } else if (fs.existsSync(defaultPath)) {
+    // Use service account file
+    serviceAccount = JSON.parse(fs.readFileSync(defaultPath, "utf8"));
+  } else {
+    throw new Error(`Firebase configuration not found. Please either:
+1. Set Firebase environment variables (FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, etc.)
+2. Place service-account.json file at: ${defaultPath}`);
+  }
+} catch (error) {
+  console.error("[Firebase Init] Error loading Firebase configuration:", error.message);
+  throw error;
+}
 if (!getApps().length) {
-  initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    storageBucket: serviceAccount.project_id + '.appspot.com'
-  });
-  console.log("[Firebase Init] Firebase Admin initialized with Storage");
+  try {
+    initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      storageBucket: serviceAccount.project_id + '.appspot.com'
+    });
+  } catch (error) {
+    console.error("[Firebase Init] Failed to initialize Firebase:", error.message);
+    throw error;
+  }
 }
 
 export const db = getFirestore();

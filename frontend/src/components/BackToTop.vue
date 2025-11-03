@@ -45,7 +45,7 @@ onUnmounted(() => {
   border: none;
   border-radius: 50px;
   padding: 10px 18px;
-  font-size: 0; /* remove spacing around inline text */
+  font-size: 0; 
   cursor: pointer;
   box-shadow: 0 6px 18px rgba(0,0,0,0.3);
   display: flex;

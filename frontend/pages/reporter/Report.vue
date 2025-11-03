@@ -1,5 +1,6 @@
 <!-- frontend/src/pages/report/Report.vue -->
 <template>
+  <BackToTop/>
   <div class="container-fluid">
     <!-- Header with Logout -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-success mb-4">
@@ -75,9 +76,9 @@
               
               <!-- Action Buttons -->
               <div class="mt-4">
-                <a href="/new_report/report.html" class="btn btn-success btn-lg me-3">
+                <router-link to="/new-report" class="btn btn-success btn-lg me-3">
                   <i class="bi bi-plus-circle"></i> Create New Report
-                </a>
+                </router-link>
                 <a href="/pages/report.html" class="btn btn-outline-primary btn-lg">
                   <i class="bi bi-file-text"></i> Alternative Report Form
                 </a>
@@ -94,6 +95,8 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { logout, getCurrentUser } from '../../api/auth.js';
+import BackToTop from '../../src/components/BackToTop.vue';
+import FloatingBackground from '../../src/components/FloatingBackground.vue';
 
 // Reactive data
 const userEmail = ref('');
