@@ -56,7 +56,7 @@
                   learn about common species in Singapore and you can even test your knowledge with our <strong>"Match the Card"</strong> game.
                   <br><br>
                   Spotted an injured critter? 
-                  <router-link to='/login' class = "description-link">Log in</router-link> now to <strong>submit a report</strong> and <strong>gain access to more features</strong> designed to help you stay connected and informed.
+                  <router-link to='/login' class = "description-link">Submit a report</router-link> now and <strong>gain access to more features</strong> designed to help you stay connected and informed.
               </p>
             </div>
 

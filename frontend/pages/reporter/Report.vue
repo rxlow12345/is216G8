@@ -1,5 +1,6 @@
 <!-- frontend/src/pages/report/Report.vue -->
 <template>
+  <BackToTop/>
   <div class="container-fluid">
     <!-- Header with Logout -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-success mb-4">
@@ -94,6 +95,8 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { logout, getCurrentUser } from '../../api/auth.js';
+import BackToTop from '../../src/components/BackToTop.vue';
+import FloatingBackground from '../../src/components/FloatingBackground.vue';
 
 // Reactive data
 const userEmail = ref('');

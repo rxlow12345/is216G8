@@ -6,6 +6,7 @@ import '../../css/common.css'
 import '../../css/game.css'
 import { getCurrentUser } from '../../../src/api/auth.js';
 import { db } from '../../../src/firebase.js';
+import confetti from 'canvas-confetti';
 import { collection, addDoc, query, orderBy, limit, getDocs, where } from 'firebase/firestore';
 
 export default {
@@ -243,6 +244,12 @@ export default {
         score: score,
         needsLogin: needsLogin
       };
+
+      confetti({
+        particleCount: 150, spread: 70,origin: { y: 0.6 },
+        particleCount: 150, spread: 70,origin: { y: 0.7 },
+        particleCount: 150, spread: 70,origin: { y: 0.9 }
+    });
 
       setTimeout(() => {
         this.showWinModal = true;

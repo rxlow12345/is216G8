@@ -1,5 +1,6 @@
 <!-- frontend/src/pages/volunteer/Home.vue -->
 <template>
+  <BackToTop/>
   <div class="container-fluid">
     <!-- Main Content -->
     <div class="container">
@@ -37,6 +38,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { logout, checkUserAuthAndRole } from '../../src/api/auth.js';
+import BackToTop from '../../src/components/BackToTop.vue';
 
 // Reactive data
 const userEmail = ref('');

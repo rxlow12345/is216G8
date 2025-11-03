@@ -1,4 +1,5 @@
 <template>
+  <BackToTop/>
   <div class="container-fluid p-0 userReportsPage">
     <!-- Top Banner -->
     <div id="topBanner" class="bannerTitles">
@@ -74,6 +75,8 @@ import api from '../../src/api/reportApi.js'
 import { getCurrentUser } from '../../src/api/auth.js'
 import '../css/pastReports.css'
 import '../css/common.css'
+import BackToTop from '../../src/components/BackToTop.vue'
+import FloatingBackground from '../../src/components/FloatingBackground.vue'
 
 export default {
   name: 'UserReports',

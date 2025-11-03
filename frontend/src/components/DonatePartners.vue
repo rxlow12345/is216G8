@@ -1,7 +1,7 @@
 <!-- DonatePartners.vue -->
 <template>
   <section class="container my-5">
-    <h2 class="fw-bold text-success text-center mb-4">Support Our Trusted Partners</h2>
+    <h2 class="fw-bold text-center mb-4">Support Our Trusted Partners</h2>
 
 <div class="row g-4">
   <div class="col-6 col-md-4" v-for="org in orgs" :key="org.id">
@@ -17,8 +17,7 @@
             style="width:56px;height:56px;object-fit:contain;"
           />
           <div class="flex-grow-1 text-wrap">
-            <!-- ✅ allow wrapping instead of truncating -->
-            <h6 class="card-title mb-0 fw-semibold text-success">{{ org.name }}</h6>
+            <h6 class="cardTitle mb-0 fw-semibold">{{ org.name }}</h6>
             <small class="text-muted d-block">{{ org.tagline }}</small>
           </div>
         </div>
@@ -28,7 +27,6 @@
           {{ org.desc }}
         </p>
 
-        <!-- Buttons now fully inside card -->
         <div class="mt-auto d-flex flex-wrap gap-2">
           <a
             :href="org.url"
@@ -60,6 +58,7 @@
 
 <script setup>
 import { ref } from 'vue'
+import '../../pages/css/common.css'
 
 const orgs = ref([
   {
@@ -110,12 +109,32 @@ const orgs = ref([
 
 <style scoped>
 .min-w-0 { min-width: 0; }
-.partner-card { transition: transform .25s ease, box-shadow .25s ease; background: linear-gradient(145deg,#f7fff7,#ecf8ee);
-display: flex; flex-direction:column; overflow:hidden  }
-.partner-card:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(25,135,84,.15); }
+
+.partner-card { 
+  transition: transform .25s ease, box-shadow .25s ease; 
+  background: linear-gradient(145deg,#f7fff7,#ecf8ee);
+  display: flex; flex-direction:column; overflow:hidden  
+}
+
+.partner-card:hover { 
+  transform: translateY(-4px); 
+  box-shadow: 0 10px 24px rgba(25,135,84,.15); 
+}
+
+.cardTitle {
+  color: #285436;
+  font-size: 18px;
+}
+
+h2 {
+    font-size: 40px;
+    font-weight: 600;
+    color:#285436;
+    text-shadow: 0 4px 20px rgba(11, 155, 23, 0.3);
+}
 
 .btn-donate2 {
-    padding: 16px 32px;
+    padding: 8px 10px;
     border-radius: 15px;
     font-size: 18px;
     font-weight: 600;
@@ -126,13 +145,13 @@ display: flex; flex-direction:column; overflow:hidden  }
 }
 
 .btn-donate2:hover{
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);;
+    background-color: #606C38;
     color: #fff;
-    border: 1px solid #285436;
+    border: none;
 }
 
 .btn-learn {
-    padding: 16px 32px;
+    padding: 8px 10px;
     border-radius: 15px;
     font-size: 18px;
     font-weight: 600;
@@ -143,8 +162,8 @@ display: flex; flex-direction:column; overflow:hidden  }
 }
 
 .btn-learn:hover{
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);;
+    background-color: #606C38;
     color: #fff;
-    border: 1px solid #285436;
+    border: 2px solid #285436;
 }
 </style>

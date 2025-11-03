@@ -4,14 +4,14 @@
     <div class="container-fluid">
       <!-- Logo -->
       <router-link class="navbar-brand navbarLogo order-0" to="/">
-        <img src="../public/assets/NoWordLogo.png" alt="Logo" class="d-inline-block align-text-top" style="height: 75px;">
+        <img src="../public/assets/logo.png" alt="Logo" class="d-inline-block align-text-top" style="height: 75px;">
       </router-link>
 
-      <img src="../public/assets/Title.png" style="height:60px;">
+      <p class="critterTitle"> CritterConnect </p>
 
       <!-- Welcome Message -->
-      <span v-if="auth.uid" class="navbar-text me-auto ms-3 order-1">
-        Welcome, {{ displayName }}
+      <span v-if="auth.uid" class="welcome-bar text-center py-2">
+        Welcome back, {{ displayName }} 👋
       </span>
 
       <!-- Toggler -->
@@ -162,6 +162,28 @@ export default {
 };
 </script>
 <style>
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+
+.critterTitle {
+  padding-left: 0;
+  display: inline-block;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #285436;
+  vertical-align: middle;
+}
+
+.welcome-bar {
+  color: #285436;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
 .navFadeOut {
   opacity: 0;
   transform: scale(0.8);

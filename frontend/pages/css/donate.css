@@ -36,11 +36,14 @@ body .bannerTitles {
     font-weight: 600;
     color: #285436;
     margin-top: 20px;
+    margin-left: 8px;
+    text-shadow: 0 4px 20px rgba(11, 155, 23, 0.3);
 }
 
 .helpDescription {
+    margin-top: 30px;
     font-size: 18px;
-    line-height: 1.8;
+    line-height: 1.4;
     color: #285436;
 }
 .carousel-img {
@@ -52,6 +55,7 @@ body .bannerTitles {
 
 .carousel-wrapper,
 .carousel-container {
+    margin-top: 10px;
     position: relative;
     overflow: hidden;
     border-radius: 20px;
@@ -65,7 +69,6 @@ body .bannerTitles {
     overflow: hidden;
 }
 
-/* Inside your <style scoped> block */
 .collapse-content {
     max-height: 0;
     overflow: hidden;
@@ -74,7 +77,6 @@ body .bannerTitles {
 
 .collapse-content.visible {
     max-height: 700px;
-    /* Needs to be larger than the content */
 }
 
 

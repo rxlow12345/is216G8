@@ -2,8 +2,8 @@
   <section class="container my-5">
     <div class="row g-4 align-items-center">
       <!-- Left: Summary -->
-      <h2 class=" text-center fw-bold text-success">Impact of Your Donations</h2>
-      <p class="text-muted">
+      <h2 class="impactTitle text-center fw-bold">Impact of Your Donations</h2>
+      <p class="supportText text-center">
         See how your support fuels rescue operations, medical care, and community education adds up so far.
       </p>
       <div class="col-12">
@@ -51,11 +51,7 @@
 
 
 
-        <div class="text-center-custom mb-3 px-1 py-5">
-          <button type="button" class="custom-collapse-btn" @click="toggleCollapse">
-            {{ isContentVisible ? 'Show Less' : 'Show Full Impact' }}
-          </button>
-        </div>
+        
       </div>
 
       <div class="collapse-content" :class="{ 'visible': isContentVisible }">
@@ -113,7 +109,7 @@
                       </div>
                       <div :class="s.image ? 'col-md-8' : 'col-12'">
                         <p class="mb-2">{{ s.body }}</p>
-                        <small class="text-muted">Funded by {{ s.fundedBy }} · {{ s.date }}</small>
+                        <small class="fundedText">Funded by {{ s.fundedBy }} · {{ s.date }}</small>
                       </div>
                     </div>
                   </div>
@@ -124,8 +120,12 @@
             </div>
           </div>
         </div>
-
-
+      
+        <div class="text-center-custom mb-3 px-1 py-5">
+          <button type="button" class="btn custom-collapse-btn" @click="toggleCollapse">
+            {{ isContentVisible ? 'Show Less' : 'Show Full Impact' }}
+          </button>
+        </div>
   </section>
 </template>
 
@@ -282,36 +282,94 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.accordion-button {
-  font-weight: 600;
+* {
+  font-family: Georgia, 'Times New Roman', Times, serif;
 }
+
+h2 {
+  font-size: 40px;
+  font-weight: 600;
+  color:#285436;
+  text-shadow: 0 4px 20px rgba(11, 155, 23, 0.3);
+}
+
+.supportText {
+  font-size: 18px;
+  color: #606C38;
+  font-weight: 500;
+  padding-top: 0;
+}
+
+/* Accordion appearance */
+.accordion-item {
+  border: none;
+  margin-bottom: 12px;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.accordion-button {
+  background-color: #f0f4ec;
+  color: #285436;
+  font-weight: 600;
+  font-size: 18px;
+  padding: 15px 20px;
+  border: none;
+  box-shadow: none;
+  transition: all 0.3s ease;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #285436;
+  color: #fff;
+  box-shadow: inset 0 -2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.accordion-button::after {
+  filter: brightness(0.5);
+}
+
+.accordion-body {
+  background-color: #fff;
+  border-top: 1px solid #e0e4d9;
+  padding: 20px;
+  line-height: 1.6;
+}
+
+.story-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+
 
 .collapse-content {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.5s ease-in-out;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: 
+    max-height 0.6s ease-in-out,
+    opacity 0.5s ease-in,
+    transform 0.5s ease-in;
 }
 
 .collapse-content.visible {
-  max-height: none;
-  /* Needs to be larger than the content */
+  max-height: 2000px; 
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.custom-collapse-btn {
-  /* Color Properties (Matching your image) */
-  background-color: #5a511e;
-  /* Light tan/khaki background */
-  color: #ffffff;
-  /* Darker olive text color */
 
-  /* Shape and Sizing */
-  border: none;
-  padding: 16px 32px;
-  /* Increased horizontal padding for the pill shape */
-  font-size: 18px;
-  font-weight: 600;
-  border-radius: 15px;
-  /* Large border-radius creates the pill shape */
+
+.custom-collapse-btn {
+  background-color: #285436;
+  color: rgb(254, 250, 224);
+
 
   /* Interaction & Display */
   cursor: pointer;
@@ -321,78 +379,50 @@ onBeforeUnmount(() => {
 
 .custom-collapse-btn:hover {
   background-color: #d1ccb0;
-  /* Slightly darker background on hover */
-  /* Optional: Add a subtle shadow on hover */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .image-slider-container {
   display: flex;
-  /* Arranges items in a row */
   overflow-x: scroll;
-  /* Enables horizontal scrolling */
   scroll-snap-type: x mandatory;
-  /* Makes it snap to individual items */
   gap: 20px;
-  /* Space between images */
   padding: 20px;
-  /* Padding around the entire scrolling area */
   max-width: 100vw;
-  /* Ensures it doesn't overflow the viewport */
   box-sizing: border-box;
-  /* Include padding in width */
   -webkit-overflow-scrolling: touch;
-  /* Improves scrolling performance on iOS */
 }
 
-/* Hide Scrollbar (Optional - common for sliders) */
 .image-slider-container::-webkit-scrollbar {
   display: none;
-  /* For Chrome, Safari, Opera */
 }
 
 .image-slider-container {
   -ms-overflow-style: none;
-  /* For IE and Edge */
   scrollbar-width: none;
-  /* For Firefox */
 }
 
 .image-slide {
   flex: 0 0 auto;
-  /* Prevent items from shrinking, let them take their natural width */
   scroll-snap-align: center;
-  /* Snap the center of the item to the center of the container */
-
-  /* You might want to define a specific width for each slide, e.g.: */
   width: calc(min(45vw, 280px));
-  /* Take up to 45% of viewport width, max 280px */
   height: calc(min(45vw, 280px));
-  /* Keep it square */
-
   background-color: transparent;
-  /* Card background is handled by the image's rounded corners */
   display: flex;
-  /* For centering content if needed, though img fills it */
   justify-content: center;
   align-items: center;
 }
 
 .rounded-image {
   width: 100%;
-  /* Make image fill its parent .image-slide div */
   height: 100%;
   object-fit: cover;
-  /* Ensures the image covers the area without distortion */
   border-radius: 20px;
-  /* Adjust this value for desired roundness */
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
-  /* Optional subtle shadow */
 }
 
 .counter-wrap {
   min-height: 60px;
-  /* ensure it has height so it can intersect */
   display: flex;
   align-items: center;
 }

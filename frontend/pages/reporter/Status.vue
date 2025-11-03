@@ -1,5 +1,6 @@
 <!-- src/components/StatusUpdate.vue -->
 <template>
+  <BackToTop/>
   <!-- Main container with custom styling -->
   <div class="container-fluid p-0">
     <!-- Top Banner -->
@@ -195,6 +196,7 @@
 <script>
 import api from '../../src/api/reportApi.js';
 import '../css/common.css'
+import BackToTop from '../../src/components/BackToTop.vue';
 
 export default {
   name: 'StatusUpdate',

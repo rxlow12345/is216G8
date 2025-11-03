@@ -2,7 +2,7 @@
 <template>
   <FloatingBackground/>
   <OtterCursor animal="🦦" :speed="0.08"/>
-  <div class="login-wrapper">
+  <div class="wrapper">
     <div class="loginContainer">
       <div class="auth-card">
         <!-- Header with Logo -->
@@ -85,7 +85,7 @@
               :disabled="loading"
             >
               <span v-if="loading" class="spinner"></span>
-              <span v-else>{{ loading ? 'Signing in...' : 'Sign In' }}</span>
+              <span v-else>{{ loading ? 'Logging in...' : 'Log In' }}</span>
             </button>
           </div>
         </form>
@@ -114,6 +114,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { login } from '../../src/api/auth.js';
+import confetti from 'canvas-confetti';
 import '../css/common.css'
 import '../css/login.css'
 import OtterCursor from '../../src/components/OtterCursor.vue';
@@ -208,6 +209,8 @@ async function handleLogin() {
   
   try {
     const user = await login(email.value, password.value);
+
+    celebrateLogin();
     
     // Redirect based on user role
     switch (user.role) {
@@ -244,4 +247,10 @@ async function handleLogin() {
     loading.value = false;
   }
 }
+
+function celebrateLogin() {
+  confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+  confetti({ particleCount: 50, spread: 120, origin: { y: 0.6 } });
+}
+
 </script>

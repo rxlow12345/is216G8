@@ -5,6 +5,9 @@
     <!--Back to top -->
     <BackToTop/>
 
+    <!-- Floating animals -->
+     <FloatingBackground/>
+
     <div class="bannerTitles">
       <header class="text-center mb-2">
         <h1>🌿 Support Our Partners 🌿</h1>
@@ -99,6 +102,11 @@ import OtterCursor from './OtterCursor.vue';
 import '../../pages/css/common.css'
 import '../../pages/css/donate.css'
 import BackToTop from './BackToTop.vue';
+import { ref, onMounted, onUnmounted, onBeforeUnmount } from 'vue';
+import DonatePartners from './DonatePartners.vue'
+import Impact from './Impact.vue'
+import FloatingBackground from './FloatingBackground.vue';
+
 
 const testimonials = ref([
     {
@@ -144,12 +152,6 @@ const testimonials = ref([
             "Critterconnect is amazing and I'm motivated to help out more animals!",
     },
 ])
-
-import { ref, onMounted, onUnmounted, onBeforeUnmount } from 'vue';
-import DonatePartners from './DonatePartners.vue'
-// import Common from './Common.vue'
-// import Footer from './Footer.vue'
-import Impact from './Impact.vue'
 
 const slider = ref(null)
 let autoTimer = null

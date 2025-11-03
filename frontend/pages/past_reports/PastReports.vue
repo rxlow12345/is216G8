@@ -1,4 +1,5 @@
 <template>
+  <BackToTop/>
   <div class="container-fluid p-0 pastReportsPage">
     <!-- Top Banner -->
     <div id="topBanner" class="bannerTitles">
@@ -164,6 +165,7 @@ import api from '../../src/api/reportApi.js'
 import { getCurrentUser } from '../../src/api/auth.js'
 import '../css/pastReports.css'
 import '../css/common.css'
+import BackToTop from '../../src/components/BackToTop.vue'
 
 export default {
   name: 'PastReports',

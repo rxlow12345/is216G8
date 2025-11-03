@@ -1,4 +1,5 @@
 <template>
+  <BackToTop/>
   <div class="new-report-page">
     <!-- Top Banner - Matching Reporter Dashboard style -->
     <div id="topBanner" class="bannerTitles">
@@ -402,6 +403,7 @@ import { getCurrentUser } from '../../src/api/auth.js';
 import './report.css'; // Import local styles first
 import '../css/report.css';
 import '../css/common.css'; // Then common.css (we'll override it)
+import BackToTop from '../../src/components/BackToTop.vue';
 
 const router = useRouter();
 

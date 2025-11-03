@@ -1,4 +1,6 @@
 <template>
+  <BackToTop/>
+  <FloatingBackground/>
   <div class="container-fluid p-0 reporterDashboard">
     <!-- Top Banner -->
     <div id="topBanner" class="bannerTitles">
@@ -37,6 +39,8 @@
 import { ref, onMounted } from 'vue';
 import { getCurrentUser } from '../../src/api/auth.js';
 import '../css/common.css'
+import BackToTop from '../../src/components/BackToTop.vue';
+import FloatingBackground from '../../src/components/FloatingBackground.vue';
 
 const userEmail = ref('');
 const userId = ref('');
