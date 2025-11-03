@@ -53,7 +53,7 @@ Explain the core features and the benefit each provides.
 |Donation Page| Page that will accept donation from users | Clear and informative donation page for users to donate to the cause easily
 
 ---
-## Tech Stack (NOT YET UPDATED)
+## Tech Stack 
 
 | Logo | Technology | Purpose / Usage |
 |:--:|:--|:--|
@@ -63,8 +63,6 @@ Explain the core features and the benefit each provides.
 | <img src="https://vitejs.dev/logo.svg" width="40"> | **Vite** | Development server and build tool |
 | <img src="https://vuejs.org/images/logo.png" width="40"> | **Vue.js 3** | Component-based frontend framework |
 | <img src="https://firebase.google.com/downloads/brand-guidelines/PNG/logo-logomark.png" width="40"> | **Firebase** | Authentication and database services |
-
-> Add or remove technologies depending on your project stack (e.g., Express.js, Supabase, MongoDB Atlas, AWS S3).
 
 ---
 
@@ -326,7 +324,7 @@ Each member should contribute 2–3 sentences on their learning and project expe
 > - Charlize: I feel like this project has been challenging and complicated, but it was really insightful in helping me realise how a proper project works. I learnt how to efficiently split up and delegate tasks based on our strengths, how to work together as a group to integrate our code and our ideas together, how to debug and fix errors that we came across and more. I think the biggest challenge was getting all our ideas aligned, and ensuring everyone was on the same page, since we all had different impressions of the same feature, which led to a lot of miscommunication and extra work.
 > - Amelia:
 > - Jessica:
-> - Rui Xuan:
+> - Rui Xuan: I thought it was difficult since I was learning an entirely new language and have to use that knowledge to build the app, however, I thought it was a good learning experience and this helped me build my fundamentals for the module. Ensuring everyone could code without merge conflicts was definitely a pain, but it was worthwhile seeing everyone come together and helping each other solve their bugs. We did have miscommunications here and there, but we sat down with each other and fought it out, eventually coming to a conclusion.
 
 As a team, reflect on:
 - Key takeaways from working with real-world frameworks  
