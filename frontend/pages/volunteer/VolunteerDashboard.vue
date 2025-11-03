@@ -124,8 +124,8 @@ onMounted(async () => {
 .buttonItemLeft { flex-direction: row; }
 .buttonItemRight { flex-direction: row-reverse; }
 
-.buttonItemLeft img { margin: 15px 0px 15px 15px; }
-.buttonItemRight img { margin: 15px 15px 15px 0px; }
+.buttonItemLeft img { margin: 15px 0px 15px 15px; border-radius: 10px; }
+.buttonItemRight img { margin: 15px 15px 15px 0px;  border-radius: 10px;}
 
 .buttonItemLeft .sectionImg,
 .buttonItemRight .sectionImg {

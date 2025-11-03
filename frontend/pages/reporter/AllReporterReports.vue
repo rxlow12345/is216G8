@@ -75,8 +75,9 @@
                 <label for="urgencyFilter" class="form-label customLabel">Filter by Urgency</label>
                 <select id="urgencyFilter" class="form-select customSelect filterSelect" v-model="urgencyFilter">
                   <option value="all">All Reports</option>
-                  <option value="urgent">Urgent Only</option>
-                  <option value="non-urgent">Non-Urgent</option>
+                  <option value="low">Low</option>
+                  <option value="moderate">Moderate</option>
+                  <option value="urgent">Urgent</option>
                 </select>
               </div>
 
@@ -156,7 +157,7 @@
         <div v-else class="emptyState text-center py-5">
           <i class="bi bi-inbox emptyIcon"></i>
           <h4 class="emptyTitle mt-3">No Reports Found</h4>
-          <p class="emptyText">You haven’t submitted any reports yet.</p>
+          <p class="emptyText">There are no matching reports.</p>
         </div>
       </div>
     </div>
@@ -166,7 +167,7 @@
 <script>
 import api from '../../src/api/reportApi.js'
 import { getCurrentUser } from '../../src/api/auth.js'
-import '../css/pastReports.css'
+import '../css/allReports.css'
 import '../css/common.css'
 
 export default {
@@ -206,11 +207,12 @@ export default {
     },
     filteredReports() {
       let filtered = this.reports.filter(report => {
-        const statusMatch = this.statusFilter === 'all' || report.status === this.statusFilter;
+        const statusMatch =
+          this.statusFilter === 'all' || report.status === this.statusFilter;
+
         const urgencyMatch =
           this.urgencyFilter === 'all' ||
-          (this.urgencyFilter === 'urgent' && report.isUrgent) ||
-          (this.urgencyFilter === 'non-urgent' && !report.isUrgent);
+          report.severity === this.urgencyFilter;
 
         const searchLower = this.searchQuery.toLowerCase();
         const speciesName = report.speciesName || 'Unknown Species';
