@@ -2,39 +2,12 @@
 
     <OtterCursor animal="🦦" :speed="0.08" />
     <div class="bannerTitles">
-      <header class="text-center mb-2">
+        <header class="text-center mb-2">
             <h1>📝 Resources 📝</h1>
             <p> Learn More about CritterConnect</p>
         </header>
     </div>
     <div>
-
-        <!-- FAQ Section -->
-        <section class="container my-5">
-            <h2 class="text-success fw-bold text-center mb-4">Got Questions? We've Got Answers!</h2>
-            <div class="row">
-                <div class="col-lg-8 mx-auto">
-                    <div class="accordion" id="faqAccordion">
-                        <div class="accordion-item" v-for="(faq, index) in faqs" :key="index">
-                            <h2 class="accordion-header">
-                                <button class="accordion-button" :class="{ collapsed: index !== 0 }" type="button"
-                                    data-bs-toggle="collapse" :data-bs-target="`#faq${index}`"
-                                    :aria-expanded="index === 0 ? 'true' : 'false'">
-                                    {{ faq.question }}
-                                </button>
-                            </h2>
-                            <div :id="`faq${index}`" class="accordion-collapse collapse" :class="{ show: index === 0 }"
-                                data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    {{ faq.answer }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
         <!-- Latest News Section -->
         <section class="bg-light py-5">
             <div class="container">
@@ -61,8 +34,52 @@
             </div>
         </section>
 
+        <!-- FAQ + Feedback in a single card -->
+        <section class="container my-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <!-- Header -->
+                <h2 class="text-success fw-bold text-center mb-4">
+                    Got Questions or Feedback? We’re Here to Help!
+                </h2>
+
+                <div class="row g-5">
+                    <!-- FAQ Section -->
+                    <div class="col-12 col-lg-7">
+                        <h4 class="fw-bold mb-3 text-success">Frequently Asked Questions</h4>
+
+                        <div class="accordion" id="faqAccordion">
+                            <div class="accordion-item" v-for="(faq, index) in faqs" :key="index">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" :class="{ collapsed: index !== 0 }" type="button"
+                                        data-bs-toggle="collapse" :data-bs-target="`#faq${index}`"
+                                        :aria-expanded="index === 0 ? 'true' : 'false'">
+                                        {{ faq.question }}
+                                    </button>
+                                </h2>
+                                <div :id="`faq${index}`" class="accordion-collapse collapse"
+                                    :class="{ show: index === 0 }" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        {{ faq.answer }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Form -->
+                    <div class="col-12 col-lg-5">
+                        <h4 class="fw-bold mb-3 text-success">Send Us Feedback</h4>
+                        <FeedbackForm />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
         <!-- Contact Section -->
         <section class="container my-5">
+
             <h2 class="text-success fw-bold text-center mb-4">Get In Touch</h2>
             <!-- Contact Info -->
 
@@ -139,6 +156,7 @@
 <script setup>
 import { ref } from 'vue';
 import OtterCursor from './OtterCursor.vue';
+import FeedbackForm from './FeedbackForm.vue';
 
 
 const faqs = ref([
@@ -225,7 +243,7 @@ const latestNews = ref([
     flex-direction: column;
 }
 
-.card-body .mt-auto{
+.card-body .mt-auto {
     margin-top: auto;
 }
 
