@@ -55,12 +55,12 @@
 <script>
 import MapView from "../../src/components/MapView.vue";
 import ReportCard from "../../src/components/ReportCard.vue";
-import api from "../../src/api/mapapi";
 import reportApi from "../../src/api/reportApi";
+import {getCurrentUser} from '../../src/api/auth.js';
 import socket from "../../src/api/socket";
-import { map } from "leaflet";
 import acceptCaseModal from "../../src/components/acceptCaseModal.vue";
 import BackToTop from "../../src/components/BackToTop.vue";
+import { filter } from "mathjs";
 
 
 export default {
@@ -82,6 +82,7 @@ export default {
       mapCenter: { lat: 1.3521, lng: 103.8198 }, // Singapore
       showModal: false,
       selectedLocation: "",
+      currentUser: "",
     };
   },
   computed: {},
@@ -94,6 +95,28 @@ export default {
     socket.disconnect();
   },
   methods: {
+    isWithinSingapore(coordinates) {
+      if (!coordinates || typeof coordinates.lat !== 'number' || typeof coordinates.lng !== 'number') {
+        return false;
+      }
+      
+      // Singapore's approximate bounding box
+      const SINGAPORE_BOUNDS = {
+        north: 1.4707,   
+        south: 1.1496,   
+        east: 104.0945,  
+        west: 103.6057   
+      };
+      
+      const { lat, lng } = coordinates;
+      
+      return (
+        lat >= SINGAPORE_BOUNDS.south &&
+        lat <= SINGAPORE_BOUNDS.north &&
+        lng >= SINGAPORE_BOUNDS.west &&
+        lng <= SINGAPORE_BOUNDS.east
+      );
+    },
     async loadReports() {
       try {
         const response = await reportApi.getAllReports();
@@ -101,80 +124,93 @@ export default {
           (report) => report.status === "pending"
         );
 
+        const validReports = [];
+
         for (const report of filteredReports) {
           if (report.location == null) {
             report.location = "Singapore Management University";
           } 
-          if (typeof report.location === 'object'){
-            // means postal code present 
-            const location = report.location.postalCode
-          } else {
-            const location = report.location.address
+          try {
+            let addressToGeocode;
+            if (typeof report.location === 'object'){
+              addressToGeocode = report.location.postalCode;
+            } else {
+              addressToGeocode = report.location;
+            }
+
+            const coordinates = await this.geocode(addressToGeocode);
+
+            if (this.isWithinSingapore(coordinates)){
+              report.coordinates = coordinates;
+              validReports.push(report); // report only added if in SG 
+            }
+          } catch (geocodeError) {
+              console.log(
+                `Report ID ${report.reportId} failed to geocode location`,
+                geocodeError.message
+              );
+              report.coordinates = this.mapCenter;
           }
           // to handle geocoding errors
-          try {
-            const coordinates = await this.geocode(report.location);
-            report.coordinates = coordinates;
-          } catch (geocodeError) {
-            console.log(
-              `Report ID ${report.reportId} failed to geocode location`,
-              geocodeError.message
-            );
-            report.coordinates = this.mapCenter;
-          }
         }
-        this.reports = filteredReports;
+        this.reports = validReports;
+        console.log(`Only loaded ${validReports.length} valid reports out of ${filteredReports.length} total`);
         console.log('Reports:', this.reports);
+
       } catch (error) {
         console.error("Error loading reports:", error.message);
         alert("Failed to load reports. Make sure backend is running!");
       }
     },
 
-    // async geocode(address) {
-    //   const OPENCAGE_API_KEY = import.meta.env.VITE_OPENCAGE_API_KEY;
-    //   const OPENCAGE_BASE_URL = "https://api.opencagedata.com/geocode/v1/json";
-    //   const url = `${OPENCAGE_BASE_URL}?q=${address}&key=${OPENCAGE_API_KEY}`;
+    async geocode(address) {
+      const OPENCAGE_API_KEY = import.meta.env.VITE_OPENCAGE_API_KEY;
+      const OPENCAGE_BASE_URL = "https://api.opencagedata.com/geocode/v1/json";
+      const url = `${OPENCAGE_BASE_URL}?q=${address}&key=${OPENCAGE_API_KEY}`;
 
-    //   try {
-    //     const response = await fetch(url);
+      try {
+        const response = await fetch(url);
 
-    //     if (!response.ok) {
-    //       throw new Error(
-    //         `OpenCage API request failed with status: ${response.status}`
-    //       );
-    //     }
+        if (!response.ok) {
+          throw new Error(
+            `OpenCage API request failed with status: ${response.status}`
+          );
+        }
 
-    //     const data = await response.json();
+        const data = await response.json();
 
-    //     if (
-    //       !data.results ||
-    //       data.results.length == 0 ||
-    //       !data.results[0].geometry
-    //     ) {
-    //       throw new Error("Geocoding service returned no valid results");
-    //     }
+        if (
+          !data.results ||
+          data.results.length == 0 ||
+          !data.results[0].geometry
+        ) {
+          throw new Error("Geocoding service returned no valid results");
+        }
 
-    //     const lat = data.results[0].geometry.lat;
-    //     const lng = data.results[0].geometry.lng;
-    //     return { lat: lat, lng: lng };
-    //   } catch (error) {
-    //     console.error("Geocoding Error:", error);
-    //     throw new Error("Failed to connect to the geocoding service.");
-    //   }
-    // },
+        const lat = data.results[0].geometry.lat;
+        const lng = data.results[0].geometry.lng;
+        return { lat: lat, lng: lng };
+      } catch (error) {
+        console.error("Geocoding Error:", error);
+        throw new Error("Failed to connect to the geocoding service.");
+      }
+    },
 
     async acceptCaseFromCard(report) {
       this.selectedReportId = report.reportId;
       this.selectedDocId = report.id;
-      if (typeof report.location === 'object'){
-        this.selectedLocation = report.location.address;
+      if (typeof report.location === 'object') {
+        this.selectedLocation = report.location.address; // Display address to user
       } else {
         this.selectedLocation = report.location;
       }
       this.selectReport;
 
       try {
+        const addressToGeocode = typeof report.location === 'object' 
+        ? report.location.postalCode 
+        : report.location;
+
         this.selectReportCoordinates = await this.geocode(report.location);
       } catch (error) {
         console.error("Failed to geocode location on case acceptance:", error);
@@ -215,6 +251,17 @@ export default {
         }
     },
 
+    async updateVolunteer(){
+      try {
+        const result = await getCurrentUser();
+        return result.uid;
+
+      } catch(e) {
+        console.log('Error getting user', e);
+        alert('Current user not found');
+      }
+    },
+
     async handleConfirmation(etaData) {
       // console.log('selected report id',this.selectedReportId);
       // adjusting data 
@@ -222,16 +269,19 @@ export default {
       console.log('timestamp', firebaseTimestamp);
       const caseAcceptedTimeJS = new Date();
       const caseAcceptedTime = caseAcceptedTimeJS.toISOString() ;
-
-      const updates = {
-        timeAccepted: caseAcceptedTime, 
-        volunteerETA: firebaseTimestamp
-      }
-      
-      console.log('documentid', this.selectedDocId);
       const docIdtoUpdate = this.selectedDocId;
-
+      
+      
       try {
+        // getting UID and formatting updates
+        const uid = await this.updateVolunteer();
+        const updates = {
+          timeAccepted: caseAcceptedTime, 
+          volunteerETA: firebaseTimestamp,
+          uid: uid,
+        }
+        
+
         //  to update report fields 
         const result = await reportApi.updateReportFields(docIdtoUpdate, updates)
         console.log('Case accepted!',result);

@@ -31,6 +31,7 @@
         <div class="meta-item">
           <span class="icon">📍</span>
           <span class="text">{{ handleLocation(report) }}</span>
+          <!-- <span class="text">{{ report.location.address }}</span> -->
         </div>
         <div class="meta-item">
           <span class="icon">🕐</span>

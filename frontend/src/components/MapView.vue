@@ -17,6 +17,12 @@
       />
       <button @click="searchAddress" class="search-btn">Search</button>
     </div>
+
+    <div class="re-center">
+      <button @click="recenterMap" class="recenter-btn" title="Recenter to Singapore">
+        <span>🎯</span>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -24,7 +30,6 @@
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
-// TODO Fix Leaflet default marker icon issue
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
@@ -187,7 +192,7 @@ export default {
 
       return L.divIcon({
         html: svgIcon,
-        className: 'custom-marker',
+        className: 'custom-marker custom-marker-bounce',
         iconSize: [30, 40],
         iconAnchor: [15, 40],
         popupAnchor: [0, -40],
@@ -200,6 +205,9 @@ export default {
 
     createPopupContent(report) {
       const species = report.speciesName || 'Unknown';
+      const displayLocation = typeof report.location === 'object' 
+    ? report.location.address 
+    : report.location;
       return `
         <div style="min-width: 280px; padding: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
           <h3 style="margin: 0 0 12px; color: #065f46; font-size: 18px; font-weight: 700; letter-spacing: -0.5px;">
@@ -251,7 +259,7 @@ export default {
           <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #f3f4f6;">
             <p style="margin: 0 0 3px; color: #6b7280; font-size: 12px; display: flex; align-items: center;">
               <span style="margin-right: 6px;">📍</span>
-              <span>${report.location}</span>
+              <span>${displayLocation}</span>
             </p>
 
             <p style="margin: 3px 0 0; color: #9ca3af; font-size: 11px; display: flex; align-items: center;">
@@ -342,6 +350,21 @@ export default {
         hour12: true,
       }).format(date);
     },
+
+    recenterMap() {
+      if (!this.map) return;
+      
+      // If there are markers, fit bounds to show all of them
+      if (this.markers.length > 0) {
+        const group = L.featureGroup(this.markers);
+        this.map.fitBounds(group.getBounds().pad(0.1));
+      } else {
+        // Otherwise, center on Singapore with default zoom
+        this.map.setView([this.center.lat, this.center.lng], 11);
+      }
+    },
+
+    
   },
 }
 </script>
@@ -451,4 +474,53 @@ export default {
   display: none;
 }
 
+.recenter-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: all 0.2s ease;
+}
+
+.recenter-btn:hover {
+  background: #f3f4f6;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.recenter-btn:active {
+  transform: scale(0.95);
+}
+
+/* Keyframe definition for the subtle bounce/pulse effect */
+@keyframes pulse {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-5px) scale(1.05); /* Lifts and slightly enlarges */
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Apply the animation to the custom marker */
+:deep(.custom-marker-bounce) {
+  animation: pulse 1.5s infinite ease-in-out; /* 1.5s duration, repeats infinitely */
+}
 </style>

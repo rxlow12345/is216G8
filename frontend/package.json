@@ -13,6 +13,7 @@
     "@vue-leaflet/vue-leaflet": "^0.10.1",
     "axios": "^1.7.5",
     "bootstrap": "^5.3.3",
+    "canvas-confetti": "^1.9.4",
     "firebase": "^12.4.0",
     "leaflet": "^1.9.4",
     "socket.io-client": "^4.8.1",
