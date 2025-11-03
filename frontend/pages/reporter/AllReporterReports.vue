@@ -177,7 +177,7 @@ export default {
       reports: [],
       isLoading: true,
       error: null,
-      userUid: '',
+      reporterId: '',
       searchQuery: '',
       statusFilter: 'all',
       urgencyFilter: 'all',
@@ -238,10 +238,11 @@ export default {
         this.isLoading = true;
         const user = await getCurrentUser();
         if (!user || !user.uid) throw new Error('User not authenticated.');
-        this.userUid = user.uid;
+        this.reporterId = user.uid;
 
         const allReports = await api.getAllReports();
-        this.reports = allReports.filter(r => r.uid === this.userUid);
+
+        this.reports = allReports.filter(r => r.reporterId === this.reporterId);
       } catch (err) {
         this.error = err.message || 'Failed to fetch reports.';
       } finally {
@@ -277,6 +278,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css');
