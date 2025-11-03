@@ -220,7 +220,7 @@ router.beforeEach(async (to, from, next) => {
     setTimeout(() => {
       router.push(to.path);
     }, 100);
-    next(false); // must call next() to cancel the current navigat
+    next(false); // must call next() to cancel the current navigation
     return;
   }
   
