@@ -2,69 +2,162 @@
   <BackToTop/>
   <div class="container-fluid p-0 userReportsPage">
     <!-- Top Banner -->
-    <div id="topBanner" class="bannerTitles">
+    <div class="bannerTitles">
       <header class="text-center mb-2">
-        <h1>Your Wildlife Reports</h1>
+        <h1>🌿 Your Wildlife Reports 🌿</h1>
+        <p>A summary of all reports you’ve submitted</p>
       </header>
     </div>
 
-    <!-- Loading State -->
-    <div v-if="isLoading" class="loadingState">
-      <div class="loadingSpinner"></div>
-      <span class="loadingText">Loading your reports...</span>
-    </div>
-
-    <!-- Error State -->
-    <div v-else-if="error" class="errorState">
-      <p><strong>Error:</strong> {{ error }}</p>
-    </div>
-
-    <!-- Main Content -->
-    <div v-else>
-      <!-- Search Bar -->
-      <div class="searchSection">
-        <div class="searchBar">
-          <input
-            id="searchInput"
-            v-model="searchQuery"
-            @input="filterReports"
-            type="text"
-            placeholder="🔍 Search reports..."
-          />
-          <button
-            id="searchBtn"
-            @click="handleSearchButtonClick"
-          >
-            {{ searchQuery ? 'Clear' : 'Search' }}
-          </button>
+    <div class="container my-5">
+      <!-- Loading State -->
+      <div v-if="isLoading" class="d-flex justify-content-center align-items-center py-5">
+        <div class="spinner-border" style="color: #086143;" role="status">
+          <span class="visually-hidden">Loading...</span>
         </div>
+        <span class="ms-3 fs-4" style="color: #285436;">Loading your reports...</span>
       </div>
 
-      <!-- Reports List -->
-      <div id="reportsContainer" class="reportsContainer">
-        <p v-if="filteredReports.length === 0" class="noResults">
-          You have no reports to display.
-        </p>
+      <!-- Error State -->
+      <div v-else-if="error" class="alert alert-danger shadow-sm border-0 rounded-4">
+        <h4 class="alert-heading">An Error Occurred!</h4>
+        <p>{{ error }}</p>
+      </div>
 
-        <transition-group name="list" tag="div">
+      <!-- Main Content -->
+      <div v-else>
+        <!-- Dashboard Stats -->
+        <div class="row gx-4 gy-4 mb-5">
+          <div class="col-12 col-md-6 col-xl-3" v-for="stat in stats" :key="stat.label">
+            <div class="statCard shadow-sm">
+              <div class="statCardInner" :class="stat.class" @click="filterAndScroll(stat.status)">
+                <div class="statIcon">
+                  <i :class="stat.icon"></i>
+                </div>
+                <div class="statContent">
+                  <h3 class="statNumber">{{ stat.value }}</h3>
+                  <p class="statLabel">{{ stat.label }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search & Filter Section -->
+        <div class="searchSection" ref="reportsSection">
+          <div class="searchBar">
+            <input
+              id="searchInput"
+              v-model="searchQuery"
+              type="text"
+              placeholder="🔍 Search by ID or species..."
+            />
+            <button id="searchBtn" @click="clearSearch">
+              {{ searchQuery ? 'Clear' : 'Search' }}
+            </button>
+          </div>
+
+          <div class="filterSpace">
+            <div class="filterSection">
+              <!-- Status Filter -->
+              <div class="filterSize">
+                <label for="statusFilter" class="form-label customLabel">Filter by Status</label>
+                <select id="statusFilter" class="form-select customSelect filterSelect" v-model="statusFilter">
+                  <option value="all">All Statuses</option>
+                  <option value="pending">Pending</option>
+                  <option value="active">Active</option>
+                  <option value="resolved">Resolved</option>
+                </select>
+              </div>
+
+              <!-- Urgency Filter -->
+              <div class="filterSize">
+                <label for="urgencyFilter" class="form-label customLabel">Filter by Urgency</label>
+                <select id="urgencyFilter" class="form-select customSelect filterSelect" v-model="urgencyFilter">
+                  <option value="all">All Reports</option>
+                  <option value="urgent">Urgent Only</option>
+                  <option value="non-urgent">Non-Urgent</option>
+                </select>
+              </div>
+
+              <!-- Sort Order -->
+              <div class="filterSize">
+                <label for="sortOrder" class="form-label customLabel">Sort by Reporting Time</label>
+                <select id="sortOrder" class="form-select customSelect filterSelect" v-model="sortOrder">
+                  <option value="desc">Newest First</option>
+                  <option value="asc">Oldest First</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reports List -->
+        <div v-if="filteredReports.length > 0" class="reportsList mt-4">
           <div
             v-for="report in filteredReports"
             :key="report.reportId"
-            :class="['reportCard', 'mb-2', { expanded: expandedReport === report.reportId }]"
+            class="reportItem shadow-sm"
           >
-            <div class="reportSummary" @click="toggleReport(report.reportId)">
-              <div class="reportTitle">
-                <strong>{{ report.speciesName || 'Unknown Species' }}</strong>
-                <span class="reportSubtitle"> ({{ report.reportId || 'Unknown ID' }})</span>
+            <div class="reportHeader position-relative">
+              <div class="reportMainInfo">
+                <h5 class="reportId">
+                  <div class="reportIdText">
+                    <i class="bi bi-file-earmark-text me-2"></i>
+                    {{ report.reportId || 'Unknown ID' }}
+                  </div>
+                  <div class="tags">
+                    <span
+                      class="tag"
+                      :class="{
+                        tagLow: report.severity === 'low',
+                        tagModerate: report.severity === 'moderate',
+                        tagUrgent: report.severity === 'urgent'
+                      }"
+                    >
+                      {{ report.severity }}
+                    </span>
+                    <span
+                      class="tag"
+                      :class="{
+                        tagPending: report.status === 'pending',
+                        tagActive: report.status === 'active',
+                        tagResolved: report.status === 'resolved'
+                      }"
+                    >
+                      {{ report.status }}
+                    </span>
+                  </div>
+                </h5>
+
+                <router-link :to="'/status/' + report.reportId" class="no-underline">
+                  <button class="viewStatusButton">View Status</button>
+                </router-link>
               </div>
-              
-              <!-- Button to View Status -->
-              <router-link :to="'/status/' + report.reportId">
-                <button class="viewStatusButton">View Status</button>
-              </router-link>
+            </div>
+
+            <div class="reportDetails">
+              <p class="reportInfo mb-1 capitalise">
+                <i class="bi bi-award me-2"></i>
+                <strong>Species:</strong> {{ report.speciesName || 'Unknown Species' }}
+              </p>
+              <p class="reportInfo mb-1">
+                <i class="bi bi-geo-alt me-2"></i>
+                <strong>Location: </strong> {{ report.location }}
+              </p>
+              <p class="reportInfo mb-1">
+                <i class="bi bi-calendar-event me-2"></i>
+                Reported on {{ formatDate(report.createdAt) }}
+              </p>
             </div>
           </div>
-        </transition-group>
+        </div>
+
+        <div v-else class="emptyState text-center py-5">
+          <i class="bi bi-inbox emptyIcon"></i>
+          <h4 class="emptyTitle mt-3">No Reports Found</h4>
+          <p class="emptyText">You haven’t submitted any reports yet.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -75,137 +168,353 @@ import api from '../../src/api/reportApi.js'
 import { getCurrentUser } from '../../src/api/auth.js'
 import '../css/pastReports.css'
 import '../css/common.css'
-import BackToTop from '../../src/components/BackToTop.vue'
-import FloatingBackground from '../../src/components/FloatingBackground.vue'
 
 export default {
   name: 'UserReports',
   data() {
     return {
       reports: [],
-      filteredReports: [],
-      expandedReport: null,
       isLoading: true,
       error: null,
       userUid: '',
       searchQuery: '',
-    }
+      statusFilter: 'all',
+      urgencyFilter: 'all',
+      sortOrder: 'desc',
+    };
+  },
+  computed: {
+    totalReports() {
+      return this.reports.length;
+    },
+    pendingReports() {
+      return this.reports.filter(r => r.status === 'pending').length;
+    },
+    activeReports() {
+      return this.reports.filter(r => r.status === 'active').length;
+    },
+    resolvedReports() {
+      return this.reports.filter(r => r.status === 'resolved').length;
+    },
+    stats() {
+      return [
+        { label: 'Total Reports', value: this.totalReports, icon: 'bi bi-clipboard-data', class: 'statTotal', status: 'all' },
+        { label: 'Pending', value: this.pendingReports, icon: 'bi bi-clock-history', class: 'statPending', status: 'pending' },
+        { label: 'Active', value: this.activeReports, icon: 'bi bi-activity', class: 'statActive', status: 'active' },
+        { label: 'Resolved', value: this.resolvedReports, icon: 'bi bi-check-circle', class: 'statResolved', status: 'resolved' },
+      ];
+    },
+    filteredReports() {
+      let filtered = this.reports.filter(report => {
+        const statusMatch = this.statusFilter === 'all' || report.status === this.statusFilter;
+        const urgencyMatch =
+          this.urgencyFilter === 'all' ||
+          (this.urgencyFilter === 'urgent' && report.isUrgent) ||
+          (this.urgencyFilter === 'non-urgent' && !report.isUrgent);
+
+        const searchLower = this.searchQuery.toLowerCase();
+        const speciesName = report.speciesName || 'Unknown Species';
+        const searchMatch =
+          (report.reportId && report.reportId.toLowerCase().includes(searchLower)) ||
+          speciesName.toLowerCase().includes(searchLower);
+
+        return statusMatch && urgencyMatch && searchMatch;
+      });
+
+      filtered.sort((a, b) => {
+        const dateA = a.createdAt?._seconds || 0;
+        const dateB = b.createdAt?._seconds || 0;
+        return this.sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+      });
+
+      return filtered;
+    },
   },
   methods: {
     async fetchReports() {
       try {
-        this.isLoading = true
-        this.error = null
+        this.isLoading = true;
+        const user = await getCurrentUser();
+        if (!user || !user.uid) throw new Error('User not authenticated.');
+        this.userUid = user.uid;
 
-        const user = await getCurrentUser()
-        if (!user || !user.uid) throw new Error('User not authenticated.')
-        this.userUid = user.uid
-
-        // Fetch all reports from the API
-        const allReports = await api.getAllReports()
-
-        // Filter reports based on user UID
-        this.reports = allReports.filter(r => r.uid === this.userUid)
-        this.filteredReports = [...this.reports]
-      }
-      catch (err) {
-        console.error('Failed to fetch reports:', err)
-        this.error = err.message || 'Failed to fetch reports.'
-      }
-      finally {
-        this.isLoading = false
+        const allReports = await api.getAllReports();
+        this.reports = allReports.filter(r => r.uid === this.userUid);
+      } catch (err) {
+        this.error = err.message || 'Failed to fetch reports.';
+      } finally {
+        this.isLoading = false;
       }
     },
-    toggleReport(reportId) {
-      this.expandedReport = this.expandedReport === reportId ? null : reportId
+    clearSearch() {
+      if (this.searchQuery) {
+        this.searchQuery = '';
+      }
+    },
+    filterAndScroll(status) {
+      this.statusFilter = status;
+      const section = this.$refs.reportsSection;
+      if (section) {
+        const yOffset = -80;
+        const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
     },
     formatDate(timestamp) {
       if (!timestamp) return 'Unknown date';
-
       let date;
-
-      if (timestamp && timestamp._seconds !== undefined) {
-        date = new Date(timestamp._seconds * 1000);
-      }
-      else if (timestamp && timestamp.seconds !== undefined) {
-        date = new Date(timestamp.seconds * 1000);
-      }
-      else if (timestamp instanceof Date) {
-        date = timestamp;
-      }
-      else if (typeof timestamp === 'string') {
-        date = new Date(timestamp);
-      }
-      else if (typeof timestamp === 'number') {
-        date = new Date(timestamp);
-      }
-
+      if (timestamp._seconds) date = new Date(timestamp._seconds * 1000);
+      else if (timestamp.seconds) date = new Date(timestamp.seconds * 1000);
+      else if (timestamp instanceof Date) date = timestamp;
+      else if (typeof timestamp === 'string' || typeof timestamp === 'number') date = new Date(timestamp);
       return date ? date.toLocaleDateString() : 'Invalid date';
     },
-    filterReports() {
-      const query = this.searchQuery.trim().toLowerCase();
-
-      if (!query) {
-        // If the search query is empty, show all reports
-        this.filteredReports = [...this.reports];
-      } else {
-        // Filter reports by species name or report ID
-        this.filteredReports = this.reports.filter(report => {
-          const speciesName = report.speciesName ? report.speciesName.toLowerCase() : '';
-          const reportId = report.reportId ? report.reportId.toString().toLowerCase() : '';
-
-          return speciesName.includes(query) || reportId.includes(query);
-        });
-      }
-    },
-    handleSearchButtonClick() {
-      if (this.searchQuery) {
-        this.searchQuery = ''
-        this.filterReports()
-      }
-      else {
-        this.filterReports()
-      }
-    }
   },
   mounted() {
-    this.fetchReports()
-  }
-}
+    this.fetchReports();
+  },
+};
 </script>
 
 <style scoped>
-.userReportsPage {
-  background-color: #FEFAE0;
-  min-height: 100vh;
-  color: #283618;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css');
+
+/* ===== Dashboard Stats ===== */
+.statCard {
+  border-radius: 16px;
+  border: none;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  margin: 0.5rem;
 }
 
-.searchSection {
-  margin-bottom: 30px;
+.statCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15) !important;
 }
 
-.reportTitle {
+.statCardInner {
+  padding: 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.statIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+}
+
+.statContent {
+  flex-grow: 1;
+}
+
+.statNumber {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-left: 10px;
+}
+
+.statLabel {
+  font-size: 0.95rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+/* Variants */
+.statTotal {
+  background: #285436;
+  color: white;
+}
+
+.statTotal .statIcon {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.statPending {
+  background: #BC6C25;
+  color: white;
+}
+
+.statPending .statIcon {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.statActive {
+  background: #DDA15E;
+  color: white;
+}
+
+.statActive .statIcon {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.statResolved {
+  background: #6B8E23;
+  color: white;
+}
+
+.statResolved .statIcon {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ===== Filter Section ===== */
+.filterSize {
+  width: 33%;
+}
+
+.filterSize label {
+  margin-left: 15px;
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  .filterSection {
+    max-width: 600px;
+    width: calc(100% - 20px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .filterSize {
+    width: 100%;
+  }
+}
+
+/* ===== Reports Section ===== */
+.reportsList {
   display: flex;
   flex-direction: column;
+  gap: 1rem;
 }
 
-.reportSubtitle {
-  color: #aaa;
+.reportItem {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.reportItem:hover {
+  transform: translateY(-5px);
+  border-color: #086143;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
+}
+
+.reportMainInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 20px;
+}
+
+.reportId {
+  display: flex;
+  align-items: center;       /* Vertically center everything */
+  justify-content: space-between; /* Space between ID and tags */
+  margin: 0;
+  padding: 0;
+  color: #285436;
+  font-weight: 600;
+  font-size: 1.1rem;
+  gap: 1rem;
+}
+
+.reportIdText {
+  display: flex;
+  align-items: center;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+}
+
+@media (max-width: 768px) {
+  .reportId {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .tags {
+    margin-left: 25px;
+  }
 }
 
 .viewStatusButton {
-  padding: 8px 16px;
-  background-color: #DDA15E;
+  background-color: #285436;
   color: white;
   border: none;
   border-radius: 50px;
   cursor: pointer;
-  width: 120px;
+  width: 130px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  font-weight: 600;
 }
 
 .viewStatusButton:hover {
-  background-color: #BC6C25;
+  color: #285436;
+  background-color: #A8C686;
+}
+
+@media (max-width: 768px) {
+  .viewStatusButton {
+    align-self: flex-start;
+  }
+}
+
+.no-underline {
+  text-decoration: none;
+  color: inherit; 
+}
+
+.reportInfo {
+  font-size: 0.95rem;
+  color: #606c38;
+}
+
+.reportInfo i {
+  color: #086143;
+}
+
+/* ===== Empty State ===== */
+.emptyState {
+  background: white;
+  border-radius: 16px;
+  padding: 3rem 2rem;
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  color: #a8c686;
+}
+
+.emptyTitle {
+  color: #285436;
+  font-weight: 600;
+}
+
+.emptyText {
+  color: #606c38;
+  font-size: 1.05rem;
 }
 </style>

@@ -58,20 +58,11 @@ const buttonItems = ref([
   {
     imgSrc: '../../src/public/assets/monkey.jpg',
     imgAlt: 'Monkey',
-    buttonText: 'Check Report Status',
+    buttonText: 'View All Reports',
     buttonClass: 'greenBtnLg',
-    description: 'Track the status of your existing reports',
+    description: 'View reports you\'ve submitted previously',
     link: '/all-reports',
     align: 'right'
-  },
-  {
-    imgSrc: '../../src/public/assets/eagle.jpg',
-    imgAlt: 'Eagle',
-    buttonText: 'View Past Reports',
-    buttonClass: 'brownBtn',
-    description: 'View reports you\'ve submitted previously',
-    link: '/past-reports',
-    align: 'left'
   }
 ]);
 

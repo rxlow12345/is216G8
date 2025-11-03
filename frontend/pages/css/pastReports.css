@@ -15,7 +15,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #f6f8f3;
+  background-color: white;
   border-radius: 40px;
   padding: 8px 16px;
   font-size: 1rem;
@@ -70,7 +70,7 @@
 .filterSelect {
   border-radius: 30px;
   padding: 10px 40px 10px 20px;
-  background-color: #f6f8f3;
+  background-color: white;
   border: none;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   cursor: pointer;
@@ -88,36 +88,6 @@
   padding: 8px 12px;
   border-radius: 12px;
   color: #283618;
-}
-
-.filterSelect option[value="low"] {
-  background-color: rgba(107, 142, 35, 0.5);
-  color: #435c11;
-}
-
-.filterSelect option[value="moderate"] {
-  background-color: rgba(221, 161, 94, 0.5);
-  color: #a56f31;
-}
-
-.filterSelect option[value="urgent"] {
-  background-color: rgba(188, 108, 37, 0.5); 
-  color: #8f511c;
-}
-
-.filterSelect option[value="pending"] {
-  background-color: rgba(170, 170, 170, 0.5);
-  color: #616161;
-}
-
-.filterSelect option[value="active"] {
-  background-color: rgba(221, 161, 94, 0.5);
-  color: #a56f31;
-}
-
-.filterSelect option[value="resolved"] {
-  background-color: rgba(107, 142, 35, 0.5);
-  color: #435c11;
 }
 
 .filterSelect option:hover {
@@ -199,7 +169,7 @@
   padding: 5px 10px;
   border-radius: 12px;
   font-size: 0.85rem;
-  font-weight: bold;
+  font-weight: 600;
   text-transform: capitalize;
   margin-right: 6px;
   color: white;
@@ -221,7 +191,7 @@
 }
 
 .tagPending {
-  background-color: #aaa;
+  background-color: #BC6C25;
   color: white;
 }
 
