@@ -101,9 +101,34 @@
             <div class="reportHeader position-relative">
               <div class="reportMainInfo">
                 <h5 class="reportId">
-                  <i class="bi bi-file-earmark-text me-2"></i>
-                  {{ report.reportId || 'Unknown ID' }}
+                  <div class="reportIdText">
+                    <i class="bi bi-file-earmark-text me-2"></i>
+                    {{ report.reportId || 'Unknown ID' }}
+                  </div>
+                  <div class="tags">
+                    <span
+                      class="tag"
+                      :class="{
+                        tagLow: report.severity === 'low',
+                        tagModerate: report.severity === 'moderate',
+                        tagUrgent: report.severity === 'urgent'
+                      }"
+                    >
+                      {{ report.severity }}
+                    </span>
+                    <span
+                      class="tag"
+                      :class="{
+                        tagPending: report.status === 'pending',
+                        tagActive: report.status === 'active',
+                        tagResolved: report.status === 'resolved'
+                      }"
+                    >
+                      {{ report.status }}
+                    </span>
+                  </div>
                 </h5>
+
                 <router-link :to="'/status/' + report.reportId" class="no-underline">
                   <button class="viewStatusButton">View Status</button>
                 </router-link>
@@ -262,16 +287,19 @@ export default {
   cursor: pointer;
   margin: 0.5rem;
 }
+
 .statCard:hover {
   transform: translateY(-8px);
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15) !important;
 }
+
 .statCardInner {
   padding: 1.75rem;
   display: flex;
   align-items: center;
   gap: 1.25rem;
 }
+
 .statIcon {
   width: 60px;
   height: 60px;
@@ -281,13 +309,17 @@ export default {
   justify-content: center;
   font-size: 1.75rem;
 }
+
 .statContent {
   flex-grow: 1;
 }
+
 .statNumber {
   font-size: 2.5rem;
   font-weight: 700;
+  margin-left: 10px;
 }
+
 .statLabel {
   font-size: 0.95rem;
   font-weight: 500;
@@ -296,30 +328,37 @@ export default {
 
 /* Variants */
 .statTotal {
-  background: #086143;
+  background: #285436;
   color: white;
 }
+
 .statTotal .statIcon {
   background: rgba(255, 255, 255, 0.2);
 }
+
 .statPending {
-  background: #bc6c25;
+  background: #aaa;
   color: white;
 }
+
 .statPending .statIcon {
   background: rgba(255, 255, 255, 0.2);
 }
+
 .statActive {
-  background: #15aa78;
+  background: #DDA15E;
   color: white;
 }
+
 .statActive .statIcon {
   background: rgba(255, 255, 255, 0.2);
 }
+
 .statResolved {
-  background: #086143;
+  background: #6B8E23;
   color: white;
 }
+
 .statResolved .statIcon {
   background: rgba(255, 255, 255, 0.2);
 }
@@ -354,6 +393,7 @@ export default {
   flex-direction: column;
   gap: 1rem;
 }
+
 .reportItem {
   background: white;
   border-radius: 12px;
@@ -361,46 +401,84 @@ export default {
   border: 2px solid transparent;
   transition: all 0.3s ease;
 }
+
 .reportItem:hover {
-  transform: translateX(8px);
+  transform: translateY(-5px);
   border-color: #086143;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
 }
 
-/* === Align Report ID and View Status Button === */
 .reportMainInfo {
   display: flex;
-  align-items: center; /* Vertical align */
-  justify-content: space-between; /* ID left, button right */
+  align-items: center;
+  justify-content: space-between;
   gap: 1rem;
   margin-bottom: 20px;
 }
 
 .reportId {
-  padding-bottom: 0;
-  margin: 0;
   display: flex;
-  align-items: center;
+  align-items: center;       /* Vertically center everything */
+  justify-content: space-between; /* Space between ID and tags */
+  margin: 0;
+  padding: 0;
   color: #285436;
   font-weight: 600;
   font-size: 1.1rem;
+  gap: 1rem;
+}
+
+.reportIdText {
+  display: flex;
+  align-items: center;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: capitalize;
+}
+
+@media (max-width: 768px) {
+  .reportId {
+    flex-direction: column;
+    align-items: start;
+  }
+
+  .tags {
+    margin-left: 25px;
+  }
 }
 
 .viewStatusButton {
-  background-color: #dda15e;
+  background-color: #285436;
   color: white;
   border: none;
   border-radius: 50px;
   cursor: pointer;
-  width: 120px;
+  width: 130px;
   padding: 8px 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background-color 0.3s ease;
+  font-weight: 600;
 }
+
 .viewStatusButton:hover {
-  background-color: #bc6c25;
+  color: #285436;
+  background-color: #A8C686;
+}
+
+@media (max-width: 768px) {
+  .viewStatusButton {
+    align-self: flex-start;
+  }
 }
 
 .no-underline {
@@ -412,24 +490,28 @@ export default {
   font-size: 0.95rem;
   color: #606c38;
 }
+
 .reportInfo i {
   color: #086143;
 }
 
-/* Empty State */
+/* ===== Empty State ===== */
 .emptyState {
   background: white;
   border-radius: 16px;
   padding: 3rem 2rem;
 }
+
 .emptyIcon {
   font-size: 4rem;
   color: #a8c686;
 }
+
 .emptyTitle {
   color: #285436;
   font-weight: 600;
 }
+
 .emptyText {
   color: #606c38;
   font-size: 1.05rem;
