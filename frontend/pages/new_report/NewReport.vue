@@ -45,6 +45,19 @@
         <!-- STEP 1: Document -->
         <section :class="{ 'step-pane': true, 'active': currentStep === 1 }" data-step="1">
           <div class="content-card">
+            <!-- Card-top sticky progress -->
+            <div 
+              v-if="idProgress.active" 
+              class="card-progress" role="status" aria-live="polite"
+            >
+              <div class="card-progress__text">
+                🔍 Identifying species...
+                <span class="card-progress__meta">{{ idProgress.percent }}% • {{ idProgress.elapsed }}s elapsed</span>
+              </div>
+              <div class="card-progress__bar">
+                <div class="card-progress__fill" :style="{ width: idProgress.percent + '%' }"></div>
+              </div>
+            </div>
             <h2 class="section-title">Upload Documents</h2>
               
               <!-- Upload Section -->
@@ -92,7 +105,7 @@
                 <small class="form-hint">Upload photos or videos that show the animal and incident location.</small>
                 
                 <!-- Species Detection Message -->
-                <div class="species-message" v-html="speciesDetectionMessage"></div>
+                <div v-if="speciesDetectionMessage" class="species-message" v-html="speciesDetectionMessage"></div>
               </div>
 
               <!-- Location Section -->
@@ -108,11 +121,14 @@
                     v-model="formData.location"
                     class="modern-input"
                     :class="{ 'is-invalid': errors.location }"
-                    placeholder="e.g., Orchard Road, Singapore Botanic Gardens" 
+                    :placeholder="locationPlaceholder"
                     required
+                    readonly
+                    @keydown.prevent
                   >
                 </div>
-                <div class="invalid-feedback">{{ errors.location || 'Please provide a location.' }}</div>
+                <div v-if="errors.location" class="invalid-feedback">{{ errors.location }}</div>
+                <div v-if="!errors.location && locationStatusHtml" class="form-hint" v-html="locationStatusHtml"></div>
 
                 <button 
                   type="button" 
@@ -135,6 +151,7 @@
                   </p>
                   <div id="osm-map" ref="mapContainer"></div>
                 </div>
+                <small class="form-hint">Please use your current location or select on the map.</small>
               </div>
 
               <!-- Date & Time Section -->
@@ -154,7 +171,7 @@
                     required
                   >
                 </div>
-                <div class="invalid-feedback">{{ errors.sightingDateTime || 'Please select date & time.' }}</div>
+                <div v-if="errors.sightingDateTime" class="invalid-feedback">{{ errors.sightingDateTime }}</div>
               </div>
               
             <!-- Navigation Buttons - Inside Step 1 -->
@@ -172,6 +189,7 @@
                 type="button" 
                 class="btn btn-primary"
                 @click="nextStep"
+                :disabled="currentStep === 1 && !locationValid"
               >
                 Next →
               </button>
@@ -182,6 +200,19 @@
         <!-- STEP 2: Incident -->
         <section :class="{ 'step-pane': true, 'active': currentStep === 2 }" data-step="2">
           <div class="content-card">
+            <!-- Card-top sticky progress -->
+            <div 
+              v-if="idProgress.active" 
+              class="card-progress" role="status" aria-live="polite"
+            >
+              <div class="card-progress__text">
+                🔍 Identifying species...
+                <span class="card-progress__meta">{{ idProgress.percent }}% • {{ idProgress.elapsed }}s elapsed</span>
+              </div>
+              <div class="card-progress__bar">
+                <div class="card-progress__fill" :style="{ width: idProgress.percent + '%' }"></div>
+              </div>
+            </div>
             <h2 class="section-title">Incident Details</h2>
 
               <div class="form-row">
@@ -198,17 +229,27 @@
                       required
                       @change="formData.incidentTypeOther = ''"
                     >
-                      <option value="">Select incident type</option>
-                      <option value="dead">Dead</option>
-                      <option value="injured">Injured</option>
-                      <option value="misplaced">Misplaced (Animal in Wrong Location)</option>
-                      <option value="trapped">Trapped</option>
-                      <option value="others">Others</option>
+                      <option disabled value="">Select incident type</option>
+                      <optgroup label="Injury or Health">
+                        <option value="injured">🩹 Injured or Sick</option>
+                        <option value="dead">🕊️ Dead or Deceased</option>
+                      </optgroup>
+                      <optgroup label="Hazard or Entrapment">
+                        <option value="trapped">🪤 Trapped or Entangled</option>
+                        <option value="vehicle">🚗 Hit by Vehicle</option>
+                      </optgroup>
+                      <optgroup label="Behavior or Situation">
+                        <option value="orphaned">🍼 Orphaned (separated from parent)</option>
+                        <option value="aggressive">⚠️ Aggressive/Dangerous Behavior</option>
+                        <option value="displaced">🧭 Lost or Displaced</option>
+                        <option value="conflict">🤝 Human-Wildlife Conflict</option>
+                      </optgroup>
+                      <option value="other">📝 Other (please specify)</option>
                     </select>
                   </div>
-                  <div class="invalid-feedback">{{ errors.incidentType || 'Please select the incident type.' }}</div>
+                  <div v-if="errors.incidentType" class="invalid-feedback">{{ errors.incidentType }}</div>
                   <input 
-                    v-if="formData.incidentType === 'others'"
+                    v-if="formData.incidentType === 'other'"
                     type="text" 
                     id="incidentTypeOther" 
                     v-model="formData.incidentTypeOther"
@@ -229,13 +270,13 @@
                       :class="{ 'is-invalid': errors.severity }"
                       required
                     >
-                      <option value="">Select severity</option>
-                      <option class='severityLow' value="low">Low - Not urgent</option>
-                      <option class='severityModerate' value="moderate">Moderate - Needs attention</option>
-                      <option class='severityHigh' value="urgent">Urgent - Immediate action needed</option>
+                      <option disabled value="">Select severity</option>
+                      <option class='severityLow' value="low">🟢 Low — Not urgent</option>
+                      <option class='severityModerate' value="moderate">🟡 Moderate — Needs attention</option>
+                      <option class='severityHigh' value="urgent">🔴 Urgent — Immediate action needed</option>
                     </select>
                   </div>
-                  <div class="invalid-feedback">{{ errors.severity || 'Please choose a severity.' }}</div>
+                  <div v-if="errors.severity" class="invalid-feedback">{{ errors.severity }}</div>
                 </div>
               </div>
 
@@ -305,6 +346,19 @@
         <!-- STEP 3: Animal -->
         <section :class="{ 'step-pane': true, 'active': currentStep === 3 }" data-step="3">
           <div class="content-card">
+            <!-- Card-top sticky progress -->
+            <div 
+              v-if="idProgress.active" 
+              class="card-progress" role="status" aria-live="polite"
+            >
+              <div class="card-progress__text">
+                🔍 Identifying species...
+                <span class="card-progress__meta">{{ idProgress.percent }}% • {{ idProgress.elapsed }}s elapsed</span>
+              </div>
+              <div class="card-progress__bar">
+                <div class="card-progress__fill" :style="{ width: idProgress.percent + '%' }"></div>
+              </div>
+            </div>
             <h2 class="section-title">Animal Identification</h2>
               
               <div class="form-group">
@@ -333,7 +387,7 @@
                   required
                   placeholder="e.g., Limping, Bleeding, Nesting, Aggressive Behaviour, etc."
                 ></textarea>
-                <div class="invalid-feedback">{{ errors.description || 'Please describe the condition of the animal.' }}</div>
+                <div v-if="errors.description" class="invalid-feedback">{{ errors.description }}</div>
               </div>
               
             <!-- Navigation Buttons - Inside Step 3 -->
@@ -395,7 +449,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, nextTick, onBeforeMount } from 'vue';
+import { ref, reactive, computed, onMounted, nextTick, onBeforeMount, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { Modal } from 'bootstrap';
 import { getCurrentUser } from '../../src/api/auth.js';
@@ -454,6 +508,7 @@ const API_BASE_URL = isDevelopment
 
 const OPENCAGE_API_KEY = "9047284f3fca4d20a801c1c973198406";
 const OPENCAGE_BASE_URL = "https://api.opencagedata.com/geocode/v1/json";
+const NOMINATIM_REVERSE_URL = "https://nominatim.openstreetmap.org/reverse"; // no key required
 
 // Form Data
 const formData = reactive({
@@ -484,6 +539,27 @@ const reportForm = ref(null);
 const successModal = ref(null);
 const marker = ref(null);
 const isDragging = ref(false);
+const selectedLat = ref(null);
+const selectedLon = ref(null);
+const locationValid = ref(false);
+const locationStatusHtml = ref('');
+const locationPlaceholder = ref("Click 'Live Location' or select on map");
+
+// Sticky identification progress state
+const idProgress = reactive({
+  active: false,
+  percent: 0,
+  elapsed: 0
+});
+let idProgressTimer = null;
+
+// Live validation: clear a field's error as soon as the user provides a value
+watch(() => formData.location, (val) => { if (val) { delete errors.location; } });
+watch(() => formData.sightingDateTime, (val) => { if (val) { delete errors.sightingDateTime; } });
+watch(() => formData.incidentType, (val) => { if (val) { delete errors.incidentType; } });
+watch(() => formData.severity, (val) => { if (val) { delete errors.severity; } });
+watch(() => formData.isMovingNormally, (val) => { if (val) { delete errors.isMovingNormally; } });
+watch(() => formData.description, (val) => { if (val) { delete errors.description; } });
 
 // Computed
 const progressPercentage = computed(() => {
@@ -509,6 +585,26 @@ function loadLeaflet() {
     document.head.appendChild(script);
   });
 }
+function isWithinSingapore(lat, lon) {
+  return lat >= 1.1 && lat <= 1.5 && lon >= 103.6 && lon <= 104.0;
+}
+
+function parseOpenCageInfo(data) {
+  const first = data.results && data.results[0];
+  if (!first) return { address: null, postalCode: null, countryCode: null, isWater: false, point: null };
+  const components = first.components || {};
+  const address = first.formatted || null;
+  const postalCode = components.postcode || components["ISO_3166-2"] || null;
+  const countryCode = (components.country_code || '').toLowerCase();
+  const isWater = !!(components.water || components.ocean || components.beach ||
+    (first.components && (first.components.natural === 'water')) ||
+    (first.components && (first.components.waterway)) ||
+    (first.annotations && first.annotations.place && /water|ocean|sea/i.test(first.annotations.place)) ||
+    (address && /\b(ocean|sea|strait|channel|bay|coast|beach|reservoir|lake|estuary|harbour|harbor)\b/i.test(address)));
+  const point = first.geometry ? { lat: first.geometry.lat, lon: first.geometry.lng } : null;
+  return { address, postalCode, countryCode, isWater, point };
+}
+
 
 // Set default datetime and get current location on mount
 onMounted(async () => {
@@ -882,6 +978,51 @@ async function uploadFile(file) {
   }
 }
 
+// Secondary validation using OpenStreetMap Nominatim to detect water/sea
+async function nominatimReverse(lat, lon) {
+  const params = new URLSearchParams({
+    format: 'jsonv2',
+    lat: String(lat),
+    lon: String(lon),
+    zoom: '16',
+    addressdetails: '1'
+  });
+  const url = `${NOMINATIM_REVERSE_URL}?${params.toString()}`;
+  try {
+    const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) return null;
+    const json = await res.json();
+    const category = json.category || '';
+    const type = json.type || '';
+    const addresstype = json.addresstype || '';
+    const name = json.name || '';
+    const display_name = json.display_name || '';
+    const waterKeywords = /\b(ocean|sea|strait|channel|bay|coast|beach|water|reservoir|lake|estuary|harbour|harbor)\b/i;
+    const isWater = (category === 'waterway') ||
+                    (category === 'natural' && /water|sea|coastline|beach/.test(type)) ||
+                    waterKeywords.test(addresstype) ||
+                    waterKeywords.test(type) ||
+                    waterKeywords.test(name) ||
+                    waterKeywords.test(display_name);
+    const point = (json.lat && json.lon) ? { lat: parseFloat(json.lat), lon: parseFloat(json.lon) } : null;
+    return { isWater, category, type, addresstype, point };
+  } catch (e) {
+    return null;
+  }
+}
+
+function haversineMeters(lat1, lon1, lat2, lon2) {
+  const toRad = (d) => d * Math.PI / 180;
+  const R = 6371000; // meters
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+}
+
 function getCurrentLocation() {
   return new Promise((resolve, reject) => {
     if (!("geolocation" in navigator)) {
@@ -903,11 +1044,11 @@ async function reverseGeocode(lat, lon) {
 
     const data = await response.json();
     if (data.results && data.results.length > 0) {
-      return data.results[0].formatted;
+      return parseOpenCageInfo(data);
     } else if (data.status.code === 402) {
       throw new Error("OpenCage quota exceeded or key invalid.");
     } else {
-      return `No street address found for this location. (Lat: ${lat.toFixed(5)})`;
+      return { address: `No street address found for this location. (Lat: ${lat.toFixed(5)})`, postalCode: null, countryCode: null, isWater: false };
     }
   } catch (error) {
     console.error("Reverse Geocoding Error:", error);
@@ -949,31 +1090,8 @@ async function embedMap(lat, lon) {
       map.value.on('click', async (e) => {
         const clickedLat = e.latlng.lat;
         const clickedLon = e.latlng.lng;
-        
-        // Update marker position
-        if (marker.value) {
-          marker.value.setLatLng([clickedLat, clickedLon]);
-        } else {
-          marker.value = L.marker([clickedLat, clickedLon], { draggable: true })
-            .addTo(map.value)
-            .bindPopup("Selected Location")
-            .openPopup();
-        }
-
-        // Update location field with reverse geocoded address
-        try {
-          isGettingLocation.value = true;
-          const address = await reverseGeocode(clickedLat, clickedLon);
-          formData.location = address;
-        } catch (error) {
-          console.error('Reverse geocoding failed:', error);
-          formData.location = `${clickedLat.toFixed(6)}, ${clickedLon.toFixed(6)}`;
-        } finally {
-          isGettingLocation.value = false;
-        }
-
-        // Update popup with new location
-        marker.value.bindPopup(`Selected Location<br>${formData.location}`).openPopup();
+        setValidatingStatus();
+        await validateAndSetLocation(clickedLat, clickedLon);
       });
     } else {
       // Update existing map view
@@ -991,24 +1109,13 @@ async function embedMap(lat, lon) {
         .openPopup();
       
       // Add dragend event to marker
+      marker.value.on('dragstart', () => {
+        setValidatingStatus();
+      });
       marker.value.on('dragend', async (e) => {
         const markerLat = marker.value.getLatLng().lat;
         const markerLon = marker.value.getLatLng().lng;
-        
-        // Update location field with reverse geocoded address
-        try {
-          isGettingLocation.value = true;
-          const address = await reverseGeocode(markerLat, markerLon);
-          formData.location = address;
-        } catch (error) {
-          console.error('Reverse geocoding failed:', error);
-          formData.location = `${markerLat.toFixed(6)}, ${markerLon.toFixed(6)}`;
-        } finally {
-          isGettingLocation.value = false;
-        }
-
-        // Update popup
-        marker.value.bindPopup(`Selected Location<br>${formData.location}`).openPopup();
+        await validateAndSetLocation(markerLat, markerLon);
       });
     }
 
@@ -1020,6 +1127,78 @@ async function embedMap(lat, lon) {
     });
   });
 }
+function setValidatingStatus() {
+  locationValid.value = false;
+  delete errors.location;
+  locationStatusHtml.value = '<span>⏳ Validating location...</span>';
+}
+
+async function validateAndSetLocation(lat, lon) {
+  selectedLat.value = lat;
+  selectedLon.value = lon;
+
+  // Bounds check for Singapore
+  if (!isWithinSingapore(lat, lon)) {
+    locationValid.value = false;
+    formData.location = '';
+    errors.location = '⚠️ Invalid location - Please select within Singapore';
+    locationStatusHtml.value = '';
+    if (marker.value) {
+      marker.value.bindPopup('<div style="color:#c85a54;font-weight:600;">❌ Invalid Location</div><div>Please pick a point within Singapore.</div>').openPopup();
+    }
+    return;
+  }
+
+  try {
+    isGettingLocation.value = true;
+    const info = await reverseGeocode(lat, lon);
+    const nominatim = await nominatimReverse(lat, lon);
+    const countryOk = (info.countryCode === 'sg');
+    const waterOk = !info.isWater && !(nominatim && nominatim.isWater);
+
+    // Distance sanity check: if reverse-geocoded point is far from marker, likely offshore
+    let distanceOk = true;
+    const distances = [];
+    if (info.point) {
+      distances.push(haversineMeters(lat, lon, info.point.lat, info.point.lon));
+    }
+    if (nominatim && nominatim.point) {
+      distances.push(haversineMeters(lat, lon, nominatim.point.lat, nominatim.point.lon));
+    }
+    if (distances.length > 0) {
+      const maxDist = Math.max(...distances);
+      // threshold 200m
+      distanceOk = maxDist <= 200;
+    }
+
+    if (!countryOk || !waterOk || !distanceOk) {
+      locationValid.value = false;
+      formData.location = '';
+      errors.location = '⚠️ Invalid location - Please select within Singapore';
+      locationStatusHtml.value = '';
+      if (marker.value) {
+        const waterMsg = !distanceOk ? 'Marker is far from nearest address (offshore).' : 'Location appears to be in water.';
+        marker.value.bindPopup(`<div style=\"color:#c85a54;font-weight:600;\">❌ Invalid Location</div><div>${waterMsg}</div>`).openPopup();
+      }
+      return;
+    }
+
+    formData.location = info.address || `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+    delete errors.location;
+    locationValid.value = true;
+    locationStatusHtml.value = '<span style="color:#2d6b2f;">✓ Location confirmed</span>';
+    if (marker.value) {
+      marker.value.bindPopup(`<div style=\"color:#2d6b2f;font-weight:600;\">✓ Valid Location</div><div>${formData.location}</div>`).openPopup();
+    }
+  } catch (e) {
+    locationValid.value = false;
+    errors.location = 'Failed to verify location. Please try again.';
+    locationStatusHtml.value = '';
+  } finally {
+    isGettingLocation.value = false;
+  }
+}
+
 
 async function handleLiveLocation() {
   isGettingLocation.value = true;
@@ -1032,22 +1211,7 @@ async function handleLiveLocation() {
 
     // Show map first, then update with address
     await embedMap(lat, lon);
-    
-    // Get address and update location field
-    try {
-      const address = await reverseGeocode(lat, lon);
-      formData.location = address;
-      // Update marker popup with address
-      if (marker.value) {
-        marker.value.bindPopup(`Current Location<br>${address}`).openPopup();
-      }
-    } catch (geocodeError) {
-      // If geocoding fails, use coordinates
-      formData.location = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
-      if (marker.value) {
-        marker.value.bindPopup(`Current Location<br>${formData.location}`).openPopup();
-      }
-    }
+    await validateAndSetLocation(lat, lon);
   } catch (error) {
     let errorMessage = 'Unable to get location.';
     if (error.message.includes('permission denied')) {
@@ -1233,31 +1397,35 @@ async function handleSpeciesIdentification(imageFile) {
   let startTime = Date.now();
   let timerInterval;
 
-  speciesDetectionMessage.value = `
-    <div style="color:#050000ff;font-weight:bold;padding:10px;border-radius:4px;font-size:16px;">
-      🔍 Identifying species... This may take up to 30 seconds
-      <br><small style="color:#000000ff;font-weight:normal;">Please wait while AI analyzes the image</small>
-      <div id="progressTimer" style="margin-top:5px;font-size:12px;color:#000000ff;"></div>
-    </div>
-  `;
+  // Replace intrusive box with sticky, non-blocking progress indicator
+  speciesDetectionMessage.value = '';
+  idProgress.active = true;
+  idProgress.percent = 0;
+  idProgress.elapsed = 0;
 
+  const expectedDurationMs = 30000; // expected max shown to user (30s)
   timerInterval = setInterval(() => {
-    const elapsed = Math.floor((Date.now() - startTime) / 1000);
-    const timer = document.getElementById('progressTimer');
-    if (timer) {
-      timer.textContent = `Processing time: ${elapsed} seconds`;
-    }
-  }, 1000);
+    const elapsedMs = Date.now() - startTime;
+    idProgress.elapsed = Math.floor(elapsedMs / 1000);
+    const pctRaw = Math.min(0.95, elapsedMs / expectedDurationMs); // cap at 95% until done
+    idProgress.percent = Math.max(1, Math.round(pctRaw * 100));
+  }, 200);
 
   try {
     const predictions = await identifySpecies(imageFile);
     clearInterval(timerInterval);
+    // Snap sticky progress to 100% on completion and auto-dismiss
+    idProgress.percent = 100;
+    // leave elapsed as-is; hide after short delay
+    setTimeout(() => { idProgress.active = false; }, 1500);
     if (predictions !== null) {
       displaySpeciesResults(predictions);
     }
   } catch (error) {
     clearInterval(timerInterval);
     console.error('Species identification error:', error);
+    // Hide sticky indicator on error
+    idProgress.active = false;
   }
 }
 
@@ -1726,6 +1894,7 @@ select,
 textarea {
   width: 100%;
   padding: 0.9rem 1.1rem;
+  padding-left: 2.5rem; /* ensure space for leading emoji icons */
   border: 2px solid #d4cdb8;
   border-radius: 12px;
   font-size: 0.95rem;
@@ -1753,9 +1922,9 @@ textarea:focus {
 
 .input-icon {
   position: absolute;
-  left: 15px;
+  left: 12px;
   font-size: 1.1rem;
-  z-index: 1;
+  z-index: 2; /* keep icon above the input background */
   pointer-events: none;
 }
 
@@ -1770,7 +1939,7 @@ textarea:focus {
   width: 100%;
   height: auto;
   min-height: 45px;
-  padding: 0.9rem 1.1rem 0.9rem 3rem;
+  padding: 0.9rem 1.1rem 0.9rem 3.5rem; /* extra left padding so emoji never overlaps text */
   border: 2px solid #d4cdb8;
   border-radius: 12px;
   font-size: 0.95rem;
@@ -1963,6 +2132,90 @@ textarea:focus {
 .species-message {
   margin-top: 1rem;
   min-height: 20px;
+}
+
+/* Identification progress styles */
+.cc-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cc-progress-bar {
+  width: 100%;
+  height: 10px;
+  background: #e8f0e6;
+  border: 1px solid #c9d6c2;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.cc-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #6b9e3e, #8fbc5a);
+  transition: width 0.2s ease;
+  position: relative;
+}
+
+.cc-progress-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(45deg, rgba(255,255,255,0.25) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.25) 75%, transparent 75%, transparent);
+  background-size: 20px 20px;
+  animation: cc-barber 1s linear infinite;
+}
+
+@keyframes cc-barber {
+  from { background-position: 0 0; }
+  to { background-position: 20px 0; }
+}
+
+.cc-progress-text {
+  font-size: 12px;
+  color: #2d5016;
+}
+
+/* Card-top sticky progress (within each content card) */
+.card-progress {
+  position: sticky;
+  top: -1px; /* stick to top inside the card */
+  z-index: 5;
+  background: #fffaf1;
+  border: 1px solid #e8e0cc;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+
+.card-progress__text {
+  color: #2d5016;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.card-progress__meta {
+  font-weight: 400;
+  color: #3b5b20;
+  margin-left: 8px;
+  font-size: 0.85rem;
+}
+
+.card-progress__bar {
+  margin-top: 8px;
+  height: 8px;
+  background: #f0ecd9;
+  border: 1px solid #d4cdb8;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.card-progress__fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #6b9e3e, #8fbc5a);
+  transition: width 0.2s ease;
 }
 
 /* ============================================
@@ -2271,8 +2524,8 @@ div:not(.button-group):not(.content-card):not(.form-group):not(.form-row) {
 .species-message {
   margin-top: 1rem;
   min-height: 20px;
-  background: linear-gradient(135deg, #e8f4f8 0%, #f0f8ff 100%);
-  border: 2px solid #b8d9e8;
+  background: linear-gradient(135deg, #fffaf1 0%, #f7f1e3 100%); /* softer beige */
+  border: 1px solid #e8e0cc;
   border-radius: 12px;
   padding: 1rem;
   color: #2d5016;
