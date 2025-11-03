@@ -10,6 +10,8 @@ import Login from '../pages/auth/Login.vue';
 import Signup from '../pages/auth/Signup.vue';
 import ReporterDashboard from '../pages/reporter/ReporterDashboard.vue';
 import VolunteerDashboard from '../pages/volunteer/VolunteerDashboard.vue';
+import VolunteerActive from '../pages/volunteer/ActiveReports.vue';
+import VolunteerPast from '../pages/volunteer/PastReports.vue';
 import Game from '../pages/guidebook/guidebook game/game.vue';
 import GuideBook from '../pages/GuideBook.vue';
 import Map from '../pages/map/Map.vue';
@@ -84,6 +86,18 @@ const routes = [
     path:'/volunteer/home',
     name: 'Volunteer Dashboard',
     component: VolunteerDashboard,
+    meta: { requiresAuth: true, roles: ['volunteer'] }
+  },
+  {
+    path:'/volunteer/active',
+    name: 'Volunteer Active Reports',
+    component: VolunteerActive,
+    meta: { requiresAuth: true, roles: ['volunteer'] }
+  },
+  {
+    path:'/volunteer/past',
+    name: 'Volunteer Past Reports',
+    component: VolunteerPast,
     meta: { requiresAuth: true, roles: ['volunteer'] }
   },
   {

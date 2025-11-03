@@ -374,6 +374,7 @@ export default {
   font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
+/* Ensure the map always has a visible height */
 .map-wrapper {
   position: relative;
   width: 100%;
