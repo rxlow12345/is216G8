@@ -20,9 +20,9 @@
       <div class="reports-list">
         <ReportCard
           v-for="report in reports"
-          :key="report.id"
+          :key="report.reportId"
           :report="report"
-          :selected="selectedReportId === report.id"
+          :selected="selectedReportId === report.reportId"
           @click="selectReport"
           @acceptCase="acceptCaseFromCard"
         />
@@ -42,8 +42,10 @@
       <acceptCaseModal
         :isPopup="showModal"
         :location="selectedLocation"
+        :reportId="selectedReportId"
         @close="handleModalClose"
         @confirm="handleConfirmation"
+
       />
   </div>
 
@@ -53,9 +55,11 @@
 import MapView from "../../src/components/MapView.vue";
 import ReportCard from "../../src/components/ReportCard.vue";
 import api from "../../src/api/mapapi";
+import reportApi from "../../src/api/reportApi";
 import socket from "../../src/api/socket";
 import { map } from "leaflet";
 import acceptCaseModal from "../../src/components/acceptCaseModal.vue";
+
 
 export default {
   name: "RescueMap",
@@ -68,6 +72,7 @@ export default {
     return {
       reports: [],
       selectedReportId: null,
+      selectedDocId: null,
       selectReportCoordinates: { lat: null, lng: null },
       isConnected: false,
       activeUsers: 0,
@@ -88,7 +93,7 @@ export default {
   methods: {
     async loadReports() {
       try {
-        const response = await api.getReports();
+        const response = await reportApi.getAllReports();
         const filteredReports = response.filter(
           (report) => report.status === "pending"
         );
@@ -109,7 +114,7 @@ export default {
             report.coordinates = coordinates;
           } catch (geocodeError) {
             console.log(
-              `Report ID ${report.id} failed to geocode location`,
+              `Report ID ${report.reportId} failed to geocode location`,
               geocodeError.message
             );
             report.coordinates = this.mapCenter;
@@ -118,7 +123,7 @@ export default {
         this.reports = filteredReports;
         console.log('Reports:', this.reports);
       } catch (error) {
-        console.error("Error loading reports:", error);
+        console.error("Error loading reports:", error.message);
         alert("Failed to load reports. Make sure backend is running!");
       }
     },
@@ -157,7 +162,8 @@ export default {
     // },
 
     async acceptCaseFromCard(report) {
-      this.selectedReportId = report.id;
+      this.selectedReportId = report.reportId;
+      this.selectedDocId = report.id;
       if (typeof report.location === 'object'){
         this.selectedLocation = report.location.address;
       } else {
@@ -174,53 +180,67 @@ export default {
       
       this.showModal = true;
       console.log("coordinates", this.selectReportCoordinates);
-      console.log("Case Accepted", report.id);
+      console.log("Case Accepted", this.selectedReportId);
     },
+
     handleModalClose() {
       this.showModal = false;
       this.selectedReportId = null;
+      this.selectedDocId = null;
       this.selectReportCoordinates = { lat: null, lng: null };
       this.selectedLocation = "";
       console.log("Modal closed - report deselected");
     },
+
+    async updateReportStatus(docIdtoUpdate){
+      if (!docIdtoUpdate) {
+        throw new Error("No report ID selected");
+      }
+      try {
+        console.log('Attempting to update status for docId:', docIdtoUpdate);
+
+        const response = await reportApi.updateReportStatus(docIdtoUpdate, 'active')
+        console.log('Status updated successfully, new status:', response);
+
+        return response
+          
+        } catch (e) {
+          console.error('Failed to update status:', e);
+          console.error('Error message:', e,message);
+          console.error('Error response', e.response?.data);
+          throw e; // so handleconfirmation catches it 
+        }
+    },
+
     async handleConfirmation(etaData) {
-      console.log("ETA Data received:", etaData);
+      // console.log('selected report id',this.selectedReportId);
+      // adjusting data 
+      const firebaseTimestamp = etaData[0].timestamp;
+      console.log('timestamp', firebaseTimestamp);
+      const caseAcceptedTimeJS = new Date();
+      const caseAcceptedTime = caseAcceptedTimeJS.toISOString() ;
+
+      const updates = {
+        timeAccepted: caseAcceptedTime, 
+        volunteerETA: firebaseTimestamp
+      }
       
-      // to convert to Firebase Timestamp format
-      const firebaseTimestamp = {
-        seconds: Math.floor(new Date(etaData.timestamp).getTime() / 1000),
-        nanoseconds: 0
-      };
-      
-      // TODO: Upload to Firebase
-      // Example structure:
-      // await firebase.firestore().collection('cases').doc(this.selectedReportId).update({
-      //   status: 'accepted',
-      //   eta: firebaseTimestamp,
-      //   etaDate: etaData.date,
-      //   etaTime: etaData.time,
-      //   acceptedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      //   acceptedBy: 'Current User' // Replace with actual user ID
-      // });
+      console.log('documentid', this.selectedDocId);
+      const docIdtoUpdate = this.selectedDocId;
 
       try {
-        // TODO: Replace this API call with your Firebase update
-        await api.updateReportStatus(
-          this.selectedReportId,
-          "accepted", // Change status to accepted
-          "Current User"
-        );
-        
-        alert(`Case accepted! ETA: ${etaData.date} at ${etaData.time}`);
+        //  to update report fields 
+        const result = await reportApi.updateReportFields(docIdtoUpdate, updates)
+        console.log('Case accepted!',result);
+
+        await this.updateReportStatus(docIdtoUpdate);
         
         // Close modal and reset selection
-        this.showModal = false;
-        this.selectedReportId = null;
-        this.selectReportCoordinates = { lat: null, lng: null };
-        this.selectedLocation = "";
-        
+        this.handleModalClose()
         // Reload reports to update the list
         await this.loadReports();
+
+        alert('Case accepted successfully')
       } catch (error) {
         console.error("Error accepting case:", error);
         alert("Failed to accept case");
@@ -272,29 +292,8 @@ export default {
       };
     },
 
-    closeModal() {
-      this.selectedReportId = null;
-    },
-
-    async resolveCase() {
-      try {
-        await api.updateReportStatus(
-          this.selectedReportId,
-          "resolved",
-          "Current User"
-        );
-        alert("Case marked as resolved!");
-        this.closeModal();
-      } catch (error) {
-        console.error("Error resolving case:", error);
-        alert("Failed to resolve case");
-      }
-    },
-
     getCount(filterValue) {
       return this.reports?.length;
-      // if (filterValue === "all") return this.reports?.length;
-      // return this.reports?.filter((r) => r.status === filterValue).length;
     },
 
     formatDateTime(date) {

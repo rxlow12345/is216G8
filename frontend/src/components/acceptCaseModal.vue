@@ -92,12 +92,13 @@ export default {
         alert('Please select a future time. The arrival time cannot be in the past.');
         return;
       }
-      const submissionData = {
+      const submissionData = [{
         date: this.todayDate, 
         time: this.formData.time, 
         timestamp: selectedDateTime.toISOString(), 
         location: this.location
-      };
+    }];
+
 
       // will emit the 'confirm event' with data
       this.$emit('confirm', submissionData);

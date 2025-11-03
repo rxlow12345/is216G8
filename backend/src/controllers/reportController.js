@@ -643,7 +643,7 @@ export const updateReportStatus = async (req, res) => {
     console.error("Error updating report status:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to update report status: '
+      message: `Failed to update report status: ${error.message}`
     });
   }
 };
