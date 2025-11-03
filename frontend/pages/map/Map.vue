@@ -35,81 +35,18 @@
 
     <!-- Right Side: Map -->
     <div class="map-container">
-      <MapView :reports="reports" :center="mapCenter" />
+      <MapView :reports="reports" :center="mapCenter" @acceptCase="acceptCaseFromCard" />
     </div>
+
+    <!-- PopUp -->
+      <acceptCaseModal
+        :isPopup="showModal"
+        :location="selectedLocation"
+        @close="handleModalClose"
+        @confirm="handleConfirmation"
+      />
   </div>
 
-  <!-- Report Details Modal TOD0 NOT APPEARING -->
-  <div v-if="selectedReportId" class="modal-overlay" @click="closeModal">
-    <div class="modal" @click.stop>
-      <button class="close-btn" @click="closeModal">×</button>
-
-      <h2>{{ selectedReport.animalType }}</h2>
-      <p class="modal-address">📍 {{ selectedReport.address }}</p>
-
-      <div class="modal-details">
-        <div class="detail-row">
-          <span class="label">Status:</span>
-          <span class="value status" :class="`status-${selectedReport.status}`">
-            {{ selectedReport.status }}
-          </span>
-        </div>
-
-        <div class="detail-row">
-          <span class="label">Urgency:</span>
-          <span
-            class="value urgency"
-            :class="`urgency-${selectedReport.urgency}`"
-          >
-            {{ selectedReport.urgency }}
-          </span>
-        </div>
-
-        <div class="detail-row">
-          <span class="label">Description:</span>
-          <p class="value">{{ selectedReport.description }}</p>
-        </div>
-
-        <div class="detail-row">
-          <span class="label">Reported by:</span>
-          <span class="value">{{ selectedReport.reporter }}</span>
-        </div>
-
-        <div class="detail-row">
-          <span class="label">Time:</span>
-          <span class="value">{{
-            formatDateTime(selectedReport.reportedAt)
-          }}</span>
-        </div>
-
-        <div v-if="selectedReport.assignedTo" class="detail-row">
-          <span class="label">Assigned to:</span>
-          <span class="value">{{ selectedReport.assignedTo }}</span>
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="modal-actions">
-        <button
-          v-if="selectedReport.status === 'pending'"
-          @click="acceptCase"
-          class="btn btn-primary"
-        >
-          Accept Case
-        </button>
-
-        <button
-          v-if="selectedReport.status === 'in-progress'"
-          @click="resolveCase"
-          class="btn btn-success"
-        >
-          Mark as Resolved
-        </button>
-
-        <button @click="closeModal" class="btn btn-secondary">Close</button>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script>
@@ -118,12 +55,14 @@ import ReportCard from "../../src/components/ReportCard.vue";
 import api from "../../src/api/mapapi";
 import socket from "../../src/api/socket";
 import { map } from "leaflet";
+import acceptCaseModal from "../../src/components/acceptCaseModal.vue";
 
 export default {
   name: "RescueMap",
   components: {
     MapView,
     ReportCard,
+    acceptCaseModal,
   },
   data() {
     return {
@@ -133,6 +72,8 @@ export default {
       isConnected: false,
       activeUsers: 0,
       mapCenter: { lat: 1.3521, lng: 103.8198 }, // Singapore
+      showModal: false,
+      selectedLocation: "",
     };
   },
   computed: {},
@@ -155,6 +96,12 @@ export default {
         for (const report of filteredReports) {
           if (report.location == null) {
             report.location = "Singapore Management University";
+          } 
+          if (typeof report.location === 'object'){
+            // means postal code present 
+            const location = report.location.postalCode
+          } else {
+            const location = report.location.address
           }
           // to handle geocoding errors
           try {
@@ -169,48 +116,53 @@ export default {
           }
         }
         this.reports = filteredReports;
-        console.log('Reports:', this.filteredReports);
+        console.log('Reports:', this.reports);
       } catch (error) {
         console.error("Error loading reports:", error);
         alert("Failed to load reports. Make sure backend is running!");
       }
     },
 
-    async geocode(address) {
-      const OPENCAGE_API_KEY = import.meta.env.VITE_OPENCAGE_API_KEY;
-      const OPENCAGE_BASE_URL = "https://api.opencagedata.com/geocode/v1/json";
-      const url = `${OPENCAGE_BASE_URL}?q=${address}&key=${OPENCAGE_API_KEY}`;
+    // async geocode(address) {
+    //   const OPENCAGE_API_KEY = import.meta.env.VITE_OPENCAGE_API_KEY;
+    //   const OPENCAGE_BASE_URL = "https://api.opencagedata.com/geocode/v1/json";
+    //   const url = `${OPENCAGE_BASE_URL}?q=${address}&key=${OPENCAGE_API_KEY}`;
 
-      try {
-        const response = await fetch(url);
+    //   try {
+    //     const response = await fetch(url);
 
-        if (!response.ok) {
-          throw new Error(
-            `OpenCage API request failed with status: ${response.status}`
-          );
-        }
+    //     if (!response.ok) {
+    //       throw new Error(
+    //         `OpenCage API request failed with status: ${response.status}`
+    //       );
+    //     }
 
-        const data = await response.json();
+    //     const data = await response.json();
 
-        if (
-          !data.results ||
-          data.results.length == 0 ||
-          !data.results[0].geometry
-        ) {
-          throw new Error("Geocoding service returned no valid results");
-        }
+    //     if (
+    //       !data.results ||
+    //       data.results.length == 0 ||
+    //       !data.results[0].geometry
+    //     ) {
+    //       throw new Error("Geocoding service returned no valid results");
+    //     }
 
-        const lat = data.results[0].geometry.lat;
-        const lng = data.results[0].geometry.lng;
-        return { lat: lat, lng: lng };
-      } catch (error) {
-        console.error("Geocoding Error:", error);
-        throw new Error("Failed to connect to the geocoding service.");
-      }
-    },
+    //     const lat = data.results[0].geometry.lat;
+    //     const lng = data.results[0].geometry.lng;
+    //     return { lat: lat, lng: lng };
+    //   } catch (error) {
+    //     console.error("Geocoding Error:", error);
+    //     throw new Error("Failed to connect to the geocoding service.");
+    //   }
+    // },
 
     async acceptCaseFromCard(report) {
       this.selectedReportId = report.id;
+      if (typeof report.location === 'object'){
+        this.selectedLocation = report.location.address;
+      } else {
+        this.selectedLocation = report.location;
+      }
       this.selectReport;
 
       try {
@@ -220,8 +172,59 @@ export default {
         this.selectReportCoordinates = this.mapCenter;
       }
       
+      this.showModal = true;
       console.log("coordinates", this.selectReportCoordinates);
       console.log("Case Accepted", report.id);
+    },
+    handleModalClose() {
+      this.showModal = false;
+      this.selectedReportId = null;
+      this.selectReportCoordinates = { lat: null, lng: null };
+      this.selectedLocation = "";
+      console.log("Modal closed - report deselected");
+    },
+    async handleConfirmation(etaData) {
+      console.log("ETA Data received:", etaData);
+      
+      // to convert to Firebase Timestamp format
+      const firebaseTimestamp = {
+        seconds: Math.floor(new Date(etaData.timestamp).getTime() / 1000),
+        nanoseconds: 0
+      };
+      
+      // TODO: Upload to Firebase
+      // Example structure:
+      // await firebase.firestore().collection('cases').doc(this.selectedReportId).update({
+      //   status: 'accepted',
+      //   eta: firebaseTimestamp,
+      //   etaDate: etaData.date,
+      //   etaTime: etaData.time,
+      //   acceptedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      //   acceptedBy: 'Current User' // Replace with actual user ID
+      // });
+
+      try {
+        // TODO: Replace this API call with your Firebase update
+        await api.updateReportStatus(
+          this.selectedReportId,
+          "accepted", // Change status to accepted
+          "Current User"
+        );
+        
+        alert(`Case accepted! ETA: ${etaData.date} at ${etaData.time}`);
+        
+        // Close modal and reset selection
+        this.showModal = false;
+        this.selectedReportId = null;
+        this.selectReportCoordinates = { lat: null, lng: null };
+        this.selectedLocation = "";
+        
+        // Reload reports to update the list
+        await this.loadReports();
+      } catch (error) {
+        console.error("Error accepting case:", error);
+        alert("Failed to accept case");
+      }
     },
 
     connectWebSocket() {
@@ -271,41 +274,6 @@ export default {
 
     closeModal() {
       this.selectedReportId = null;
-    },
-
-    async acceptCase() {
-      try {
-        // TODO: Show a form modal here to collect additional details from user
-        // Details to collect:
-        // - Estimated arrival time
-        // - Resources needed
-        // - Special equipment required
-        // - Additional notes
-        // - Team member assignments
-        
-        const confirmAccept = confirm(
-          `Accept this case?\n\nAnimal: ${this.selectedReport.animalType}\nLocation: ${this.selectedReport.location}\n\n(TODO: Replace this with a proper form modal)`
-        );
-
-        if (!confirmAccept) return;
-
-        await api.updateReportStatus(
-          this.selectedReportId,
-          "in-progress",
-          "Current User" // TODO: Replace with actual user name
-        );
-
-        // Remove from list since we're only showing pending
-        this.reports = this.reports.filter(
-          (r) => r.id !== this.selectedReportId
-        );
-
-        alert("Case accepted successfully!");
-        this.closeModal();
-      } catch (error) {
-        console.error("Error accepting case:", error);
-        alert("Failed to accept case");
-      }
     },
 
     async resolveCase() {

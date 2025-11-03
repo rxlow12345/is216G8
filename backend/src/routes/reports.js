@@ -10,7 +10,6 @@ import {
   getReportByReportId,
   updateReportStatus,
   updateReportFields,
-  getByGeoSpatial,
   deleteReport,
   getActiveSummary, 
 } from '../controllers/reportController.js';

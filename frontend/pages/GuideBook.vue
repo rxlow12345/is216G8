@@ -102,30 +102,6 @@
       </div>
     </div>
 
-
-    <!-- Pagination -->
-    <!-- <div id="pagination" class="pagination-buttons d-flex justify-content-center align-items-center mt-4"
-      v-if="shouldShowPagination">
-      <button class="btn btn-outline-success mx-2" @click="goToFirstPage" :disabled="isFirstPage">
-        « First
-      </button>
-
-      <button class="btn btn-outline-success me-2" @click="prevPage" :disabled="isFirstPage">
-        ‹ Prev
-      </button>
-
-      <span id="pageIndicator" class="mx-0 mx-sm-2 px-3 py-2">
-        <span class="page-label">Page </span>{{ currentPage }} of {{ totalPages }}
-      </span>
-
-      <button class="btn btn-outline-success ms-2" @click="nextPage" :disabled="isLastPage">
-        Next ›
-      </button>
-
-      <button class="btn btn-outline-success mx-2" @click="goToLastPage" :disabled="isLastPage">
-        Last »
-      </button>
-    </div> -->
     <!-- Pagination -->
     <div id="pagination" class="pagination-buttons d-flex justify-content-center align-items-center mt-4"
       v-if="shouldShowPagination">
@@ -156,10 +132,6 @@
       </button>
     </div>
 
-    <!-- Back to Top Button -->
-    <button v-show="showBackToTop" class="back-to-top" @click="scrollToTop">
-      ⬆️ Back to Top
-    </button>
   </div>
 </template>
 
@@ -173,7 +145,7 @@ import BackToTop from '../src/components/BackToTop.vue';
 
 export default {
   name: 'Guidebook',
-  components: { OtterCursor, FloatingBackground },
+  components: { OtterCursor, FloatingBackground, BackToTop},
 
   data() {
     return {

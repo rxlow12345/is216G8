@@ -18,40 +18,79 @@
 
 </head>
 
-<body class="bg-light">
+<body>
 
-    <!-- Top bar / logo -->
-    <div class="logo-section text-center py-2 border-bottom">
-        <img src="/src/public/assets/logo.png" class="logo-section-img mx-auto d-block" alt="CritterConnect logo">
-        <nav class="navbar navbar-expand-md navbar-light bg-transparent">
-            <div class="container">
-                   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav"
-                    aria-controls="topNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="topNav">
-                    <ul class="navbar-nav mx-auto my-2 my-lg-0 navbar-nav-scroll">
+    <nav class="navbar navbar-expand-lg fixed-top customNavbar py-1">
+        <div class="container-fluid">
+            <a class="navbar-brand navbarLogo" href="/home">
+                <img src="/src/public/assets/NoWordLogo.png" alt="Logo" class="d-inline-block align-text-top"
+                    style="height: 75px;">
+            </a>
+            <img src="/src/public/assets/Title.png" style="height:60px;">
+            <span id="welcomeMessage" class="navbar-text me-auto ms-3 order-1" style="display: none;">
+                Welcome, <span id="username"></span>
+            </span>
+            <button class="navbar-toggler navbarToggle order-2" id="navbarToggle" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <img id="navbarToggleBurger" src="/src/public/assets/navBurger.svg" alt="menu">
+            </button>
+            <div class="collapse navbar-collapse justify-content-end order-2" id="navbarNav">
+                <ul class="navbar-nav navbarNav">
+                    <!-- Always visible links -->
+                    <li class="nav-item">
+                        <a class="nav-link navLink" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link navLink" href="/guidebook">Guidebook</a>
+                    </li>
+                    <!-- Map (shown dynamically for admin/volunteer) -->
+                    <li class="nav-item" id="mapLink" style="display: none;">
+                        <a class="nav-link navLink" href="/map">Map</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link navLink" href="/donate">Donate</a>
+                    </li>
+                    
+                    <!-- Login (shown when not logged in) -->
+                    <li class="nav-item" id="loginLink">
+                        <a class="nav-link navLink" href="/login">Login</a>
+                    </li>
 
-                        <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="#">Report</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">About Us</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Guidebook</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Resources</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Donate</a></li>
-                    </ul>
-                   
-                </div>
+                    <!-- Volunteer Dashboard -->
+                    <li class="nav-item" id="volunteerLink" style="display: none;">
+                        <a class="nav-link navLink" href="/volunteer/home">Dashboard</a>
+                    </li>
+                    
+                    <!-- Reporter Dashboard -->
+                    <li class="nav-item" id="reporterLink" style="display: none;">
+                        <a class="nav-link navLink" href="/report">Dashboard</a>
+                    </li>
+                    
+                    <!-- Admin Dashboard -->
+                    <li class="nav-item" id="adminLink" style="display: none;">
+                        <a class="nav-link navLink" href="/admin">Admin</a>
+                    </li>
+                    
+                    <!-- Logout -->
+                    <li class="nav-item" id="logoutLink" style="display: none;">
+                        <a class="nav-link navLink" href="#" onclick="handleLogout(event)">Logout</a>
+                    </li>
+                </ul>
             </div>
-        </nav>
-    </div>
+        </div>
+    </nav>
 
-    <h1 class="title-section mb-2">Report Wildlife</h1>
-    <main class="container my-4">
+    <div id="topBanner">
+        <header class="text-center mb-2">
+            <h1>Report Wildlife</h1>
+        </header>
+    </div>
+    <main class="container-fluid my-4">
         <header class="mb-3">
             <p class="text-section mb-0">
-                Thank you for reaching out. Provide a few details to help rescue teams respond appropriately.
-                See <a href="#">FAQs</a> or <a href="#">chat</a> live for immediate assistance.
-            </p>
+                Thank you for reaching out to help local wildlife. Your report provides essential details that allow
+                rescue teams to locate, assess, and respond to the situation quickly and safely. </p>
         </header>
 
         <!-- Step status bar -->
@@ -61,7 +100,7 @@
             <div class="step-pill" data-step-pill="3"><span class="idx">3</span><span>Animal</span></div>
         </div>
         <div class="progress mb-4" role="progressbar" aria-label="Progress" aria-valuemin="0" aria-valuemax="100">
-            <div class="progress-bar" id="progressBar" style="width: 33%;">33%</div>
+            <div class="progress-bar bg-success" id="progressBar" style="width: 0%;">0%</div>
         </div>
 
         <!-- Wizard form -->
@@ -91,10 +130,10 @@
                                 placeholder="e.g., Orchard Road, Singapore Botanic Gardens" required>
                             <div class="invalid-feedback">Please provide a location.</div>
 
-                            <button type="button" id="live-location-btn" class="btn btn-secondary btn-sm mt-2">
+                            <button type="button" id="live-location-btn" class="btn btn-secondary btn-sm mt-3">
                                 <span class="spinner-border spinner-border-sm me-1 d-none" role="status"
                                     aria-hidden="true"></span>
-                                Select Live Location
+                                <span style="font-weight: 600"> Live Location </span>
                             </button>
 
                             <div id="map-container" class="mt-3" style="display:none;">
@@ -126,11 +165,11 @@
                                         class="required">*</span></label>
                                 <select id="incidentType" name="incidentType" class="form-select" required>
                                     <option value="">Select incident type</option>
-                                    <option value="misplaced">Misplaced (animal in wrong location)</option>
-                                    <option value="injured">Injured</option>
-                                    <option value="trapped">Trapped</option>
-                                    <option value="dead">Dead</option>
-                                    <option value="others">Others</option>
+                                <option value="dead">Dead</option>
+                                <option value="injured">Injured</option>
+                                <option value="misplaced">Misplaced (Animal in Wrong Location)</option>
+                                <option value="trapped">Trapped</option>
+                                <option value="others">Others</option>
                                 </select>
                                 <div class="invalid-feedback">Please select the incident type.</div>
                                 <input type="text" id="incidentTypeOther" class="form-control mt-2"
@@ -142,9 +181,11 @@
                                         class="required">*</span></label>
                                 <select id="severity" name="severity" class="form-select" required>
                                     <option value="">Select severity</option>
-                                    <option value="low">Low - Not urgent</option>
-                                    <option value="moderate">Moderate - Needs attention</option>
-                                    <option value="urgent">Urgent - Immediate action needed</option>
+                                    <option class='severityLow' value="low">Low - Not urgent</option>
+                                    <option class='severityModerate' value="moderate">Moderate - Needs attention
+                                    </option>
+                                    <option class='severityHigh' value="urgent">Urgent - Immediate action needed
+                                    </option>
                                 </select>
                                 <div class="invalid-feedback">Please choose a severity.</div>
                             </div>
@@ -189,19 +230,50 @@
                             <div class="col-12">
                                 <label for="speciesName" class="form-label">Species Name (if known)</label>
                                 <input type="text" id="speciesName" name="speciesName" class="form-control"
-                                    placeholder="e.g., Common Palm Civet, Hornbill, Wild Boar">
+                                    placeholder="e.g., Common Palm Civet, Hornbill, Wild Boar, etc.">
                             </div>
                             <div class="col-12">
-                                <label for="animalCondition" class="form-label">Special Behaviour or Condition</label>
-                                <textarea id="animalCondition" name="animalCondition" class="form-control" rows="3"
-                                    placeholder="e.g., limping, bleeding, nesting, aggressive behaviour, etc."></textarea>
+                                <label for="description" class="form-label">Describe Special Behaviour or
+                                    Condition<span class="required">*</span></label>
+                                <textarea id="description" name="animalCondition" class="form-control" rows="3" required
+                                    placeholder="e.g., Limping, Bleeding, Nesting, Aggressive Behaviour, etc."></textarea>
+                                <div class="invalid-feedback">Please describe the condition of the animal.</div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="d-flex justify-content-end mt-3">
-                    <button type="submit" id="submitBtn">Submit Report</button>
-                </div>
+                    <div class="d-flex justify-content-end mt-3">
+                        <button type="submit" id="submitBtn">Submit Report</button>
+                        <div id="status"></div>
+                        <!-- Success Modal -->
+                        <div class="modal fade" id="submitSuccessModal" tabindex="-1"
+                            aria-labelledby="submitSuccessLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="submitSuccessLabel">Report Submitted</h5>
+                                        <button type="button" class="btn-close" aria-label="Close"
+                                            onclick="window.location.reload()">
+                                        </button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <!-- We'll inject the success HTML into this div -->
+                                        <!-- <div id="status"></div> -->
+                                        <div id="modalStatus"></div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                                            onclick="window.location.href='/home'">Home</button>
+                                        <!-- If you use plain files, set href to your home page path -->
+                                        <a id="goHomeBtn" class="btn btn-primary" href="/home">Go to Status Page</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
             </section>
 
             <!-- STEP 4: Quick Assessment -->
@@ -237,7 +309,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <!-- Your existing report logic -->
-    <script src="/pages/js/report.js"></script>
+    <script type='module' src="/pages/new_report/report.js"></script>
 
 
 </body>

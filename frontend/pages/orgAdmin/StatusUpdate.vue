@@ -1,13 +1,13 @@
 <!-- src/components/StatusUpdate.vue -->
 <template>
   <!-- Main container -->
-  <div class="dashboard-container">
+  <div class="container-fluid p-0">
 
     <!-- Top Banner -->
     <div class="bannerTitles">
       <header class="text-center mb-2">
-        <h1>🌿 Report Dashboard 🌿</h1>
-        <p>Change the status of reports</p>
+        <h1>🌿 Reports Dashboard 🌿</h1>
+        <p>A Comprehensive View Of All Reports</p>
       </header>
     </div>
 
@@ -433,16 +433,6 @@ export default {
 
 <style scoped>
 @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css');
-
-* {
-  margin: 0;
-  padding: 0;
-}
-
-.dashboard-container {
-  min-height: 100vh;
-  background: linear-gradient(to bottom, #FEFAE0 0%, #f8f9fa 100%);
-}
 
 /* Stat Cards */
 .stat-card {

@@ -75,9 +75,9 @@
               
               <!-- Action Buttons -->
               <div class="mt-4">
-                <a href="/new_report/report.html" class="btn btn-success btn-lg me-3">
+                <router-link to="/new-report" class="btn btn-success btn-lg me-3">
                   <i class="bi bi-plus-circle"></i> Create New Report
-                </a>
+                </router-link>
                 <a href="/pages/report.html" class="btn btn-outline-primary btn-lg">
                   <i class="bi bi-file-text"></i> Alternative Report Form
                 </a>

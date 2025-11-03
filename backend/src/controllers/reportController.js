@@ -139,7 +139,15 @@ export const uploadImage = async (req, res) => {
     const filename = `incident-images/${uuidv4()}.jpg`;
     
     // Upload to Firebase Storage
+    if (!storage) {
+      throw new Error('Firebase Storage is not initialized. Please check Firebase configuration.');
+    }
+    
     const bucket = storage.bucket();
+    if (!bucket) {
+      throw new Error('Firebase Storage bucket is not available. Please check Firebase configuration.');
+    }
+    
     const file = bucket.file(filename);
     
     try {
@@ -166,25 +174,35 @@ export const uploadImage = async (req, res) => {
       });
       
     } catch (storageError) {
+      console.error('Firebase Storage error:', storageError);
       
       // Fallback Handling (if Upload Fails): Store as base64 in a separate collection if Storage fails
-      const fallbackId = uuidv4();
-      await db.collection('imageFallback').doc(fallbackId).set({
-        imageData: imageData,
-        createdAt: new Date(),
-        size: buffer.length
-      });
-      
-      const fallbackURL = `${req.protocol}://${req.get('host')}/api/reports/images/${fallbackId}`;
-      
-      res.json({
-        success: true,
-        data: {
-          imageURL: fallbackURL,
-          filename: `fallback-${fallbackId}.jpg`,
-          note: 'Stored as fallback due to Storage error'
-        }
-      });
+      try {
+        const fallbackId = uuidv4();
+        await db.collection('imageFallback').doc(fallbackId).set({
+          imageData: imageData,
+          createdAt: new Date(),
+          size: buffer.length
+        });
+        
+        const fallbackURL = `${req.protocol}://${req.get('host')}/api/reports/images/${fallbackId}`;
+        
+        res.json({
+          success: true,
+          data: {
+            imageURL: fallbackURL,
+            filename: `fallback-${fallbackId}.jpg`,
+            note: 'Stored as fallback due to Storage error'
+          }
+        });
+      } catch (fallbackError) {
+        console.error('Fallback storage also failed:', fallbackError);
+        res.status(500).json({
+          success: false,
+          message: 'Failed to upload image to Firebase Storage and fallback storage. Please check Firebase configuration.',
+          error: process.env.NODE_ENV === 'development' ? storageError.message : 'Firebase Storage error'
+        });
+      }
     }
     
   } catch (error) {
@@ -229,20 +247,60 @@ export const getFallbackImage = async (req, res) => {
   }
 };
 
-// getByGeoSpatial,
-export const getByGeoSpatial = async (req, res) => {
+// Helper function to format postal code with "S" prefix
+const formatPostalCode = (postalCode) => {
+  if (!postalCode) return null;
+  
+  const trimmed = String(postalCode).trim();
+  
+  // Remove existing "S" prefix if present (case-insensitive)
+  const withoutPrefix = trimmed.replace(/^S/i, '');
+  
+  // Add "S" prefix
+  return `S${withoutPrefix}`;
+};
+
+// getPostalCode - Extract postal code and English address using geocoding API
+const getPostalCode = async (address) => {
   try {
-    const OPENCAGE_API_URL = process.env.VITE_OPENCAGE_API_KEY
-    const response = await axios.get(`https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${apiKey}&limit=1&countrycode=sg`
-    );
+    if (!address || address.trim() === '') {
+      return null;
+    }
+
+    const apiKey = process.env.OPENCAGE_API_KEY || process.env.VITE_OPENCAGE_API_KEY || "9047284f3fca4d20a801c1c973198406";
     
-    if (response.data.results.length > 0) {
-      const { lat, lng } = response.data.results[0].geometry;
-      return { lat, lng };
+    if (!apiKey) {
+      console.error('OpenCage API key not found');
+      return null;
+    }
+
+    // Force English language and prefer English results
+    const url = `https://api.opencagedata.com/geocode/v1/json?q=${encodeURIComponent(address)}&key=${apiKey}&limit=1&countrycode=sg&language=en&no_annotations=1`;
+    
+    const response = await axios.get(url);
+    
+    if (response.data && response.data.results && response.data.results.length > 0) {
+      const result = response.data.results[0];
+      
+      // Extract postal code from components
+      // OpenCage API returns postal code in components.postcode or components.postal_code
+      const components = result.components || {};
+      const rawPostalCode = components.postcode || components.postal_code || components.postal || null;
+      
+      // Format postal code with "S" prefix
+      const postalCode = formatPostalCode(rawPostalCode);
+      
+      // Get English formatted address (this is always in English due to language=en parameter)
+      const englishAddress = result.formatted || address;
+      
+      return {
+        postalCode: postalCode,
+        englishAddress: englishAddress.trim()
+      };
     }
     return null;
   } catch (error) {
-    console.error('Geocoding error:', error);
+    console.error('Geocoding error:', error.message);
     return null;
   }
 };
@@ -289,14 +347,15 @@ export const createReport = async (req, res) => {
       'incidentType', 'severity', 'sightingDateTime', 'description', 'isMovingNormally'
     ];
 
-      const coordinates = await getByGeoSpatial(location);
-      if (!coordinates) {
-        return res.status(400).json({
-          success: false, 
-          message: "Unable to geocode the provided location"
-        });
-      }
+    // Validate location first before geocoding
+    if (!location || location.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        message: 'Location is required'
+      });
+    }
 
+    // Validate required fields
     const missingFields = requiredFields.filter(field => !req.body[field]);
     if (missingFields.length > 0) {
       return res.status(400).json({
@@ -305,11 +364,37 @@ export const createReport = async (req, res) => {
       });
     }
 
-    // Validate location
-    if (!location || location.trim() === '') {
+    // Get postal code and English address from location (handles both English and Chinese input)
+    let postalCode = null;
+    let englishAddress = location.trim(); // Default to input address
+    
+    try {
+      const geocodeResult = await getPostalCode(location);
+      if (geocodeResult) {
+        postalCode = geocodeResult.postalCode;
+        englishAddress = geocodeResult.englishAddress; // Always use English address from API
+      }
+    } catch (geocodeError) {
+      console.error('Error during geocoding:', geocodeError);
+      // Continue to fallback extraction
+    }
+    
+    // Fallback: Try to extract Singapore postal code (6 digits) from address string if geocoding didn't find it
+    if (!postalCode) {
+      // Try to match 6-digit postal code (may or may not have "S" prefix)
+      const postalCodeMatch = location.match(/\b(S?)(\d{6})\b/i);
+      if (postalCodeMatch) {
+        // Extract the 6-digit code and format with "S" prefix
+        const rawCode = postalCodeMatch[2]; // The 6 digits
+        postalCode = formatPostalCode(rawCode);
+      }
+    }
+
+    // Validate that postal code was found
+    if (!postalCode) {
       return res.status(400).json({
-        success: false,
-        message: 'Location is required'
+        success: false, 
+        message: "Unable to determine postal code for the provided location. Please ensure the location includes a valid Singapore address with postal code (6 digits), or include the postal code in the address field (e.g., '123 Orchard Road, Singapore 238890')."
       });
     }
 
@@ -327,9 +412,8 @@ export const createReport = async (req, res) => {
       severity,
       description: description.trim(),
       location: {
-        address: location.trim(),
-        lat: coordinates.lat, 
-        lng: coordinates.lng
+        address: englishAddress, // Always use English address from geocoding API
+        postalCode: postalCode
       },
       sightingDateTime: new Date(sightingDateTime),
       
@@ -419,7 +503,6 @@ export const deleteReport = async (req, res) => {
       io.emit('report-deleted', docRef.id);
     }
     
-    console.log(`🗑️ Report deleted: ${id}`);
     
     res.json({ 
       success: true,
