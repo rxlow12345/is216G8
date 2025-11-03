@@ -90,7 +90,7 @@
   color: #283618;
 }
 
-.filterSelect option[value="low"] {
+/* .filterSelect option[value="low"] {
   background-color: rgba(107, 142, 35, 0.5);
   color: #435c11;
 }
@@ -118,7 +118,7 @@
 .filterSelect option[value="resolved"] {
   background-color: rgba(107, 142, 35, 0.5);
   color: #435c11;
-}
+} */
 
 .filterSelect option:hover {
   filter: brightness(0.9);
