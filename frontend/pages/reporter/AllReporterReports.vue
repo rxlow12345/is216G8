@@ -337,7 +337,7 @@ export default {
 }
 
 .statPending {
-  background: #aaa;
+  background: #BC6C25;
   color: white;
 }
 
