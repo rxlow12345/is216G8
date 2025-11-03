@@ -60,6 +60,7 @@ import {getCurrentUser} from '../../src/api/auth.js';
 import socket from "../../src/api/socket";
 import acceptCaseModal from "../../src/components/acceptCaseModal.vue";
 import BackToTop from "../../src/components/BackToTop.vue";
+import { filter } from "mathjs";
 
 
 export default {
