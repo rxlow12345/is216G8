@@ -64,7 +64,7 @@
                             </span>
                           </p>
                           <p class="info-item"><strong>Moving Normally:</strong> {{ capitalize(report.isMovingNormally)
-                            }}</p>
+                          }}</p>
                         </div>
                       </div>
 
@@ -215,10 +215,19 @@
                     <div class="mb-3">
                       <i class="bi bi-exclamation-circle-fill display-4 text-muted"></i>
                     </div>
-                    <h5 class="card-title text-muted mb-2">Rescuers on the way</h5>
-                    <p class="card-text text-muted">
-                      Rescuers are on the way. Once progress is made, you'll see updates here.
-                    </p>
+                    <div v-if="report.status === 'pending'">
+                      <h5 class="card-title text-muted mb-2">Case has yet to be accepted</h5>
+                      <p class="card-text text-muted">
+                        Nobody has accepted this case yet
+                      </p>
+                    </div>
+                    <div v-else>
+                      <h5 class="card-title text-muted mb-2">Rescuers on the way</h5>
+                      <p class="card-text text-muted">
+                        Once progress rescuers arrive, you'll see updates here
+                      </p>
+                    </div>
+
                   </div>
                 </div>
               </div>
