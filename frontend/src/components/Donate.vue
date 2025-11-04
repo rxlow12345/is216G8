@@ -190,7 +190,7 @@ onBeforeUnmount(() => stopAuto())
 
 
 const carouselImages = [
-    { src: '../src/public/assets/carousel1.png', alt: 'Otter', caption: "Otters", emoji: '🦦' },
+    { src: '../src/public/assets/otter.jpg', alt: 'Otter', caption: "Otters", emoji: '🦦' },
     { src: '../src/public/assets/carousel2.jpg', alt: 'Cat', caption: 'Community Cats', emoji: '🐱' },
     { src: '../src/public/assets/carousel3.jpg', alt: 'Turtle', caption: 'Turtles', emoji: '🐢' },
 ]

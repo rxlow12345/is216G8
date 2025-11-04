@@ -104,10 +104,13 @@ export default {
   },
   computed: {
     displayName() {
-      if (this.auth.username){
-        return this.auth.username;
+      // Extract username from email or use username field
+      let name = this.auth.username || this.auth.email || '';
+      if (name.includes('@')) {
+        return name.split('@')[0]; // Get only the part before @
       }
-  }
+      return name;
+    }
 },
   methods: {
     // programmatic toggle entrypoint

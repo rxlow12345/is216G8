@@ -9,7 +9,7 @@
     </div>
     <div>
         <!-- Latest News Section -->
-        <section class="bg-light py-5">
+        <section class="py-5">
             <div class="container">
                 <h2 class="text-success fw-bold text-center mb-4">News & Updates</h2>
                 <div class="row g-4">
@@ -36,16 +36,16 @@
 
         <!-- FAQ + Feedback in a single card -->
         <section class="container my-5">
+            <!-- Header -->
+            <h2 class="text-success fw-bold text-center mb-4">
+                Got Questions or Feedback? We’re Here to Help!
+            </h2>
             <div class="card border-0 shadow-sm rounded-4 p-4">
-                <!-- Header -->
-                <h2 class="text-success fw-bold text-center mb-4">
-                    Got Questions or Feedback? We’re Here to Help!
-                </h2>
 
                 <div class="row g-5">
                     <!-- FAQ Section -->
                     <div class="col-12 col-lg-7">
-                        <h4 class="fw-bold mb-3 text-success">Frequently Asked Questions</h4>
+                        <h4 class="fw-bold mb-4">Frequently Asked Questions</h4>
 
                         <div class="accordion" id="faqAccordion">
                             <div class="accordion-item" v-for="(faq, index) in faqs" :key="index">
@@ -68,7 +68,7 @@
 
                     <!-- Feedback Form -->
                     <div class="col-12 col-lg-5">
-                        <h4 class="fw-bold mb-3 text-success">Send Us Feedback</h4>
+                        <h4 class="fw-bold mb-4">Send Us Feedback</h4>
                         <FeedbackForm />
                     </div>
                 </div>
