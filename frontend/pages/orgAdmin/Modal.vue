@@ -37,7 +37,7 @@ export default {
   <Transition name="modal">
     <div v-if="selectedReport" class="modal-mask">
       <!-- Modal -->
-      <div v-if="selectedReport" class="modal fade show" style="display: block;" tabindex="-1">
+      <div class="modal fade show" style="display: block;" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-fullscreen-sm-down modal-lg">
           <div class="modal-content custom-modal shadow-lg">
             <div class="modal-header custom-modal-header">
@@ -76,7 +76,7 @@ export default {
                       <i class="bi bi-geo-alt info-icon"></i>
                       <div>
                         <strong>Location:</strong>
-                        <span class="ms-2">{{ capitalise(selectedReport.location) }}</span>
+                        <span class="ms-2">{{ capitalise(selectedReport.location.address) }}</span>
                       </div>
                     </div>
                     <div class="info-row">
@@ -97,8 +97,8 @@ export default {
                     <div class="info-row">
                       <i class="bi bi-person-circle info-icon"></i>
                       <div>
-                        <strong>Reporter Contact:</strong>
-                        <span class="ms-2">{{ selectedReport.contactEmail }} | {{ selectedReport.contactPhone }}</span>
+                        <strong>Reporter Email:</strong>
+                        <span class="ms-2">{{ selectedReport.email }}</span>
                       </div>
                     </div>
                     <div class="info-row">
@@ -114,7 +114,7 @@ export default {
                 </div>
               </div>
             </div>
-            <div class="modal-footer d-flex flex-wrap align-items-center gap-2 custom-modal-footer">
+            <div class="custom-modal-buttons d-flex flex-wrap align-items-center gap-2">
               <!-- Close & View Details -->
               <div class="d-flex flex-wrap gap-2 w-100 w--auto">
                 <button type="button" class="btn custom-btn-close flex-fill" @click="$emit('close')">
@@ -286,6 +286,22 @@ export default {
   background-color: #f8f9fa;
   border-top: 1px solid #dee2e6;
   padding: 1.25rem 1.5rem;
+}
+
+.custom-modal-buttons {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  padding: calc(var(--bs-modal-padding) - var(--bs-modal-footer-gap) * 0.5);
+  background-color: var(--bs-modal-footer-bg);
+  border-top: var(--bs-modal-footer-border-width) solid var(--bs-modal-footer-border-color);
+  border-bottom-right-radius: var(--bs-modal-inner-border-radius);
+  border-bottom-left-radius: var(--bs-modal-inner-border-radius);
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  /* padding: 1.25rem 1.5rem; */
 }
 
 .custom-btn-outline {

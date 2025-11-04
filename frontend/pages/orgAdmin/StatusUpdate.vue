@@ -155,9 +155,19 @@
                   <i class="bi bi-file-earmark-text me-2"></i>
                   {{ report.reportId || 'Unknown ID' }}
                 </h5>
-                <span :class="['status-badge', `status-${report.status}`]">
-                  {{ capitalise(report.status) }}
-                </span>
+                <div class="badges">
+                  <span :class="['status-badge', `status-${report.status}`]">
+                    {{ capitalise(report.status) }}
+                  </span>
+                  <span class="severity-badge" :class="{
+                    tagLow: report.severity === 'low',
+                    tagModerate: report.severity === 'moderate',
+                    tagUrgent: report.severity === 'urgent'
+                  }">
+                    {{ capitalise(report.severity) }}
+                  </span>
+                </div>
+
               </div>
             </div>
 
@@ -168,7 +178,7 @@
               </p>
               <p class="report-info mb-1">
                 <i class="bi bi-geo-alt me-2"></i>
-                <strong>Location: </strong> {{ report.location }}
+                <strong>Location: </strong> {{ report.location.address }}
               </p>
               <p class="report-date mb-0">
                 <i class="bi bi-calendar-event me-2"></i>
@@ -193,100 +203,6 @@
         </Modal>
       </Teleport>
 
-      <!-- Modal -->
-      <div v-if="false" class="modal fade show" style="display: block;" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-          <div class="modal-content custom-modal shadow-lg">
-            <div class="modal-header custom-modal-header">
-              <h5 class="modal-title">
-                <i class="bi bi-file-earmark-check me-2"></i>
-                Report Details: {{ selectedReport.reportId }}
-              </h5>
-              <button type="button" class="btn-close btn-close-white" @click="closeModal"></button>
-            </div>
-            <div class="modal-body p-4">
-              <div class="row g-4">
-                <div class="col-md-5" v-if="selectedReport.photoURLs && selectedReport.photoURLs.length > 0">
-                  <img :src="selectedReport.photoURLs[0]" class="img-fluid rounded-4 modal-image" alt="Report Photo">
-                </div>
-                <div :class="selectedReport.photoURLs && selectedReport.photoURLs.length > 0 ? 'col-md-7' : 'col-12'">
-                  <div class="modal-info-section">
-                    <div class="info-row">
-                      <i class="bi bi-award info-icon"></i>
-                      <div>
-                        <strong>Species:</strong>
-                        <span class="ms-2">{{ selectedReport.speciesName || 'Not specified' }}</span>
-                      </div>
-                    </div>
-                    <div class="info-row">
-                      <i class="bi bi-flag info-icon"></i>
-                      <div>
-                        <strong>Status:</strong>
-                        <span :class="['status-badge ms-2', `status-${selectedReport.status}`]">
-                          {{ selectedReport.status }}
-                        </span>
-                      </div>
-                    </div>
-                    <div class="info-row">
-                      <i class="bi bi-geo-alt info-icon"></i>
-                      <div>
-                        <strong>Location:</strong>
-                        <span class="ms-2">{{ selectedReport.location }}</span>
-                      </div>
-                    </div>
-                    <div class="info-row">
-                      <i class="bi bi-calendar-event info-icon"></i>
-                      <div>
-                        <strong>Sighting Time:</strong>
-                        <span class="ms-2">{{ formatDate(selectedReport.sightingDateTime) }}</span>
-                      </div>
-                    </div>
-                    <div class="info-row">
-                      <i class="bi bi-chat-left-text info-icon"></i>
-                      <div>
-                        <strong>Description:</strong>
-                        <p class="description-text mt-2 mb-0">{{ selectedReport.description }}</p>
-                      </div>
-                    </div>
-                    <hr class="my-3">
-                    <div class="info-row">
-                      <i class="bi bi-person-circle info-icon"></i>
-                      <div>
-                        <strong>Reporter Contact:</strong>
-                        <span class="ms-2">{{ selectedReport.contactEmail }} | {{ selectedReport.contactPhone }}</span>
-                      </div>
-                    </div>
-                    <div class="info-row">
-                      <i class="bi bi-exclamation-triangle info-icon"></i>
-                      <div>
-                        <strong>Urgent:</strong>
-                        <span :class="['ms-2', selectedReport.isUrgent ? 'text-danger fw-bold' : 'text-muted']">
-                          {{ selectedReport.isUrgent ? 'Yes, Urgent ⚠️' : 'No' }}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer custom-modal-footer">
-              <button type="button" class="btn btn-outline-secondary custom-btn-outline" @click="closeModal">
-                <i class="bi bi-x-circle me-2"></i>Close
-              </button>
-              <button type="button" class="btn custom-btn-active"
-                @click="handleStatusChange(selectedReport.id, 'active')">
-                <i class="bi bi-play-circle me-2"></i>Set Active
-              </button>
-              <button type="button" class="btn custom-btn-resolved"
-                @click="handleStatusChange(selectedReport.id, 'resolved')">
-                <i class="bi bi-check-circle me-2"></i>Set Resolved
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Backdrop for the modal -->
-      <div v-if="selectedReport" class="modal-backdrop fade show"></div>
     </div>
 
     <!-- Back to Top Button -->
@@ -441,7 +357,7 @@ export default {
   overflow: hidden;
   transition: all 0.3s ease;
   cursor: pointer;
-    /* Add manual gaps */
+  /* Add manual gaps */
   margin: 0.5rem;
 }
 
@@ -559,7 +475,7 @@ export default {
   transition: all 0.3s ease;
 }
 
-@media (max-width: 576px){
+@media (max-width: 576px) {
   .custom-select {
     width: 100%;
   }
@@ -643,7 +559,22 @@ export default {
   margin: 0;
 }
 
-.status-badge {
+.badges {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.status-badge,
+.severity-badge {
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  position: relative; /* or remove entirely */
+}
+/* .status-badge {
   padding: 0.35rem 0.85rem;
   border-radius: 20px;
   font-size: 0.85rem;
@@ -654,6 +585,18 @@ export default {
   right: 0;
   margin-right: 0.5rem;
 }
+
+.severity-badge {
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-right: 0.5rem;
+} */
 
 @media (max-width: 767.98px) {
   .status-badge {
