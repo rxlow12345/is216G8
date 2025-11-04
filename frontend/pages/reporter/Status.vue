@@ -1,4 +1,4 @@
-<!-- src/components/StatusUpdate.vue -->
+<!-- src/components/Status.vue -->
 <template>
   <BackToTop />
   <!-- Main container with custom styling -->
@@ -42,7 +42,7 @@
                   <div class="col-md-7">
                     <div
                       class="card-header custom-card-header text-white d-flex justify-content-between align-items-center">
-                      <h4 class="mb-0">{{ report.speciesName || 'Unnamed Species' }}</h4>
+                      <h4 class="mb-0">{{ capitalize(report.speciesName) || 'Unnamed Species' }}</h4>
                       <span class="badge custom-badge">
                         {{ capitalize(report.status || 'Unknown Status') }}
                       </span>
@@ -91,9 +91,19 @@
                 </div>
               </div>
 
+              <!-- Photos Section, for more than 1 photo, but not being used -->
+              <div v-if="report.photoURLs && report.photoURLs.length > 1"
+                class="card custom-card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <h6 class="fw-bold mb-3" style="color: #285436;">Additional Photos</h6>
+                <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
+                  <img v-for="(url, index) in report.photoURLs" :key="index" :src="url"
+                    class="img-thumbnail photo-thumbnail" />
+                </div>
+              </div>
+
               <!-- Status Tracker -->
               <div class="card custom-card border-0 shadow-sm rounded-4 p-4 mb-4">
-                <h5 class="mb-4 text-center fw-bold" style="color: #285436;">Rescue Progress Timeline</h5>
+                <h5 class="mb-4 text-center fw-bold" style="color: #285436;">Overall Stages</h5>
 
                 <!-- Progress Bar -->
                 <div class="progress custom-progress mb-4">
@@ -122,115 +132,13 @@
                 </div>
               </div>
 
-              <!-- Checkpoint Progress Bar -->
-              <div v-if="(report.status === 'active' || report.status === 'resolved') && checkpointCurrentIndex > -1"
-                class="card custom-card border-0 shadow-sm rounded-4 p-4 mb-4">
-                <h5 class="mb-4 text-center fw-bold" style="color: #285436;">Checkpoint Progress</h5>
-                <div class="mt-4">
-                  <div class="progress custom-progress mb-3">
-                    <div class="progress-bar progress-bar-striped custom-progress-bar" role="progressbar"
-                      :style="{ width: checkpointProgressPercent + '%' }" :aria-valuenow="checkpointProgressPercent"
-                      aria-valuemin="0" aria-valuemax="100">
-                      {{ capitalize(checkpointStages[checkpointCurrentIndex]) }}
-                    </div>
-                  </div>
+              <!-- Timeline -->
+              <Timeline
+              v-if="(report.status === 'active' || report.status === 'resolved')"
+              :reportId="report.reportId"
+              >
+              </Timeline>
 
-                  <!-- Checkpoint Steps -->
-                  <div class="d-flex justify-content-between text-center px-3 status-steps-wrapper">
-                    <div v-for="(stage, index) in checkpointStages" :key="index" class="flex-fill status-step-item">
-                      <div class="stage-circle mx-auto mb-2" :class="{
-                        'stage-active': index <= checkpointCurrentIndex,
-                        'stage-inactive': index > checkpointCurrentIndex
-                      }">
-                        <i v-if="index <= checkpointCurrentIndex" class="bi bi-check-lg"></i>
-                        <span v-else>{{ index + 1 }}</span>
-                      </div>
-                      <p class="small fw-semibold mb-0"
-                        :style="{ color: index <= checkpointCurrentIndex ? '#086143' : '#888' }">
-                        {{ capitalize(stage) }}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Photos Section, for more than 1 photo, but not being used -->
-              <!-- <div v-if="report.photoURLs && report.photoURLs.length > 1"
-                class="card custom-card border-0 shadow-sm rounded-4 p-4 mb-4">
-                <h6 class="fw-bold mb-3" style="color: #285436;">Additional Photos</h6>
-                <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
-                  <img v-for="(url, index) in report.photoURLs" :key="index" :src="url"
-                    class="img-thumbnail photo-thumbnail" />
-                </div>
-              </div> -->
-
-              <!-- Checkpoint Summary Cards -->
-              <div v-if="(report.status === 'active' || report.status === 'resolved') && checkpointCurrentIndex > -1">
-                <div v-for="(stage, index) in checkpointStages" :key="index">
-                  <div v-if="checkpoints[stage]?.completed" class="card custom-card border-0 shadow-sm rounded-4 mb-4">
-                    <div class="card-header custom-card-header-secondary text-white">
-                      <h6 class="mb-0">
-                        {{ capitalize(stage) }} Stage
-                        <span class="float-end">{{ convertDate(checkpoints[stage].completedAt) }}</span>
-                      </h6>
-                    </div>
-
-                    <div class="card-body p-4">
-                      <div class="row">
-                        <div v-if="checkpoints[stage].diagnosis || checkpoints[stage].treatment" class="col-md-6 mb-3">
-                          <p class="info-item">
-                            <strong>Diagnosis:</strong> {{ checkpoints[stage].diagnosis || '—' }}
-                          </p>
-                        </div>
-                        <div v-if="checkpoints[stage].treatment" class="col-md-6 mb-3">
-                          <p class="info-item">
-                            <strong>Treatment:</strong> {{ checkpoints[stage].treatment || '—' }}
-                          </p>
-                        </div>
-                        <div v-if="checkpoints[stage].condition" class="col-md-6 mb-3">
-                          <p class="info-item">
-                            <strong>Condition:</strong> {{ checkpoints[stage].condition || '—' }}
-                          </p>
-                        </div>
-                        <div v-if="checkpoints[stage].notes" class="col-md-12 mb-3">
-                          <p class="info-item">
-                            <strong>Notes:</strong> {{ checkpoints[stage].notes || 'No notes available.'
-                            }}
-                          </p>
-                        </div>
-                        <div v-if="checkpoints[stage].outcome" class="col-md-12 mb-3">
-                          <p class="info-item">
-                            <strong>Outcome:</strong> {{ checkpoints[stage].outcome || 'No outcome available.'
-                            }}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div v-else>
-                <div class="card custom-card border-0 shadow-sm rounded-4 mb-4 text-center p-4">
-                  <div class="card-body">
-                    <div class="mb-3">
-                      <i class="bi bi-exclamation-circle-fill display-4 text-muted"></i>
-                    </div>
-                    <div v-if="report.status === 'pending'">
-                      <h5 class="card-title text-muted mb-2">Case has yet to be accepted</h5>
-                      <p class="card-text text-muted">
-                        Nobody has accepted this case yet
-                      </p>
-                    </div>
-                    <div v-else>
-                      <h5 class="card-title text-muted mb-2">Rescuers on the way</h5>
-                      <p class="card-text text-muted">
-                        Once progress rescuers arrive, you'll see updates here
-                      </p>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
               <!-- Meta Information -->
               <div class="card custom-card border-0 shadow-sm rounded-4 mb-4">
                 <div class="card-header custom-card-header-secondary text-white">
@@ -263,9 +171,11 @@
 import api from '../../src/api/reportApi.js';
 import '../css/common.css'
 import BackToTop from '../../src/components/BackToTop.vue';
+import Timeline from './Timeline.vue';
 
 export default {
   name: 'StatusUpdate',
+  components: { Timeline },
   data() {
     return {
       isLoading: true,
@@ -287,7 +197,6 @@ export default {
         status: "",
         updatedAt: "",
       },
-      activeSummary: {},
       stages: ["pending", "active", "resolved"],
       checkpointStages: ["arrived", "handled", "treated", "reconciled"]
     };
@@ -318,34 +227,11 @@ export default {
     updatedAtReadable() {
       return this.convertDate(this.report.updatedAt);
     },
-    checkpoints() {
-      return this.activeSummary.checkpoints || {};
-    },
-    checkpointCurrentIndex() {
-      // Count how many checkpoints are completed
-      let completedCount = 0;
-      this.checkpointStages.forEach(stage => {
-        const key = stage;
-        if (this.checkpoints[key]?.completed) completedCount++;
-      });
-      return completedCount - 1 >= 0 ? completedCount - 1 : -1;
-    },
-
-    checkpointProgressPercent() {
-      return ((this.checkpointCurrentIndex + 1) / this.checkpointStages.length) * 100;
-    }
   },
   methods: {
     async fetchReport(reportId) {
       try {
         this.report = await api.getReportByReportId(reportId);
-      } catch (e) {
-        this.error = e.message;
-      }
-    },
-    async fetchActiveSummary(reportId) {
-      try {
-        this.activeSummary = await api.getActiveSummary(reportId);
       } catch (e) {
         this.error = e.message;
       }
@@ -379,11 +265,6 @@ export default {
     this.isLoading = true;
     this.error = null;
     await this.fetchReport(reportId);
-    if (this.report.status === 'active' || this.report.status === 'resolved') {
-      console.log('fetching active summary');
-      const res = await this.fetchActiveSummary(reportId);
-      console.log(res);
-    }
     this.isLoading = false;
     window.addEventListener('scroll', this.handleScroll);
   },

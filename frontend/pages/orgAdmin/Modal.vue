@@ -97,8 +97,8 @@ export default {
                     <div class="info-row">
                       <i class="bi bi-person-circle info-icon"></i>
                       <div>
-                        <strong>Reporter Email:</strong>
-                        <span class="ms-2">{{ selectedReport.email }}</span>
+                        <strong>Reporter UID:</strong>
+                        <span class="ms-2">{{ selectedReport.reporterId }}</span>
                       </div>
                     </div>
                     <div class="info-row">
