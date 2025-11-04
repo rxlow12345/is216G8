@@ -24,23 +24,15 @@ export default {
       navbarHeight: 0,
     }
   },
-  watch: {
-    '$route'(to, from) {
-      // Update navbar height on route change
-      this.$nextTick(() => {
-        this.updateNavbarHeight();
-      });
-    }
-  },
   mounted() {
-    this.updateNavbarHeight();
-    // window.addEventListener('resize', this.updateNavbarHeight);
     const navbar = document.querySelector('.customNavbar');
+    this.updateNavbarHeight();
+
+    window.addEventListener('resize', this.updateNavbarHeight);
     if (navbar) {
-      navbar.addEventListener('shown.bs.collapse', this.updateNavbarHeight);
+      // navbar.addEventListener('shown.bs.collapse', this.updateNavbarHeight);
       navbar.addEventListener('hidden.bs.collapse', this.updateNavbarHeight);
     }
-
     // Remove all footer elements from the entire app
     this.removeAllFooters();
   },
@@ -176,7 +168,6 @@ export default {
 
 <style>
 .page-content {
-  transition: padding-top 0.2s;
-  /* smooth adjustment when resizing */
+  transition: padding-top 0.1s;
 }
 </style>
