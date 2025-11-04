@@ -42,7 +42,9 @@ const io = new Server(server, {
     origin: process.env.FRONTEND_URL || 'http://localhost:5175',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
-  }
+  },
+  pingTimeout: 5000,
+  pingInterval: 10000,
 });
 server.listen(4100, () => console.log('Server running on port 4100'));
 // Make io accessible in routes

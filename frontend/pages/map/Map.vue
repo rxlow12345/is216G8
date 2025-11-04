@@ -1,13 +1,20 @@
 <template>
-  <BackToTop/>
+  <BackToTop />
+  <!-- Notification -->
+  <MapNotification
+    ref="notify"
+    :title="notificationData.title"
+    :message="notificationData.message"
+    :type="notificationData.type"
+    :duration="notificationData.duration || 3000"
+    @close="notificationData = {}"
+  />
   <!-- Left Sidebar -->
   <div class="rescuemapwrapper">
     <div class="sidebar">
       <!-- Header -->
       <div class="header">
-        <p class="subtitle">
-          {{ getCount(reports) }} reports pending... Accept a case now!
-        </p>
+        <p class="subtitle">{{ getCount() }} pending reports</p>
 
         <!-- Connection Status -->
         <div class="connection-status">
@@ -19,7 +26,14 @@
 
       <!-- Reports List -->
       <div class="reports-list">
+        <div v-if="loadingReports" class="empty-state">
+          <p>Loading Reports...</p>
+        </div>
+        <div v-else-if="reports?.length === 0" class="empty-state">
+          <p>No reports found</p>
+        </div>
         <ReportCard
+          v-else
           v-for="report in reports"
           :key="report.reportId"
           :report="report"
@@ -27,41 +41,45 @@
           @click="selectReport"
           @acceptCase="acceptCaseFromCard"
         />
-
-        <div v-if="reports?.length === 0" class="empty-state">
+        <!-- <div v-if="reports?.length === 0" class="empty-state">
           <p>No reports found</p>
-        </div>
+        </div> -->
       </div>
     </div>
 
     <!-- Right Side: Map -->
     <div class="map-container">
-      <MapView :reports="reports" :center="mapCenter" @acceptCase="acceptCaseFromCard" />
+      <MapView
+        ref="mapView"
+        :reports="reports"
+        :center="mapCenter"
+        @acceptCase="acceptCaseFromCard"
+      />
     </div>
 
     <!-- PopUp -->
-      <acceptCaseModal
-        :isPopup="showModal"
-        :location="selectedLocation"
-        :reportId="selectedReportId"
-        @close="handleModalClose"
-        @confirm="handleConfirmation"
-
-      />
+    <acceptCaseModal
+      :isPopup="showModal"
+      :location="selectedLocation"
+      :reportId="selectedReportId"
+      @close="handleModalClose"
+      @confirm="handleConfirmation"
+    />
   </div>
-
 </template>
 
 <script>
 import MapView from "../../src/components/MapView.vue";
 import ReportCard from "../../src/components/ReportCard.vue";
 import reportApi from "../../src/api/reportApi";
-import {getCurrentUser} from '../../src/api/auth.js';
+import { db } from "../../src/firebase.js";
+import { collection, addDoc, doc as fsDoc, updateDoc, Timestamp, serverTimestamp } from "firebase/firestore";
+import { getCurrentUser } from "../../src/api/auth.js";
 import socket from "../../src/api/socket";
 import acceptCaseModal from "../../src/components/acceptCaseModal.vue";
 import BackToTop from "../../src/components/BackToTop.vue";
-import { filter } from "mathjs";
-
+import MapNotification from "../../src/components/MapNotification.vue";
+// import { filter } from "mathjs";
 
 export default {
   name: "RescueMap",
@@ -69,10 +87,12 @@ export default {
     MapView,
     ReportCard,
     acceptCaseModal,
-    BackToTop
+    BackToTop,
+    MapNotification,
   },
   data() {
     return {
+      loadingReports: true,
       reports: [],
       selectedReportId: null,
       selectedDocId: null,
@@ -83,236 +103,152 @@ export default {
       showModal: false,
       selectedLocation: "",
       currentUser: "",
+      notificationData: { title: "", message: "", type: "info", duration: 6000 },
     };
   },
   computed: {},
   async mounted() {
-    await this.loadReports();
+    // Connect socket immediately; do not block on data/geocoding
     this.connectWebSocket();
+    // Load reports in parallel to avoid delaying socket handshake
+    await this.loadReports();
     this.setupGlobalFunctions();
   },
-  beforeUnmount() {
+  // Disconnect only when navigating away from this route (not on HMR unmount)
+  // async unmounted(to, from, next) {
+  async unmounted() {
     socket.disconnect();
+    // next;
   },
   methods: {
-    isWithinSingapore(coordinates) {
-      if (!coordinates || typeof coordinates.lat !== 'number' || typeof coordinates.lng !== 'number') {
-        return false;
-      }
-      
-      // Singapore's approximate bounding box
-      const SINGAPORE_BOUNDS = {
-        north: 1.4707,   
-        south: 1.1496,   
-        east: 104.0945,  
-        west: 103.6057   
-      };
-      
-      const { lat, lng } = coordinates;
-      
-      return (
-        lat >= SINGAPORE_BOUNDS.south &&
-        lat <= SINGAPORE_BOUNDS.north &&
-        lng >= SINGAPORE_BOUNDS.west &&
-        lng <= SINGAPORE_BOUNDS.east
-      );
+    showNotification(title = "", message = "", type = "info", duration = 6000) {
+      this.notificationData = { title, message, type, duration };
+      this.$nextTick(() => this.$refs.notify?.show());
     },
-    async loadReports() {
-      try {
-        const response = await reportApi.getAllReports();
-        const filteredReports = response.filter(
-          (report) => report.status === "pending"
-        );
-
-        const validReports = [];
-
-        for (const report of filteredReports) {
-          if (report.location == null) {
-            report.location = "Singapore Management University";
-          } 
-          try {
-            let addressToGeocode;
-            if (typeof report.location === 'object'){
-              addressToGeocode = report.location.postalCode;
-            } else {
-              addressToGeocode = report.location;
-            }
-
-            const coordinates = await this.geocode(addressToGeocode);
-
-            if (this.isWithinSingapore(coordinates)){
-              report.coordinates = coordinates;
-              validReports.push(report); // report only added if in SG 
-            }
-          } catch (geocodeError) {
-              console.log(
-                `Report ID ${report.reportId} failed to geocode location`,
-                geocodeError.message
-              );
-              report.coordinates = this.mapCenter;
-          }
-          // to handle geocoding errors
-        }
-        this.reports = validReports;
-        console.log(`Only loaded ${validReports.length} valid reports out of ${filteredReports.length} total`);
-        console.log('Reports:', this.reports);
-
-      } catch (error) {
-        console.error("Error loading reports:", error.message);
-        alert("Failed to load reports. Make sure backend is running!");
-      }
-    },
-
-    async geocode(address) {
-      const OPENCAGE_API_KEY = import.meta.env.VITE_OPENCAGE_API_KEY;
-      const OPENCAGE_BASE_URL = "https://api.opencagedata.com/geocode/v1/json";
-      const url = `${OPENCAGE_BASE_URL}?q=${address}&key=${OPENCAGE_API_KEY}`;
-
-      try {
-        const response = await fetch(url);
-
-        if (!response.ok) {
-          throw new Error(
-            `OpenCage API request failed with status: ${response.status}`
-          );
-        }
-
-        const data = await response.json();
-
-        if (
-          !data.results ||
-          data.results.length == 0 ||
-          !data.results[0].geometry
-        ) {
-          throw new Error("Geocoding service returned no valid results");
-        }
-
-        const lat = data.results[0].geometry.lat;
-        const lng = data.results[0].geometry.lng;
-        return { lat: lat, lng: lng };
-      } catch (error) {
-        console.error("Geocoding Error:", error);
-        throw new Error("Failed to connect to the geocoding service.");
-      }
-    },
-
-    async acceptCaseFromCard(report) {
+    selectReport(report) {
+      if (!report) return;
       this.selectedReportId = report.reportId;
       this.selectedDocId = report.id;
-      if (typeof report.location === 'object') {
-        this.selectedLocation = report.location.address; // Display address to user
+      // Immediately open the popup and pan to it for better UX
+      if (report.coordinates) {
+        // Let popup auto-pan keep it fully visible
+        this.$refs.mapView?.openMarkerPopup(report.reportId);
       } else {
-        this.selectedLocation = report.location;
-      }
-      this.selectReport;
-
-      try {
-        const addressToGeocode = typeof report.location === 'object' 
-        ? report.location.postalCode 
-        : report.location;
-
-        this.selectReportCoordinates = await this.geocode(report.location);
-      } catch (error) {
-        console.error("Failed to geocode location on case acceptance:", error);
-        this.selectReportCoordinates = this.mapCenter;
-      }
-      
-      this.showModal = true;
-      console.log("coordinates", this.selectReportCoordinates);
-      console.log("Case Accepted", this.selectedReportId);
-    },
-
-    handleModalClose() {
-      this.showModal = false;
-      this.selectedReportId = null;
-      this.selectedDocId = null;
-      this.selectReportCoordinates = { lat: null, lng: null };
-      this.selectedLocation = "";
-      console.log("Modal closed - report deselected");
-    },
-
-    async updateReportStatus(docIdtoUpdate){
-      if (!docIdtoUpdate) {
-        throw new Error("No report ID selected");
-      }
-      try {
-        console.log('Attempting to update status for docId:', docIdtoUpdate);
-
-        const response = await reportApi.updateReportStatus(docIdtoUpdate, 'active')
-        console.log('Status updated successfully, new status:', response);
-
-        return response
-          
-        } catch (e) {
-          console.error('Failed to update status:', e);
-          console.error('Error message:', e,message);
-          console.error('Error response', e.response?.data);
-          throw e; // so handleconfirmation catches it 
-        }
-    },
-
-    async updateVolunteer(){
-      try {
-        const result = await getCurrentUser();
-        return result.uid;
-
-      } catch(e) {
-        console.log('Error getting user', e);
-        alert('Current user not found');
+        // Fallback to existing handler (will try after geocode if needed)
+        this.handleReportSelection();
       }
     },
-
-    async handleConfirmation(etaData) {
-      // console.log('selected report id',this.selectedReportId);
-      // adjusting data 
-      const firebaseTimestamp = etaData[0].timestamp;
-      console.log('timestamp', firebaseTimestamp);
-      const caseAcceptedTimeJS = new Date();
-      const caseAcceptedTime = caseAcceptedTimeJS.toISOString() ;
-      const docIdtoUpdate = this.selectedDocId;
-      
-      
-      try {
-        // getting UID and formatting updates
-        const uid = await this.updateVolunteer();
-        const updates = {
-          timeAccepted: caseAcceptedTime, 
-          volunteerETA: firebaseTimestamp,
-          uid: uid,
-        }
-        
-
-        //  to update report fields 
-        const result = await reportApi.updateReportFields(docIdtoUpdate, updates)
-        console.log('Case accepted!',result);
-
-        await this.updateReportStatus(docIdtoUpdate);
-        
-        // Close modal and reset selection
-        this.handleModalClose()
-        // Reload reports to update the list
-        await this.loadReports();
-
-        alert('Case accepted successfully')
-      } catch (error) {
-        console.error("Error accepting case:", error);
-        alert("Failed to accept case");
-      }
+    async ensureMapViewReady() {
+      if (this.$refs.mapView) return true;
+      await this.$nextTick();
+      return !!this.$refs.mapView;
     },
+    handleReportSelection() {
+      const report = this.selectedReport;
+      if (!report) {
+        return;
+      }
 
+      // to emit event to the map view to ensure the pop up opens
+      this.$refs.mapView?.openMarkerPopup(report.reportId);
+
+      // Let popup autoPan handle map movement to keep fully in view
+    },
+    getCount() {
+      if (!Array.isArray(this.reports)) return 0;
+      return this.reports.filter((r) => {
+        const statusOk = (r?.status || "").toLowerCase().trim() === "pending";
+        return statusOk && this.isWithinSingapore(r?.coordinates);
+      }).length;
+    },
     connectWebSocket() {
       socket.connect();
 
       // Listen for new reports
-      socket.on("new-report", (report) => {
-        this.reports?.unshift(report);
-        this.showNotification("New Report", `${report.animalType} needs help!`);
+      socket.on("new-report", async (report) => {
+        try {
+          // Geocode incoming report before adding so markers can render
+          const addressToGeocode =
+            typeof report.location === "object"
+              ? report.location.address ||
+                report.location.postalCode ||
+                "Singapore"
+              : report.location || "Singapore";
+
+          const coords = await this.geocode(addressToGeocode);
+          if (this.isWithinSingapore(coords)) {
+            report.coordinates = coords;
+          } else {
+            report.coordinates = this.mapCenter; // safe fallback
+          }
+        } catch (err) {
+          console.warn(
+            "Failed to geocode incoming report; using fallback",
+            err?.message
+          );
+          report.coordinates = this.mapCenter;
+        }
+
+        // Drop a visual pin immediately (non-persistent) so user sees it instantly
+        try {
+          const ready = await this.ensureMapViewReady();
+          if (ready) {
+            console.debug("new-report addPin", report.coordinates);
+            await this.$refs.mapView.addPin(report.coordinates, {
+              popupContent: `<b>${report.speciesName || "New Case"}</b>`,
+              persistent: false,
+            });
+          }
+        } catch (e) {
+          console.warn("addPin failed", e?.message);
+        }
+
+        // Only add valid pending reports and normalize minimal fields
+        const status = (report?.status || "").toLowerCase().trim();
+        if (status === "pending") {
+          report.speciesName = report.speciesName || report.animalType || "Unknown";
+          const ts = report.createdAt;
+          if (!ts) {
+            report.createdAt = { _seconds: Math.floor(Date.now() / 1000) };
+          } else if (typeof ts === "string" || typeof ts === "number") {
+            const date = new Date(ts);
+            if (!isNaN(date)) report.createdAt = { _seconds: Math.floor(date.getTime() / 1000) };
+          } else if (ts instanceof Date) {
+            report.createdAt = { _seconds: Math.floor(ts.getTime() / 1000) };
+          }
+
+          // Then update reactive list so MapView rebuilds persistent markers
+          this.reports?.unshift(report);
+          // Notify about new report
+          const species = report?.speciesName || report?.animalType || "An animal";
+          this.showNotification("New Report", `${species} needs help!`, "info", 7000);
+        }
+        // Recenter so the new marker is visible
+        this.$nextTick(() => this.$refs.mapView?.recenterMap());
       });
 
       // Listen for report updates
-      socket.on("report-updated", (updatedReport) => {
+      socket.on("report-updated", async (updatedReport) => {
         const index = this.reports?.findIndex((r) => r.id === updatedReport.id);
         if (index !== -1) {
+          // Ensure updated report still has coordinates
+          if (!updatedReport.coordinates) {
+            try {
+              const addressToGeocode =
+                typeof updatedReport.location === "object"
+                  ? updatedReport.location.address ||
+                    updatedReport.location.postalCode ||
+                    "Singapore"
+                  : updatedReport.location || "Singapore";
+              const coords = await this.geocode(addressToGeocode);
+              updatedReport.coordinates = this.isWithinSingapore(coords)
+                ? coords
+                : this.mapCenter;
+            } catch (e) {
+              updatedReport.coordinates = this.mapCenter;
+            }
+          }
+
           this.reports?.splice(index, 1, updatedReport);
         }
       });
@@ -335,40 +271,328 @@ export default {
         this.activeUsers = count;
       });
     },
-
     setupGlobalFunctions() {
       // Allow map popup to call this function
       window.selectReport = (reportId) => {
-        const report = this.reports?.find((r) => r.id === reportId);
-        if (report) this.selectReport(report);
+        const report = this.reports?.find((r) => r.reportId === reportId);
+        if (report) this.selectedReportId = report.reportId;
         console.log("Case selected");
       };
+      // Quick manual test helper to drop a pin
+      window.dropPin = (lat, lng) =>
+        this.$refs.mapView?.addPin(
+          { lat, lng },
+          { popupContent: "<b>Test Pin</b>", persistent: false }
+        );
     },
+    isWithinSingapore(coordinates) {
+      if (
+        !coordinates ||
+        typeof coordinates.lat !== "number" ||
+        typeof coordinates.lng !== "number"
+      ) {
+        return false;
+      }
 
-    getCount(filterValue) {
-      return this.reports?.length;
+      // Singapore's approximate bounding box
+      const SINGAPORE_BOUNDS = {
+        north: 1.4707,
+        south: 1.1496,
+        east: 104.0945,
+        west: 103.6057,
+      };
+
+      const { lat, lng } = coordinates;
+
+      return (
+        lat >= SINGAPORE_BOUNDS.south &&
+        lat <= SINGAPORE_BOUNDS.north &&
+        lng >= SINGAPORE_BOUNDS.west &&
+        lng <= SINGAPORE_BOUNDS.east
+      );
     },
+    async loadReports() {
+      try {
+        const response = await reportApi.getAllReports();
+        const filteredReports = response.filter(
+          (report) => report.status === "pending"
+        );
 
-    formatDateTime(date) {
-      if (!date) return "Unknown";
-      return new Date(date).toLocaleString("en-SG", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      });
-    },
+        this.reports = [];
 
-    showNotification(title, message) {
-      if ("Notification" in window && Notification.permission === "granted") {
-        new Notification(title, {
-          body: message,
-          icon: "/favicon.ico",
-        });
+        for (const report of filteredReports) {
+          if (report.location == null) {
+            report.location = "Singapore Management University";
+          }
+          try {
+            // Prefer full address, then postal code, then fallback
+            const addressToGeocode =
+              typeof report.location === "object"
+                ? report.location.address ||
+                  report.location.postalCode ||
+                  "Singapore"
+                : report.location;
+
+            const coordinates = await this.geocode(addressToGeocode);
+
+            if (this.isWithinSingapore(coordinates)) {
+              report.coordinates = coordinates;
+              this.reports.push(report); // report only added if in SG
+              this.loadingReports = false;
+            }
+          } catch (geocodeError) {
+            console.log(
+              `Report ID ${report.reportId} failed to geocode location`,
+              geocodeError.message
+            );
+            report.coordinates = this.mapCenter;
+            // Ensure we still render a fallback marker
+            this.reports.push(report);
+            // break;
+          }
+          // to handle geocoding errors
+        }
+        this.loadingReports = false;
+        // Ensure map view fits markers after first load
+        this.$nextTick(() => this.$refs.mapView?.recenterMap());
+        console.log("All Reports Fetched");
+        // this.reports = validReports;
+        // console.log(
+        //   `Only loaded ${validReports.length} valid reports out of ${filteredReports.length} total`
+        // );
+        console.log("Reports:", this.reports);
+      } catch (error) {
+        console.error("Error loading reports:", error.message);
+        this.showNotification(
+          "Failed to Load Reports",
+          "Make sure the backend is running and try again.",
+          "error",
+        );
+        // this.showNotification(
+        //   "Failed to Load Reports",
+        //   "Make sure the backend is running and try again.",
+        //   "error"
+        // );
       }
     },
+    async geocode(address) {
+      const OPENCAGE_API_KEY = import.meta.env.VITE_OPENCAGE_API_KEY;
+      const OPENCAGE_BASE_URL = "https://api.opencagedata.com/geocode/v1/json";
+      const url = `${OPENCAGE_BASE_URL}?q=${encodeURIComponent(
+        address
+      )}&key=${OPENCAGE_API_KEY}&limit=1&countrycode=sg`;
+      try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error(
+            `OpenCage API request failed with status: ${response.status}`
+          );
+        }
+
+        const data = await response.json();
+
+        if (
+          !data.results ||
+          data.results.length == 0 ||
+          !data.results[0].geometry
+        ) {
+          throw new Error("Geocoding service returned no valid results");
+        }
+
+        const lat = data.results[0].geometry.lat;
+        const lng = data.results[0].geometry.lng;
+        console.log("Geocode ran successfully");
+        return { lat: lat, lng: lng };
+      } catch (error) {
+        console.error("Geocoding Error:", error);
+        throw new Error("Failed to connect to the geocoding service.");
+      }
+    },
+    async acceptCaseFromCard(report) {
+      this.selectedReportId = report.reportId;
+      this.selectedDocId = report.id;
+      if (typeof report.location === "object") {
+        this.selectedLocation = report.location.address; // Display address to user
+      } else {
+        this.selectedLocation = report.location;
+      }
+      this.selectReport;
+
+      try {
+        const addressToGeocode =
+          typeof report.location === "object"
+            ? report.location.address ||
+              report.location.postalCode ||
+              "Singapore"
+            : report.location;
+
+        this.selectReportCoordinates = await this.geocode(addressToGeocode);
+      } catch (error) {
+        console.error("Failed to geocode location on case acceptance:", error);
+        this.selectReportCoordinates = this.mapCenter;
+      }
+
+      this.showModal = true;
+      console.log("coordinates", this.selectReportCoordinates);
+      console.log("Case Accepted", this.selectedReportId);
+    },
+
+    async handleConfirmation(etaData) {
+      const firebaseTimestamp = etaData?.[0]?.timestamp || null;
+      const caseAcceptedTimeJS = new Date();
+      const caseAcceptedTime = caseAcceptedTimeJS.toISOString();
+      const docIdtoUpdate = this.selectedDocId;
+      const reportIdtoUpload = this.selectedReportId;
+
+      try {
+        const uid = await this.updateVolunteer();
+        const updates = {
+          timeAccepted: caseAcceptedTime,
+          volunteerETA: firebaseTimestamp,
+          uid: uid,
+        };
+
+        // 1) Update incidentReports document in Firestore
+        if (docIdtoUpdate) {
+          await updateDoc(fsDoc(db, 'incidentReports', docIdtoUpdate), {
+            status: 'active',
+            assignedVolunteerID: uid,
+            timeAccepted: serverTimestamp(),
+          });
+        }
+
+        // Also sync via API (kept for compatibility)
+        try {
+          await reportApi.updateReportFields(docIdtoUpdate, updates);
+          await this.updateReportStatus(docIdtoUpdate);
+        } catch (_) { /* ignore api sync errors */ }
+
+        // 2) Create activeStatusSummary document with required structure
+        await addDoc(collection(db, 'activeStatusSummary'), {
+          // Basic info
+          reportId: reportIdtoUpload,
+          volunteerID: uid,
+
+          // Timestamps
+          acceptedAt: Timestamp.now(),
+          lastUpdated: Timestamp.now(),
+
+          // Progress
+          progressPercentage: 0,
+
+          // Checkpoints - ALL 4 must be included, all initialized to false
+          checkpoints: {
+            arrived: {
+              completed: false,
+              completedAt: null,
+              notes: "",
+            },
+            handled: {
+              completed: false,
+              completedAt: null,
+              condition: "",
+              notes: "",
+            },
+            treated: {
+              completed: false,
+              completedAt: null,
+              diagnosis: "",
+              treatment: "",
+              notes: "",
+            },
+            reconciled: {
+              completed: false,
+              completedAt: null,
+              outcome: "",
+              notes: "",
+            },
+          },
+        });
+
+        // Close modal and reset selection
+        this.handleModalClose();
+        // Reload reports to refresh the list
+        await this.loadReports();
+
+        this.showNotification(
+          "Case Accepted Successfully",
+          "You've accepted the case. Good luck!",
+          "success",
+        );
+      } catch (error) {
+        console.error("Error accepting case:", error);
+        this.showNotification(
+          "Failed to Accept Case",
+          "There was an error accepting the case. Please try again.",
+          "error",
+        );
+      }
+    },
+
+    handleModalClose() {
+      this.showModal = false;
+      this.selectedReportId = null;
+      this.selectedDocId = null;
+      this.selectReportCoordinates = { lat: null, lng: null };
+      this.selectedLocation = "";
+      console.log("Modal closed - report deselected");
+    },
+
+    async updateReportStatus(docIdtoUpdate) {
+      if (!docIdtoUpdate) {
+        throw new Error("No report ID selected");
+      }
+      try {
+        console.log("Attempting to update status for docId:", docIdtoUpdate);
+
+        const response = await reportApi.updateReportStatus(
+          docIdtoUpdate,
+          "active"
+        );
+        console.log("Status updated successfully, new status:", response);
+
+        return response;
+      } catch (e) {
+        console.error("Failed to update status:", e);
+        console.error("Error message:", e, message);
+        console.error("Error response", e.response?.data);
+        throw e; // so handleconfirmation catches it
+      }
+    },
+
+    async updateVolunteer() {
+      try {
+        const result = await getCurrentUser();
+        return result.uid;
+      } catch (e) {
+        console.log("Error getting user", e);
+        this.showNotification("Current user not found", "Please log in again.", "warning");
+      }
+    },
+
+    // showNotification(title = "", message) {
+    //   if ("Notification" in window && Notification.permission === "granted") {
+    //     new Notification(title, {
+    //       body: message,
+    //       icon: "/favicon.ico",
+    //     });
+    //   }
+    // },
   },
   computed: {
-    selectReport() {
-      return this.reports?.find((r) => r.id === this.selectedReportId);
+    selectedReport() {
+      return this.reports?.find((r) => r.reportId === this.selectedReportId);
+    },
+  },
+  watch: {
+    selectedReportId: {
+      handler(newId, oldId) {
+        if (newId !== oldId && newId) {
+          this.handleReportSelection();
+        }
+      },
+      immediate: true, // Run the handler immediately when the component is mounted
     },
   },
 };
@@ -377,243 +601,60 @@ export default {
 <style scoped>
 .rescuemapwrapper {
   display: grid;
-}
-
-.map-container {
-  min-width: 30vh;
+  grid-template-columns: 400px 1fr;
+  height: 100vh; /* Fill viewport so side can scroll */
 }
 
 .sidebar {
-  background: #046848;
+  border-right: 1px solid #e5e7eb;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Let inner list control scrolling */
+}
+
+.map-container {
+  /* Ensure Leaflet map has a real height */
+  height: 100%;
 }
 
 .header {
-  padding: 24px;
-  background: #046848;
-  color: white;
-  /* position: fixed; */
-}
-
-.header h1 {
-  margin: 0 0 8px;
-  font-size: 24px;
-  font-weight: 700;
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .subtitle {
-  margin: 0 0 16px;
-  font-size: 22px;
+  margin: 0;
+  color: #374151;
 }
 
 .connection-status {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  color: #6b7280;
 }
 
 .status-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #ef4444;
+  background: #d1d5db;
 }
 
 .status-dot.active {
-  background: #22c55e;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+  background: #10b981;
 }
 
 .reports-list {
-  flex: 1;
-  overflow-y: auto;
+  padding: 8px 12px;
+  flex: 1 1 auto;
+  overflow-y: auto; /* Scroll only the report list */
 }
 
 .empty-state {
-  padding: 40px 20px;
   text-align: center;
-  color: #9ca3af;
-}
-
-.map-container {
-  min-height: 20vh;
-  flex: 1;
-  position: relative;
-}
-
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal {
-  background: white;
-  border-radius: 12px;
-  padding: 32px;
-  max-width: 500px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-}
-
-.close-btn {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: none;
-  border: none;
-  font-size: 32px;
-  color: #9ca3af;
-  cursor: pointer;
-  line-height: 1;
-}
-
-.close-btn:hover {
-  color: #4b5563;
-}
-
-.modal h2 {
-  margin: 0 0 8px;
-  font-size: 24px;
-  color: #1f2937;
-}
-
-.modal-address {
-  margin: 0 0 24px;
   color: #6b7280;
-  font-size: 14px;
-}
-
-.modal-details {
-  margin-bottom: 24px;
-}
-
-.detail-row {
-  margin-bottom: 16px;
-  display: flex;
-  gap: 12px;
-}
-
-.detail-row .label {
-  font-weight: 600;
-  color: #4b5563;
-  min-width: 120px;
-}
-
-.detail-row .value {
-  color: #1f2937;
-  flex: 1;
-}
-
-.value.status,
-.value.urgency {
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  display: inline-block;
-}
-
-.value.status-pending {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.value.status-in-progress {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.value.status-resolved {
-  background: #d1fae5;
-  color: #065f46;
-}
-
-.value.urgency-high {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.value.urgency-medium {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.value.urgency-low {
-  background: #d1fae5;
-  color: #065f46;
-}
-
-.modal-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.btn {
-  flex: 1;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-primary {
-  background: #10b981;
-  color: white;
-}
-
-.btn-primary:hover {
-  background: #059669;
-}
-
-.btn-success {
-  background: #3b82f6;
-  color: white;
-}
-
-.btn-success:hover {
-  background: #2563eb;
-}
-
-.btn-secondary {
-  background: #e5e7eb;
-  color: #4b5563;
-}
-
-.btn-secondary:hover {
-  background: #d1d5db;
-}
-@media (min-width: 1024px) {
-  .rescuemapwrapper {
-    grid-template-columns: 2fr 3fr;
-  }
+  padding: 24px 0;
 }
 </style>

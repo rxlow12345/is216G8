@@ -32,13 +32,13 @@ import 'leaflet/dist/leaflet.css'
 
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
-import markerShadow from 'leaflet/dist/images/marker-shadow.png'
+// import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
   iconUrl: markerIcon,
-  shadowUrl: markerShadow,
+  // shadowUrl: markerShadow,
 })
 
 export default {
@@ -60,6 +60,10 @@ export default {
       markers: [],
       loading: true,
       searchQuery: '',
+      mapReadyResolve: null,
+      mapReadyPromise: null,
+      lastOpenMarkerId: null,
+      _reopenPopupAfterZoom: false,
     }
   },
   async mounted() {
@@ -81,6 +85,10 @@ export default {
   },
   methods: {
     async initMap() {
+      // Promise so external callers can await map readiness
+      this.mapReadyPromise = new Promise(resolve => {
+        this.mapReadyResolve = resolve
+      })
       try {
         // Create Leaflet map
         this.map = L.map(this.$refs.mapContainer).setView(
@@ -94,13 +102,90 @@ export default {
           maxZoom: 19,
         }).addTo(this.map)
 
-        // Add markers for existing reports
+        // resolve promise when map is ready
+        if (this.mapReadyResolve) this.mapReadyResolve()
+
+        // Add markers for existing reports 
         this.updateMarkers()
+
+        // Keep popups anchored during zoom by closing then reopening
+        this.map.on('zoomstart', () => {
+          if (this.lastOpenMarkerId != null) {
+            this._reopenPopupAfterZoom = true
+            this.map.closePopup()
+          } else {
+            this._reopenPopupAfterZoom = false
+          }
+        })
+        this.map.on('zoomend', () => {
+          if (this._reopenPopupAfterZoom) {
+            const m = this.markers.find(m => m.reportId === this.lastOpenMarkerId)
+            if (m) m.openPopup()
+            this._reopenPopupAfterZoom = false
+          }
+        })
       } catch (error) {
         console.error('Error loading map:', error)
         alert('Failed to load map')
       }
     },
+
+    // Expose a way for parent to await the map
+    async getMap() {
+      if (this.map) return this.map
+      if (this.mapReadyPromise) await this.mapReadyPromise
+      return this.map
+    },
+
+    // Programmatically add a pin. By default persistent and part of markers collection
+    async addPin(coordinates, { popupContent = null, persistent = true, icon = null, variant = 'svg' } = {}) {
+      if (!coordinates) return null
+      const lat = Number(coordinates.lat)
+      const lng = Number(coordinates.lng)
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
+      await this.getMap()
+      let marker
+      if (variant === 'circle') {
+        marker = L.circleMarker([lat, lng], {
+          radius: 12,
+          color: '#111827',
+          weight: 2,
+          fillColor: '#f59e0b',
+          fillOpacity: 0.95,
+        }).addTo(this.map)
+        marker.bringToFront()
+      } else {
+        const usedIcon = icon || this.createCustomIcon({ severity: 'moderate', incidentType: 'unknown' })
+        marker = L.marker([lat, lng]).addTo(this.map)
+      }
+      // For quick sanity checks while debugging
+      // console.debug('addPin: marker added at', lat, lng)
+      if (popupContent) marker.bindPopup(popupContent, {
+        autoPan: true,
+        keepInView: true,
+        maxWidth: 360,
+        autoPanPaddingTopLeft: [360, 120],
+        autoPanPaddingBottomRight: [120, 80],
+      })
+      if (persistent) this.markers.push(marker)
+      return marker
+    },
+
+    async openMarkerPopup(reportId) {
+      // Find by attached reportId to avoid floating point equality issues
+      const marker = this.markers.find(m => m.reportId === reportId)
+      if (marker) marker.openPopup()
+    },
+    
+    async panToLocation(coordinates, zoom = 15) {
+      if (this.map && coordinates) {
+        this.map.setView([coordinates.lat, coordinates.lng], zoom, {
+          animate: true,
+          duration: 0.5
+        });
+      }
+    },
+
 
     updateMarkers() {
       if (!this.map) return
@@ -110,43 +195,65 @@ export default {
       this.markers = []
 
       // Add new markers
+      let created = 0
       this.reports.forEach((report) => {
         const coords = report.coordinates;
-        if (!coords || typeof coords.lat !== 'number' || typeof coords.lng !== 'number'){
+        const lat = coords ? Number(coords.lat) : NaN
+        const lng = coords ? Number(coords.lng) : NaN
+        if (!coords || Number.isNaN(lat) || Number.isNaN(lng)){
           console.log(`Report ${report.id} skipped due to invalid coordinates`, report);
           return;
         }
-        const icon = this.createCustomIcon(report)
+        // Use high-visibility circle markers to ensure pins are unmistakable
+        // const marker = L.circleMarker([lat, lng], {
+        //   radius: 12,
+        //   color: '#111827',
+        //   weight: 2,
+        //   fillColor: '#f59e0b',
+        //   fillOpacity: 0.95,
+        // }).addTo(this.map)
+        const marker = L.marker([lat, lng]).addTo(this.map)
+        // marker.bringToFront()
 
-        const marker = L.marker([coords.lat, coords.lng], { icon }).addTo(
-          this.map,
-        )
+        marker.reportId = report.reportId;
 
         // Create popup content
         const popupContent = this.createPopupContent(report)
-        marker.bindPopup(popupContent)
+        marker.bindPopup(popupContent, {
+          autoPan: true,
+          keepInView: true,
+          maxWidth: 360,
+          autoPanPaddingTopLeft: [360, 120],
+          autoPanPaddingBottomRight: [120, 80],
+        })
 
         marker.on('popupopen', () => {
-          const button = document.getElementById(`accept-btn-${report}`);
+          this.lastOpenMarkerId = report.reportId
+          const button = document.getElementById(`accept-btn-${report.reportId}`)
           if (button) {
             button.addEventListener('click', () => {
-              this.handleAcceptCase(report);
-            });
+              this.handleAcceptCase(report)
+            })
           }
-        });
+        })
 
         marker.on('click', () => {
           this.$emit('marker-click', report)
         })
 
         this.markers.push(marker)
+        created += 1
       })
 
-      // Fit map to show all markers
+      // Fit map to show all markers and avoid UI overlays
       if (this.markers.length > 0) {
         const group = L.featureGroup(this.markers)
-        this.map.fitBounds(group.getBounds().pad(0.1))
+        this.map.fitBounds(group.getBounds().pad(0.1), {
+          paddingTopLeft: [300, 70], // leave space for search box
+          paddingBottomRight: [70, 40], // leave space for recenter button
+        })
       }
+      console.debug('Markers created:', created)
     },
     severityColor(report){
       // colour of icon determined based on severity
@@ -179,23 +286,40 @@ export default {
 
     createCustomIcon(report) {
       let color = this.severityColor(report).text;
-      // Create custom map pin icon
+      // Larger, higher-contrast custom pin icon
+      // SHADOW CHANGE
       const svgIcon = `
-        <svg width="30" height="40" xmlns="http://www.w3.org/2000/svg">
-          <path d="M15,40 Q5,30 5,20 A10,10 0 1,1 25,20 Q25,30 15,40" 
-            fill="${color}" 
-            stroke="white" 
-            stroke-width="2"/>
-          <circle cx="15" cy="22" r="5" fill="white"/>
+        <svg width="44" height="60" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22,58 Q8,44 8,30 A14,14 0 1,1 36,30 Q36,44 22,58"
+            fill="${color}"
+            stroke="white"
+            stroke-width="3"
+          <circle cx="22" cy="32" r="6" fill="white"/>
         </svg>
       `;
+      // const svgIcon = `
+      //   <svg width="44" height="60" xmlns="http://www.w3.org/2000/svg">
+      //     <defs>
+      //       <filter id="markerShadow" x="-50%" y="-50%" width="200%" height="200%">
+      //         <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.4)" />
+      //       </filter>
+      //     </defs>
+      //     <path d="M22,58 Q8,44 8,30 A14,14 0 1,1 36,30 Q36,44 22,58"
+      //       fill="${color}"
+      //       stroke="white"
+      //       stroke-width="3"
+      //       filter="url(#markerShadow)" />
+      //     <circle cx="22" cy="32" r="6" fill="white"/>
+      //   </svg>
+      // `;
 
       return L.divIcon({
         html: svgIcon,
-        className: 'custom-marker custom-marker-bounce',
-        iconSize: [30, 40],
-        iconAnchor: [15, 40],
-        popupAnchor: [0, -40],
+        // Include Leaflet's base class so the icon positions correctly
+        className: 'leaflet-div-icon custom-marker custom-marker-bounce',
+        iconSize: [44, 60],
+        iconAnchor: [22, 60],
+        popupAnchor: [0, -56],
       })
     },
 
@@ -269,7 +393,7 @@ export default {
           </div>
 
          <button 
-            id="accept-btn-${report}"
+            id="accept-btn-${report.reportId}"
             style="
               width: 100%;
               margin-top: 14px;
@@ -405,7 +529,8 @@ export default {
 .search-box {
   position: absolute;
   top: 10px;
-  left: 50px;
+  right: 60px;
+  left: auto;
   z-index: 1000;
   display: flex;
   gap: 4px;
@@ -523,5 +648,10 @@ export default {
 /* Apply the animation to the custom marker */
 :deep(.custom-marker-bounce) {
   animation: pulse 1.5s infinite ease-in-out; /* 1.5s duration, repeats infinitely */
+}
+
+/* Ensure Leaflet popups are not hidden behind UI overlays */
+:deep(.leaflet-pane.leaflet-popup-pane) {
+  z-index: 1200 !important;
 }
 </style>

@@ -239,25 +239,19 @@ export default {
   color: #065f46;
 }
 
-.incident-badge.incident-dead {
+.incident-badge.incident-dead, .incident-badge.incident- {
   background: #fef2f2;
   color: #991b1b;
   border-color: #fecaca;
 }
 
-.incident-badge.incident-injured {
+.incident-badge.incident-trapped, .incident-badge.incident-vehicle {
   background: #fffbeb;
-  color: #92400e;
+  color: #e36719;
   border-color: #fde68a;
 }
 
-.incident-badge.incident-trapped {
-  background: #fef3c7;
-  color: #78350f;
-  border-color: #fde047;
-}
-
-.incident-badge.incident-misplaced {
+.incident-badge.incident-orphaned, .incident-badge.incident-aggressive, .incident-badge.incident-displaced, .incident-badge.incident-conflict {
   background: #ede9fe;
   color: #6b21a8;
   border-color: #ddd6fe;
