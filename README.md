@@ -144,6 +144,8 @@ VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id_here
 Open your terminal in the project folder and run the following commands to install packages for both backend and frontend:
 
 ```bash
+npm install confetti-canvas
+
 # Backend
 cd backend
 npm install
