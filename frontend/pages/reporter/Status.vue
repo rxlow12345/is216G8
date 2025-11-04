@@ -63,7 +63,8 @@
                               {{ report.isUrgent ? 'Yes ⚠️' : 'No' }}
                             </span>
                           </p>
-                          <p class="info-item"><strong>Moving Normally:</strong> {{ capitalize(report.isMovingNormally) }}</p>
+                          <p class="info-item"><strong>Moving Normally:</strong> {{ capitalize(report.isMovingNormally)
+                            }}</p>
                         </div>
                       </div>
 
@@ -115,14 +116,15 @@
                     </div>
                     <p class="small fw-semibold mb-0"
                       :style="{ color: index <= currentStageIndex ? '#086143' : '#888' }">
-                      {{ stage }}
+                      {{ capitalize(stage) }}
                     </p>
                   </div>
                 </div>
               </div>
 
               <!-- Checkpoint Progress Bar -->
-              <div class="card custom-card border-0 shadow-sm rounded-4 p-4 mb-4">
+              <div v-if="(report.status === 'active' || report.status === 'resolved') && checkpointCurrentIndex > -1"
+                class="card custom-card border-0 shadow-sm rounded-4 p-4 mb-4">
                 <h5 class="mb-4 text-center fw-bold" style="color: #285436;">Checkpoint Progress</h5>
                 <div class="mt-4">
                   <div class="progress custom-progress mb-3">
@@ -162,42 +164,8 @@
                 </div>
               </div> -->
 
-              <!-- Active Summary Section -->
-              <div v-if="report.status === 'active' || report.status === 'resolved'"
-                class="card custom-card border-0 shadow-sm rounded-4 mb-4">
-                <div class="card-header custom-card-header-secondary text-white">
-                  <h6 class="mb-0">📋 Active Treatment Summary</h6>
-                </div>
-                <div class="card-body p-4">
-                  <div class="row">
-                    <div class="col-md-6 mb-3">
-                      <p class="info-item"><strong>Treatment Received:</strong> {{ activeSummary.treatmentReceived ||
-                        '—' }}
-                      </p>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                      <p class="info-item"><strong>Treatment Status:</strong> {{ activeSummary.treatmentStatus || '—' }}
-                      </p>
-                    </div>
-                    <div class="row">
-                      <div class="col-md-6 mb-3">
-                        <p class="info-item"><strong>Reconciliation Status:</strong> {{
-                          activeSummary.reconciliationStatus
-                          ||
-                          '—' }}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="summary-box p-3 rounded">
-                    <p class="mb-1"><strong>Treatment Summary:</strong></p>
-                    <p class="text-muted mb-0">{{ activeSummary.treatmentSummary || 'No treatment summary available.' }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
               <!-- Checkpoint Summary Cards -->
-              <div v-if="report.status === 'active' || report.status === 'resolved'">
+              <div v-if="(report.status === 'active' || report.status === 'resolved') && checkpointCurrentIndex > -1">
                 <div v-for="(stage, index) in checkpointStages" :key="index">
                   <div v-if="checkpoints[stage]?.completed" class="card custom-card border-0 shadow-sm rounded-4 mb-4">
                     <div class="card-header custom-card-header-secondary text-white">
@@ -241,7 +209,19 @@
                   </div>
                 </div>
               </div>
-
+              <div v-else>
+                <div class="card custom-card border-0 shadow-sm rounded-4 mb-4 text-center p-4">
+                  <div class="card-body">
+                    <div class="mb-3">
+                      <i class="bi bi-exclamation-circle-fill display-4 text-muted"></i>
+                    </div>
+                    <h5 class="card-title text-muted mb-2">Rescuers on the way</h5>
+                    <p class="card-text text-muted">
+                      Rescuers are on the way. Once progress is made, you'll see updates here.
+                    </p>
+                  </div>
+                </div>
+              </div>
               <!-- Meta Information -->
               <div class="card custom-card border-0 shadow-sm rounded-4 mb-4">
                 <div class="card-header custom-card-header-secondary text-white">
@@ -332,9 +312,6 @@ export default {
     checkpoints() {
       return this.activeSummary.checkpoints || {};
     },
-
-
-
     checkpointCurrentIndex() {
       // Count how many checkpoints are completed
       let completedCount = 0;
@@ -342,7 +319,7 @@ export default {
         const key = stage;
         if (this.checkpoints[key]?.completed) completedCount++;
       });
-      return completedCount - 1 >= 0 ? completedCount - 1 : 0;
+      return completedCount - 1 >= 0 ? completedCount - 1 : -1;
     },
 
     checkpointProgressPercent() {
