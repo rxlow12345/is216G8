@@ -1,5 +1,6 @@
 <!-- frontend/src/pages/volunteer/Home.vue -->
 <template>
+  <OtterCursor animal="🦦" :speed="0.08"/>
   <BackToTop/>
   <FloatingBackground/>
   <div class="container-fluid p-0 reporterDashboard">
@@ -11,7 +12,7 @@
 
     <div class="welcomeMessage">
       <div class="alertCustom">
-        <h5 class="alertHeading">Welcome, Volunteer</h5>
+        <h5 class="alertHeading">Welcome To Your Dashboard</h5>
         <p>Use the options below to navigate to volunteer tools.</p>
       </div>
     </div>
@@ -50,6 +51,7 @@ import { useRouter } from 'vue-router';
 import { logout, checkUserAuthAndRole } from '../../src/api/auth.js';
 import BackToTop from '../../src/components/BackToTop.vue';
 import FloatingBackground from '../../src/components/FloatingBackground.vue';
+import OtterCursor from '../../src/components/OtterCursor.vue';
 import '../css/common.css'
 
 // Reactive data
@@ -76,22 +78,29 @@ onMounted(async () => {
 }
 
 .alertCustom {
-  background-color: #FEFAE0;
-  border: none;
-  color: #285436;
-  box-shadow: none;
+  background: linear-gradient(135deg, #eebf9b 0%, #b5dab7 100%);
+  border-radius: 15px;
+  padding: 25px;
+  max-width: 950px;
+  margin: 0 auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.alertCustom:hover {
+  transform: translateY(-5px);
 }
 
 .alertHeading {
-  font-size: 23px;
-  font-weight: 600;
+  font-size: 30px;
+  font-weight: 400;
   color: #285436;
-  margin-bottom: 5px;
 }
 
 .welcomeMessage p {
-  font-size: 16px;
-  color: #333;
+  font-size: 18px;
+  color: #3A4D37;
+  margin-top: 10px;
 }
 
 /* Button Sections */

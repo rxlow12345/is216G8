@@ -71,4 +71,26 @@ onUnmounted(() => {
   font-weight: 500;
   white-space: nowrap;
 }
+
+@media (max-width: 520px){
+  @media (max-width: 520px) {
+  .back-to-top {
+    bottom: 80px;
+    width: 50px;      
+    height: 50px;     
+    padding: 0;        
+    border-radius: 50%; 
+    justify-content: center;
+  }
+
+  .back-to-top .text {
+    display: none; 
+  }
+
+  .back-to-top .arrow {
+    font-size: 24px;
+  }
+}
+
+}
 </style>

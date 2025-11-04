@@ -104,10 +104,9 @@ export default {
   },
   computed: {
     displayName() {
-    if (this.auth.email && this.auth.email.includes('@')) {
-      return this.auth.email.split('@')[0];
-    }
-    return this.auth.username || '';
+      if (this.auth.username){
+        return this.auth.username;
+      }
   }
 },
   methods: {

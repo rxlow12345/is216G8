@@ -1,18 +1,19 @@
 <template>
+  <OtterCursor animal="🦦" :speed="0.08"/>
   <BackToTop/>
   <FloatingBackground/>
   <div class="container-fluid p-0 reporterDashboard">
     <!-- Top Banner -->
     <div id="topBanner" class="bannerTitles">
       <header class="text-center mb-2">
-        <h1>Reporter Dashboard</h1>
+        <h1>Reporter's Dashboard</h1>
       </header>
     </div>
 
     <!-- Welcome Message -->
     <div class="welcomeMessage">
       <div class="alertCustom">
-        <h5 class="alertHeading">Welcome to your Dashboard</h5>
+        <h5 class="alertHeading" v-if="userName">Welcome to {{ userName }}'s Dashboard</h5>
         <p>Use the options below to create a new report, track the status of existing reports, or view past reports.</p>
       </div>
     </div>
@@ -41,7 +42,9 @@ import { getCurrentUser } from '../../src/api/auth.js';
 import '../css/common.css'
 import BackToTop from '../../src/components/BackToTop.vue';
 import FloatingBackground from '../../src/components/FloatingBackground.vue';
+import OtterCursor from '../../src/components/OtterCursor.vue';
 
+const userName = ref('');
 const userEmail = ref('');
 const userId = ref('');
 
@@ -73,6 +76,7 @@ onMounted(async () => {
     if (user) {
       userEmail.value = user.username || user.email;
       userId.value = user.uid;
+      userName.value = user.username;
     }
   } catch (error) {
     console.error('Error getting user info:', error);
@@ -99,6 +103,9 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+* {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
 .welcomeMessage {
   text-align: center;
   padding: 10px 0;
@@ -106,23 +113,31 @@ onMounted(async () => {
 }
 
 .alertCustom {
-  background-color: #FEFAE0;
-  border: none;
-  color: #285436;
-  box-shadow: none;
+  background: linear-gradient(135deg, #eebf9b 0%, #b5dab7 100%);
+  border-radius: 15px;
+  padding: 25px;
+  max-width: 950px;
+  margin: 0 auto;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.alertCustom:hover {
+  transform: translateY(-5px);
 }
 
 .alertHeading {
-  font-size: 23px;
-  font-weight: 600;
+  font-size: 30px;
+  font-weight: 400;
   color: #285436;
-  margin-bottom: 5px;
 }
 
 .welcomeMessage p {
-  font-size: 16px;
-  color: #333;
+  font-size: 18px;
+  color: #3A4D37;
+  margin-top: 10px;
 }
+
 
 /* Button Sections */
 .buttonSections {
@@ -158,6 +173,14 @@ onMounted(async () => {
 .buttonItemRight {
   flex-direction: row-reverse;
 }
+
+.buttonItemLeft:hover,
+.buttonItemRight:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+}
+
 
 .buttonItemLeft img {
   margin: 15px 0px 15px 15px;
