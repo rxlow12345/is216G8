@@ -2,10 +2,6 @@
   box-sizing: border-box !important;
 }
 
-/* body .bannerTitles {
-  margin-top: 97px;
-} */
-
 h1 {
   color: rgb(254, 250, 224);
   font-family: Georgia, 'Times New Roman', Times, serif;
@@ -96,6 +92,11 @@ h1 {
   transition: all 0.3s ease;
 }
 
+@media (max-width: 520px){
+  .button-container {
+    padding: 0px 60px !important;
+  }
+}
 
 /* Game Board */
 .generatingGameBoard {
