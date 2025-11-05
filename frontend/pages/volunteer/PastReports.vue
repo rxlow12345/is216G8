@@ -2,15 +2,17 @@
   <div class="container-fluid p-0 reporterDashboard">
     <div id="topBanner" class="bannerTitles">
       <header class="text-center mb-2">
-        <h1>🎉 Your Rescue Impact</h1>
+        <h1>🌿 Your Rescue Impact 🌿</h1>
+        <p class="hero-subtitle">View your completed rescue missions and contributions</p>
       </header>
     </div>
 
     <main class="report-container">
-      <div class="controls">
-        <div class="search-wrapper">
-          <span class="search-icon">🔍</span>
-          <input class="search" v-model="search" placeholder="Search by Report ID" />
+      <div class="search-section">
+        <div class="search-bar">
+          <input v-model="search" type="text" id="searchInput"
+            placeholder="🔍 Search by Report ID">
+          <button @click="() => {}" id="searchBtn">Search</button>
         </div>
       </div>
 
@@ -66,7 +68,6 @@
         <!-- Section Header -->
         <div class="section-header">
           <h2>Recent Success Stories</h2>
-          <button @click="showAllReports" class="view-all-link">View All →</button>
         </div>
 
         <!-- Success Stories -->
@@ -77,9 +78,9 @@
             class="success-story"
           >
             <div class="story-header">
-              <span class="animal-emoji">{{ getAnimalEmoji(report.data.speciesName) }}</span>
+              <span class="animal-emoji">{{ getAnimalEmoji(report.data.speciesName || report.data.reportData?.speciesName) }}</span>
               <span class="story-title">
-                {{ report.data.speciesName || 'Unknown Animal' }} → {{ getFinalOutcome(report.data) }}
+                {{ report.data.speciesName || report.data.reportData?.speciesName || 'Unknown Animal' }} → {{ getFinalOutcome(report.data) }}
               </span>
               <span class="outcome-emoji">{{ getOutcomeEmoji(report.data) }}</span>
             </div>
@@ -87,7 +88,7 @@
             <div class="story-meta">
               <span class="meta-item">{{ report.data.reportId }}</span>
               <span class="meta-separator">•</span>
-              <span class="meta-item">{{ formatLocation(report.data.location?.address) }}</span>
+              <span class="meta-item">{{ formatLocation(report.data.location?.address || report.data.reportData?.location?.address || report.data.location) }}</span>
               <span class="meta-separator">•</span>
               <span class="meta-item">{{ getResolutionDays(report.data) }} days</span>
               <span class="meta-separator">•</span>
@@ -110,7 +111,7 @@
           <button @click="closeDetailsModal" class="close-btn">✕</button>
         </div>
         <div class="modal-body">
-          {{ selectedReport?.data?.speciesName || 'Unknown Animal' }} • {{ formatLocation(selectedReport?.data?.location?.address) }}
+          {{ selectedReport?.data?.speciesName || selectedReport?.data?.reportData?.speciesName || 'Unknown Animal' }} • {{ formatLocation(selectedReport?.data?.location?.address || selectedReport?.data?.reportData?.location?.address || selectedReport?.data?.location) }}
         </div>
         <div class="timeline-container">
           <!-- Timeline items -->
@@ -223,7 +224,7 @@ import '../css/common.css'
 import BackToTop from '../../src/components/BackToTop.vue';
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { db } from '../../src/firebase.js'
-import { collection, query, where, onSnapshot, Timestamp } from 'firebase/firestore'
+import { collection, query, where, onSnapshot, Timestamp, getDocs } from 'firebase/firestore'
 import { getCurrentUser } from '../../src/api/auth.js'
 
 const loading = ref(true)
@@ -290,8 +291,15 @@ function getFinalOutcome(reportData) {
 
 function formatLocation(address) {
   if (!address) return 'Unknown Location'
-  const firstPart = address.split(',')[0]
-  return firstPart.replace(/\d+/g, '').trim() || 'Singapore'
+  // If address is a string, return it as is
+  if (typeof address === 'string') {
+    return address.trim() || 'Unknown Location'
+  }
+  // If address is an object with address property, return the address
+  if (address && typeof address === 'object' && address.address) {
+    return address.address.trim() || 'Unknown Location'
+  }
+  return 'Unknown Location'
 }
 
 function formatRelativeTime(timestamp) {
@@ -330,8 +338,38 @@ function formatOutcome(outcome) {
   return outcomes[outcome] || outcome
 }
 
-function viewTimeline(report) {
-  selectedReport.value = report
+async function viewTimeline(report) {
+  // If missing speciesName or location, fetch from incidentReports using reportId
+  if (!report.data.speciesName || !report.data.location?.address) {
+    try {
+      const q = query(
+        collection(db, 'incidentReports'),
+        where('reportId', '==', report.data.reportId)
+      )
+      const snapshot = await getDocs(q)
+      if (!snapshot.empty) {
+        const fullData = snapshot.docs[0].data()
+        // Merge full data with summary data
+        selectedReport.value = {
+          ...report,
+          data: {
+            ...report.data,
+            speciesName: report.data.speciesName || fullData.speciesName,
+            location: report.data.location?.address 
+              ? report.data.location 
+              : (fullData.location || { address: report.data.location || 'Unknown Location' })
+          }
+        }
+      } else {
+        selectedReport.value = report
+      }
+    } catch (error) {
+      console.error('Error fetching full report data:', error)
+      selectedReport.value = report
+    }
+  } else {
+    selectedReport.value = report
+  }
   showDetailsModal.value = true
 }
 
@@ -402,8 +440,10 @@ onMounted(async () => {
     return
   }
   const q = query(collection(db, 'activeStatusSummary'), where('volunteerID', '==', user.uid))
-  unsubRef.value = onSnapshot(q, (snap) => {
+  unsubRef.value = onSnapshot(q, async (snap) => {
     const rows = []
+    const promises = []
+    
     snap.forEach((d) => {
       const data = d.data()
       const cp = data?.checkpoints
@@ -421,9 +461,42 @@ onMounted(async () => {
       const progress = data.progressPercentage ?? 0
       const isReconciled = data.checkpoints?.reconciled?.completed === true
       if (progress >= 100 && isReconciled) {
-        rows.push({ id: d.id, data })
+        // If missing speciesName or location, fetch from incidentReports
+        if (!data.speciesName || !data.location?.address) {
+          const fetchPromise = getDocs(
+            query(collection(db, 'incidentReports'), where('reportId', '==', data.reportId))
+          ).then((fullSnap) => {
+            if (!fullSnap.empty) {
+              const fullData = fullSnap.docs[0].data()
+              return {
+                id: d.id,
+                data: {
+                  ...data,
+                  speciesName: data.speciesName || fullData.speciesName,
+                  location: data.location?.address 
+                    ? data.location 
+                    : (fullData.location || { address: data.location || 'Unknown Location' })
+                }
+              }
+            }
+            return { id: d.id, data }
+          }).catch((err) => {
+            console.error('Error fetching full report data:', err)
+            return { id: d.id, data }
+          })
+          promises.push(fetchPromise)
+        } else {
+          rows.push({ id: d.id, data })
+        }
       }
     })
+    
+    // Wait for all async fetches to complete
+    if (promises.length > 0) {
+      const enrichedRows = await Promise.all(promises)
+      rows.push(...enrichedRows)
+    }
+    
     // sort by resolved date desc
     rows.sort((a, b) => {
       const aDate = a.data.checkpoints?.reconciled?.completedAt?.seconds ?? a.data.lastUpdated?.seconds ?? 0
@@ -445,15 +518,15 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* Header Section */
+/* Header Section - matching common.css */
 .bannerTitles {
   width: 100% !important;
   max-width: 100vw !important;
   margin: 0 !important;
-  padding: 48px 20px !important;
+  padding: 20px !important;
   box-sizing: border-box !important;
   overflow-x: hidden !important;
-  background: linear-gradient(135deg, #4a6a4a 0%, #5a7a5a 100%) !important;
+  background-color: #285436 !important;
 }
 
 .bannerTitles header {
@@ -466,16 +539,19 @@ onBeforeUnmount(() => {
 }
 
 .bannerTitles h1 {
-  width: 100% !important;
-  max-width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  box-sizing: border-box !important;
+  margin-top: 20px !important;
+  margin-bottom: 0 !important;
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
-  color: white !important;
-  font-size: 36px !important;
-  font-weight: 700 !important;
+}
+
+.bannerTitles .hero-subtitle,
+.bannerTitles p {
+  font-weight: 200 !important;
+  color: rgb(254, 250, 224) !important;
+  font-size: 20px !important;
+  margin-top: 8px !important;
+  margin-bottom: 0 !important;
 }
 
 /* Report Container */
@@ -519,38 +595,54 @@ onBeforeUnmount(() => {
   max-width: 100%;
 }
 
-.search-wrapper {
-  flex: 0 1 500px;
-  position: relative;
+/* Search Bar - Matching Guidebook Style */
+.search-section {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0 20px 0;
+}
+
+.search-bar {
   display: flex;
   align-items: center;
-  min-width: 280px;
+  background-color: #f6f8f3;
+  border-radius: 40px;
+  padding: 6px 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+  width: 60%;
   max-width: 500px;
 }
 
-.search-icon {
-  position: absolute;
-  left: 10px;
-  font-size: 14px;
-  color: #6b7280;
-  pointer-events: none;
-  z-index: 1;
+.search-bar:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transform: translateY(-2px);
 }
 
-.search { 
-  width: 100%;
-  height: 36px;
-  border: 1px solid #dbe5d9; 
-  border-radius: 8px; 
-  padding: 8px 8px 8px 32px;
-  font-size: 13px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.search:focus {
+#searchInput {
+  flex: 1;
+  border: none;
   outline: none;
-  border-color: #5a7a5a;
-  box-shadow: 0 0 0 3px rgba(90, 122, 90, 0.1);
+  background: transparent;
+  font-size: 1rem;
+  padding: 8px 12px;
+  color: #2e4f2f;
+}
+
+#searchBtn {
+  background-color: #285436;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 8px 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+#searchBtn:hover {
+  background-color: #a8c686;
+  color: #285436;
 }
 
 /* Controls Section - Clean Standard Style */
@@ -942,23 +1034,28 @@ onBeforeUnmount(() => {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 520px) {
   .bannerTitles {
-    padding: 32px 16px !important;
+    padding: 20px !important;
   }
 
   .bannerTitles h1 {
-    font-size: 28px !important;
+    font-size: 40px !important;
+    margin-top: 20px !important;
   }
   
-  .controls { 
-    flex-direction: column; 
-    align-items: stretch; 
-    gap: 8px;
+  .bannerTitles .hero-subtitle,
+  .bannerTitles p {
+    font-size: 20px !important;
   }
   
-  .search-wrapper {
-    flex: 1 1 auto;
+  .search-section {
+    margin: 20px 0 15px 0;
+  }
+  
+  .search-bar {
+    width: 90%;
+    max-width: 100%;
   }
 
   .stats-container {

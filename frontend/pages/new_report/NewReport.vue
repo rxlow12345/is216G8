@@ -526,10 +526,20 @@ onBeforeMount(() => {
 });
 
 // API Configuration
-const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const API_BASE_URL = isDevelopment
-  ? `${window.location.protocol}//${window.location.hostname}:4100/api`
-  : '/api';
+// Use VITE_API_URL in production; fall back to relative /api if not set
+// Check if VITE_API_URL already includes /api or if it's localhost (use proxy)
+let API_BASE_URL = '/api'; // Default fallback (uses Vite proxy in dev)
+if (import.meta.env.VITE_API_URL && !import.meta.env.VITE_API_URL.includes('localhost')) {
+  // Production: use full URL, but check if /api is already included
+  if (import.meta.env.VITE_API_URL.endsWith('/api')) {
+    API_BASE_URL = import.meta.env.VITE_API_URL;
+  } else {
+    API_BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
+  }
+} else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+  // Localhost: use proxy (relative path)
+  API_BASE_URL = '/api';
+}
 
 const OPENCAGE_API_KEY = "9047284f3fca4d20a801c1c973198406";
 const OPENCAGE_BASE_URL = "https://api.opencagedata.com/geocode/v1/json";

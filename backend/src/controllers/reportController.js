@@ -542,11 +542,24 @@ function calculatePriority(severity) {
   }
 }
 
-// Return time-based ID, WR (Wildlife Report), convert timestamp into base 36 (digits+letter)
+// Generate report ID in format: CC-{yyMMdd}-{4-char random}
+// CC = CritterConnect, date is submission date (yyMMdd format)
 function generateReportId() {
-  const timestamp = Date.now().toString(36);
-  const random = Math.random().toString(36).substr(2, 5);
-  return `WR-${timestamp}-${random}`.toUpperCase();
+  // Get current date for submission date
+  const now = new Date();
+  const year = now.getFullYear().toString().slice(-2); // Last 2 digits of year (yy)
+  const month = (now.getMonth() + 1).toString().padStart(2, '0'); // Month (MM), pad with 0 if needed
+  const day = now.getDate().toString().padStart(2, '0'); // Day (dd), pad with 0 if needed
+  const dateStr = `${year}${month}${day}`; // Format: yyMMdd
+  
+  // Generate 4 random characters (alphanumeric)
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let random = '';
+  for (let i = 0; i < 4; i++) {
+    random += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  
+  return `CC-${dateStr}-${random}`;
 }
 
 /**

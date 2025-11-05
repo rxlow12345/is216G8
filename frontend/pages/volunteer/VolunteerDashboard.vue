@@ -6,7 +6,8 @@
   <div class="container-fluid p-0 reporterDashboard">
     <div id="topBanner" class="bannerTitles">
       <header class="text-center mb-2">
-        <h1>Volunteer Dashboard</h1>
+        <h1>🌿 Volunteer Dashboard 🌿</h1>
+        <p class="hero-subtitle">Manage your rescue operations and track your impact</p>
       </header>
     </div>
 
@@ -92,6 +93,16 @@ const setupScrollAnimations = () => {
 </script>
 
 <style scoped>
+/* Banner styling - matching common.css */
+.bannerTitles .hero-subtitle,
+.bannerTitles p {
+  font-weight: 200 !important;
+  color: rgb(254, 250, 224) !important;
+  font-size: 20px !important;
+  margin-top: 8px !important;
+  margin-bottom: 0 !important;
+}
+
 .welcomeMessage {
   text-align: center;
   padding: 10px 0;
@@ -290,6 +301,9 @@ const setupScrollAnimations = () => {
 @media (max-width: 520px) {
   .welcomeMessage { margin: 10px 10px 0px 10px; }
   .buttonItemLeft img, .buttonItemRight img { margin: 10px; }
+  .bannerTitles h1 { font-size: 40px !important; }
+  .bannerTitles .hero-subtitle,
+  .bannerTitles p { font-size: 20px !important; }
 }
 
 .fadeIn { opacity: 1 !important; transform: translateY(0) !important; }

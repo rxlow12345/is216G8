@@ -2,15 +2,17 @@
   <div class="container-fluid p-0 reporterDashboard">
     <div id="topBanner" class="bannerTitles">
       <header class="text-center mb-2">
-        <h1>Active Reports</h1>
+        <h1>🌿 Active Reports 🌿</h1>
+        <p class="hero-subtitle">Track ongoing wildlife rescue operations</p>
       </header>
     </div>
 
     <main class="report-container">
-      <div class="controls">
-        <div class="search-wrapper">
-          <span class="search-icon">🔍</span>
-          <input class="search" v-model="search" placeholder="Search by Report ID or Animal" />
+      <div class="search-section">
+        <div class="search-bar">
+          <input v-model="search" type="text" id="searchInput"
+            placeholder="🔍 Search by Report ID or Animal">
+          <button @click="() => {}" id="searchBtn">Search</button>
         </div>
       </div>
 
@@ -139,7 +141,7 @@
         <div class="header-content">
           <h2 class="report-id">{{ selectedReport?.data?.reportId || '' }}</h2>
           <p class="report-meta">
-            {{ selectedReport?.data?.speciesName || 'Unknown Animal' }} • {{ formatLocation(selectedReport?.data?.location?.address) }}
+            {{ selectedReport?.data?.speciesName || selectedReport?.data?.reportData?.speciesName || 'Unknown Animal' }} • {{ formatLocation(selectedReport?.data?.location?.address || selectedReport?.data?.reportData?.location?.address || selectedReport?.data?.location) }}
           </p>
         </div>
         <button @click="closeDetailsModal" class="close-button" aria-label="Close">
@@ -992,7 +994,7 @@ function hideSuccess(){
   box-sizing: border-box !important;
 }
 
-/* Green header banner */
+/* Green header banner - matching common.css */
 #topBanner,
 .bannerTitles {
   width: 100% !important;
@@ -1001,6 +1003,7 @@ function hideSuccess(){
   padding: 20px !important;
   box-sizing: border-box !important;
   overflow-x: hidden !important;
+  background-color: #285436 !important;
 }
 
 .bannerTitles header {
@@ -1012,13 +1015,19 @@ function hideSuccess(){
 }
 
 .bannerTitles h1 {
-  width: 100% !important;
-  max-width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  box-sizing: border-box !important;
+  margin-top: 20px !important;
+  margin-bottom: 0 !important;
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
+}
+
+.bannerTitles .hero-subtitle,
+.bannerTitles p {
+  font-weight: 200 !important;
+  color: rgb(254, 250, 224) !important;
+  font-size: 20px !important;
+  margin-top: 8px !important;
+  margin-bottom: 0 !important;
 }
 
 /* Report Container */
@@ -1062,38 +1071,54 @@ function hideSuccess(){
   max-width: 100%;
 }
 
-.search-wrapper {
-  flex: 0 1 500px;
-  position: relative;
+/* Search Bar - Matching Guidebook Style */
+.search-section {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0 20px 0;
+}
+
+.search-bar {
   display: flex;
   align-items: center;
-  min-width: 280px;
+  background-color: #f6f8f3;
+  border-radius: 40px;
+  padding: 6px 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+  width: 60%;
   max-width: 500px;
 }
 
-.search-icon {
-  position: absolute;
-  left: 10px;
-  font-size: 14px;
-  color: #6b7280;
-  pointer-events: none;
-  z-index: 1;
+.search-bar:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transform: translateY(-2px);
 }
 
-.search { 
-  width: 100%;
-  height: 36px;
-  border: 1px solid #dbe5d9; 
-  border-radius: 8px; 
-  padding: 8px 8px 8px 32px;
-  font-size: 13px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.search:focus {
+#searchInput {
+  flex: 1;
+  border: none;
   outline: none;
-  border-color: #5a7a5a;
-  box-shadow: 0 0 0 3px rgba(90, 122, 90, 0.1);
+  background: transparent;
+  font-size: 1rem;
+  padding: 8px 12px;
+  color: #2e4f2f;
+}
+
+#searchBtn {
+  background-color: #285436;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 8px 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+#searchBtn:hover {
+  background-color: #a8c686;
+  color: #285436;
 }
 
 .select { 
@@ -1937,24 +1962,30 @@ function hideSuccess(){
   
   #topBanner,
   .bannerTitles {
-    padding: 16px !important;
+    padding: 20px !important;
     max-width: 100vw !important;
   }
   
-  .controls {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
+  .bannerTitles h1 {
+    font-size: 40px !important;
+    margin-top: 20px !important;
+  }
+  
+  .bannerTitles .hero-subtitle,
+  .bannerTitles p {
+    font-size: 20px !important;
+  }
+  
+  .search-section {
+    margin: 20px 0 15px 0;
+  }
+  
+  .search-bar {
+    width: 90%;
     max-width: 100%;
   }
   
-  .search-wrapper {
-    flex: 1 1 auto;
-    max-width: 100%;
-    width: 100%;
-  }
-  
-  .search {
+  #searchInput {
     max-width: 100%;
   }
   

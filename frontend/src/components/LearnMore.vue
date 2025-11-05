@@ -123,17 +123,17 @@
                         <div class="d-flex flex-wrap gap-3">
                             <a href="https://facebook.com/critterconnect" target="_blank" class="social-link">
                                 <div class="social-icon">
-                                    <img src="../public/assets/facebook.png">
+                                    <img :src="facebookIcon" alt="Facebook">
                                 </div>
                             </a>
                             <a href="https://instagram.com/critterconnect" target="_blank" class="social-link">
                                 <div class="social-icon">
-                                    <img src="../public/assets/instagram.png">
+                                    <img :src="instagramIcon" alt="Instagram">
                                 </div>
                             </a>
                             <a href="https://x.com/critterconnect" target="_blank" class="social-link">
                                 <div class="social-icon">
-                                    <img src="../public/assets/twitter.png">
+                                    <img :src="twitterIcon" alt="Twitter/X">
                                 </div>
                             </a>
                         </div>
@@ -161,6 +161,9 @@ import OtterCursor from './OtterCursor.vue';
 import FeedbackForm from './FeedbackForm.vue';
 import '../../pages/css/common.css'
 import FloatingBackground from './FloatingBackground.vue';
+import facebookIcon from '../public/assets/facebook.png';
+import instagramIcon from '../public/assets/instagram.png';
+import twitterIcon from '../public/assets/twitter.png';
 
 
 const faqs = ref([

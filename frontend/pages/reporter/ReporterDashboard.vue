@@ -25,7 +25,7 @@
         :class="['buttonItem', item.align === 'left' ? 'buttonItemLeft' : 'buttonItemRight']" ref="sectionElements">
         <img :src="item.imgSrc" :alt="item.imgAlt" class="sectionImg">
         <div class="content">
-          <a :href="item.link" class="btn" :class="item.buttonClass">{{ item.buttonText }}</a>
+          <router-link :to="item.link" class="btn" :class="item.buttonClass">{{ item.buttonText }}</router-link>
           <p class="buttonDescription">{{ item.description }}</p>
         </div>
       </div>
@@ -35,11 +35,16 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { getCurrentUser } from '../../src/api/auth.js';
 import '../css/common.css'
 import BackToTop from '../../src/components/BackToTop.vue';
 import FloatingBackground from '../../src/components/FloatingBackground.vue';
 import OtterCursor from '../../src/components/OtterCursor.vue';
+// Import images properly for Vite to handle them in production
+import { getAssetUrl } from '../../src/utils/getAssetUrl.js';
+
+const router = useRouter();
 
 const userName = ref('');
 const userEmail = ref('');
@@ -47,7 +52,7 @@ const userId = ref('');
 
 const buttonItems = ref([
   {
-    imgSrc: '../../src/public/assets/duck.jpg',
+    imgSrc: getAssetUrl('duck.jpg'),
     imgAlt: 'Duck',
     buttonText: 'Create New Report',
     buttonClass: 'brownBtn',
@@ -56,7 +61,7 @@ const buttonItems = ref([
     align: 'left'
   },
   {
-    imgSrc: '../../src/public/assets/monkey.jpg',
+    imgSrc: getAssetUrl('monkey.jpg'),
     imgAlt: 'Monkey',
     buttonText: 'View All Reports',
     buttonClass: 'greenBtnLg',
@@ -267,6 +272,8 @@ onMounted(async () => {
   display: inline-block;
   margin: 0 auto;
   transition: background-color 0.3s ease, color 0.3s ease;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .buttonDescription {

@@ -1,38 +1,67 @@
 <template>
-  <div class="card custom-card border-0 shadow-sm rounded-4 p-4 mb-4" v-if="!error">
-    <!-- Header -->
-    <h5 class="mb-4 text-center fw-bold" style="color: #285436;">Rescue Journey Timeline</h5>
+  <div v-if="!error">
 
-    <!-- Timeline -->
-    <div class="timeline">
-      <!-- Loop through all checkpoint stages -->
-      <div v-for="(stage, index) in checkpointStages" :key="index" class="timeline-item">
-        <!-- Timeline node -->
-        <div class="timeline-node" :class="{
-          current: checkpointCurrentIndex === index && !checkpoints[stage]?.completed,
-          pending: checkpointCurrentIndex < index && !checkpoints[stage]?.completed,
-          completed: checkpoints[stage]?.completed,
-        }">
-          <template v-if="checkpoints[stage]?.completed">
-            <i class="bi bi-check-lg"></i>
-          </template>
-          <template v-else-if="checkpointCurrentIndex === index">
-            <i class="bi bi-arrow-right"></i>
-          </template>
-          <template v-else>
-            <span>{{ index + 1 }}</span>
-          </template>
+    <!-- Timeline as Simple Cards -->
+    <div class="timeline-cards">
+      <!-- Stage 1: Case Accepted - Based on volunteerId/assignedVolunteerID -->
+      <div class="timeline-card-item" :class="{
+        completed: hasVolunteer,
+        pending: !hasVolunteer
+      }">
+        <div class="timeline-card-header">
+          <span class="timeline-badge" :class="{
+            completed: hasVolunteer,
+            pending: !hasVolunteer
+          }">
+            <i :class="{
+              'bi bi-check-circle-fill': hasVolunteer,
+              'bi bi-hourglass': !hasVolunteer
+            }"></i>
+            {{ hasVolunteer ? 'Completed' : 'Pending' }}
+          </span>
+          <h3 class="timeline-title">
+            <i class="bi bi-person-check-fill"></i>
+            Case Accepted
+          </h3>
+          <div class="timeline-meta" v-if="hasVolunteer && timeAccepted">
+            <i class="bi bi-calendar-event"></i>
+            <span>{{ toGMT8String(timeAccepted) }}</span>
+          </div>
         </div>
+        <!-- Stage 1 Details -->
+        <div class="timeline-info">
+            <template v-if="hasVolunteer">
+              <!-- Completed State -->
+              <div class="detail-item" v-if="volunteerInfo?.name || reportData?.volunteerName || reportData?.assignedVolunteerName">
+                <span class="detail-label">Volunteer Name:</span>
+                <span class="detail-value">{{ volunteerInfo?.name || reportData?.assignedVolunteerName || reportData?.volunteerName || 'Unknown' }}</span>
+              </div>
+              <div class="detail-item" v-if="reportData?.volunteerId || reportData?.assignedVolunteerID || reportData?.uid">
+                <span class="detail-label">Volunteer ID:</span>
+                <span class="detail-value">{{ reportData?.volunteerId || reportData?.assignedVolunteerID || reportData?.uid || 'N/A' }}</span>
+              </div>
+              <div class="detail-item" v-if="timeAccepted">
+                <span class="detail-label">Acceptance Time:</span>
+                <span class="detail-value">{{ toGMT8String(timeAccepted) }}</span>
+              </div>
+            </template>
+            <template v-else>
+              <!-- Pending State -->
+              <div class="detail-item">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value">Waiting for volunteer to accept</span>
+              </div>
+            </template>
+          </div>
+      </div>
 
-        <!-- Connector -->
-        <div class="timeline-connector" :class="{ active: index <= checkpointCurrentIndex }"
-          v-if="index < checkpointStages.length - 1"></div>
-
-        <!-- Timeline Content -->
-        <div class="timeline-content" :class="{
-          completed: checkpoints[stage]?.completed,
-          current: checkpointCurrentIndex === index
-        }">
+      <!-- Loop through checkpoint stages (Stage 2-5) -->
+      <div v-for="(stage, index) in checkpointStages" :key="index" class="timeline-card-item" :class="{
+        completed: checkpoints[stage]?.completed,
+        current: checkpointCurrentIndex === index && !checkpoints[stage]?.completed,
+        pending: checkpointCurrentIndex < index && !checkpoints[stage]?.completed
+      }">
+        <div class="timeline-card-header">
           <span class="timeline-badge" :class="{
             current: checkpointCurrentIndex === index && !checkpoints[stage]?.completed,
             pending: checkpointCurrentIndex < index && !checkpoints[stage]?.completed,
@@ -45,63 +74,129 @@
             }"></i>
             {{ getStatusLabel(stage) }}
           </span>
-
           <h3 class="timeline-title">
             <i :class="stageIcons[stage]"></i>
             {{ stageTitles[stage] }}
           </h3>
-
-          <div class="timeline-meta">
-            <div class="timeline-meta-item">
-              <i class="bi bi-calendar-event"></i>
-              <span>
-                {{
-                  checkpoints[stage]?.completedAt
-                    ? convertDate(checkpoints[stage]?.completedAt)
-                    : 'Unknown'
-                }}
-              </span>
-            </div>
-          </div>
-
-
-          <div v-if="checkpoints[stage]?.completed" class="timeline-info card border-0 bg-light p-3 mt-2">
-            <div class="row mb-2" v-if="(stage === 'arrived' && timeAccepted)">
-              <div class="col-12 col-sm-4 fw-semibold">Time Accepted:</div>
-              <div class="col-12 col-sm-8">{{ toGMT8String(timeAccepted) }}</div>
-            </div>
-
-            <div class="row mb-2" v-if="(stage === 'arrived' && volunteerETA)">
-              <div class="col-12 col-sm-4 fw-semibold">Volunteer ETA:</div>
-              <div class="col-12 col-sm-8">{{ toGMT8String(volunteerETA) }}</div>
-            </div>
-
-            <div class="row mb-2" v-if="checkpoints[stage].diagnosis">
-              <div class="col-12 col-sm-4 fw-semibold">Diagnosis:</div>
-              <div class="col-12 col-sm-8">{{ checkpoints[stage].diagnosis }}</div>
-            </div>
-
-            <div class="row mb-2" v-if="checkpoints[stage].treatment">
-              <div class="col-12 col-sm-4 fw-semibold">Treatment:</div>
-              <div class="col-12 col-sm-8">{{ checkpoints[stage].treatment }}</div>
-            </div>
-
-            <div class="row mb-2" v-if="checkpoints[stage].condition">
-              <div class="col-12 col-sm-4 fw-semibold">Condition:</div>
-              <div class="col-12 col-sm-8">{{ checkpoints[stage].condition }}</div>
-            </div>
-
-            <div class="row mb-2" v-if="checkpoints[stage].notes">
-              <div class="col-12 col-sm-4 fw-semibold">Notes:</div>
-              <div class="col-12 col-sm-8">{{ checkpoints[stage].notes }}</div>
-            </div>
-
-            <div class="row mb-2" v-if="checkpoints[stage].outcome">
-              <div class="col-12 col-sm-4 fw-semibold">Outcome:</div>
-              <div class="col-12 col-sm-8">{{ capitalize(checkpoints[stage].outcome) }}</div>
-            </div>
+          <div class="timeline-meta" v-if="checkpoints[stage]?.completed && checkpoints[stage]?.completedAt">
+            <i class="bi bi-calendar-event"></i>
+            <span>{{ convertDate(checkpoints[stage].completedAt) }}</span>
           </div>
         </div>
+        <!-- Details Section -->
+        <div class="timeline-info">
+            <!-- Stage 2: Volunteer Arrival -->
+            <template v-if="stage === 'arrived'">
+              <template v-if="!checkpoints[stage]?.completed">
+                <!-- Pending State -->
+                <div class="detail-item">
+                  <span class="detail-label">Status:</span>
+                  <span class="detail-value">Volunteer is en route / has not arrived yet</span>
+                </div>
+                <div class="detail-item" v-if="volunteerETA">
+                  <span class="detail-label">Estimated Arrival:</span>
+                  <span class="detail-value">{{ toGMT8String(volunteerETA) }}</span>
+                </div>
+              </template>
+              <template v-else>
+                <!-- Completed State -->
+                <div class="detail-item" v-if="checkpoints[stage]?.completedAt">
+                  <span class="detail-label">Arrival Time:</span>
+                  <span class="detail-value">{{ convertDate(checkpoints[stage].completedAt) }}</span>
+                </div>
+                <div class="detail-item" v-if="volunteerInfo?.name || reportData?.volunteerName || reportData?.assignedVolunteerName">
+                  <span class="detail-label">Volunteer Name:</span>
+                  <span class="detail-value">{{ volunteerInfo?.name || reportData?.assignedVolunteerName || reportData?.volunteerName || 'Unknown' }}</span>
+                </div>
+                <div class="detail-item" v-if="checkpoints[stage]?.notes">
+                  <span class="detail-label">Notes:</span>
+                  <span class="detail-value">{{ checkpoints[stage].notes }}</span>
+                </div>
+              </template>
+            </template>
+
+            <!-- Stage 3: Animal Secured -->
+            <template v-if="stage === 'handled'">
+              <template v-if="!checkpoints[stage]?.completed">
+                <!-- Pending State -->
+                <div class="detail-item">
+                  <span class="detail-label">Status:</span>
+                  <span class="detail-value">Awaiting animal capture/containment</span>
+                </div>
+              </template>
+              <template v-else>
+                <!-- Completed State -->
+                <div class="detail-item" v-if="checkpoints[stage]?.completedAt">
+                  <span class="detail-label">Secured Time:</span>
+                  <span class="detail-value">{{ convertDate(checkpoints[stage].completedAt) }}</span>
+                </div>
+                <div class="detail-item" v-if="checkpoints[stage]?.condition">
+                  <span class="detail-label">Animal Condition:</span>
+                  <span class="detail-value">{{ checkpoints[stage].condition }}</span>
+                </div>
+                <div class="detail-item" v-if="checkpoints[stage]?.notes">
+                  <span class="detail-label">Notes:</span>
+                  <span class="detail-value">{{ checkpoints[stage].notes }}</span>
+                </div>
+              </template>
+            </template>
+
+            <!-- Stage 4: Medical Assessment - checkpoints.reconciled -->
+            <template v-if="stage === 'reconciled'">
+              <template v-if="!checkpoints[stage]?.completed">
+                <!-- Pending State -->
+                <div class="detail-item">
+                  <span class="detail-label">Status:</span>
+                  <span class="detail-value">Awaiting veterinary examination</span>
+                </div>
+              </template>
+              <template v-else>
+                <!-- Completed State -->
+                <div class="detail-item" v-if="checkpoints[stage]?.completedAt">
+                  <span class="detail-label">Assessment Time:</span>
+                  <span class="detail-value">{{ convertDate(checkpoints[stage].completedAt) }}</span>
+                </div>
+                <div class="detail-item" v-if="checkpoints[stage]?.diagnosis">
+                  <span class="detail-label">Diagnosis:</span>
+                  <span class="detail-value">{{ checkpoints[stage].diagnosis }}</span>
+                </div>
+                <div class="detail-item" v-if="checkpoints[stage]?.treatment">
+                  <span class="detail-label">Treatment Provided:</span>
+                  <span class="detail-value">{{ checkpoints[stage].treatment }}</span>
+                </div>
+                <div class="detail-item" v-if="checkpoints[stage]?.notes">
+                  <span class="detail-label">Notes:</span>
+                  <span class="detail-value">{{ checkpoints[stage].notes }}</span>
+                </div>
+              </template>
+            </template>
+
+            <!-- Stage 5: Case Resolved - checkpoints.treated -->
+            <template v-if="stage === 'treated'">
+              <template v-if="!checkpoints[stage]?.completed">
+                <!-- Pending State -->
+                <div class="detail-item">
+                  <span class="detail-label">Status:</span>
+                  <span class="detail-value">Case is still in progress</span>
+                </div>
+              </template>
+              <template v-else>
+                <!-- Completed State -->
+                <div class="detail-item" v-if="checkpoints[stage]?.completedAt">
+                  <span class="detail-label">Resolution Time:</span>
+                  <span class="detail-value">{{ convertDate(checkpoints[stage].completedAt) }}</span>
+                </div>
+                <div class="detail-item" v-if="checkpoints[stage]?.outcome">
+                  <span class="detail-label">Outcome:</span>
+                  <span class="detail-value">{{ capitalize(checkpoints[stage].outcome) }}</span>
+                </div>
+                <div class="detail-item" v-if="checkpoints[stage]?.notes">
+                  <span class="detail-label">Notes:</span>
+                  <span class="detail-value">{{ checkpoints[stage].notes }}</span>
+                </div>
+              </template>
+            </template>
+          </div>
       </div>
     </div>
   </div>
@@ -113,35 +208,42 @@ import '../css/common.css';
 
 export default {
   name: 'Timeline',
-  props: ['reportId', 'volunteerETA', 'timeAccepted'],
+  props: ['reportId', 'volunteerETA', 'timeAccepted', 'volunteerInfo', 'hasVolunteer', 'reportData'],
   data() {
     return {
       error: null,
       activeSummary: {},
-      checkpointStages: ['arrived', 'handled', 'treated', 'reconciled'],
+      // Stage 2-5: Checkpoint stages in correct order
+      checkpointStages: ['arrived', 'handled', 'reconciled', 'treated'],
       stageTitles: {
-        arrived: 'Arrival',
-        handled: 'Securing The Animal',
-        treated: 'Treatment',
-        reconciled: 'Outcome',
+        arrived: 'Volunteer Arrival',
+        handled: 'Animal Secured',
+        reconciled: 'Medical Assessment', // Stage 4
+        treated: 'Case Resolved', // Stage 5
+      },
+      stageDescriptions: {
+        arrived: 'Volunteer is en route / has arrived on scene',
+        handled: 'Animal has been safely captured/contained',
+        reconciled: 'Veterinary examination/treatment provided', // Stage 4
+        treated: 'Final outcome recorded (released/transferred/etc)', // Stage 5
       },
       stageIcons: {
         arrived: 'bi bi-geo-alt-fill',
         handled: 'bi bi-hand-thumbs-up-fill',
-        treated: 'bi bi-heart-pulse-fill',
-        reconciled: 'bi bi-house-check-fill',
+        reconciled: 'bi bi-heart-pulse-fill', // Stage 4: Medical Assessment
+        treated: 'bi bi-house-check-fill', // Stage 5: Case Resolved
       },
       defaultDescriptions: {
         arrived: 'Team on-site has assessed the situation.',
         handled: 'The animal has been safely secured.',
-        treated: 'Veterinary assessment and care has been provided.',
-        reconciled: 'A final outcome for the animal has been determined.',
+        reconciled: 'Veterinary assessment and care has been provided.', // Stage 4
+        treated: 'A final outcome for the animal has been determined.', // Stage 5
       },
       defaultUncompletedDescriptions: {
         arrived: 'Team is en route to the location.',
         handled: 'Preparing to safely secure the animal.',
-        treated: 'Awaiting veterinary assessment and care.',
-        reconciled: 'The animal\'s long-term outcome is being evaluated.',
+        reconciled: 'Awaiting veterinary assessment and care.', // Stage 4
+        treated: 'The animal\'s long-term outcome is being evaluated.', // Stage 5
       }
     };
   },
@@ -150,11 +252,17 @@ export default {
       return this.activeSummary.checkpoints || {};
     },
     checkpointCurrentIndex() {
+      // Calculate current checkpoint index
+      // Stage 1 (Case Accepted) is handled separately, so we track checkpoints (Stage 2-5)
       let completedCount = 0;
       this.checkpointStages.forEach((stage) => {
         if (this.checkpoints[stage]?.completed) completedCount++;
       });
       return completedCount - 1 >= 0 ? completedCount - 1 : -1;
+    },
+    isCaseAccepted() {
+      // Stage 1: Check if volunteer is assigned
+      return this.hasVolunteer;
     },
   },
   methods: {
@@ -250,159 +358,69 @@ export default {
   font-size: 1.1rem;
 }
 
-/* Timeline Container */
-.timeline {
-  position: relative;
-  padding: 2rem 0;
-  margin: 0 auto;
-}
-
-/* Timeline Item */
-.timeline-item {
-  position: relative;
-  margin-bottom: 3rem;
-  padding-left: 90px;
-}
-
-.timeline-item:last-child {
-  margin-bottom: 0;
-}
-
-.timeline-item:last-child .timeline-connector {
-  display: none;
-}
-
-/* Timeline Node (Circle) */
-.timeline-node {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+/* Timeline Cards Container */
+.timeline-cards {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: bold;
-  font-size: 1.3rem;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  z-index: 3;
+  flex-direction: column;
+  gap: 1.75rem;
 }
 
-.timeline-node i {
-  font-size: 1.5rem;
-}
-
-/* Node States */
-.timeline-node.completed {
-  background: #086143;
-  animation: pulse 2.5s ease-in-out infinite;
-}
-
-.timeline-node.current {
-  background: #BC6C25;
-  box-shadow: 0 0 0 0 rgba(188, 108, 37, 0.7);
-  animation: ripple 2s ease-out infinite;
-}
-
-.timeline-node.pending {
-  background: #94a3b8;
-  color: #475569;
-}
-
-@keyframes pulse {
-
-  0%,
-  100% {
-    box-shadow: 0 4px 20px rgba(8, 97, 67, 0.3);
-  }
-
-  50% {
-    box-shadow: 0 4px 30px rgba(22, 203, 89, 0.6);
-  }
-}
-
-@keyframes ripple {
-  0% {
-    box-shadow: 0 0 0 0 rgba(188, 108, 37, 0.7);
-  }
-
-  70% {
-    box-shadow: 0 0 0 20px rgba(188, 108, 37, 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(188, 108, 37, 0);
-  }
-}
-
-/* Timeline Connector (Line) */
-.timeline-connector {
-  position: absolute;
-  left: 29px;
-  top: 60px;
-  width: 3px;
-  height: calc(100% + 3rem);
-  background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%);
-  z-index: 1;
-  transition: all 0.6s ease;
-}
-
-.timeline-connector.active {
-  background: #086143;
-  box-shadow: 0 0 10px rgba(8, 97, 67, 0.3);
-}
-
-/* Timeline Content Card */
-.timeline-content {
+/* Timeline Card Item */
+.timeline-card-item {
   background: white;
-  border-radius: 16px;
-  padding: 1.75rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 2px solid transparent;
-  position: relative;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s ease;
+  overflow: hidden;
 }
 
-.timeline-content:hover {
-  transform: translateX(8px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-  border-color: #086143;
-  ;
+.timeline-card-item.completed {
+  border-color: rgba(8, 97, 67, 0.3);
 }
 
-.timeline-content.completed {
-  border-color: rgba(8, 97, 67, 0.2);
+.timeline-card-item.current {
+  border-color: #BC6C25;
+  box-shadow: 0 4px 12px rgba(188, 108, 37, 0.2);
 }
 
-.timeline-content::before {
-  content: '';
-  position: absolute;
-  left: -12px;
-  top: 20px;
-  width: 0;
-  height: 0;
-  border-top: 10px solid transparent;
-  border-bottom: 10px solid transparent;
-  border-right: 12px solid white;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+.timeline-card-item.pending {
+  border-color: #e5e7eb;
+  opacity: 0.8;
 }
 
-.timeline-content:hover::before {
-  opacity: 1;
+.timeline-card-item:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Timeline Card Header */
+.timeline-card-header {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  background: #fafbfc;
+}
+
+.timeline-card-item.completed .timeline-card-header {
+  background: #f0fdf4;
+}
+
+.timeline-card-item.current .timeline-card-header {
+  background: #fffbeb;
+}
+
+/* Timeline Card Content */
+.timeline-card-content {
+  padding: 1rem 1.25rem;
 }
 
 /* Timeline Badge */
 .timeline-badge {
   display: inline-block;
-  padding: 0.4rem 1rem;
+  padding: 0.3rem 0.75rem;
   border-radius: 20px;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.4rem;
 }
 
 .timeline-badge.completed {
@@ -422,10 +440,10 @@ export default {
 
 /* Timeline Title & Meta */
 .timeline-title {
-  font-size: 1.4rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -434,29 +452,22 @@ export default {
 .timeline-meta {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
-  margin-left: 4px;
-  flex-wrap: wrap;
-}
-
-.timeline-meta-item {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
   color: #606C38;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
 }
 
-.timeline-meta-item i {
+.timeline-meta i {
   color: #086143;
-  ;
+  font-size: 0.9rem;
 }
 
 .timeline-description {
   color: #64748b;
   line-height: 1.6;
-  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
 }
 
 .timeline-info .info-item {
@@ -476,111 +487,53 @@ export default {
   color: #555;
 }
 
+/* Detail Items Styling */
+.timeline-info {
+  padding: 0.875rem 1rem;
+  background: #fafbfc;
+  border-top: 1px solid #f3f4f6;
+}
+
+.timeline-info .detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.timeline-info .detail-item:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-info .detail-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.timeline-info .detail-value {
+  font-size: 13px;
+  color: #374151;
+  font-weight: 500;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
-  .timeline-item {
-    padding-left: 75px;
-  }
-
-  .timeline-node {
-    width: 50px;
-    height: 50px;
-    font-size: 1.1rem;
-  }
-
-  .timeline-node i {
-    font-size: 1.3rem;
-  }
-
-  .timeline-connector {
-    left: 24px;
+  .timeline-card-header,
+  .timeline-info {
+    padding: 0.875rem 1rem;
   }
 
   .timeline-title {
-    font-size: 1.2rem;
+    font-size: 1.05rem;
   }
 
   .timeline-meta {
-    gap: 1rem;
+    font-size: 0.8rem;
   }
-
-  .modal-title {
-    font-size: 1.4rem;
-  }
-
-  .modal-body {
-    padding: 1.5rem;
-  }
-}
-
-@media (max-width: 576px) {
-  body {
-    padding: 1.5rem 0;
-  }
-
-  .timeline-item {
-    padding-left: 65px;
-    margin-bottom: 2.5rem;
-  }
-
-  .timeline-node {
-    width: 45px;
-    height: 45px;
-    font-size: 1rem;
-  }
-
-  .timeline-connector {
-    left: 21px;
-  }
-
-  .timeline-content {
-    padding: 1.25rem;
-  }
-
-  .timeline-title {
-    font-size: 1.1rem;
-  }
-
-  .btn-view-details {
-    width: 100%;
-    padding: 0.7rem;
-  }
-}
-
-/* Loading Animation */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.timeline-item {
-  animation: fadeInUp 0.6s ease-out backwards;
-}
-
-.timeline-item:nth-child(1) {
-  animation-delay: 0.1s;
-}
-
-.timeline-item:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.timeline-item:nth-child(3) {
-  animation-delay: 0.3s;
-}
-
-.timeline-item:nth-child(4) {
-  animation-delay: 0.4s;
-}
-
-.timeline-item:nth-child(5) {
-  animation-delay: 0.5s;
 }
 </style>
