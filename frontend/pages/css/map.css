@@ -1,25 +1,32 @@
 .rescuemapwrapper {
   display: grid;
   grid-template-columns: 400px 1fr;
-  height: 100vh; /* Fill viewport so side can scroll */
+  /* height: 100vh - 96.5px; */
+  height: 100vh;
 }
+
+/* @media (max-width: 768px) {
+    .rescuemapwrapper {
+        height: 90vh;
+    }
+} */
 
 .sidebar {
   border-right: 1px solid #e5e7eb;
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Let inner list control scrolling */
+  overflow: hidden;
 }
 
 .map-container {
-  /* Ensure Leaflet map has a real height */
   height: 100%;
 }
 
 .header {
   padding: 16px;
   border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 0;
 }
 
 .subtitle {
@@ -48,7 +55,7 @@
 .reports-list {
   padding: 8px 12px;
   flex: 1 1 auto;
-  overflow-y: auto; /* Scroll only the report list */
+  overflow-y: auto;
 }
 
 .report-card {
@@ -56,24 +63,37 @@
   margin-bottom: 20px;
 }
 
+/* === Filters === */
 .filters {
   display: flex;
+  justify-content: center; 
   align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
+  padding: 20px 0;
   border-bottom: 1px solid #e5e7eb;
 }
-.filter-group { display: flex; gap: 8px; }
+
+.filter-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center; 
+}
+
 .filter-btn {
-  padding: 6px 10px;
+  padding: 6px 14px;
   border: 1px solid #e5e7eb;
-  border-radius: 6px;
+  border-radius: 8px;
   background: #fff;
   color: #374151;
   font-size: 13px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
-.filter-btn:hover { background: #f9fafb; }
+
+.filter-btn:hover {
+  background: #f3f4f6;
+}
+
 .filter-btn.active {
   background: #d1fae5;
   border-color: #10b981;
@@ -87,7 +107,29 @@
   padding: 24px 0;
 }
 
-/* Mobile bottom sheet behavior */
+.search-box,
+.recenter-btn {
+    margin-top: 10px;
+}
+
+.accept-button,
+.search-btn {
+  background-color: #285436 !important;
+  color: #fff; /* white text for contrast */
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.accept-button:hover,
+.search-btn:hover {
+  opacity: 0.9; /* subtle hover effect */
+  background-color: #A8C686 !important;
+  color: #285436 !important;
+}
+
+
 @media (max-width: 768px) {
   .rescuemapwrapper {
     grid-template-columns: 1fr;
@@ -97,7 +139,7 @@
   .sidebar.mobile-sheet {
     position: fixed;
     left: 0; right: 0; bottom: 0;
-    height: 120px; /* collapsed default */
+    height: 120px;
     background: #fff;
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;

@@ -73,9 +73,6 @@
           @click="selectReport"
           @acceptCase="acceptCaseFromCard"
         />
-        <!-- <div v-if="reports?.length === 0" class="empty-state">
-          <p>No reports found</p>
-        </div> -->
       </div>
     </div>
 
@@ -412,11 +409,6 @@ export default {
           "Make sure the backend is running and try again.",
           "error",
         );
-        // this.showNotification(
-        //   "Failed to Load Reports",
-        //   "Make sure the backend is running and try again.",
-        //   "error"
-        // );
       }
     },
     async geocode(address) {
@@ -656,36 +648,3 @@ export default {
 
 <style scoped>
 </style>
-
-/* Mobile bottom sheet behavior */
-@media (max-width: 768px) {
-  .rescuemapwrapper {
-    grid-template-columns: 1fr;
-    height: 100vh;
-  }
-  .map-container { height: 100vh; }
-  .sidebar.mobile-sheet {
-    position: fixed;
-    left: 0; right: 0; bottom: 0;
-    height: 120px; /* collapsed default, overridden by inline style */
-    background: #fff;
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
-    box-shadow: 0 -6px 24px rgba(0,0,0,0.15);
-    z-index: 1100;
-    border-right: none;
-  }
-  .sidebar .header { padding-top: 8px; }
-  .sheet-handle {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding: 8px 0 4px;
-    cursor: pointer;
-  }
-  .sheet-grabber {
-    width: 64px; height: 6px; border-radius: 999px; background: #e5e7eb;
-    display: inline-block;
-  }
-}
-
