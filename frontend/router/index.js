@@ -1,7 +1,7 @@
 // src/router/index.js
 
 import { createRouter, createWebHistory } from 'vue-router';
-import { onAuthStateChange } from '../src/api/auth.js';
+import { onAuthStateChange, getCurrentUser } from '../src/api/auth.js';
 import App from '../src/App.vue'; // Default app
 import StatusUpdate from '../pages/orgAdmin/StatusUpdate.vue'; // StatusUpdate
 import Home from '../pages/Home.vue'
@@ -188,11 +188,27 @@ router.beforeEach(async (to, from, next) => {
   const requiresAuth = to.meta.requiresAuth;
   const allowedRoles = to.meta.roles;
   
+  // For routes that require auth, always check current auth state directly
+  // This ensures we have the latest auth state even if currentUser hasn't updated yet
+  let user = currentUser;
+  if (requiresAuth && !user) {
+    // Try to get current user directly from Firebase
+    try {
+      user = await getCurrentUser();
+      // Update currentUser for future checks
+      if (user) {
+        currentUser = user;
+      }
+    } catch (error) {
+      console.error('Error checking auth in router guard:', error);
+    }
+  }
+  
   // If route doesn't require auth, allow access
   if (!requiresAuth) {
     // If user is logged in and trying to access root/login/signup, redirect to their dashboard
-    if (currentUser && (to.path === '/login' || to.path === '/signup')) {
-      switch (currentUser.role) {
+    if (user && (to.path === '/login' || to.path === '/signup')) {
+      switch (user.role) {
         case 'admin':
           next('/admin');
           break;
@@ -212,14 +228,14 @@ router.beforeEach(async (to, from, next) => {
   }
   
   // If user is not logged in, redirect to login
-  if (!currentUser) {
+  if (!user) {
     next('/login');
     return;
   }
   
   // If user doesn't have required role, redirect to their dashboard
-  if (allowedRoles && !allowedRoles.includes(currentUser.role)) {
-    switch (currentUser.role) {
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    switch (user.role) {
       case 'admin':
         next('/admin');
         break;

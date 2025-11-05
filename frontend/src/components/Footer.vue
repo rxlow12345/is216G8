@@ -136,9 +136,11 @@
 </template>
 
 <script setup>
+import { getAssetUrl } from '../utils/getAssetUrl.js'
+
 const props = defineProps({
   orgName: { type: String, default: 'CritterConnect' },
-  logoSrc: { type: String, default: '../src/public/assets/logo.png' }, // from public/assets or import if in src/assets
+  logoSrc: { type: String, default: getAssetUrl('logo.png') }, // from public/assets or import if in src/assets
   year: { type: [String, Number], default: new Date().getFullYear() },
   emergency: {
     type: Object,

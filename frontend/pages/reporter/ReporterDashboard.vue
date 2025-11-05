@@ -43,6 +43,7 @@ import '../css/common.css'
 import BackToTop from '../../src/components/BackToTop.vue';
 import FloatingBackground from '../../src/components/FloatingBackground.vue';
 import OtterCursor from '../../src/components/OtterCursor.vue';
+import { getAssetUrl } from '../../src/utils/getAssetUrl.js';
 
 const userName = ref('');
 const userEmail = ref('');
@@ -50,7 +51,7 @@ const userId = ref('');
 
 const buttonItems = ref([
   {
-    imgSrc: '../../src/public/assets/duck.jpg',
+    imgSrc: getAssetUrl('duck.jpg'),
     imgAlt: 'Duck',
     buttonText: 'Create New Report',
     buttonClass: 'brownBtn',
@@ -59,7 +60,7 @@ const buttonItems = ref([
     align: 'left'
   },
   {
-    imgSrc: '../../src/public/assets/monkey.jpg',
+    imgSrc: getAssetUrl('monkey.jpg'),
     imgAlt: 'Monkey',
     buttonText: 'View All Reports',
     buttonClass: 'greenBtnLg',

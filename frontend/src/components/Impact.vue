@@ -131,6 +131,7 @@
 
 <script setup>
 import { computed, reactive, onMounted, ref, watch, onBeforeUnmount } from 'vue'
+import { getAssetUrl } from '../utils/getAssetUrl.js'
 // 1. State: Use ref to track the visibility state
 const isContentVisible = ref(false);
 
@@ -160,10 +161,10 @@ const props = defineProps({
   stories: {
     type: Array,
     default: () => ([
-      { id: 'pangolin', title: 'Pangolin safely released', body: 'Your donations funded rehab and a GPS tag to ensure post-release monitoring.', fundedBy: '22 donors', date: 'Oct 2025', image: '../src/public/assets/SundaPangolin.png' },
-      { id: 'deer', title: 'Rescuing an Injured Deer', body: 'Swift response and care led to a full recovery.', fundedBy: '12 donors', date: 'Sep 2025', image: '../src/public/assets/GreaterMouseDeer.png' },
-      { id: 'junglefowl', title: 'Red Junglefowl wing recovery', body: 'Micro-surgery and physiotherapy covered by the medical fund.', fundedBy: '11 donors', date: 'Sep 2025', image: '../src/public/assets/RedJunglefowl.png' },
-      { id: 'otter', title: 'Otter family relocation', body: 'Field team humanely relocated a family from a risky construction site.', fundedBy: '22 donors', date: 'Aug 2025', image: '../src/public/assets/SmoothOtter.png' },
+      { id: 'pangolin', title: 'Pangolin safely released', body: 'Your donations funded rehab and a GPS tag to ensure post-release monitoring.', fundedBy: '22 donors', date: 'Oct 2025', image: getAssetUrl('SundaPangolin.png') },
+      { id: 'deer', title: 'Rescuing an Injured Deer', body: 'Swift response and care led to a full recovery.', fundedBy: '12 donors', date: 'Sep 2025', image: getAssetUrl('GreaterMouseDeer.png') },
+      { id: 'junglefowl', title: 'Red Junglefowl wing recovery', body: 'Micro-surgery and physiotherapy covered by the medical fund.', fundedBy: '11 donors', date: 'Sep 2025', image: getAssetUrl('RedJunglefowl.png') },
+      { id: 'otter', title: 'Otter family relocation', body: 'Field team humanely relocated a family from a risky construction site.', fundedBy: '22 donors', date: 'Aug 2025', image: getAssetUrl('SmoothOtter.png') },
     ])
   },
   counters: {

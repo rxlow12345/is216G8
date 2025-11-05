@@ -113,42 +113,42 @@ const testimonials = ref([
     {
         name: 'Charlize',
         amount: '$50',
-        image: new URL('../public/assets/Charlize.png', import.meta.url).href,
+        image: getAssetUrl('Charlize.png'),
         quote:
             'I love animals and I feel good knowing my contribution directly helps local wildlife!',
     },
     {
         name: 'Amelia Soh',
         amount: '$20',
-        image: new URL('../public/assets/Amelia.png', import.meta.url).href,
+        image: getAssetUrl('Amelia.png'),
         quote:
             'A small donation can go a long way. This website makes it simple to support the organisation that helps the local wildlife. Thank you :D',
     },
     {
         name: 'Rui Xuan',
         amount: '$40',
-        image: new URL('../public/assets/Ruixuan.png', import.meta.url).href,
+        image: getAssetUrl('Ruixuan.png'),
         quote:
             "These animals deserve a second chance. I am happy to support Critterconnect's mission and seeing the rescued birds are heartwarming.",
     },
     {
         name: 'Ryan',
         amount: '$30',
-        image: new URL('../public/assets/Ryan.png', import.meta.url).href,
+        image: getAssetUrl('Ryan.png'),
         quote:
             "I used to be overwhelmed on what to do when I witness a distress animal. With Critterconnect, I know what to do now!",
     },
     {
         name: 'Haoyue',
         amount: '$60',
-        image: new URL('../public/assets/Haoyue.png', import.meta.url).href,
+        image: getAssetUrl('Haoyue.png'),
         quote:
             "I reported a case and was glad to be notified of the status of the animal I rescued.",
     },
     {
         name: 'Jessica',
         amount: '$40',
-        image: new URL('../public/assets/Jessica.png', import.meta.url).href,
+        image: getAssetUrl('Jessica.png'),
         quote:
             "Critterconnect is amazing and I'm motivated to help out more animals!",
     },
