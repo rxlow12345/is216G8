@@ -474,8 +474,11 @@ export default {
       console.log("Case Accepted", this.selectedReportId);
     },
 
-    async handleConfirmation(etaData) {
-      const firebaseTimestamp = etaData?.[0]?.timestamp || null;
+    async handleConfirmation(payload) {
+      const minutes = Number(payload?.minutes)
+      const now = new Date()
+      const arrivalJs = new Date(now.getTime() + (Number.isFinite(minutes) ? minutes : 0) * 60000)
+      const firebaseTimestamp = Timestamp.fromDate(arrivalJs)
       const caseAcceptedTimeJS = new Date();
       const caseAcceptedTime = caseAcceptedTimeJS.toISOString();
       const docIdtoUpdate = this.selectedDocId;
@@ -485,7 +488,8 @@ export default {
         const uid = await this.updateVolunteer();
         const updates = {
           timeAccepted: caseAcceptedTime,
-          volunteerETA: firebaseTimestamp,
+          volunteerETA: arrivalJs.toISOString(),
+          estimatedDurationMinutes: minutes,
           uid: uid,
         };
 
@@ -513,6 +517,8 @@ export default {
           // Timestamps
           acceptedAt: Timestamp.now(),
           lastUpdated: Timestamp.now(),
+          volunteerETA: firebaseTimestamp,
+          estimatedDurationMinutes: minutes,
 
           // Progress
           progressPercentage: 0,
@@ -546,16 +552,9 @@ export default {
           },
         });
 
-        // Close modal and reset selection
+        // Close modal and redirect to Active Reports with case pre-open
         this.handleModalClose();
-        // Reload reports to refresh the list
-        await this.loadReports();
-
-        this.showNotification(
-          "Case Accepted Successfully",
-          "You've accepted the case. Good luck!",
-          "success",
-        );
+        this.$router.push({ path: '/volunteer/active', query: { caseId: reportIdtoUpload } });
       } catch (error) {
         console.error("Error accepting case:", error);
         this.showNotification(

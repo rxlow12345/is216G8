@@ -134,7 +134,7 @@
 
               <!-- Timeline -->
               <Timeline
-              v-if="(report.status === 'active' || report.status === 'resolved')"
+              v-if="(report.status === 'active' || report.status === 'resolved') && !isVolunteerViewer"
               :reportId="report.reportId"
               :volunteerETA="report.volunteerETA"
               :timeAccepted="report.timeAccepted"
@@ -204,6 +204,9 @@ export default {
     };
   },
   computed: {
+    isVolunteerViewer(){
+      return (this.$route?.query?.viewer || '').toString().toLowerCase() === 'volunteer'
+    },
     currentStage() {
       return this.report.status;
     },

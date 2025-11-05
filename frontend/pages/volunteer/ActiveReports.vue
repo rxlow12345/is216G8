@@ -120,12 +120,17 @@
           <button class="view-details-btn" @click="openDetailsModal(r)">
             View Details
           </button>
+          <button class="view-original-btn" @click="viewOriginal(r)">
+            <span class="doc-icon">📄</span>
+            View Original Report
+          </button>
         </section>
       </div>
     </main>
   </div>
 
   <!-- Details Modal -->
+  <transition name="modal-fade">
   <div v-if="showDetailsModal" class="modal-overlay" @click.self="closeDetailsModal" @keydown.esc="closeDetailsModal">
     <div class="modal-container">
       
@@ -350,6 +355,7 @@
 
     </div>
   </div>
+  </transition>
 
   <!-- Checkpoint Form Modal (existing) -->
   <CheckpointModal
@@ -363,22 +369,65 @@
     @submit="onSubmitModal"
     @close="onCloseModal"
   />
-  <div class="toast-stack">
-    <div v-for="t in toasts" :key="t.id" class="toast" :class="{ error: t.isError }">{{ t.message }}</div>
+  <div class="toast-stack" :class="toastPositionClass">
+    <div 
+      v-for="t in toasts" 
+      :key="t.id" 
+      class="toast"
+      :class="[ t.type, t.position, { entering: t.entering, leaving: t.leaving } ]"
+    >
+      <span v-if="t.type==='success'" class="toast-icon">✓</span>
+      <span class="toast-message">{{ t.message }}</span>
+      <button class="toast-close" @click="dismissToast(t.id)" aria-label="Close">×</button>
+    </div>
   </div>
+
+  <!-- Centered Success Modal -->
+  <transition name="success-backdrop">
+    <div 
+      v-if="successVisible" 
+      class="success-backdrop" 
+      @click.self="hideSuccess"
+      @keydown.esc.prevent="hideSuccess"
+      role="dialog" 
+      aria-modal="true" 
+      aria-label="Case successfully resolved"
+      :style="{ zIndex: 9999 }"
+    >
+      <transition name="success-card">
+        <div 
+          class="success-card" 
+          v-if="successVisible"
+          ref="successCardRef"
+          tabindex="-1"
+        >
+          <div class="success-icon" aria-hidden="true">✓</div>
+          <h2 class="success-title">Successfully Resolved</h2>
+          <p class="success-body">
+            Thank you for your dedication to helping this animal reach a safe outcome. <span aria-hidden="true">🐾</span>
+          </p>
+          <div class="success-case">Case {{ lastResolvedCaseId }}</div>
+          <button class="success-button" @click="hideSuccess">Continue</button>
+        </div>
+      </transition>
+    </div>
+  </transition>
 </template>
 
 <script setup>
 import '../css/common.css'
 import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { db } from '../../src/firebase.js'
 import { collection, query, where, onSnapshot, Timestamp, doc, updateDoc, serverTimestamp, getDoc, getDocs } from 'firebase/firestore'
 import { getCurrentUser } from '../../src/api/auth.js'
 import { formatDistanceToNow } from 'date-fns'
+import api from '../../src/api/reportApi.js'
 import CheckpointModal from '../../src/components/CheckpointModal.vue'
 
 const router = useRouter()
+const route = useRoute()
+const initialCaseId = ref(route.query.caseId || '')
 const loading = ref(true)
 const reports = ref([]) // [{ id, data }]
 const unsubRef = ref(null)
@@ -391,6 +440,10 @@ const modalSubmitting = ref(false)
 let currentAction = { report:null, key:'' }
 const search = ref('')
 const toasts = ref([])
+const toastPosition = ref('bottom-right')
+const successVisible = ref(false)
+const lastResolvedCaseId = ref('')
+const successCardRef = ref(null)
 const showDetailsModal = ref(false)
 const selectedReport = ref(null)
 const stageFilter = ref('all')
@@ -452,7 +505,12 @@ function viewOriginalReport() {
   closeDetailsModal()
   
   // Navigate to the status page showing the original report
-  router.push(`/status/${selectedReport.value.data.reportId}`)
+  router.push({ path: `/status/${selectedReport.value.data.reportId}` , query: { viewer: 'volunteer' } })
+}
+
+function viewOriginal(r){
+  if (!r?.data?.reportId) return
+  router.push({ path: `/status/${r.data.reportId}`, query: { viewer: 'volunteer' } })
 }
 
 function formatOutcome(outcome) {
@@ -663,15 +721,31 @@ async function onSubmitModal(payload){
       const rs = await getDocs(q2)
       const first = rs.docs[0]
       if (first){
+        // Try client-side update
         await updateDoc(doc(db, 'incidentReports', first.id), {
           status: 'resolved',
           resolvedAt: Timestamp.now(),
         })
+        // Also call backend to ensure status flips even if client rules block
+        try {
+          await api.updateReportFields(first.id, { status: 'resolved' })
+        } catch (_) { /* ignore backend errors here */ }
       }
+      // Immediately remove locally and show success toast, and close details modal
+      reports.value = reports.value.filter(rep => rep.id !== r.id)
+      modalVisible.value = false
+      showDetailsModal.value = false
+      selectedReport.value = null
+      document.body.style.overflow = ''
+      // Optional: keep toast if desired
+      // showResolvedToast(r.data.reportId)
+      showCenteredSuccess(r.data.reportId)
     }
 
-    showToast('✓ Checkpoint updated successfully')
-    modalVisible.value = false
+    if (key !== 'reconciled') {
+      showToast('✓ Checkpoint updated successfully')
+      modalVisible.value = false
+    }
     
     // Refresh the selected report in the details modal if it's open
     if (showDetailsModal.value && selectedReport.value && selectedReport.value.id === r.id) {
@@ -767,6 +841,16 @@ onMounted(async () => {
     )
     
     reports.value = enrichedReports
+    // If a caseId is provided in URL, auto-open its details once data is ready
+    if (initialCaseId.value) {
+      const target = reports.value.find(r => r.data.reportId === initialCaseId.value)
+      if (target) {
+        openDetailsModal(target)
+        // Optional: clean the URL so the modal doesn't reopen on refresh
+        router.replace({ path: router.currentRoute.value.path })
+        initialCaseId.value = ''
+      }
+    }
     loading.value = false
   }, (err) => {
     console.error(err)
@@ -806,10 +890,58 @@ onBeforeUnmount(() => {
 
 function showToast(message, isError=false){
   const id = Math.random().toString(36).slice(2)
-  toasts.value.push({ id, message, isError })
+  const toast = { id, message, type: isError ? 'error' : 'info', position: toastPosition.value, entering: true, leaving: false, duration: 2500 }
+  toasts.value.push(toast)
+  setTimeout(() => { toast.entering = false }, 10)
+  setTimeout(() => dismissToast(id), toast.duration)
+}
+
+function showResolvedToast(caseId){
+  toastPosition.value = 'top-center'
+  const message = `Case ${caseId} Successfully Resolved! Thank you for your dedication in helping this animal reach a safe outcome. Your efforts make a real difference in wildlife conservation.`
+  const id = Math.random().toString(36).slice(2)
+  const toast = { id, message, type: 'success', position: 'top-center', entering: true, leaving: false, duration: 5000 }
+  toasts.value.push(toast)
+  setTimeout(() => { toast.entering = false }, 10)
+  setTimeout(() => dismissToast(id), toast.duration)
+}
+
+function dismissToast(id){
+  const t = toasts.value.find(x => x.id === id)
+  if (!t) return
+  t.leaving = true
   setTimeout(() => {
-    toasts.value = toasts.value.filter(t => t.id !== id)
-  }, 2500)
+    toasts.value = toasts.value.filter(x => x.id !== id)
+  }, 200)
+}
+
+const toastPositionClass = computed(() => {
+  return toastPosition.value === 'top-center' ? 'top-center' : 'bottom-right'
+})
+
+function showCenteredSuccess(caseId){
+  lastResolvedCaseId.value = caseId
+  successVisible.value = true
+  // Focus trap entry: focus the card after paint
+  setTimeout(() => {
+    successCardRef.value?.focus()
+  }, 10)
+  // Auto dismiss after 4s
+  clearSuccessTimeout()
+  _successTimer = window.setTimeout(() => hideSuccess(), 4000)
+}
+
+let _successTimer = null
+function clearSuccessTimeout(){
+  if (_successTimer){
+    clearTimeout(_successTimer)
+    _successTimer = null
+  }
+}
+
+function hideSuccess(){
+  clearSuccessTimeout()
+  successVisible.value = false
 }
 
 /* 
@@ -1290,6 +1422,31 @@ function showToast(message, isError=false){
   background: #4a6a4a;
 }
 
+.view-original-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background: white;
+  color: #285436;
+  border: 2px dashed #cfe6cf;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.view-original-btn:hover {
+  background: #f6fbf6;
+  border-color: #5a7a5a;
+  color: #1f3b2a;
+}
+
+.doc-icon { font-size: 16px; }
+
 /* Details Modal - Modern Design */
 .modal-overlay {
   position: fixed;
@@ -1326,6 +1483,30 @@ function showToast(message, isError=false){
   box-sizing: border-box;
   overflow: hidden;
 }
+
+/* Modal fade transition */
+.modal-fade-enter-active, .modal-fade-leave-active { transition: opacity 0.3s ease; }
+.modal-fade-enter-from, .modal-fade-leave-to { opacity: 0; }
+
+/* Centered Success Modal Styles */
+.success-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center; }
+.success-card { width: 480px; max-width: 90vw; background: #fff; border-radius: 16px; padding: 48px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.15); outline: none; }
+.success-icon { width: 64px; height: 64px; border-radius: 50%; background: #E8F5E9; color: #4CAF50; font-size: 48px; font-weight: 800; display:inline-flex; align-items:center; justify-content:center; margin: 0 auto; }
+.success-title { font-size: 28px; font-weight: 600; color: #2C3E50; margin-top: 24px; }
+.success-body { font-size: 16px; line-height: 1.6; color: #5A6C7D; margin-top: 16px; max-width: 380px; margin-left:auto; margin-right:auto; }
+.success-case { font-size: 14px; font-weight: 500; color: #8B9CAD; margin-top: 24px; }
+.success-button { margin-top: 24px; padding: 10px 20px; background: #5a7a5a; color:#fff; border:none; border-radius:8px; cursor:pointer; }
+
+/* Entry/Exit animations */
+.success-backdrop-enter-active { animation: sb-fade-in .2s forwards; }
+.success-backdrop-leave-active { animation: sb-fade-out .2s forwards; }
+@keyframes sb-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sb-fade-out { from { opacity: 1; } to { opacity: 0; } }
+
+.success-card-enter-active { animation: sc-in .3s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.success-card-leave-active { animation: sc-out .2s ease forwards; }
+@keyframes sc-in { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: scale(1); } }
+@keyframes sc-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(.95); } }
 
 @keyframes slideUp {
   from {
@@ -1703,13 +1884,14 @@ function showToast(message, isError=false){
 /* Toast Notifications */
 .toast-stack { 
   position: fixed; 
-  right: 18px; 
-  bottom: 18px; 
   display: flex; 
   flex-direction: column; 
   gap: 8px; 
   z-index: 3000; 
+  pointer-events: none;
 }
+.toast-stack.bottom-right { right: 18px; bottom: 18px; }
+.toast-stack.top-center { left: 50%; top: 16px; transform: translateX(-50%); align-items: center; }
 
 .toast { 
   background: #285436; 
@@ -1717,15 +1899,28 @@ function showToast(message, isError=false){
   border: 1px solid #285436; 
   padding: 12px 16px; 
   border-radius: 10px; 
-  min-width: 240px; 
+  min-width: 260px; 
+  max-width: 720px;
   box-shadow: 0 6px 16px rgba(0,0,0,.2); 
   font-size: 14px;
+  display: flex; align-items: center; gap: 10px;
+  pointer-events: auto;
+  transition: transform .2s ease, opacity .2s ease;
 }
+.toast.entering { transform: translateY(-8px); opacity: 0; }
+.toast.entering:not(.leaving) { transform: translateY(0); opacity: 1; }
+.toast.leaving { opacity: 0; }
 
-.toast.error { 
-  background: #b91c1c; 
-  border-color: #7f1d1d; 
+.toast.success { 
+  background: #E8F5E9; 
+  color: #1b5e20; 
+  border: 2px solid #4CAF50; 
+  border-radius: 8px;
 }
+.toast-icon { color: #2e7d32; font-weight: 800; }
+.toast-message { flex: 1; }
+.toast-close { background: transparent; border: none; color: #2e7d32; font-size: 18px; cursor: pointer; }
+.toast.error { background: #b91c1c; border-color: #7f1d1d; color: #fff; }
 
 /* Responsive Design */
 @media (max-width: 599px) {

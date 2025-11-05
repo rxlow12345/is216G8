@@ -7,19 +7,26 @@
 
       <div class="modal-body">
         <form @submit.prevent="submitForm">
-          
           <div class="form-group">
-            <label for="eta-time">
-              What time will you reach <strong>{{ location }}</strong>? *
+            <label for="eta-minutes">
+              How long until you reach the location? *
             </label>
-          <input 
-          id="eta-time"
-          type="time" 
-          v-model="formData.time"
-          required
-          />
-          <small class="hint-text">Select your estimated arrival time</small>
-        </div>
+            <div class="subtitle">{{ location }}</div>
+            <div class="minutes-row">
+              <input 
+                id="eta-minutes"
+                type="number"
+                inputmode="numeric"
+                v-model.number="formData.minutes"
+                placeholder="e.g., 15"
+                min="1"
+                max="180"
+                required
+              />
+              <span class="unit-label">minutes</span>
+            </div>
+            <small class="hint-text">Enter estimated travel time in minutes</small>
+          </div>
         
         <div class="modal-actions">
           <button type="button" class="cancel-button" @click="closeModal">
@@ -49,19 +56,12 @@ export default {
   data() {
     return {
       formData: {
-        date: '',
-        time: ''
+        minutes: null
       },
     }
   },
   computed: {
-    todayDate() {
-      return new Date().toISOString().split('T')[0];
-    },
-    currentTime() {
-      const now = new Date();
-      return now.toTimeString().slice(0, 5); // Returns HH:MM format
-    }
+    
   },
   methods: {
     closeModal() {
@@ -70,44 +70,18 @@ export default {
     },
 
     submitForm() {
-      if (!this.formData.time) {
-        alert('Please select an arrival time');
-        return;
+      const m = Number(this.formData.minutes)
+      if (!Number.isFinite(m) || m < 1 || m > 180) {
+        alert('Please enter a valid duration between 1 and 180 minutes')
+        return
       }
-      const now = new Date();
-      const [hours, minutes] = this.formData.time.split(':').map(Number);
-      const selectedDateTime = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate(),
-        hours,
-        minutes,
-        0, // seconds
-        0 // milliseconds
-      );
-
-      if (selectedDateTime <= now) {
-        console.log('Selected time:', selectedDateTime);
-        console.log('Current time:', now);
-        alert('Please select a future time. The arrival time cannot be in the past.');
-        return;
-      }
-      const submissionData = [{
-        date: this.todayDate, 
-        time: this.formData.time, 
-        timestamp: selectedDateTime.toISOString(), 
-        location: this.location
-    }];
-
-
-      // will emit the 'confirm event' with data
-      this.$emit('confirm', submissionData);
-      this.closeModal();
+      const payload = { minutes: m, location: this.location }
+      this.$emit('confirm', payload)
+      this.closeModal()
     },
 
     resetForm() {
-      this.formData.date = '';
-      this.formData.time = '';
+      this.formData.minutes = null
     }
   }
 }
@@ -152,21 +126,14 @@ h2 {
   color: #333;
 }
 
-.form-group input[type="date"],
-.form-group input[type="time"] {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-}
+.subtitle { color: #666; font-size: 14px; margin-top: 4px; margin-bottom: 10px; }
 
-.form-group input[type="date"]:focus,
-.form-group input[type="time"]:focus {
-  outline: none;
-  border-color: #34d399;
-  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.1);
-}
+.minutes-row { display: flex; align-items: center; gap: 8px; }
+.minutes-row input[type="number"] { width: 140px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+.minutes-row input[type="number"]:focus { outline: none; border-color: #34d399; box-shadow: 0 0 0 3px rgba(52,211,153,0.1); }
+.unit-label { color: #555; font-size: 14px; }
+
+
 
 .hint-text {
   display: block;
