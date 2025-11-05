@@ -32,3 +32,6 @@ Thumbs.db
 # speciesnet-api related
 speciesnet-api/venv
 speciesnet-api/app/__pycache__
+
+# Firebase local artifacts
+.firebase/
