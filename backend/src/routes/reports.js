@@ -11,7 +11,8 @@ import {
   updateReportStatus,
   updateReportFields,
   deleteReport,
-  getActiveSummary, 
+  getActiveSummary,
+  getUserEmail
 } from '../controllers/reportController.js';
 
 const router = express.Router();
@@ -49,6 +50,9 @@ router.post('/updateReportFields/:id', updateReportFields);
 
 // Gets summary details of report by reportId
 router.get('/getReport/activeSummary/:id', getActiveSummary);
+
+// Gets email of user who reported the case
+router.get('/getReport/email/:id', getUserEmail);
 
 export default router;
 

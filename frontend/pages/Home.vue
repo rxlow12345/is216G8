@@ -137,7 +137,8 @@
 
 
     <!-- ======================== Features Section ======================== -->
-    <section class="features-section">
+    <!-- Only show feature cards if user is not volunteer or admin -->
+    <section v-if="!shouldHideFeatureCards" class="features-section">
       <div class="container">
         <h2 class="section-title text-center">Make a Difference with CritterConnect</h2>
         <p class="feature-card-note">
@@ -211,6 +212,7 @@ import '../pages/css/common.css'
 import OtterCursor from '../src/components/OtterCursor.vue';
 import FloatingBackground from '../src/components/FloatingBackground.vue';
 import BackToTop from '../src/components/BackToTop.vue';
+import { getAssetUrl } from '../src/utils/getAssetUrl.js';
 
 
 // ======================== Auth State ========================
@@ -219,13 +221,18 @@ const isLoggedIn = computed(() => {
   return auth.value && auth.value.uid;
 });
 
+// Hide feature cards if user is volunteer or admin
+const shouldHideFeatureCards = computed(() => {
+  return auth.value && (auth.value.role === 'volunteer' || auth.value.role === 'admin');
+});
+
 // ======================== Carousel Images ========================
 const carouselImages = [
-  { src: '/src/public/assets/otter.jpg', alt: 'Otter', caption: "Otters", emoji: '🦦' },
-  { src: '/src/public/assets/cat.jpg', alt: 'Cat', caption: 'Felines', emoji: '🐱' },
-  { src: '/src/public/assets/squirrel.jpg', alt: 'Squirrel', caption: 'Squirrels', emoji: '🐿️' },
-  { src: '/src/public/assets/pigeon.jpg', alt: 'Pigeon', caption: 'Pigeons', emoji: '🕊️' },
-  { src: '/src/public/assets/chicken.jpg', alt: 'Chicken', caption: 'Chickens', emoji: '🐔' }
+  { src: getAssetUrl('otter.jpg'), alt: 'Otter', caption: "Otters", emoji: '🦦' },
+  { src: getAssetUrl('cat.jpg'), alt: 'Cat', caption: 'Felines', emoji: '🐱' },
+  { src: getAssetUrl('squirrel.jpg'), alt: 'Squirrel', caption: 'Squirrels', emoji: '🐿️' },
+  { src: getAssetUrl('pigeon.jpg'), alt: 'Pigeon', caption: 'Pigeons', emoji: '🕊️' },
+  { src: getAssetUrl('chicken.jpg'), alt: 'Chicken', caption: 'Chickens', emoji: '🐔' }
 ];
 
 

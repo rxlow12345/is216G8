@@ -10,18 +10,73 @@
       <div class="controls">
         <div class="search-wrapper">
           <span class="search-icon">🔍</span>
-          <input class="search" v-model="search" placeholder="Search by Report ID" />
+          <input class="search" v-model="search" placeholder="Search by Report ID or Animal" />
         </div>
-        <select class="select" v-model="sortBy">
-          <option value="newest">Newest first</option>
-          <option value="oldest">Oldest first</option>
-          <option value="progress">Progress %</option>
-        </select>
-        <select class="select" v-model="filterBy">
-          <option value="all">All</option>
-          <option value="inprogress">In progress</option>
-          <option value="near">Near completion</option>
-        </select>
+      </div>
+
+      <div v-if="!loading && reports.length > 0" class="controls-section">
+        <div class="sort-group">
+          <span class="section-label">Sort:</span>
+          <button 
+            @click="sortBy = 'urgency'" 
+            :class="{ active: sortBy === 'urgency' }"
+            class="control-btn"
+          >
+            Urgency
+          </button>
+          <button 
+            @click="sortBy = 'progress'" 
+            :class="{ active: sortBy === 'progress' }"
+            class="control-btn"
+          >
+            Progress
+          </button>
+          <button 
+            @click="sortBy = 'time'" 
+            :class="{ active: sortBy === 'time' }"
+            class="control-btn"
+          >
+            Latest
+          </button>
+        </div>
+
+        <div class="filter-group">
+          <button 
+            @click="stageFilter = 'all'" 
+            :class="{ active: stageFilter === 'all' }"
+            class="control-btn"
+          >
+            All ({{ filteredBySearch.length }})
+          </button>
+          <button 
+            @click="stageFilter = 'arriving'" 
+            :class="{ active: stageFilter === 'arriving' }"
+            class="control-btn"
+          >
+            Arriving
+          </button>
+          <button 
+            @click="stageFilter = 'handling'" 
+            :class="{ active: stageFilter === 'handling' }"
+            class="control-btn"
+          >
+            Handling
+          </button>
+          <button 
+            @click="stageFilter = 'treating'" 
+            :class="{ active: stageFilter === 'treating' }"
+            class="control-btn"
+          >
+            Treating
+          </button>
+          <button 
+            @click="stageFilter = 'recovery'" 
+            :class="{ active: stageFilter === 'recovery' }"
+            class="control-btn"
+          >
+            Recovery
+          </button>
+        </div>
       </div>
       <div v-if="loading" class="loading-box">Loading active reports...</div>
 
@@ -29,77 +84,274 @@
         <p>No active reports yet.</p>
       </div>
 
-      <div v-else class="cards">
+      <div v-else class="reports-grid">
         <section
-          v-for="r in displayedReports"
+          v-for="r in sortedReports"
           :key="r.id"
           class="report-card"
+          :data-severity="r.data.severity || 'medium'"
         >
-          <div class="card-top">
-            <div class="id-and-time">
-              <div class="report-id">{{ r.data.reportId }}</div>
-              <div class="accepted-time">Accepted {{ formatSince(r.data.acceptedAt) }}</div>
-            </div>
-
-            <div class="progress-wrap">
-              <div class="progress-label">{{ r.data.progressPercentage }}%</div>
-              <div class="progress-bar">
-                <div class="progress-fill" :style="{ width: r.data.progressPercentage + '%' }"></div>
-              </div>
-            </div>
-
-            <div class="status-pill" :class="getStatusClass(r.data)">{{ currentStatus(r.data) }}</div>
-
-            <button class="toggle-btn" @click="toggle(r.id)">
-              {{ expanded.has(r.id) ? 'Hide details' : 'View details' }}
-            </button>
-            <div class="quick-actions">
-              <router-link class="qa-btn" :to="`/status/${r.data.reportId}`">View Original Report</router-link>
-            </div>
+          <div class="report-id">{{ r.data.reportId }}</div>
+          
+          <!-- Animal Info -->
+          <div class="animal-info">
+            <span class="species">{{ r.data.speciesName || 'Unknown Animal' }}</span>
+            <span class="incident-type" v-if="r.data.incidentType">({{ r.data.incidentType }})</span>
           </div>
 
-          <transition name="expand">
-            <div v-if="expanded.has(r.id)" class="details">
-              <div class="step" 
-                   v-for="(step, idx) in steps" 
-                   :key="step.key"
-                   :class="{ completed: r.data.checkpoints[step.key].completed, pending: !r.data.checkpoints[step.key].completed }">
-                <div class="step-left">
-                  <div class="step-icon-wrapper" :class="{ completed: r.data.checkpoints[step.key].completed }">
-                    <span v-if="r.data.checkpoints[step.key].completed" class="check-icon">✓</span>
-                    <span v-else class="step-icon">{{ step.icon }}</span>
-                  </div>
-                  <div class="step-info">
-                    <div class="step-title" :class="{ completed: r.data.checkpoints[step.key].completed }">
-                      {{ step.title }}
-                    </div>
-                    <div v-if="r.data.checkpoints[step.key].completed" class="meta completed-meta">
-                      <span class="meta-time">📅 Completed {{ formatSince(r.data.checkpoints[step.key].completedAt) }}</span>
-                      <span v-if="r.data.checkpoints[step.key].notes" class="meta-notes">📝 {{ r.data.checkpoints[step.key].notes }}</span>
-                    </div>
-                    <div v-else class="meta muted">⏳ Pending</div>
-                  </div>
-                </div>
+          <!-- Location -->
+          <div class="location" v-if="r.data.location?.address">
+            📍 {{ formatLocation(r.data.location.address) }}
+          </div>
 
-                <div class="step-right">
-                  <button
-                    v-if="!r.data.checkpoints[step.key].completed"
-                    class="complete-btn"
-                    :disabled="!canComplete(r.data, idx) || updatingId === r.id"
-                    @click="markComplete(r, step.key)"
-                  >
-                    <span v-if="updatingId === r.id" class="spinner"></span>
-                    {{ updatingId === r.id ? 'Updating...' : 'Mark Complete' }}
-                  </button>
-                </div>
-              </div>
+          <div class="status-badge-wrapper">
+            <span class="status-pill" :class="getStatusClass(r.data)">{{ getShortStatus(r.data) }}</span>
+          </div>
+
+          <div class="progress-section">
+            <div class="progress-bar">
+              <div class="progress-fill" :style="{ width: r.data.progressPercentage + '%' }"></div>
             </div>
-          </transition>
+            <div class="progress-text">{{ r.data.progressPercentage }}%</div>
+          </div>
+
+          <div class="timestamp">Accepted {{ formatSince(r.data.acceptedAt) }}</div>
+
+          <button class="view-details-btn" @click="openDetailsModal(r)">
+            View Details
+          </button>
         </section>
       </div>
     </main>
   </div>
-  <BackToTop/>
+
+  <!-- Details Modal -->
+  <div v-if="showDetailsModal" class="modal-overlay" @click.self="closeDetailsModal" @keydown.esc="closeDetailsModal">
+    <div class="modal-container">
+      
+      <!-- Header Section -->
+      <div class="modal-header">
+        <div class="header-content">
+          <h2 class="report-id">{{ selectedReport?.data?.reportId || '' }}</h2>
+          <p class="report-meta">
+            {{ selectedReport?.data?.speciesName || 'Unknown Animal' }} • {{ formatLocation(selectedReport?.data?.location?.address) }}
+          </p>
+        </div>
+        <button @click="closeDetailsModal" class="close-button" aria-label="Close">
+          ×
+        </button>
+      </div>
+
+      <!-- Progress Section -->
+      <div class="progress-section">
+        <div class="progress-header">
+          <span class="progress-label">Rescue Progress</span>
+          <span class="progress-percentage">{{ selectedReport?.data?.progressPercentage || 0 }}%</span>
+        </div>
+        <div class="progress-bar-track">
+          <div 
+            class="progress-bar-fill" 
+            :style="{ width: (selectedReport?.data?.progressPercentage || 0) + '%' }"
+          ></div>
+        </div>
+        <p class="progress-status">{{ getProgressStatus(selectedReport?.data?.progressPercentage || 0) }}</p>
+      </div>
+
+      <!-- Timeline Section -->
+      <div class="timeline-section">
+        
+        <!-- Arrived Checkpoint -->
+        <div 
+          class="timeline-item" 
+          :class="{ 
+            completed: selectedReport?.data?.checkpoints?.arrived?.completed,
+            current: !selectedReport?.data?.checkpoints?.arrived?.completed 
+          }"
+        >
+          <div class="timeline-icon">
+            <span v-if="selectedReport?.data?.checkpoints?.arrived?.completed" class="icon-check">✓</span>
+            <span v-else class="icon-number">1</span>
+          </div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <h3 class="timeline-title">Arrived at Location</h3>
+              <span v-if="selectedReport?.data?.checkpoints?.arrived?.completed && selectedReport?.data?.checkpoints?.arrived?.completedAt" class="timeline-timestamp">
+                {{ formatRelativeTime(selectedReport.data.checkpoints.arrived.completedAt) }}
+              </span>
+            </div>
+            <div v-if="selectedReport?.data?.checkpoints?.arrived?.completed && selectedReport?.data?.checkpoints?.arrived?.notes" class="timeline-details">
+              <div class="detail-row">
+                <span class="detail-label">Notes:</span>
+                <span class="detail-value">{{ selectedReport.data.checkpoints.arrived.notes }}</span>
+              </div>
+            </div>
+            <button 
+              v-if="!selectedReport?.data?.checkpoints?.arrived?.completed"
+              @click="markComplete(selectedReport, 'arrived')"
+              class="mark-complete-btn"
+              :disabled="updatingId === selectedReport?.id"
+            >
+              <span v-if="updatingId === selectedReport?.id" class="spinner"></span>
+              {{ updatingId === selectedReport?.id ? 'Updating...' : 'Mark as Complete' }}
+            </button>
+            <span v-if="selectedReport?.data?.checkpoints?.arrived?.completed === false && (selectedReport?.data?.progressPercentage || 0) > 0" class="pending-text">
+              Pending
+            </span>
+          </div>
+        </div>
+
+        <!-- Handled Checkpoint -->
+        <div 
+          class="timeline-item" 
+          :class="{ 
+            completed: selectedReport?.data?.checkpoints?.handled?.completed,
+            current: selectedReport?.data?.checkpoints?.arrived?.completed && !selectedReport?.data?.checkpoints?.handled?.completed
+          }"
+        >
+          <div class="timeline-icon">
+            <span v-if="selectedReport?.data?.checkpoints?.handled?.completed" class="icon-check">✓</span>
+            <span v-else class="icon-number">2</span>
+          </div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <h3 class="timeline-title">Animal Secured</h3>
+              <span v-if="selectedReport?.data?.checkpoints?.handled?.completed && selectedReport?.data?.checkpoints?.handled?.completedAt" class="timeline-timestamp">
+                {{ formatRelativeTime(selectedReport.data.checkpoints.handled.completedAt) }}
+              </span>
+            </div>
+            <div v-if="selectedReport?.data?.checkpoints?.handled?.completed" class="timeline-details">
+              <div v-if="selectedReport?.data?.checkpoints?.handled?.condition" class="detail-row">
+                <span class="detail-label">Condition:</span>
+                <span class="detail-value">{{ selectedReport.data.checkpoints.handled.condition }}</span>
+              </div>
+              <div v-if="selectedReport?.data?.checkpoints?.handled?.notes" class="detail-row">
+                <span class="detail-label">Notes:</span>
+                <span class="detail-value">{{ selectedReport.data.checkpoints.handled.notes }}</span>
+              </div>
+            </div>
+            <button 
+              v-if="selectedReport?.data?.checkpoints?.arrived?.completed && !selectedReport?.data?.checkpoints?.handled?.completed"
+              @click="markComplete(selectedReport, 'handled')"
+              class="mark-complete-btn"
+              :disabled="updatingId === selectedReport?.id"
+            >
+              <span v-if="updatingId === selectedReport?.id" class="spinner"></span>
+              {{ updatingId === selectedReport?.id ? 'Updating...' : 'Mark as Complete' }}
+            </button>
+            <span v-if="!selectedReport?.data?.checkpoints?.handled?.completed && !selectedReport?.data?.checkpoints?.arrived?.completed" class="pending-text">
+              Complete previous step first
+            </span>
+          </div>
+        </div>
+
+        <!-- Treated Checkpoint -->
+        <div 
+          class="timeline-item" 
+          :class="{ 
+            completed: selectedReport?.data?.checkpoints?.treated?.completed,
+            current: selectedReport?.data?.checkpoints?.handled?.completed && !selectedReport?.data?.checkpoints?.treated?.completed
+          }"
+        >
+          <div class="timeline-icon">
+            <span v-if="selectedReport?.data?.checkpoints?.treated?.completed" class="icon-check">✓</span>
+            <span v-else class="icon-number">3</span>
+          </div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <h3 class="timeline-title">Treatment Completed</h3>
+              <span v-if="selectedReport?.data?.checkpoints?.treated?.completed && selectedReport?.data?.checkpoints?.treated?.completedAt" class="timeline-timestamp">
+                {{ formatRelativeTime(selectedReport.data.checkpoints.treated.completedAt) }}
+              </span>
+            </div>
+            <div v-if="selectedReport?.data?.checkpoints?.treated?.completed" class="timeline-details">
+              <div v-if="selectedReport?.data?.checkpoints?.treated?.diagnosis" class="detail-row">
+                <span class="detail-label">Diagnosis:</span>
+                <span class="detail-value">{{ selectedReport.data.checkpoints.treated.diagnosis }}</span>
+              </div>
+              <div v-if="selectedReport?.data?.checkpoints?.treated?.treatment" class="detail-row">
+                <span class="detail-label">Treatment:</span>
+                <span class="detail-value">{{ selectedReport.data.checkpoints.treated.treatment }}</span>
+              </div>
+              <div v-if="selectedReport?.data?.checkpoints?.treated?.notes" class="detail-row">
+                <span class="detail-label">Notes:</span>
+                <span class="detail-value">{{ selectedReport.data.checkpoints.treated.notes }}</span>
+              </div>
+            </div>
+            <button 
+              v-if="selectedReport?.data?.checkpoints?.handled?.completed && !selectedReport?.data?.checkpoints?.treated?.completed"
+              @click="markComplete(selectedReport, 'treated')"
+              class="mark-complete-btn"
+              :disabled="updatingId === selectedReport?.id"
+            >
+              <span v-if="updatingId === selectedReport?.id" class="spinner"></span>
+              {{ updatingId === selectedReport?.id ? 'Updating...' : 'Mark as Complete' }}
+            </button>
+            <span v-if="!selectedReport?.data?.checkpoints?.treated?.completed && !selectedReport?.data?.checkpoints?.handled?.completed" class="pending-text">
+              Complete previous step first
+            </span>
+          </div>
+        </div>
+
+        <!-- Reconciled Checkpoint -->
+        <div 
+          class="timeline-item" 
+          :class="{ 
+            completed: selectedReport?.data?.checkpoints?.reconciled?.completed,
+            current: selectedReport?.data?.checkpoints?.treated?.completed && !selectedReport?.data?.checkpoints?.reconciled?.completed
+          }"
+        >
+          <div class="timeline-icon">
+            <span v-if="selectedReport?.data?.checkpoints?.reconciled?.completed" class="icon-check">✓</span>
+            <span v-else class="icon-number">4</span>
+          </div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <h3 class="timeline-title">Case Resolved</h3>
+              <span v-if="selectedReport?.data?.checkpoints?.reconciled?.completed && selectedReport?.data?.checkpoints?.reconciled?.completedAt" class="timeline-timestamp">
+                {{ formatRelativeTime(selectedReport.data.checkpoints.reconciled.completedAt) }}
+              </span>
+            </div>
+            <div v-if="selectedReport?.data?.checkpoints?.reconciled?.completed" class="timeline-details">
+              <div v-if="selectedReport?.data?.checkpoints?.reconciled?.outcome" class="detail-row">
+                <span class="detail-label">Outcome:</span>
+                <span class="detail-value">{{ formatOutcome(selectedReport.data.checkpoints.reconciled.outcome) }}</span>
+              </div>
+              <div v-if="selectedReport?.data?.checkpoints?.reconciled?.notes" class="detail-row">
+                <span class="detail-label">Notes:</span>
+                <span class="detail-value">{{ selectedReport.data.checkpoints.reconciled.notes }}</span>
+              </div>
+            </div>
+            <button 
+              v-if="selectedReport?.data?.checkpoints?.treated?.completed && !selectedReport?.data?.checkpoints?.reconciled?.completed"
+              @click="markComplete(selectedReport, 'reconciled')"
+              class="mark-complete-btn"
+              :disabled="updatingId === selectedReport?.id"
+            >
+              <span v-if="updatingId === selectedReport?.id" class="spinner"></span>
+              {{ updatingId === selectedReport?.id ? 'Updating...' : 'Mark as Complete' }}
+            </button>
+            <span v-if="!selectedReport?.data?.checkpoints?.reconciled?.completed && !selectedReport?.data?.checkpoints?.treated?.completed" class="pending-text">
+              Complete previous step first
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button @click="viewOriginalReport" class="secondary-button">
+          📄 View Original Report
+        </button>
+        <button @click="closeDetailsModal" class="primary-button">
+          Done
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Checkpoint Form Modal (existing) -->
   <CheckpointModal
     :visible="modalVisible"
     :title="modalTitle"
@@ -118,17 +370,17 @@
 
 <script setup>
 import '../css/common.css'
-import BackToTop from '../../src/components/BackToTop.vue';
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { db } from '../../src/firebase.js'
 import { collection, query, where, onSnapshot, Timestamp, doc, updateDoc, serverTimestamp, getDoc, getDocs } from 'firebase/firestore'
 import { getCurrentUser } from '../../src/api/auth.js'
 import { formatDistanceToNow } from 'date-fns'
 import CheckpointModal from '../../src/components/CheckpointModal.vue'
 
+const router = useRouter()
 const loading = ref(true)
 const reports = ref([]) // [{ id, data }]
-const expanded = ref(new Set())
 const unsubRef = ref(null)
 const updatingId = ref('')
 const modalVisible = ref(false)
@@ -138,9 +390,11 @@ const modalFields = ref([])
 const modalSubmitting = ref(false)
 let currentAction = { report:null, key:'' }
 const search = ref('')
-const sortBy = ref('newest')
-const filterBy = ref('all')
 const toasts = ref([])
+const showDetailsModal = ref(false)
+const selectedReport = ref(null)
+const stageFilter = ref('all')
+const sortBy = ref('urgency')
 
 const steps = [
   { key: 'arrived',     title: 'Arrived at Location',      icon: '📍' },
@@ -162,17 +416,87 @@ function currentStatus(data) {
   return 'Completed'
 }
 
+function getShortStatus(data) {
+  const progress = data.progressPercentage ?? 0
+  if (progress === 0) return '📍 Arriving'
+  if (progress === 25) return '🤲 Handling'
+  if (progress === 50) return '💊 Treating'
+  if (progress === 75) return '🏥 Recovery'
+  return 'In Progress'
+}
+
 function getStatusClass(data) {
-  const status = currentStatus(data)
-  if (status === 'Completed' || status === 'Reconciliation Complete') {
-    return 'status-completed'
-  }
+  const progress = data.progressPercentage ?? 0
+  if (progress >= 75) return 'status-near-complete'
   return 'status-in-progress'
 }
 
-function toggle(id) {
-  if (expanded.value.has(id)) expanded.value.delete(id)
-  else expanded.value.add(id)
+function openDetailsModal(report) {
+  selectedReport.value = report
+  showDetailsModal.value = true
+  // Prevent body scroll when modal is open
+  document.body.style.overflow = 'hidden'
+}
+
+function closeDetailsModal() {
+  showDetailsModal.value = false
+  selectedReport.value = null
+  // Restore body scroll
+  document.body.style.overflow = ''
+}
+
+function viewOriginalReport() {
+  if (!selectedReport.value?.data?.reportId) return
+  
+  // Close the modal first
+  closeDetailsModal()
+  
+  // Navigate to the status page showing the original report
+  router.push(`/status/${selectedReport.value.data.reportId}`)
+}
+
+function formatOutcome(outcome) {
+  const outcomes = {
+    'released': 'Released to Wild',
+    'rehomed': 'Rehomed/Adopted',
+    'deceased': 'Deceased',
+    'transferred': 'Transferred to Wildlife Center',
+    'reunited_with_owner': 'Reunited with Owner',
+    'other': 'Other'
+  }
+  return outcomes[outcome] || outcome
+}
+
+function formatLocation(address) {
+  if (!address) return 'Unknown Location'
+  // "589 Pasir Ris Green, Singapore 510589" → "Pasir Ris"
+  const firstPart = address.split(',')[0]
+  const cleaned = firstPart.replace(/\d+/g, '').trim()
+  return cleaned || 'Singapore'
+}
+
+function formatRelativeTime(timestamp) {
+  if (!timestamp) return ''
+  const date = timestamp instanceof Timestamp ? timestamp.toDate() : new Date(timestamp)
+  const now = Date.now()
+  const then = date.getTime()
+  const diff = now - then
+  
+  const minutes = Math.floor(diff / 60000)
+  const hours = Math.floor(diff / 3600000)
+  const days = Math.floor(diff / 86400000)
+  
+  if (minutes < 60) return `${minutes} min ago`
+  if (hours < 24) return `${hours}h ago`
+  return `${days}d ago`
+}
+
+function getProgressStatus(percentage) {
+  if (percentage === 0) return 'Just started - volunteer on the way'
+  if (percentage === 25) return 'Animal located and secured'
+  if (percentage === 50) return 'Currently receiving treatment'
+  if (percentage === 75) return 'Almost complete - finalizing case'
+  return 'Completed'
 }
 
 function canComplete(data, idx) {
@@ -190,25 +514,78 @@ function recalcProgress(cp) {
   return Math.round((done / total) * 100)
 }
 
-const displayedReports = computed(() => {
+// Get reports filtered by search only (for "All" button count)
+const filteredBySearch = computed(() => {
   let rows = [...reports.value]
+  
   if (search.value.trim()){
     const q = search.value.trim().toLowerCase()
-    rows = rows.filter(r => String(r.data.reportId).toLowerCase().includes(q))
+    rows = rows.filter(r => {
+      const reportId = String(r.data.reportId || '').toLowerCase()
+      const speciesName = String(r.data.speciesName || '').toLowerCase()
+      const incidentType = String(r.data.incidentType || '').toLowerCase()
+      return reportId.includes(q) || speciesName.includes(q) || incidentType.includes(q)
+    })
   }
-  if (filterBy.value === 'inprogress'){
-    rows = rows.filter(r => (r.data.progressPercentage ?? 0) < 100)
-  } else if (filterBy.value === 'near'){
-    rows = rows.filter(r => (r.data.progressPercentage ?? 0) >= 75 && (r.data.progressPercentage ?? 0) < 100)
-  }
-  if (sortBy.value === 'oldest'){
-    rows.sort((a,b) => (a.data.lastUpdated?.seconds ?? 0) - (b.data.lastUpdated?.seconds ?? 0))
-  } else if (sortBy.value === 'progress'){
-    rows.sort((a,b) => (b.data.progressPercentage ?? 0) - (a.data.progressPercentage ?? 0))
-  } else {
-    rows.sort((a,b) => (b.data.lastUpdated?.seconds ?? 0) - (a.data.lastUpdated?.seconds ?? 0)).reverse()
-  }
+  
   return rows
+})
+
+const filteredByStage = computed(() => {
+  let rows = [...filteredBySearch.value]
+  
+  // Filter by stage
+  if (stageFilter.value !== 'all') {
+    rows = rows.filter(r => {
+      const cp = r.data.checkpoints
+      switch(stageFilter.value) {
+        case 'arriving':
+          return !cp?.arrived?.completed
+        case 'handling':
+          return cp?.arrived?.completed && !cp?.handled?.completed
+        case 'treating':
+          return cp?.handled?.completed && !cp?.treated?.completed
+        case 'recovery':
+          return cp?.treated?.completed && !cp?.reconciled?.completed
+        default:
+          return true
+      }
+    })
+  }
+  
+  return rows
+})
+
+const sortedReports = computed(() => {
+  const rows = [...filteredByStage.value]
+  
+  switch(sortBy.value) {
+    case 'urgency':
+      return rows.sort((a, b) => {
+        const order = { high: 0, medium: 1, moderate: 1, low: 2 }
+        const severityA = order[a.data.severity] ?? 1
+        const severityB = order[b.data.severity] ?? 1
+        return severityA - severityB
+      })
+    case 'progress':
+      return rows.sort((a, b) => {
+        const progressA = a.data.progressPercentage ?? 0
+        const progressB = b.data.progressPercentage ?? 0
+        return progressA - progressB
+      })
+    case 'time':
+      return rows.sort((a, b) => {
+        const timeA = a.data.acceptedAt?.seconds ?? a.data.lastUpdated?.seconds ?? 0
+        const timeB = b.data.acceptedAt?.seconds ?? b.data.lastUpdated?.seconds ?? 0
+        return timeB - timeA
+      })
+    default:
+      return rows
+  }
+})
+
+const displayedReports = computed(() => {
+  return sortedReports.value
 })
 
 async function markComplete(r, key) {
@@ -295,6 +672,16 @@ async function onSubmitModal(payload){
 
     showToast('✓ Checkpoint updated successfully')
     modalVisible.value = false
+    
+    // Refresh the selected report in the details modal if it's open
+    if (showDetailsModal.value && selectedReport.value && selectedReport.value.id === r.id) {
+      // The onSnapshot will automatically update the report, but we need to refresh the selectedReport
+      // Find the updated report in the reports array
+      const updatedReport = reports.value.find(report => report.id === r.id)
+      if (updatedReport) {
+        selectedReport.value = updatedReport
+      }
+    }
   } catch (error) {
     showToast('Failed to update checkpoint: ' + (error?.message || 'Unknown error'), true)
   } finally {
@@ -323,7 +710,7 @@ onMounted(async () => {
     return
   }
   const q = query(collection(db, 'activeStatusSummary'), where('volunteerID', '==', user.uid))
-  unsubRef.value = onSnapshot(q, (snap) => {
+  unsubRef.value = onSnapshot(q, async (snap) => {
     const rows = []
     snap.forEach((d) => {
       const data = d.data()
@@ -337,11 +724,49 @@ onMounted(async () => {
         console.warn('[ActiveReports] Skipping doc without full checkpoints structure:', d.id, data?.checkpoints)
         return
       }
+      
+      // Filter out 100% completed reports (they should be in Past Reports)
+      const progress = data.progressPercentage ?? 0
+      const isReconciled = data.checkpoints?.reconciled?.completed === true
+      if (progress >= 100 || isReconciled) {
+        return // Skip completed reports
+      }
+      
       rows.push({ id: d.id, data })
     })
-    // sort by lastUpdated desc
-    rows.sort((a, b) => (b.data.lastUpdated?.seconds ?? 0) - (a.data.lastUpdated?.seconds ?? 0))
-    reports.value = rows
+    
+    // Enrich each report with data from incidentReports
+    const enrichedReports = await Promise.all(
+      rows.map(async (report) => {
+        try {
+          const incidentQuery = query(
+            collection(db, 'incidentReports'),
+            where('reportId', '==', report.data.reportId)
+          )
+          const incidentSnapshot = await getDocs(incidentQuery)
+          
+          if (!incidentSnapshot.empty) {
+            const incidentData = incidentSnapshot.docs[0].data()
+            return {
+              ...report,
+              data: {
+                ...report.data,
+                speciesName: incidentData.speciesName || null,
+                incidentType: incidentData.incidentType || null,
+                location: incidentData.location || null,
+                severity: incidentData.severity || 'medium'
+              }
+            }
+          }
+          return report
+        } catch (error) {
+          console.error('Error fetching incident data for', report.data.reportId, error)
+          return report
+        }
+      })
+    )
+    
+    reports.value = enrichedReports
     loading.value = false
   }, (err) => {
     console.error(err)
@@ -349,8 +774,34 @@ onMounted(async () => {
   })
 })
 
+// Handle ESC key to close modal
+let escKeyHandler = null
+onMounted(() => {
+  escKeyHandler = (e) => {
+    if (e.key === 'Escape' && showDetailsModal.value) {
+      closeDetailsModal()
+    }
+  }
+  window.addEventListener('keydown', escKeyHandler)
+})
+
+// Watch for report updates and sync selectedReport
+watch(reports, (newReports) => {
+  if (showDetailsModal.value && selectedReport.value) {
+    const updatedReport = newReports.find(r => r.id === selectedReport.value.id)
+    if (updatedReport) {
+      selectedReport.value = updatedReport
+    }
+  }
+}, { deep: true })
+
 onBeforeUnmount(() => {
   if (unsubRef.value) unsubRef.value()
+  if (escKeyHandler) {
+    window.removeEventListener('keydown', escKeyHandler)
+  }
+  // Restore body scroll if modal was open
+  document.body.style.overflow = ''
 })
 
 function showToast(message, isError=false){
@@ -360,54 +811,138 @@ function showToast(message, isError=false){
     toasts.value = toasts.value.filter(t => t.id !== id)
   }, 2500)
 }
+
+/* 
+ * DEBUG SCRIPT - Run this in browser console to find wide elements:
+ * 
+ * const findWideElements = () => {
+ *   const all = document.querySelectorAll('*');
+ *   const wide = [];
+ *   all.forEach(el => {
+ *     if (el.scrollWidth > window.innerWidth) {
+ *       wide.push({
+ *         element: el,
+ *         width: el.scrollWidth,
+ *         viewport: window.innerWidth,
+ *         tagName: el.tagName,
+ *         classes: el.className,
+ *         id: el.id
+ *       });
+ *     }
+ *   });
+ *   console.table(wide);
+ *   return wide;
+ * };
+ * findWideElements();
+ */
 </script>
 
 <style scoped>
-/* Header Section */
-.header-section {
-  text-align: center;
-  margin-bottom: 2rem;
-  padding: 2rem 0;
+/* Prevent horizontal overflow - Nuclear fix */
+* {
+  box-sizing: border-box !important;
 }
-.page-title {
-  font-size: 32px;
-  font-weight: bold;
-  color: #285436;
-  margin: 0 0 8px 0;
+
+/* Root container - ensure no overflow */
+.container-fluid {
+  width: 100% !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
 }
-.page-subtitle {
-  font-size: 16px;
-  color: #6b7280;
-  margin: 0;
+
+.reporterDashboard {
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Green header banner */
+#topBanner,
+.bannerTitles {
+  width: 100% !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 20px !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+}
+
+.bannerTitles header {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.bannerTitles h1 {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
 }
 
 /* Report Container */
-.report-container { 
-  max-width: 980px; 
-  margin: 0 auto; 
-  padding: 0 1.5rem 2rem 1.5rem; 
+.report-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 80px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Responsive padding for smaller screens */
+@media (max-width: 1200px) {
+  .report-container {
+    padding: 40px 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .report-container {
+    padding: 40px 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .report-container {
+    padding: 30px 20px;
+  }
 }
 
 /* Controls Section */
-.controls { 
-  display: flex; 
-  gap: 12px; 
-  align-items: center; 
-  margin-bottom: 24px; 
-  flex-wrap: wrap; 
+.controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
 }
 
 .search-wrapper {
-  flex: 1 1 280px;
+  flex: 0 1 500px;
   position: relative;
   display: flex;
   align-items: center;
+  min-width: 280px;
+  max-width: 500px;
 }
 
 .search-icon {
   position: absolute;
-  left: 12px;
-  font-size: 16px;
+  left: 10px;
+  font-size: 14px;
   color: #6b7280;
   pointer-events: none;
   z-index: 1;
@@ -415,10 +950,11 @@ function showToast(message, isError=false){
 
 .search { 
   width: 100%;
+  height: 36px;
   border: 1px solid #dbe5d9; 
   border-radius: 8px; 
-  padding: 12px 12px 12px 36px;
-  font-size: 14px;
+  padding: 8px 8px 8px 32px;
+  font-size: 13px;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -429,10 +965,11 @@ function showToast(message, isError=false){
 }
 
 .select { 
+  height: 36px;
   border: 1px solid #dbe5d9; 
   border-radius: 8px; 
-  padding: 12px 16px;
-  font-size: 14px;
+  padding: 8px 12px;
+  font-size: 13px;
   background: white;
   cursor: pointer;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -444,103 +981,245 @@ function showToast(message, isError=false){
   box-shadow: 0 0 0 3px rgba(90, 122, 90, 0.1);
 }
 
+/* Controls Section - Clean Standard Style */
+.controls-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.sort-group,
+.filter-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.section-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-right: 8px;
+  white-space: nowrap;
+}
+
+/* Clean, simple button style */
+.control-btn {
+  padding: 9px 18px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+/* Hover - subtle green hint */
+.control-btn:hover:not(.active) {
+  border-color: #5a7a5a;
+  color: #5a7a5a;
+  background: #fafafa;
+}
+
+/* Active - clean green with white text */
+.control-btn.active {
+  background: #5a7a5a !important;
+  border-color: #5a7a5a !important;
+  color: white !important;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(90, 122, 90, 0.25);
+}
+
+/* Pressed effect */
+.control-btn:active {
+  transform: scale(0.98);
+}
+
 /* Loading & Empty States */
 .loading-box, .empty-state { 
   background: #FEFAE0; 
   border: 1px solid #285436; 
   color: #285436; 
-  padding: 20px 24px; 
+  padding: 16px 20px; 
   border-radius: 12px; 
   text-align: center;
-  font-size: 16px;
+  font-size: 14px;
 }
 
-/* Cards */
-.cards { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 20px; 
+/* Reports Grid - Flexible Card Layout */
+.reports-grid {
+  display: grid;
+  gap: 20px;
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  overflow-x: hidden;
+  align-items: start; /* Cards align to top */
 }
 
+/* Desktop - 4 columns */
+@media (min-width: 1200px) {
+  .reports-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Tablet - 3 columns */
+@media (min-width: 900px) and (max-width: 1199px) {
+  .reports-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Small tablet - 2 columns */
+@media (min-width: 600px) and (max-width: 899px) {
+  .reports-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile - 1 column */
+@media (max-width: 599px) {
+  .reports-grid {
+    grid-template-columns: 1fr;
+    padding: 16px 0;
+    gap: 12px;
+  }
+}
+
+/* Flexible Card Styling */
 .report-card {
-  background: #ffffff; 
-  border: 1px solid #e0e0e0; 
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-left: 4px solid #e0e0e0;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08); 
-  padding: 24px; 
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.report-card:hover { 
-  transform: translateY(-2px); 
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12); 
-}
-
-.card-top { 
-  display: grid; 
-  grid-template-columns: 1fr 1fr auto auto; 
-  gap: 16px; 
-  align-items: center; 
-  margin-bottom: 8px;
-}
-
-.report-id { 
-  font-weight: 700; 
-  color: #285436; 
-  font-size: 18px; 
-  margin-bottom: 4px;
-}
-
-.accepted-time { 
-  color: #6b7280; 
-  font-size: 13px; 
-}
-
-/* Progress Bar */
-.progress-wrap { 
-  display: flex; 
-  align-items: center; 
-  gap: 12px; 
-}
-
-.progress-label { 
-  font-weight: 700; 
-  color: #285436; 
-  min-width: 42px; 
-  text-align: right;
-  font-size: 16px;
-}
-
-.progress-bar { 
-  width: 180px; 
-  height: 10px; 
-  background: #eef3ee; 
-  border-radius: 999px; 
-  overflow: hidden; 
-  border: 1px solid #dbe5d9;
-}
-
-.progress-fill { 
-  height: 100%; 
-  background: linear-gradient(90deg, #5a7a5a, #7aa87a);
-  transition: width 0.3s ease;
-  border-radius: 999px;
-}
-
-/* Status Pills */
-.status-pill { 
-  padding: 8px 14px; 
-  border-radius: 999px; 
-  font-size: 13px; 
-  font-weight: 600; 
-  white-space: nowrap; 
+  padding: 20px;
   text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  /* Flexible height - allow cards to grow */
+  min-height: 240px;
+  height: auto;
 }
 
-.status-pill.status-completed {
-  background: #d1fae5;
-  color: #065f46;
-  border: 1px solid #a7f3d0;
+/* Severity-based left border - only for actual severity */
+.report-card[data-severity="high"] {
+  border-left-color: #f44336;
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.15);
+}
+
+.report-card[data-severity="high"]:hover {
+  border-left-color: #d32f2f;
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.2);
+  transform: translateY(-2px);
+}
+
+.report-card[data-severity="medium"],
+.report-card[data-severity="moderate"] {
+  border-left-color: #ff9800;
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.1);
+}
+
+.report-card[data-severity="medium"]:hover,
+.report-card[data-severity="moderate"]:hover {
+  border-left-color: #f57c00;
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.report-card[data-severity="low"] {
+  border-left-color: #4caf50;
+}
+
+.report-card[data-severity="low"]:hover {
+  border-left-color: #388e3c;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Default hover for cards without severity - use green, not orange */
+.report-card:not([data-severity]):hover {
+  border-left-color: #5a7a5a;
+  box-shadow: 0 4px 12px rgba(90, 122, 90, 0.15);
+  transform: translateY(-2px);
+}
+
+/* General hover enhancement for all cards */
+.report-card:hover {
+  transform: translateY(-2px);
+}
+
+.report-id {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2d5016;
+  margin-bottom: 8px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  flex-grow: 0;
+}
+
+/* Animal Info Styling */
+.animal-info {
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #666;
+  line-height: 1.4;
+  flex-grow: 0;
+}
+
+.species {
+  font-weight: 600;
+  color: #333;
+}
+
+.incident-type {
+  font-style: italic;
+  color: #999;
+  font-size: 13px;
+}
+
+/* Location Styling */
+.location {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 12px;
+  line-height: 1.4;
+  flex-grow: 0;
+}
+
+/* Status Badge */
+.status-badge-wrapper {
+  margin-bottom: 16px;
+  flex-grow: 0;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .status-pill.status-in-progress {
@@ -549,86 +1228,251 @@ function showToast(message, isError=false){
   border: 1px solid #cfe6cf;
 }
 
-/* Toggle Button */
-.toggle-btn { 
-  background: #285436; 
-  color: #FEFAE0; 
-  border: 1px solid #285436; 
-  padding: 10px 16px; 
-  border-radius: 8px; 
-  cursor: pointer; 
-  font-size: 14px;
-  font-weight: 600;
-  transition: background 0.2s;
+.status-pill.status-near-complete {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
 }
 
-.toggle-btn:hover { 
-  background: #1e3a26; 
+/* Progress Section */
+.progress-section {
+  margin-bottom: 12px;
+  flex-grow: 0;
 }
 
-/* Quick Actions */
-.quick-actions { 
-  display: flex; 
-  gap: 8px; 
-  justify-content: flex-end; 
-  grid-column: 1 / -1; 
-  margin-top: 8px;
-}
-
-.qa-btn { 
-  background: #eaf5ea; 
-  color: #285436; 
-  border: 1px solid #cfe6cf; 
-  padding: 8px 14px; 
-  border-radius: 8px; 
-  text-decoration: none; 
-  font-weight: 600;
-  font-size: 13px;
-  transition: background 0.2s, border-color 0.2s;
-}
-
-.qa-btn:hover {
-  background: #d1fae5;
-  border-color: #a7f3d0;
-}
-
-/* Details Section */
-.details { 
-  padding-top: 16px; 
-  margin-top: 16px;
-  border-top: 1px solid #f3f4f6;
-}
-
-.step { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: flex-start; 
-  padding: 16px 12px; 
-  border-radius: 8px;
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #eef3ee;
+  border-radius: 4px;
+  overflow: hidden;
   margin-bottom: 8px;
+  border: 1px solid #dbe5d9;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, #5a7a5a, #7aa87a);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #5a7a5a;
+}
+
+/* Timestamp */
+.timestamp {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 16px;
+  flex-grow: 1; /* Takes up remaining space */
+}
+
+/* View Details Button */
+.view-details-btn {
+  width: 100%;
+  padding: 10px;
+  background: #5a7a5a;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
   transition: background 0.2s;
+  margin-top: auto; /* Push button to bottom */
+  flex-grow: 0;
 }
 
-.step.completed {
-  background: #f0fdf4;
+.view-details-btn:hover {
+  background: #4a6a4a;
 }
 
-.step.pending {
-  background: #f9fafb;
+/* Details Modal - Modern Design */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
-.step:last-child {
-  margin-bottom: 0;
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-.step-left { 
-  display: flex; 
-  gap: 16px; 
-  align-items: flex-start; 
+/* Container */
+.modal-container {
+  background: white;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+
+.header-content {
   flex: 1;
 }
 
-.step-icon-wrapper {
+.report-id {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2d5016;
+  margin: 0 0 4px 0;
+}
+
+.report-meta {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.close-button {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #999;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-button:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+/* Progress Section */
+.progress-section {
+  padding: 18px 20px;
+  background: linear-gradient(to bottom, #f9fdf9, white);
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.progress-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.progress-percentage {
+  font-size: 24px;
+  font-weight: 700;
+  color: #5a7a5a;
+}
+
+.progress-bar-track {
+  height: 10px;
+  background: #e8f0e8;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(to right, #5a7a5a, #7aa87a);
+  border-radius: 5px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-status {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Timeline Section */
+.timeline-section {
+  padding: 20px 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  min-height: 0;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 16px;
+  position: relative;
+  padding-bottom: 24px;
+}
+
+.timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+/* Vertical connecting line */
+.timeline-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 40px;
+  bottom: 0;
+  width: 2px;
+  background: #e0e0e0;
+}
+
+.timeline-item.completed::after {
+  background: #5a7a5a;
+}
+
+/* Timeline Icon (circle) */
+.timeline-icon {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -636,95 +1480,212 @@ function showToast(message, isError=false){
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: #e5e7eb;
-  transition: background 0.2s;
+  font-weight: 700;
+  font-size: 16px;
+  transition: all 0.3s;
+  z-index: 1;
 }
 
-.step-icon-wrapper.completed {
-  background: #10b981;
+/* Not completed - gray circle */
+.timeline-item:not(.completed):not(.current) .timeline-icon {
+  background: #f5f5f5;
+  border: 2px solid #e0e0e0;
+  color: #999;
 }
 
-.step-icon { 
-  font-size: 20px; 
-}
-
-.check-icon {
+/* Completed - solid green circle with checkmark */
+.timeline-item.completed .timeline-icon {
+  background: #5a7a5a;
+  border: 2px solid #5a7a5a;
   color: white;
+}
+
+.icon-check {
   font-size: 20px;
-  font-weight: bold;
+  line-height: 1;
 }
 
-.step-info {
+/* Current step - white circle with green border */
+.timeline-item.current .timeline-icon {
+  background: white;
+  border: 3px solid #5a7a5a;
+  color: #5a7a5a;
+  box-shadow: 0 0 0 4px rgba(90, 122, 90, 0.1);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 4px rgba(90, 122, 90, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(90, 122, 90, 0.05);
+  }
+}
+
+.icon-number {
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* Timeline Content */
+.timeline-content {
   flex: 1;
-  min-width: 0;
+  padding-top: 4px;
 }
 
-.step-title { 
-  font-weight: 700; 
-  color: #374151; 
-  font-size: 15px;
-  margin-bottom: 6px;
-}
-
-.step-title.completed {
-  color: #065f46;
-}
-
-.meta { 
-  font-size: 13px; 
-  color: #6b7280;
+.timeline-header {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.meta.muted { 
-  color: #9ca3af; 
-}
-
-.completed-meta {
-  color: #059669;
-}
-
-.meta-time {
-  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 4px;
+  margin-bottom: 8px;
+  gap: 12px;
 }
 
-.meta-notes {
-  display: flex;
-  align-items: flex-start;
-  gap: 4px;
-  margin-top: 4px;
-}
-
-.step-right {
-  margin-left: 16px;
-}
-
-.complete-btn { 
-  background: #7aa87a; 
-  color: #ffffff; 
-  border: none; 
-  padding: 10px 16px; 
-  border-radius: 8px; 
-  cursor: pointer; 
-  font-size: 14px;
+.timeline-title {
+  font-size: 16px;
   font-weight: 600;
-  transition: background 0.2s;
+  color: #333;
+  margin: 0;
+}
+
+.timeline-timestamp {
+  font-size: 12px;
+  color: #999;
   white-space: nowrap;
 }
 
-.complete-btn:hover:not(:disabled) {
-  background: #6a9a6a;
+/* Details Box (for completed checkpoints) */
+.timeline-details {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-top: 10px;
+  border: 1px solid #f0f0f0;
 }
 
-.complete-btn[disabled] { 
-  opacity: 0.5; 
-  cursor: not-allowed; 
+.detail-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
+.detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #666;
+  min-width: 85px;
+  flex-shrink: 0;
+}
+
+.detail-value {
+  color: #333;
+  flex: 1;
+}
+
+/* Mark Complete Button */
+.mark-complete-btn {
+  margin-top: 12px;
+  padding: 10px 20px;
+  background: #5a7a5a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mark-complete-btn:hover:not(:disabled) {
+  background: #4a6a4a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(90, 122, 90, 0.3);
+}
+
+.mark-complete-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.mark-complete-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Pending Text */
+.pending-text {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #999;
+  font-style: italic;
+}
+
+/* Footer */
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid #e0e0e0;
+  background: #fafafa;
+  flex-shrink: 0;
+}
+
+.secondary-button {
+  flex: 1;
+  padding: 12px 20px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.secondary-button:hover {
+  border-color: #5a7a5a;
+  color: #5a7a5a;
+  background: #fafafa;
+}
+
+.primary-button {
+  padding: 12px 32px;
+  background: #5a7a5a;
+  border: none;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.primary-button:hover {
+  background: #4a6a4a;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(90, 122, 90, 0.3);
+}
+
+.primary-button:active {
+  transform: translateY(0);
+}
+
+
+/* Spinner for loading state */
 .spinner { 
   width: 14px; 
   height: 14px; 
@@ -732,22 +1693,11 @@ function showToast(message, isError=false){
   border-top-color: #fff; 
   border-radius: 50%; 
   display: inline-block; 
-  margin-right: 6px; 
   animation: spin .7s linear infinite; 
 }
 
 @keyframes spin { 
   to { transform: rotate(360deg); } 
-}
-
-/* Expand Animation */
-.expand-enter-active, .expand-leave-active { 
-  transition: all 0.3s ease; 
-}
-
-.expand-enter-from, .expand-leave-to { 
-  opacity: 0; 
-  transform: translateY(-10px); 
 }
 
 /* Toast Notifications */
@@ -778,61 +1728,86 @@ function showToast(message, isError=false){
 }
 
 /* Responsive Design */
-@media (max-width: 720px) {
-  .header-section {
-    padding: 1.5rem 0;
-  }
-  
-  .page-title {
-    font-size: 24px;
-  }
-  
+@media (max-width: 599px) {
   .report-container {
-    padding: 0 1rem 2rem 1rem;
+    padding: 0 16px 2rem 16px;
+    max-width: 100vw;
   }
   
-  .controls { 
-    flex-direction: column; 
-    align-items: stretch; 
-    gap: 10px;
+  .container-fluid,
+  .reporterDashboard {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+  
+  #topBanner,
+  .bannerTitles {
+    padding: 16px !important;
+    max-width: 100vw !important;
+  }
+  
+  .controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    max-width: 100%;
   }
   
   .search-wrapper {
     flex: 1 1 auto;
+    max-width: 100%;
+    width: 100%;
   }
   
-  .card-top { 
-    grid-template-columns: 1fr; 
-    gap: 12px; 
+  .search {
+    max-width: 100%;
   }
   
-  .progress-bar { 
-    width: 100%; 
+  .report-card {
+    padding: 16px;
+    min-height: 180px;
+    height: auto; /* Flexible height on mobile too */
+    max-width: 100%;
   }
   
-  .progress-wrap {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  
-  .progress-label {
-    text-align: left;
-    min-width: auto;
-  }
-  
-  .step {
-    flex-direction: column;
+  .reports-grid {
+    padding: 16px 0;
     gap: 12px;
+    max-width: 100%;
+  }
+}
+
+/* Responsive Modal Styles */
+@media (max-width: 768px) {
+  .modal-container {
+    max-height: 95vh;
+    max-width: 95vw;
   }
   
-  .step-right {
-    margin-left: 0;
+  .modal-header {
+    padding: 20px 16px;
+  }
+  
+  .progress-section {
+    padding: 20px 16px;
+  }
+  
+  .timeline-section {
+    padding: 24px 16px;
+  }
+  
+  .modal-footer {
+    flex-direction: column;
+    padding: 16px;
+  }
+  
+  .secondary-button,
+  .primary-button {
     width: 100%;
   }
   
-  .complete-btn {
-    width: 100%;
+  .timeline-item {
+    padding-bottom: 24px;
   }
 }
 </style>

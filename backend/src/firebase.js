@@ -44,10 +44,16 @@ try {
 }
 if (!getApps().length) {
   try {
+    // Use environment variable if available, otherwise fall back to default pattern
+    const storageBucket = process.env.FIREBASE_STORAGE_BUCKET || 
+                         (serviceAccount.project_id + '.appspot.com');
+    
     initializeApp({
       credential: admin.credential.cert(serviceAccount),
-      storageBucket: serviceAccount.project_id + '.appspot.com'
+      storageBucket: storageBucket
     });
+    
+    console.log(`[Firebase Init] Initialized with storage bucket: ${storageBucket}`);
   } catch (error) {
     console.error("[Firebase Init] Failed to initialize Firebase:", error.message);
     throw error;

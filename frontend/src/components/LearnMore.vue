@@ -11,7 +11,7 @@
         <!-- Latest News Section -->
         <section class="py-5">
             <div class="container">
-                <h2 class="text-success fw-bold text-center mb-4">News & Updates</h2>
+                <h2 class="textHeader fw-bold text-center mb-4">News & Updates</h2>
                 <div class="row g-4">
                     <div class="col-md-6 col-lg-4" v-for="news in latestNews" :key="news.id">
                         <div class="card h-100 border-0 shadow-sm rounded-4">
@@ -37,7 +37,7 @@
         <!-- FAQ + Feedback in a single card -->
         <section class="container my-5">
             <!-- Header -->
-            <h2 class="text-success fw-bold text-center mb-4">
+            <h2 class="textHeader fw-bold text-center mb-4">
                 Got Questions or Feedback? We’re Here to Help!
             </h2>
             <div class="card border-0 shadow-sm rounded-4 p-4">
@@ -80,7 +80,7 @@
         <!-- Contact Section -->
         <section class="container my-5">
 
-            <h2 class="text-success fw-bold text-center mb-4">Get In Touch</h2>
+            <h2 class="textHeader fw-bold text-center mb-4">Get In Touch</h2>
             <!-- Contact Info -->
 
             <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
@@ -142,11 +142,10 @@
         <!-- CTA Section -->
         <section class="cta-section text-white text-center py-3">
             <div class="container">
-                <h3 class="fw-bold mb-3">Ready to Make a Difference?</h3>
-                <p class="lead mb-4">Join us in protecting Singapore's precious wildlife</p>
+                <h3 class="textSub fw-bold mb-3">Ready to Make a Difference?</h3>
+                <p class="textSub lead mb-4">Join us in protecting Singapore's precious wildlife</p>
                 <div class="d-flex gap-3 justify-content-center flex-wrap">
-                    <a href="/donate" class="btn btn-light btn-lg rounded-pill px-4">Donate Now</a>
-                    <a href="/home" class="btn btn-outline-light btn-lg rounded-pill px-4">Volunteer</a>
+                    <a href="/donate" class="btn linear-btn custom-linear-btn">Donate Now</a>
                 </div>
             </div>
         </section>
@@ -157,6 +156,7 @@
 import { ref } from 'vue';
 import OtterCursor from './OtterCursor.vue';
 import FeedbackForm from './FeedbackForm.vue';
+import '../../pages/css/common.css'
 
 
 const faqs = ref([
@@ -214,6 +214,22 @@ const latestNews = ref([
 </script>
 
 <style scoped>
+.textHeader {
+    font-size: 40px;
+    font-weight: 600;
+    color:#285436;
+    text-shadow: 0 4px 20px rgba(11, 155, 23, 0.3);
+}
+
+.textSub {
+    color: rgb(254, 250, 224);
+}
+
+.custom-linear-btn {
+    padding-left:100px;
+    padding-right:100px;
+}
+
 .cta-section {
     background: #064301;
     /* fallback */
@@ -289,22 +305,13 @@ const latestNews = ref([
 }
 
 .custom-collapse-btn {
-    /* Color Properties (Matching your image) */
-    background-color: #5a511e;
-    /* Light tan/khaki background */
-    color: #ffffff;
-    /* Darker olive text color */
-
-    /* Shape and Sizing */
+    background-color: #285436;
+    color: rgb(254, 250, 224);
     border: none;
-    padding: 15px 30px;
-    /* Increased horizontal padding for the pill shape */
+    padding: 16px 32px;
     font-size: 1rem;
     font-weight: bold;
     border-radius: 50px;
-    /* Large border-radius creates the pill shape */
-
-    /* Interaction & Display */
     cursor: pointer;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     display: inline-block;
@@ -312,8 +319,6 @@ const latestNews = ref([
 
 .custom-collapse-btn:hover {
     background-color: #d1ccb0;
-    /* Slightly darker background on hover */
-    /* Optional: Add a subtle shadow on hover */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 </style>

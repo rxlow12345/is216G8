@@ -44,13 +44,12 @@
             <router-link class="nav-link navLink" to="/guidebook" exact-active-class="active" @click="collapseNavbar">Guidebook</router-link>
           </li>
 
-          <!-- Map only for admin/volunteer -->
-          <li v-if="auth.role === 'admin' || auth.role === 'volunteer'" class="nav-item">
-            <router-link class="nav-link navLink" to="/map" exact-active-class="active" @click="collapseNavbar">Map</router-link>
+          <li class="nav-item">
+            <router-link class="nav-link navLink" to="/donate" exact-active-class="active" @click="collapseNavbar">Donate</router-link>
           </li>
 
           <li class="nav-item">
-            <router-link class="nav-link navLink" to="/donate" exact-active-class="active" @click="collapseNavbar">Donate</router-link>
+            <router-link class="nav-link navLink" to="/learn-more" exact-active-class="active" @click="collapseNavbar">Resources</router-link>
           </li>
 
           <!-- Only if not logged in -->

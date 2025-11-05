@@ -106,6 +106,7 @@ import { ref, onMounted, onUnmounted, onBeforeUnmount } from 'vue';
 import DonatePartners from './DonatePartners.vue'
 import Impact from './Impact.vue'
 import FloatingBackground from './FloatingBackground.vue';
+import { getAssetUrl } from '../utils/getAssetUrl.js';
 
 
 const testimonials = ref([
@@ -190,9 +191,9 @@ onBeforeUnmount(() => stopAuto())
 
 
 const carouselImages = [
-    { src: '../src/public/assets/otter.jpg', alt: 'Otter', caption: "Otters", emoji: '🦦' },
-    { src: '../src/public/assets/carousel2.jpg', alt: 'Cat', caption: 'Community Cats', emoji: '🐱' },
-    { src: '../src/public/assets/carousel3.jpg', alt: 'Turtle', caption: 'Turtles', emoji: '🐢' },
+    { src: getAssetUrl('otter.jpg'), alt: 'Otter', caption: "Otters", emoji: '🦦' },
+    { src: getAssetUrl('carousel2.jpg'), alt: 'Cat', caption: 'Community Cats', emoji: '🐱' },
+    { src: getAssetUrl('carousel3.jpg'), alt: 'Turtle', caption: 'Turtles', emoji: '🐢' },
 ]
 
 const currentSlide = ref(0);

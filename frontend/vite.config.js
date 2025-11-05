@@ -5,11 +5,11 @@ import { fileURLToPath, URL } from 'node:url'
 export default defineConfig({
   plugins: [vue()],
   server: {
-    port: 5175,          // avoid conflicts with other projects
+    port: parseInt(process.env.VITE_PORT || '5175'), // Support custom dev port
     open: true,
     proxy: {
       "/api": {
-        target: "http://localhost:4100", // backend port
+        target: process.env.VITE_PROXY_TARGET || "http://localhost:4100", // Support custom backend URL
         changeOrigin: true,
         secure: false
       }

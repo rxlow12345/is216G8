@@ -486,12 +486,37 @@ onBeforeMount(() => {
     document.head.appendChild(style);
   }
   
-  // Remove footers only (keep banner)
+  // Remove footers only (keep banner, but protect modal elements)
+  const isInsideModal = (el) => {
+    if (!el) return false;
+    let current = el.parentElement;
+    while (current) {
+      if (current.classList.contains('modal') ||
+          current.classList.contains('modal-overlay') ||
+          current.classList.contains('modal-content') ||
+          current.classList.contains('modal-dialog') ||
+          current.classList.contains('modal-body') ||
+          current.classList.contains('modal-header') ||
+          current.classList.contains('modal-actions') ||
+          current.classList.contains('modal-footer') ||
+          current.classList.contains('modal-backdrop') ||
+          current.id === 'modal' ||
+          current.getAttribute('role') === 'dialog') {
+        return true;
+      }
+      current = current.parentElement;
+    }
+    return false;
+  };
+  
   ['footer', '#footer', '.emergency-strip', '.footer-body'].forEach(sel => {
     try {
       const els = document.querySelectorAll(sel);
       els.forEach(el => {
-        if (el) {
+        if (el && !isInsideModal(el) && // PROTECT ALL MODAL ELEMENTS
+            !el.classList.contains('form-footer') &&
+            !el.classList.contains('modal-footer') &&
+            !el.classList.contains('modal-actions')) {
           el.style.display = 'none';
           el.remove();
         }
@@ -639,6 +664,29 @@ onMounted(async () => {
 
   // Aggressively remove footer and emergency strip if they exist
   const removeFooter = () => {
+    // Helper function to check if element is inside a modal
+    const isInsideModal = (el) => {
+      if (!el) return false;
+      let current = el.parentElement;
+      while (current) {
+        if (current.classList.contains('modal') ||
+            current.classList.contains('modal-overlay') ||
+            current.classList.contains('modal-content') ||
+            current.classList.contains('modal-dialog') ||
+            current.classList.contains('modal-body') ||
+            current.classList.contains('modal-header') ||
+            current.classList.contains('modal-actions') ||
+            current.classList.contains('modal-footer') ||
+            current.classList.contains('modal-backdrop') ||
+            current.id === 'modal' ||
+            current.getAttribute('role') === 'dialog') {
+          return true;
+        }
+        current = current.parentElement;
+      }
+      return false;
+    };
+    
     // Multiple selectors to catch all possible footer elements
     const selectors = [
       'footer',
@@ -656,12 +704,15 @@ onMounted(async () => {
       try {
         const elements = document.querySelectorAll(selector);
         elements.forEach(el => {
-          // CRITICAL: Do NOT remove form-footer or modal-footer - these are needed!
+          // CRITICAL: Do NOT remove form-footer, modal-footer, modal-actions, or any element inside a modal!
           if (el && el.parentNode && 
               !el.classList.contains('form-footer') && 
               !el.classList.contains('modal-footer') &&
+              !el.classList.contains('modal-actions') &&
+              !isInsideModal(el) && // PROTECT ALL MODAL ELEMENTS
               el.id !== 'form-footer-nav' &&
-              !el.getAttribute('data-form-footer')) {
+              !el.getAttribute('data-form-footer') &&
+              !el.getAttribute('data-modal-footer')) {
             // Remove the element completely
             el.remove();
             // Also try to remove all its children
@@ -747,45 +798,77 @@ onMounted(async () => {
     mutations.forEach((mutation) => {
       mutation.addedNodes.forEach((node) => {
         if (node.nodeType === 1) { // Element node
-          // Check if it's a footer-related element (but NOT form-footer or modal-footer)
+          // Helper function to check if element is inside a modal (reuse the same logic)
+          const isInsideModal = (el) => {
+            if (!el) return false;
+            let current = el.parentElement;
+            while (current) {
+              if (current.classList.contains('modal') ||
+                  current.classList.contains('modal-overlay') ||
+                  current.classList.contains('modal-content') ||
+                  current.classList.contains('modal-dialog') ||
+                  current.classList.contains('modal-body') ||
+                  current.classList.contains('modal-header') ||
+                  current.classList.contains('modal-actions') ||
+                  current.classList.contains('modal-footer') ||
+                  current.classList.contains('modal-backdrop') ||
+                  current.id === 'modal' ||
+                  current.getAttribute('role') === 'dialog') {
+                return true;
+              }
+              current = current.parentElement;
+            }
+            return false;
+          };
+          
+          // Check if it's a footer-related element (but NOT form-footer, modal-footer, modal-actions, or inside a modal)
           const isFooter = (node.tagName === 'FOOTER' ||
             node.classList?.contains('emergency-strip') ||
             node.classList?.contains('footer-body') ||
             node.id === 'footer' ||
             (node.id?.includes('footer') && node.id !== 'form-footer-nav') ||
-            (node.className?.includes('footer') && !node.classList?.contains('form-footer') && !node.classList?.contains('modal-footer') && !node.getAttribute('data-form-footer')) ||
+            (node.className?.includes('footer') && !node.classList?.contains('form-footer') && !node.classList?.contains('modal-footer') && !node.classList?.contains('modal-actions') && !node.getAttribute('data-form-footer')) ||
             node.className?.includes('emergency')) &&
             !node.classList?.contains('form-footer') &&
             !node.classList?.contains('modal-footer') &&
+            !node.classList?.contains('modal-actions') &&
+            !isInsideModal(node) && // PROTECT ALL MODAL ELEMENTS
             node.id !== 'form-footer-nav' &&
-            !node.getAttribute('data-form-footer');
+            !node.getAttribute('data-form-footer') &&
+            !node.getAttribute('data-modal-footer');
           
           if (isFooter) {
             node.remove();
             return;
           }
           
-          // Also check and remove footer children immediately (but NOT form-footer or modal-footer)
+          // Also check and remove footer children immediately (but NOT form-footer, modal-footer, modal-actions, or inside modals)
           if (node.querySelectorAll) {
             const footerChildren = node.querySelectorAll('footer, .emergency-strip, .footer-body, [id*="footer"], [id="footer"]');
             footerChildren.forEach(el => {
-              // Skip form-footer and modal-footer - these should NOT be removed
+              // Skip form-footer, modal-footer, modal-actions, and anything inside modals
               if (!el.classList.contains('form-footer') && 
                   !el.classList.contains('modal-footer') &&
+                  !el.classList.contains('modal-actions') &&
+                  !isInsideModal(el) && // PROTECT ALL MODAL ELEMENTS
                   el.id !== 'form-footer-nav' &&
-                  !el.getAttribute('data-form-footer')) {
+                  !el.getAttribute('data-form-footer') &&
+                  !el.getAttribute('data-modal-footer')) {
                 el.remove();
                 el.innerHTML = '';
               }
             });
             
-            // Also check for class*="footer" but exclude form-footer and modal-footer
+            // Also check for class*="footer" but exclude form-footer, modal-footer, modal-actions, and modal elements
             const allFooterLike = node.querySelectorAll('[class*="footer"]');
             allFooterLike.forEach(el => {
               if (!el.classList.contains('form-footer') && 
                   !el.classList.contains('modal-footer') &&
+                  !el.classList.contains('modal-actions') &&
+                  !isInsideModal(el) && // PROTECT ALL MODAL ELEMENTS
                   el.id !== 'form-footer-nav' &&
-                  !el.getAttribute('data-form-footer')) {
+                  !el.getAttribute('data-form-footer') &&
+                  !el.getAttribute('data-modal-footer')) {
                 el.remove();
                 el.innerHTML = '';
               }

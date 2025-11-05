@@ -8,7 +8,10 @@
     "dev": "nodemon index.js",
     "start": "node index.js",
     "build:frontend": "cd ../frontend && npm run build",
-    "serve:prod": "npm run build:frontend && node index.js"
+    "serve:prod": "npm run build:frontend && node index.js",
+    "upload-assets": "node scripts/upload-assets.js",
+    "update-guidebook": "node scripts/update-guidebook-assets.js",
+    "verify-storage": "node scripts/verify-storage-permissions.js"
   },
   "dependencies": {
     "axios": "^1.12.2",
