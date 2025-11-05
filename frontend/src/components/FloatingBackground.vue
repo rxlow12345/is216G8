@@ -43,10 +43,15 @@ export default {
 /* Floating Animals */
 .floating-animals {
   position: fixed;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  left: 0;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100vh;
   pointer-events: none;
   z-index: 0;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
 }
 
 .floating-animal {
@@ -54,6 +59,8 @@ export default {
   font-size: 40px;
   opacity: 0.15;
   animation: float 20s infinite ease-in-out;
+  max-width: 100vw;
+  overflow: hidden;
 }
 
 @keyframes float {
@@ -71,6 +78,8 @@ export default {
   color: #10b981;
   pointer-events: none;
   z-index: 0;
+  max-width: 100vw;
+  overflow: hidden;
 }
 
 .leaf-top { top: 40px; left: 40px; }

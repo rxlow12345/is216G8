@@ -149,10 +149,15 @@
 /* Floating Animals */
 .floating-animals {
   position: fixed;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  left: 0;
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100vh;
   pointer-events: none;
   z-index: 0;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
 }
 
 /* Container */

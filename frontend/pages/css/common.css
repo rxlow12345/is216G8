@@ -10,6 +10,24 @@ rgb(254, 250, 224); WHITE YELLOW
 * {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+/* Global fix for floating-animals to prevent horizontal scroll */
+/* Only target .floating-animals specifically, not other floating elements */
+.floating-animals,
+div[class*="floating-animals"] {
+  max-width: 100vw !important;
+  width: 100vw !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Ensure floating-game-btn is NOT affected */
+.floating-game-btn {
+  /* Reset any potential interference - keep original styling */
+  width: auto !important;
+  max-width: none !important;
 }
 
 /* Banner Titles */

@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:4100/api/tasks";
+const API_URL = import.meta.env.VITE_API_URL 
+  ? `${import.meta.env.VITE_API_URL}/api/tasks`
+  : "/api/tasks"; // Use relative URL for production (proxied or same origin)
 
 // Fetch all tasks
 export const fetchTasks = async () => {

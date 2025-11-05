@@ -4,7 +4,7 @@
     "common_name": "Malayan Colugo (Flying Lemur)",
     "scientific_name": "Galeopterus variegatus",
     "description": "An arboreal gliding mammal found in some Singapore forest patches, rarely seen though.",
-    "image_url": "/src/public/assets/MalayanColugo.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/MalayanColugo.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Galeopterus_variegatus"
   },
   {
@@ -12,7 +12,7 @@
     "common_name": "Sunda Slow Loris",
     "scientific_name": "Nycticebus coucang",
     "description": "A nocturnal primate recorded in Singapore (though rare) with big eyes and slow movements.",
-    "image_url": "/src/public/assets/SundaSlowLoris.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/SundaSlowLoris.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Sunda_slow_loris"
   },
   {
@@ -20,7 +20,7 @@
     "common_name": "Long-tailed Macaque",
     "scientific_name": "Macaca fascicularis",
     "description": "Same species as Crab-eating Macaque (alternate common name); widespread around Singapore’s nature reserves.",
-    "image_url": "/src/public/assets/LongTailedMacaque.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/LongTailedMacaque.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Macaca_fascicularis"
   },
   {
@@ -28,7 +28,7 @@
     "common_name": "Sambar Deer",
     "scientific_name": "Rusa unicolor",
     "description": "A large deer species once more common in Singapore’s forest reserves; very rare now locally.",
-    "image_url": "/src/public/assets/SambarDeer.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/SambarDeer.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Rusa_unicolor"
   },
   {
@@ -36,7 +36,7 @@
     "common_name": "Greater Mouse-deer",
     "scientific_name": "Tragulus napu",
     "description": "Another chevrotain species recorded on Singapore’s offshore islands and forested catchments; small shy deer-like animal.",
-    "image_url": "/src/public/assets/GreaterMouseDeer.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/GreaterMouseDeer.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Tragulus_napu"
   },
   {
@@ -44,7 +44,7 @@
     "common_name": "Pygmy Fruit Bat",
     "scientific_name": "Aethalops alecto",
     "description": "A small fruit bat species found in Singapore’s forests; part of the bat diversity in the city state.",
-    "image_url": "/src/public/assets/PygmyFruitBat.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/PygmyFruitBat.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Aethalops_alecto"
   },
   {
@@ -52,7 +52,7 @@
     "common_name": "Sunda Pangolin",
     "scientific_name": "Manis javanica",
     "description": "It is covered in scaled that are made of compressed hair. When threatened, it curls up into an armoured ball.",
-    "image_url": "/src/public/assets/SundaPangolin.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/SundaPangolin.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Sunda_pangolin"
   },
   {
@@ -60,7 +60,7 @@
     "common_name": "Malayan Porcupine",
     "scientific_name": "Hystrix brachyura",
     "description": "A nocturnal rodent with quills, recorded on some of Singapore’s offshore islands and less-disturbed forest patches.",
-    "image_url": "/src/public/assets/MalayanPorcupine.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/MalayanPorcupine.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Hystrix_brachyura"
   },
   {
@@ -68,7 +68,7 @@
     "common_name": "Wild Boar",
     "scientific_name": "Sus scrofa",
     "description": "Common in forests and nature reserves; forages in groups. If spotted, please REPORT immediately!",
-    "image_url": "/src/public/assets/WildBoar.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/WildBoar.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Wild_boar"
   },
   {
@@ -76,7 +76,7 @@
     "common_name": "Asian Palm Civet",
     "scientific_name": "Paradoxurus Hermaphroditus",
     "description": "Nocturnal mammal found mainly in trees. Often seen near urbanised areas. The Asian Palm Civets are commonly spotted in Singapore.",
-    "image_url": "/src/public/assets/PalmCivet.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/PalmCivet.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/paradoxurus_hermaphroditus"
   },
   {
@@ -84,7 +84,7 @@
     "common_name": "Smooth Otter",
     "scientific_name": "Lutrogale Perspicillata",
     "description": "Often seen in coastal habitats, largely in mangroves and mudflats. Active during day and night, and mainly feeds on fish.",
-    "image_url": "/src/public/assets/SmoothOtter.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/SmoothOtter.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Smooth_otter"
   },
   {
@@ -92,15 +92,15 @@
     "common_name": "Plantain Squirrel",
     "scientific_name": "Callosciurus Notatus",
     "description": "Active both day and night. Feeds on a mixed of animal and plant material. Buids a spherical nest of twigs.",
-    "image_url": "/src/public/assets/PlantainSquirrel.png",
-    "learn_more_url":"https://www.nparks.gov.sg/florafaunaweb/fauna/4/8/488"
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/PlantainSquirrel.png",
+    "learn_more_url": "https://www.nparks.gov.sg/florafaunaweb/fauna/4/8/488"
   },
   {
     "category": "Marine",
     "common_name": "Small Giant Clam",
     "scientific_name": "Tridacna Maxima",
     "description": "Helps to clean up water column by filtering out nutrients and larger particles. Was last recorded in Singapore in 2003.",
-    "image_url": "/src/public/assets/SmallGiantClam.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/SmallGiantClam.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Tridacna_gigas"
   },
   {
@@ -108,7 +108,7 @@
     "common_name": "Hawksbill Sea Turtle",
     "scientific_name": "Eretmochelys imbricata",
     "description": "Have been regularly sighted along the Singapore Strait. Females have been spotted coming ashore at East Coast Park to lay eggs.",
-    "image_url": "/src/public/assets/HawksbillSeaTurtle.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/HawksbillSeaTurtle.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Eretmochelys_imbricata"
   },
   {
@@ -116,7 +116,7 @@
     "common_name": "Green Sea Turtle",
     "scientific_name": "Chelonia mydas",
     "description": "Another sea-turtle species found in the waters around Singapore, foraging on seagrass and reef flats.",
-    "image_url": "/src/public/assets/GreenSeaTurtle.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/GreenSeaTurtle.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Green_sea_turtle"
   },
   {
@@ -124,7 +124,7 @@
     "common_name": "Coral Grouper",
     "scientific_name": "Plectropomus leopardus",
     "description": "A reef fish species found around Singapore’s coral reefs and island reefs; spotted body and sought after in diving sites.",
-    "image_url": "/src/public/assets/CoralGrouper.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/CoralGrouper.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Plectropomus_leopardus"
   },
   {
@@ -132,7 +132,7 @@
     "common_name": "Humphead Wrasse",
     "scientific_name": "Cheilinus undulatus",
     "description": "An endangered coral reef fish—growing over six feet long—with a prominent bulge on its forehead. Some of them live to be over 30 years old.",
-    "image_url": "/src/public/assets/HumpheadWrasse.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/HumpheadWrasse.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Cheilinus_undulatus"
   },
   {
@@ -140,7 +140,7 @@
     "common_name": "Mangrove Horseshoe Crab",
     "scientific_name": "Carcinoscorpius rotundicauda",
     "description": "Normally seen when they come up to the edge of the shore to breed. Grows up to an average diameter of 150mm.",
-    "image_url": "/src/public/assets/HorseshoeCrab.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/HorseshoeCrab.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Carcinoscorpius_rotundicauda"
   },
   {
@@ -148,7 +148,7 @@
     "common_name": "Blue-ringed Angelfish",
     "scientific_name": "Pomacanthus annularis",
     "description": "Juveniles are found in shallow areas. Adults are often found in pairs. Are unfortunately often harvested from the wild for live aquarium trade.",
-    "image_url": "/src/public/assets/BlueRingedAngelfish.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/BlueRingedAngelfish.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Pomacanthus_annularis"
   },
   {
@@ -156,7 +156,7 @@
     "common_name": "Spotted Eagle Ray",
     "scientific_name": "Aetobatus narinari",
     "description": "Was sighted swimming peacefully near VivoCity in 2021. Has spotted pattern and wide pectoral fins.",
-    "image_url": "/src/public/assets/SpottedEagleRay.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/SpottedEagleRay.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Aetobatus_narinari"
   },
   {
@@ -164,7 +164,7 @@
     "common_name": "Bottlenose Dolphin",
     "scientific_name": "Tursiops aduncus",
     "description": "By releasing air through their blowholes, producing their unique signature whistle to broadcast their identity",
-    "image_url": "/src/public/assets/BottleNoseDolphin.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/BottleNoseDolphin.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Tursiops_aduncus"
   },
   {
@@ -172,7 +172,7 @@
     "common_name": "Clownfish (Orange-anemonefish)",
     "scientific_name": "Amphiprion percula",
     "description": "A small reef fish found around coral reef areas near Singapore’s islands; iconic bright orange with white bands.",
-    "image_url": "/src/public/assets/ClownFish.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/ClownFish.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Amphiprion_percula"
   },
   {
@@ -180,7 +180,7 @@
     "common_name": "Moray Eel",
     "scientific_name": "Gymnothorax javanicus",
     "description": "Usually seen only at night and in the more undisturbed shores with reefs and coral rubble. Often mistaken for snakes.",
-    "image_url": "/src/public/assets/MorayEel.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/MorayEel.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Gymnothorax_javanicus"
   },
   {
@@ -188,7 +188,7 @@
     "common_name": "Spitting Cobra (Equatorial Spitting Cobra)",
     "scientific_name": "Naja sumatrana",
     "description": "Highly venomous. Ejects fine sprays of venom, can cause discomfort and temporary blindness. Please keep your distance and REPORT immediately.",
-    "image_url": "/src/public/assets/SpittingCobra.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/SpittingCobra.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Naja_sumatrana"
   },
   {
@@ -196,7 +196,7 @@
     "common_name": "Green Crested Lizard",
     "scientific_name": "Bronchocela cristatella",
     "description": "When threatened, body colour changes from brigt green to dark brown or grey.",
-    "image_url": "/src/public/assets/GreenCrestedLizard.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/GreenCrestedLizard.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Bronchocela_cristatella"
   },
   {
@@ -204,7 +204,7 @@
     "common_name": "Tokay Gecko",
     "scientific_name": "Gekko gecko",
     "description": "Large, nocturnal species that are critically endangered in Singapore due to urbanisation.",
-    "image_url": "/src/public/assets/TokayGecko.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/TokayGecko.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Gekko_gecko"
   },
   {
@@ -212,7 +212,7 @@
     "common_name": "Monitor Lizard (Malayan Water Monitor)",
     "scientific_name": "Varanus salvator",
     "description": "Found in forests, mangrove swamps, and even man-made canals. Plays an important role as scavengers in biomass decomposition and recycling.",
-    "image_url": "/src/public/assets/MonitorLizard.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/MonitorLizard.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Water_monitor_lizard"
   },
   {
@@ -220,7 +220,7 @@
     "common_name": "Paradise Tree Snake",
     "scientific_name": "Chrysopelea paradisi",
     "description": "Has the astonishing ability to 'fly' from tree to tree. Found in our natural reserves.",
-    "image_url": "/src/public/assets/ParadiseTreeSnake.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/ParadiseTreeSnake.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Chrysopelea_paradisi"
   },
   {
@@ -228,7 +228,7 @@
     "common_name": "Common Sun Skink",
     "scientific_name": "Eutropis multifasciata",
     "description": "Widespread in wooded areas, mangroves, and parkland. Feeds mainly on insects and bears live young.",
-    "image_url": "/src/public/assets/SunSkink.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/SunSkink.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Eutropis_multifasciata"
   },
   {
@@ -236,7 +236,7 @@
     "common_name": "Singapore Swamp Skink",
     "scientific_name": "Tytthoscincus temasekensis",
     "description": "Small and highly elusive. Typically encountered next to shallow streams.",
-    "image_url": "/src/public/assets/SingaporeSwampSkink.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/SingaporeSwampSkink.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Tytthoscincus_temasekensis"
   },
   {
@@ -252,7 +252,7 @@
     "common_name": "Sumatran Flying Dragon",
     "scientific_name": "Draco Sumatranus",
     "description": "Capable of gliding from tree to tree by  extending its ribs. Feeds on ants and termites",
-    "image_url": "/src/public/assets/FlyingDragon.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/FlyingDragon.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Draco_sumatranus"
   },
   {
@@ -260,7 +260,7 @@
     "common_name": "Common Tree Frog",
     "scientific_name": "Polypedates leucomystax",
     "description": "A small frog species commonly found around Singapore, especially in urban gardens and forests.",
-    "image_url": "/src/public/assets/TreeFrog.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/TreeFrog.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Polypedates_leucomystax"
   },
   {
@@ -268,7 +268,7 @@
     "common_name": "Banded Bullfrog",
     "scientific_name": "Kaloula Pulchra",
     "description": "Their calls are usually heard before and after heavy rain. Found on tree trunks and usually inhabits built-up areas.",
-    "image_url": "/src/public/assets/BandedBullfrog.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/BandedBullfrog.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Kaloula_pulchra"
   },
   {
@@ -276,7 +276,7 @@
     "common_name": "Asian Koel",
     "scientific_name": "Eudynamys scolopaceus",
     "description": "A fairly common resident bird in Singapore, often heard (male with deep 'koo-el' calls) especially in open woodland and parks.",
-    "image_url": "/src/public/assets/AsianKoel.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/AsianKoel.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Asian_koel"
   },
   {
@@ -284,7 +284,7 @@
     "common_name": "Olive-winged Bulbul",
     "scientific_name": "Pycnonotus plumosus",
     "description": "A common bulbul species in Singapore’s lowland forests, edges, and mangroves. Sing us a simple series of bubbly warbling interspersed with sharper notes.",
-    "image_url": "/src/public/assets/OliveWingedBulbul.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/OliveWingedBulbul.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Olive-winged_bulbul"
   },
   {
@@ -292,7 +292,7 @@
     "common_name": "Collared Kingfisher",
     "scientific_name": "Todiramphus chloris",
     "description": "A widespread kingfisher in Singapore, found near coastlines, mangroves and even parks. When in flight, shows uniform turquoise upperparts.",
-    "image_url": "/src/public/assets/CollaredKingfisher.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/CollaredKingfisher.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Collared_kingfisher"
   },
   {
@@ -300,7 +300,7 @@
     "common_name": "White-throated Kingfisher",
     "scientific_name": "Halcyon smyrnensis",
     "description": "A kingfisher species found in Singapore’s reservoirs and open habitats, with bright blue back, chestnut head, and a dark red bill.",
-    "image_url": "/src/public/assets/WhiteThroatedKingfisher.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/WhiteThroatedKingfisher.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/White-throated_kingfisher"
   },
   {
@@ -308,7 +308,7 @@
     "common_name": "Blue-winged Pitta",
     "scientific_name": "Pitta moluccensis",
     "description": "A migratory bird that visits Singapore during the non-breeding season, but has been recorded breeding in the country, particularly on Palau Ubin.",
-    "image_url": "/src/public/assets/BlueWingedPitta.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/BlueWingedPitta.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Blue-winged_pitta"
   },
   {
@@ -316,7 +316,7 @@
     "common_name": "Pink-necked Green Pigeon",
     "scientific_name": "Treron vernans",
     "description": "A colourful pigeon species found in Singapore’s parks and gardens. Both male and female are involved in the incubation of eggs and care of young chicks.",
-    "image_url": "/src/public/assets/PinkNeckedGreenPigeon.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/PinkNeckedGreenPigeon.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Pink-necked_green_pigeon"
   },
   {
@@ -324,15 +324,15 @@
     "common_name": "Red Junglefowl",
     "scientific_name": "Gallus gallus domesticus",
     "description": "Resembles the domestic chicken, but have grey feet and brighter plumage. Common around Singapore.",
-    "image_url": "/src/public/assets/RedJunglefowl.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/RedJunglefowl.png",
     "learn_more_url": "https://en.wikipedia.org/wiki/Chicken"
-  }, 
+  },
   {
     "category": "Birds",
     "common_name": "Common Myna",
     "scientific_name": "Acridotheres Tritis",
     "description": "Extremely common around Singapore. Nesting site can be anywhere including cracks in buildings.",
-    "image_url": "/src/public/assets/CommonMyna.png",
+    "image_url": "https://storage.googleapis.com/wad2-92dca.firebasestorage.app/assets/CommonMyna.png",
     "learn_more_url": "https://www.nparks.gov.sg/publications-resources/articles/what-s-that-(black)-bird"
   }
 ]

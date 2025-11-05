@@ -16,7 +16,22 @@ import reportRoutes from "./src/routes/reports.js";
 import mapRoutes from "./src/routes/maps.js";
 
 const app = express();
-app.use(cors());
+// CORS configuration - support both development and production URLs
+const allowedOrigins = process.env.FRONTEND_URL 
+  ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
+  : ['http://localhost:5175'];
+app.use(cors({
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
  
 // Configure body parser with higher limits
 app.use(express.json({ 
@@ -37,16 +52,18 @@ app.use("/api/maps", mapRoutes);
 
 const server = http.createServer(app);
 // SOCKET 
+const socketOrigins = process.env.FRONTEND_URL 
+  ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
+  : ['http://localhost:5175'];
 const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5175',
+    origin: socketOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true
-  },
-  pingTimeout: 5000,
-  pingInterval: 10000,
+  }
 });
-server.listen(4100, () => console.log('Server running on port 4100'));
+const PORT = process.env.PORT || 4100;
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 // Make io accessible in routes
 app.set('io', io);
 
@@ -104,5 +121,3 @@ app.get("/api/health", (req, res) => {
 });
 
 // Static file serving disabled for development
-
-const PORT = process.env.PORT || 4100;

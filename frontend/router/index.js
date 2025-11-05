@@ -67,7 +67,8 @@ const routes = [
   {
     path: '/status/:id',
     name: 'Status',       
-    component: Status      
+    component: Status,
+    meta: { requiresAuth: true, roles: ['reporter', 'volunteer'] }
   },
   {
     path:'/guidebook/game',
@@ -114,14 +115,15 @@ const routes = [
   {
     path: '/all-reports',
     name: 'All Reporter Reports',
-    component: AllReporterReports
+    component: AllReporterReports,
+    meta: { requiresAuth: true, roles: ['reporter'] }
   },
   {
     path: '/new-report',
     name: 'New Report',
     component: NewReport,
-    meta: { requiresAuth: false }
-  }
+    meta: { requiresAuth: true, roles: ['reporter'] }
+  },
 ];
 
 // 2. Create the router instance
@@ -142,8 +144,6 @@ let currentUser = null;
 
 // Listen to authentication state changes
 onAuthStateChange(async (user) => {
-  isAuthReady = true;
-  
   if (user) {
     // User is logged in, fetch their role
     try {
@@ -157,71 +157,32 @@ onAuthStateChange(async (user) => {
     currentUser = null;
   }
   
-  // Handle navigation based on auth state
-  handleAuthNavigation();
+  // Mark auth as ready after first state change
+  if (!isAuthReady) {
+    isAuthReady = true;
+    // If we're on a route that requires auth and user is not logged in, redirect will happen in beforeEach
+    // If user is logged in and on login/signup, redirect will happen in beforeEach
+    // Don't force navigation here - let beforeEach handle it
+  }
 });
-
-/**
- * Handle navigation based on authentication state and user role
- */
-function handleAuthNavigation() {
-  if (!isAuthReady) return;
-  
-  const currentRoute = router.currentRoute.value;
-  const requiresAuth = currentRoute.meta.requiresAuth;
-  const allowedRoles = currentRoute.meta.roles;
-  
-  // If route requires auth but user is not logged in
-  if (requiresAuth && !currentUser) {
-    router.push('/login');
-    return;
-  }
-  
-  // If user is logged in but doesn't have required role
-  if (currentUser && allowedRoles && !allowedRoles.includes(currentUser.role)) {
-    // Redirect based on user role
-    switch (currentUser.role) {
-      case 'admin':
-        router.push('/admin');
-        break;
-      case 'reporter':
-        router.push('/report');
-        break;
-      case 'volunteer':
-        router.push('/volunteer/home');
-        break;
-      default:
-        router.push('/login');
-    }
-    return;
-  }
-  
-  // If user is logged in and trying to access login/signup or root, redirect to their dashboard
-  if (currentUser && (currentRoute.path === '/login' || currentRoute.path === '/signup')) {
-    switch (currentUser.role) {
-      case 'admin':
-        router.push('/admin');
-        break;
-      case 'reporter':
-        router.push('/report');
-        break;
-      case 'volunteer':
-        router.push('/volunteer/home');
-        break;
-    }
-  }
-}
 
 // Navigation guard
 router.beforeEach(async (to, from, next) => {
-  // Wait for auth to be ready
+  // Wait for auth to be ready (with timeout to prevent infinite waiting)
   if (!isAuthReady) {
-    // Wait a bit and try again
-    setTimeout(() => {
-      router.push(to.path);
-    }, 100);
-    next(false); // must call next() to cancel the current navigation
-    return;
+    // Wait for auth state to initialize
+    let attempts = 0;
+    const maxAttempts = 50; // 5 seconds max wait
+    
+    while (!isAuthReady && attempts < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      attempts++;
+    }
+    
+    // If still not ready after max attempts, proceed anyway (auth might be taking longer)
+    if (!isAuthReady) {
+      console.warn('Auth not ready after waiting, proceeding with navigation');
+    }
   }
   
   const requiresAuth = to.meta.requiresAuth;
