@@ -178,6 +178,12 @@ body .bannerTitles {
   scale: 1.05;
 }
 
+@media (max-width: 520px){
+  .floating-game-btn{
+    padding: 5px 12px;
+  }
+}
+
 .learnMoreBtn {
   padding: 1px 1px;
   text-decoration: None;

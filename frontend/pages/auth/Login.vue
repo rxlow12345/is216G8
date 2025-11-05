@@ -1,7 +1,9 @@
 <!-- frontend/src/pages/Login.vue -->
 <template>
   <FloatingBackground/>
-  <OtterCursor animal="🦦" :speed="0.08"/>
+  <AnimalTrail/>
+  <OtterCursor animal="🦦" :speed="0.08" />
+
   <div class="wrapper">
     <div class="loginContainer">
       <div class="auth-card">
@@ -97,17 +99,10 @@
             <router-link to="/signup" class="signup-link">Sign up here</router-link>
           </p>
         </div>
-
-        <!-- Footer Critters -->
-        <div class="footer-critters">
-          <span class="critter">🦝</span>
-          <span class="critter">🐿️</span>
-          <span class="critter">🦔</span>
-          <span class="critter">🦉</span>
         </div>
       </div>
     </div>
-  </div>
+
 </template>
 
 <script setup>
@@ -119,6 +114,7 @@ import '../css/common.css'
 import '../css/login.css'
 import OtterCursor from '../../src/components/OtterCursor.vue';
 import FloatingBackground from '../../src/components/FloatingBackground.vue';
+import AnimalTrail from '../../src/components/AnimalTrail.vue';
 
 // Reactive data
 const email = ref('');

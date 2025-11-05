@@ -217,7 +217,7 @@ export default {
       const width = window.innerWidth
       let newCount = 10
       if (width <= 500) {
-        newCount = 4       // very small screens → 1 card per page
+        newCount = 8       // very small screens → 1 card per page
       } else if (width <= 768) {
         newCount = 8       // small screens → 2 cards per page
       } else if (width <= 1027) {
@@ -280,15 +280,11 @@ export default {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  /* spacing between cards */
   justify-content: center;
-  /* This will now correctly center the non-stretched cards */
   padding: 0 1rem;
-  /* Add some padding to the container for better spacing on edges */
 }
 
 .animal-card {
-  /* Mobile-first: 1 per row. flex-grow is 0. */
   flex: 0 1 100% !important;
   max-width: 100%;
 }

@@ -3,7 +3,7 @@
   <div class="wrapper">
     <!-- Floating Animals Background -->
     <FloatingBackground/>
-
+    <AnimalTrail/>
     <OtterCursor animal="🦦" :speed="0.08"/>
 
     <div class="loginContainer">
@@ -187,6 +187,7 @@ import FloatingBackground from '../../src/components/FloatingBackground.vue';
 import '../css/common.css'
 import '../css/login.css'
 import confetti from 'canvas-confetti';
+import AnimalTrail from '../../src/components/AnimalTrail.vue';
 
 // Reactive data
 const username = ref('');
@@ -373,6 +374,7 @@ function celebrateSignup() {
 
 .auth-card:hover {
   transform: translateY(-5px);
+  background:rgba(181, 162, 162, 0.1);
 }
 
 /* Alert Messages - Made MORE VISIBLE */

@@ -1,5 +1,5 @@
 <template>
-
+    <FloatingBackground/>
     <OtterCursor animal="🦦" :speed="0.08" />
     <div class="bannerTitles">
         <header class="text-center mb-2">
@@ -157,6 +157,7 @@ import { ref } from 'vue';
 import OtterCursor from './OtterCursor.vue';
 import FeedbackForm from './FeedbackForm.vue';
 import '../../pages/css/common.css'
+import FloatingBackground from './FloatingBackground.vue';
 
 
 const faqs = ref([

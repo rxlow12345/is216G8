@@ -172,34 +172,6 @@
       </div>
       </div>
     </section>
-
-
-    <!--======================== Final CTA Section ========================
-    <section class="final-cta-section">
-      <div class="container">
-        <div class="final-cta-card">
-          <h2>Help Us Make a Difference!</h2>
-          <p>Donate to CritterConnect's Partners Today</p>
-         
-          <div class="cta-buttons">
-            <router-link to="/donate" class="btn btn-donate">
-              Learn More About Our Partners
-            </router-link>
-          </div>
-
-
-          
-          <div class="footer-critters">
-            <span class = "critter">🦔</span>
-            <span class = "critter">🦅</span>
-            <span class = "critter">🐿️</span>
-            <span class = "critter">🦉</span>
-            <span class = "critter">🦜</span>
-          </div>
-        </div>
-      </div>
-    </section>
-  -->
   </div>
 </template>
 
