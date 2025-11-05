@@ -17,69 +17,60 @@
       </span>
 
       <!-- Toggler (no data-API; click is programmatic) -->
-      <button ref="navbarToggler" class="navbar-toggler navbarToggle order-2" type="button" aria-controls="navbarNav"
-        :aria-expanded="false" aria-label="Toggle navigation" @click="onTogglerClick">
+      <button
+        ref="navbarToggler"
+        class="navbar-toggler navbarToggle order-2"
+        type="button"
+        aria-controls="navbarNav"
+        :aria-expanded="false"
+        aria-label="Toggle navigation"
+        @click="onTogglerClick"
+      >
         <img id="navbarToggleBurger" :src="iconSrc" alt="menu">
       </button>
 
       <!-- Collapsible nav -->
-      <div ref="navbarCollapse" class="collapse navbar-collapse justify-content-end order-2" id="navbarNav">
+      <div
+        ref="navbarCollapse"
+        class="collapse navbar-collapse justify-content-end order-2"
+        id="navbarNav"
+      >
         <ul class="navbar-nav navbarNav text-center">
           <!-- Always visible links -->
           <li class="nav-item">
-            <router-link class="nav-link navLink" to="/" exact-active-class="active"
-              @click="collapseNavbar">Home</router-link>
+            <router-link class="nav-link navLink" to="/" exact-active-class="active" @click="collapseNavbar">Home</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link navLink" to="/guidebook" exact-active-class="active"
-              @click="collapseNavbar">Guidebook</router-link>
+            <router-link class="nav-link navLink" to="/guidebook" exact-active-class="active" @click="collapseNavbar">Guidebook</router-link>
           </li>
 
           <li class="nav-item">
-            <router-link class="nav-link navLink" to="/donate" exact-active-class="active"
-              @click="collapseNavbar">Donate</router-link>
+            <router-link class="nav-link navLink" to="/donate" exact-active-class="active" @click="collapseNavbar">Donate</router-link>
           </li>
 
           <li class="nav-item">
-            <router-link class="nav-link navLink" to="/learn-more" exact-active-class="active"
-              @click="collapseNavbar">Resources</router-link>
-          </li>
-
-          <li v-if="auth.role === 'admin'" class="nav-item">
-            <router-link class="nav-link navLink" to="/map" exact-active-class="active"
-              @click="collapseNavbar">Map</router-link>
-          </li>
-
-          <li v-if="auth.role === 'admin'" class="nav-item">
-            <router-link class="nav-link navLink" to="/volunteer/active" exact-active-class="active"
-              @click="collapseNavbar">Active</router-link>
+            <router-link class="nav-link navLink" to="/learn-more" exact-active-class="active" @click="collapseNavbar">Resources</router-link>
           </li>
 
           <!-- Only if not logged in -->
           <li v-if="!auth.uid" class="nav-item">
-            <router-link class="nav-link navLink" to="/login" exact-active-class="active"
-              @click="collapseNavbar">Login</router-link>
+            <router-link class="nav-link navLink" to="/login" exact-active-class="active" @click="collapseNavbar">Login</router-link>
           </li>
 
           <!-- Role dashboards -->
           <li v-if="auth.role === 'volunteer'" class="nav-item">
-            <router-link class="nav-link navLink" to="/volunteer/home" exact-active-class="active"
-              @click="collapseNavbar">Dashboard</router-link>
+            <router-link class="nav-link navLink" to="/volunteer/home" exact-active-class="active" @click="collapseNavbar">Dashboard</router-link>
           </li>
           <li v-if="auth.role === 'reporter'" class="nav-item">
-            <router-link class="nav-link navLink" to="/report" exact-active-class="active"
-              @click="collapseNavbar">Dashboard</router-link>
+            <router-link class="nav-link navLink" to="/report" exact-active-class="active" @click="collapseNavbar">Dashboard</router-link>
           </li>
           <li v-if="auth.role === 'admin'" class="nav-item">
-            <router-link class="nav-link navLink" to="/admin" exact-active-class="active"
-              @click="collapseNavbar">Admin</router-link>
+            <router-link class="nav-link navLink" to="/admin" exact-active-class="active" @click="collapseNavbar">Admin</router-link>
           </li>
-
 
           <!-- Logout -->
           <li v-if="auth.uid" class="nav-item">
-            <a class="nav-link navLink" href="#" @click.prevent="handleLogoutAndCollapse"
-              exact-active-class="active">Logout</a>
+            <a class="nav-link navLink" href="#" @click.prevent="handleLogoutAndCollapse" exact-active-class="active">Logout</a>
           </li>
         </ul>
       </div>
@@ -119,7 +110,7 @@ export default {
       }
       return name;
     }
-  },
+},
   methods: {
     // programmatic toggle entrypoint
     onTogglerClick() {
@@ -238,9 +229,7 @@ export default {
 </script>
 
 <style>
-.navbar-brand {
-  margin-right: 8px;
-}
+.navbar-brand { margin-right: 8px; }
 
 .critterTitle {
   display: inline-block;
@@ -262,22 +251,11 @@ export default {
 #navbarToggleBurger {
   transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
 }
-
-.navFadeOut {
-  opacity: 0 !important;
-  transform: scale(0.8) !important;
-}
-
-.navFadeIn {
-  opacity: 1 !important;
-  transform: scale(1) !important;
-}
+.navFadeOut { opacity: 0 !important; transform: scale(0.8) !important; }
+.navFadeIn { opacity: 1 !important; transform: scale(1) !important; }
 
 /* optional: center items on mobile menu */
 @media (max-width: 767.98px) {
-  .navbarNav .nav-link {
-    font-size: 1.25rem;
-    padding: 0.5rem 0;
-  }
+  .navbarNav .nav-link { font-size: 1.25rem; padding: 0.5rem 0; }
 }
 </style>
