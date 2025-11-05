@@ -17,13 +17,13 @@
       </div>
       <!-- Header -->
       <div class="header">
-        <p class="subtitle">{{ getCount() }} pending reports</p>
+        <p class="subtitle">{{ getCount() }} Pending Reports</p>
 
         <!-- Connection Status -->
         <div class="connection-status">
           <span class="status-dot" :class="{ active: isConnected }"></span>
           <span>{{ isConnected ? "Online" : "Offline" }}</span>
-          <span v-if="activeUsers > 0">({{ activeUsers }} active)</span>
+          <span v-if="activeUsers > 0">({{ activeUsers }} Active)</span>
         </div>
       </div>
 

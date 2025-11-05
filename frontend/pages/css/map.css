@@ -122,13 +122,49 @@
   cursor: pointer;
 }
 
-.accept-button:hover,
-.search-btn:hover {
-  opacity: 0.9; /* subtle hover effect */
-  background-color: #A8C686 !important;
-  color: #285436 !important;
+@media (max-width: 768px) {
+    .rescuemapwrapper {
+        height: 90vh;
+    }
+
+    .accept-button {
+        margin: 0 auto;
+        width: 300px !important;
+    }
 }
 
+@media (max-width: 520x) {
+    .accept-button {
+        margin: 0 auto;
+        width: 250px !important;
+    }
+}
+
+.report-card.severity-urgent {
+  border-left-color: #BC6C25 !important;
+}
+
+.report-card.severity-moderate {
+  border-left-color: #DDA15E !important;
+}
+
+.report-card.severity-low {
+  border-left-color: #6B8E23 !important;
+}
+
+.severity-badge.severity-urgent {
+  background-color: #BC6C25 !important;
+  color: white !important;
+}
+.severity-badge.severity-moderate {
+  background-color: #DDA15E !important;
+  color: white !important;
+  
+}
+.severity-badge.severity-low {
+  background-color: #6B8E23 !important;
+  color: white !important;
+}
 
 @media (max-width: 768px) {
   .rescuemapwrapper {
