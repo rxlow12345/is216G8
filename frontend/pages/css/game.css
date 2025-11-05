@@ -98,6 +98,26 @@ h1 {
   }
 }
 
+.modal-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.modal-btn.primary {
+  background-color: #285436;
+  color: rgb(254, 250, 224);
+}
+
+.modal-btn.primary:hover {
+  background-color: #606C38;;
+  transform: translateY(-2px);
+}
+
 /* Game Board */
 .generatingGameBoard {
   display: grid;

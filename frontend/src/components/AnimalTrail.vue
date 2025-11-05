@@ -24,12 +24,11 @@ import { ref, onMounted, onUnmounted } from 'vue';
 const animals = ref([]);
 let nextId = 0;
 let lastSpawnTime = 0;
-const spawnDelay = 50; // milliseconds between spawns (adjust for more/less animals)
+const spawnDelay = 90; //adjust to decrease animals
 
 const animalIcons = ['🐾', '🦊', '🐰', '🦝', '🦦'];
 
 function isOverAuthCard(x, y) {
-  // Check if mouse is over the auth card
   const authCard = document.querySelector('.auth-card');
   if (!authCard) return false;
   
@@ -45,11 +44,9 @@ function isOverAuthCard(x, y) {
 function spawnAnimalTrail(event) {
   const now = Date.now();
   
-  // Throttle spawning to prevent too many animals
   if (now - lastSpawnTime < spawnDelay) return;
   lastSpawnTime = now;
   
-  // Don't spawn if mouse is over the auth card
   if (isOverAuthCard(event.clientX, event.clientY)) return;
   
   const animal = {
@@ -77,11 +74,10 @@ function spawnAnimalTrail(event) {
       animals.value = animals.value.filter(a => a.id !== animal.id);
       clearInterval(fadeInterval);
     }
-  }, 16); // ~60fps
+  }, 16);
 }
 
 onMounted(() => {
-  // Listen to mousemove on the window instead of the container
   window.addEventListener('mousemove', spawnAnimalTrail);
 });
 
@@ -106,7 +102,7 @@ onUnmounted(() => {
   position: absolute;
   pointer-events: none;
   user-select: none;
-  transition: opacity 0.8s ease-out;
+  transition: opacity 0.6s ease-out;
 }
 
 @keyframes float {

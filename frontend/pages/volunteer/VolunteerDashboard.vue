@@ -12,8 +12,7 @@
 
     <div class="welcomeMessage">
       <div class="alertCustom">
-        <h5 class="alertHeading">Welcome To Your Dashboard </h5>
-        <p> Use the options below to navigate to volunteer tools. ⬇️</p>
+        <p> Select an option below to see your live, active, and past reports ⬇️</p>
       </div>
     </div>
 
@@ -100,7 +99,7 @@ const setupScrollAnimations = () => {
 }
 
 .alertCustom {
-  background: linear-gradient(135deg, #eebf9b 0%, #b5dab7 100%);
+  background: linear-gradient(135deg, #f4c27b 0%, #c6e0b4 100%);
   border-radius: 15px;
   padding: 25px;
   max-width: 950px;
@@ -109,20 +108,14 @@ const setupScrollAnimations = () => {
   transition: transform 0.3s ease;
 }
 
+.alertCustom p {
+  color: #2c3e1f;
+  margin-top: 10px;
+  font-size:18px;
+}
+
 .alertCustom:hover {
   transform: translateY(-5px);
-}
-
-.alertHeading {
-  font-size: 30px;
-  font-weight: 400;
-  color: #285436;
-}
-
-.welcomeMessage p {
-  font-size: 18px;
-  color: #3A4D37;
-  margin-top: 10px;
 }
 
 /* Button Sections */

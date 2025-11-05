@@ -1,5 +1,7 @@
 <!-- src/components/StatusUpdate.vue -->
 <template>
+  <OtterCursor animal="🦦" :speed="0.08" />
+  <BackToTop/>
   <!-- Main container -->
   <div class="container-fluid p-0">
 
@@ -204,11 +206,6 @@
       </Teleport>
 
     </div>
-
-    <!-- Back to Top Button -->
-    <button class="back-to-top" @click="scrollToTop" v-show="showBackToTop">
-      <i class="bi bi-arrow-up"></i>
-    </button>
   </div>
 </template>
 
@@ -217,10 +214,12 @@ import api from '../../src/api/reportApi.js';
 import { logout, getCurrentUser } from '../../src/api/auth.js';
 import Modal from './Modal.vue';
 import '../css/common.css'
+import OtterCursor from '../../src/components/OtterCursor.vue';
+import BackToTop from '../../src/components/BackToTop.vue';
 
 export default {
   name: 'StatusUpdate',
-  components: { Modal },
+  components: { Modal, OtterCursor, BackToTop},
   data() {
     return {
       showModal: false,

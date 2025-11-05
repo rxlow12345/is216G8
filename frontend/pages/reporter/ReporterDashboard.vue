@@ -131,18 +131,15 @@ onMounted(async () => {
   margin: 40px 10px 20px 10px;
 }
 
-/* .alertCustom {
-  background: linear-gradient(135deg, #eebf9b 0%, #b5dab7 100%);
-  border-radius: 15px;
-  padding: 25px;
-  max-width: 950px;
-  margin: 0 auto;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-} */
+.alertCustom p {
+  color: #2c3e1f;
+  font-size: 18px;
+  margin-top: 10px;
+}
+
 
 .alertCustom {
-  background: linear-gradient(135deg, #eebf9b 0%, #b5dab7 100%);
+  background: linear-gradient(135deg, #f4c27b 0%, #c6e0b4 100%);
   border-radius: 15px;
   padding: 25px;
   max-width: 950px;
@@ -160,13 +157,6 @@ onMounted(async () => {
   font-weight: 400;
   color: #285436;
 }
-
-.welcomeMessage p {
-  font-size: 18px;
-  color: #3A4D37;
-  margin-top: 10px;
-}
-
 
 /* Button Sections */
 .buttonSections {
