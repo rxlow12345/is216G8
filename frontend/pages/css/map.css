@@ -5,12 +5,6 @@
   height: 100vh;
 }
 
-/* @media (max-width: 768px) {
-    .rescuemapwrapper {
-        height: 90vh;
-    }
-} */
-
 .sidebar {
   border-right: 1px solid #e5e7eb;
   height: 100%;
@@ -63,6 +57,11 @@
   margin-bottom: 20px;
 }
 
+.leaflet-popup-content h3,
+.animal-type {
+  text-transform: capitalize;
+}
+
 /* === Filters === */
 .filters {
   display: flex;
@@ -112,6 +111,7 @@
     margin-top: 10px;
 }
 
+.leaflet-popup-content button,
 .accept-button,
 .search-btn {
   background-color: #285436 !important;
@@ -120,6 +120,14 @@
   padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.leaflet-popup-content:hover button,
+.accept-button:hover,
+.search-btn:hover {
+  opacity: 0.9; /* subtle hover effect */
+  background-color: #A8C686 !important;
+  color: #285436 !important;
 }
 
 @media (max-width: 768px) {
@@ -152,15 +160,20 @@
   border-left-color: #6B8E23 !important;
 }
 
+/* .leaflet-popup-content span:nth-child(2), */
 .severity-badge.severity-urgent {
   background-color: #BC6C25 !important;
   color: white !important;
 }
+
+/* .leaflet-popup-content span:nth-child(2), */
 .severity-badge.severity-moderate {
   background-color: #DDA15E !important;
   color: white !important;
   
 }
+
+/* .leaflet-popup-content span:nth-child(2), */
 .severity-badge.severity-low {
   background-color: #6B8E23 !important;
   color: white !important;
