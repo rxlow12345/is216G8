@@ -1,4 +1,6 @@
 <script>
+import api from '../../src/api/reportApi.js';
+
 export default {
   props: ['selectedReport'],
   emits: ['close', 'statusChange'],
@@ -22,12 +24,38 @@ export default {
     },
     openStatusInNewTab(reportId) {
       const routeData = this.$router.resolve({
-        name: 'Status', // The name of the route
-        params: { id: reportId } // The dynamic part of the URL
+        name: 'Status',
+        params: { id: reportId }
       });
       window.open(routeData.href, '_blank');
+    },
+    async fetchEmail(reportId) {
+      try {
+        const res = await api.getUserEmail(reportId);
+        
+        this.email = res || 'Email not found'
+      } catch (err) {
+        console.log('Failed to fetch email:', err)
+        this.email = 'Error fetching email'
+      }
     }
-  }
+  },
+  data() {
+    return {
+      email: null
+    }
+  },
+  watch: {
+    // Watch for when the prop arrives or changes
+    selectedReport: {
+      immediate: true,
+      handler(newVal) {
+        if (newVal?.reportId) {
+          this.fetchEmail(newVal.reportId)
+        }
+      }
+    }
+  },
 }
 
 
@@ -97,8 +125,9 @@ export default {
                     <div class="info-row">
                       <i class="bi bi-person-circle info-icon"></i>
                       <div>
-                        <strong>Reporter UID:</strong>
-                        <span class="ms-2">{{ selectedReport.reporterId }}</span>
+                        <strong>Reporter Email: </strong>
+                        <span v-if="email" class="ms-2">{{ email }}</span>
+                        <span v-else class="ms-2">Not found</span>
                       </div>
                     </div>
                     <div class="info-row">
@@ -191,14 +220,16 @@ export default {
 /* Media query for tablet-sized screens and up */
 @media (min-width: 768px) {
   .modal-dialog.modal-lg {
-    max-width: 90%; /* You can adjust this percentage */
+    max-width: 90%;
+    /* You can adjust this percentage */
   }
 }
 
 /* Media query for tablet-sized screens and up */
 @media (min-width: 992px) {
   .modal-dialog.modal-lg {
-    max-width: 75%; /* You can adjust this percentage */
+    max-width: 75%;
+    /* You can adjust this percentage */
   }
 }
 

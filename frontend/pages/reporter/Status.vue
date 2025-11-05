@@ -136,6 +136,8 @@
               <Timeline
               v-if="(report.status === 'active' || report.status === 'resolved')"
               :reportId="report.reportId"
+              :volunteerETA="report.volunteerETA"
+              :timeAccepted="report.timeAccepted"
               >
               </Timeline>
 

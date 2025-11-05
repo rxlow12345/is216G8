@@ -198,7 +198,7 @@
       <!-- Modal -->
       <Teleport to="body">
         <!-- use the modal component, pass in the prop -->
-        <Modal :selectedReport="selectedReport" @close="this.selectedReport = null"
+        <Modal v-if="selectedReport" :selectedReport="selectedReport" @close="this.selectedReport = null"
           @statusChange="this.handleStatusChange">
         </Modal>
       </Teleport>

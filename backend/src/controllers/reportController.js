@@ -779,3 +779,66 @@ export const updateReportFields = async (req, res) => {
     });
   }
 };
+
+/**
+ * Gets the email of the user who reported the case
+ */
+export const getUserEmail = async (req, res) => {
+  try {
+    const { id } = req.params; // this will be the reportId value
+
+    const reportSnap = await db
+      .collection('incidentReports')
+      .where('reportId', '==', id)
+      .limit(1)
+      .get();
+
+    if (reportSnap.empty) {
+      return res.status(404).json({
+        success: false,
+        message: `Report not found: ${id}`,
+      });
+    }
+
+    const reportData = reportSnap.docs[0].data();
+    const { reporterId } = reportData;
+
+    if (!reporterId) {
+      return res.status(400).json({
+        success: false,
+        message: 'No UID found in the report data.',
+      });
+    }
+
+    const userRef = db.collection('users').doc(reporterId);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: `User not found for UID: ${reporterId}`,
+      });
+    }
+
+    const userData = userDoc.data();
+    const email = userData?.email;
+
+    if (!email) {
+      return res.status(404).json({
+        success: false,
+        message: 'Email not found for user.',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      email,
+    });
+  } catch (error) {
+    console.error('Error fetching user email:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve user email.',
+    });
+  }
+};

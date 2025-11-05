@@ -1,5 +1,4 @@
 // Backend API configuration, automatically detect environment
-// This logic is perfect for this file.
 const isDevelopment =
     window.location.hostname === 'localhost' ||
     window.location.hostname === '127.0.0.1';
@@ -133,6 +132,23 @@ const api = {
       throw new Error(result.message || 'Failed to get report from API.');
     }
     return result.data;
+  },
+    /**
+   * Gets the email of the user that reported the case
+   * @param {string} reportId - The report ID of the report to fetch.
+   * @returns {Promise<Object>} A promise that resolves to the report object.
+   */
+  async getUserEmail(reportId) {
+    const response = await fetch(`${API_BASE_URL}/reports/getReport/email/${reportId}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok while fetching the email.');
+    }
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to get email from API.');
+    }
+    
+    return result.email;
   },
 };
 

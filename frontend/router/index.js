@@ -68,7 +68,7 @@ const routes = [
     path: '/status/:id',
     name: 'Status',       
     component: Status,
-    meta: { requiresAuth: true, roles: ['reporter', 'volunteer'] }
+    meta: { requiresAuth: true, roles: ['reporter', 'volunteer', 'admin'] }
   },
   {
     path:'/guidebook/game',

@@ -66,6 +66,16 @@
 
 
           <div v-if="checkpoints[stage]?.completed" class="timeline-info card border-0 bg-light p-3 mt-2">
+            <div class="row mb-2" v-if="(stage === 'arrived' && timeAccepted)">
+              <div class="col-12 col-sm-4 fw-semibold">Time Accepted:</div>
+              <div class="col-12 col-sm-8">{{ toGMT8String(timeAccepted) }}</div>
+            </div>
+
+            <div class="row mb-2" v-if="(stage === 'arrived' && volunteerETA)">
+              <div class="col-12 col-sm-4 fw-semibold">Volunteer ETA:</div>
+              <div class="col-12 col-sm-8">{{ toGMT8String(volunteerETA) }}</div>
+            </div>
+
             <div class="row mb-2" v-if="checkpoints[stage].diagnosis">
               <div class="col-12 col-sm-4 fw-semibold">Diagnosis:</div>
               <div class="col-12 col-sm-8">{{ checkpoints[stage].diagnosis }}</div>
@@ -103,7 +113,7 @@ import '../css/common.css';
 
 export default {
   name: 'Timeline',
-  props: ['reportId'],
+  props: ['reportId', 'volunteerETA', 'timeAccepted'],
   data() {
     return {
       error: null,
@@ -175,6 +185,19 @@ export default {
       const formattedDate = date.toLocaleString('en-US', options);
       return formattedDate;
     },
+    toGMT8String(utcString) {
+      const date = new Date(utcString);
+      return date.toLocaleString('en-SG', {
+        timeZone: 'Asia/Singapore',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+    }
+    ,
     capitalize(str) {
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
