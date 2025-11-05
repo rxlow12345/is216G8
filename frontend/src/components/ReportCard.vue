@@ -10,17 +10,27 @@
   >
     <!-- Report Content -->
     <div class="report-content">
-      <!-- Header Section -->
+      <!-- Header Section (image + titles side by side) -->
       <div class="card-header">
-        <div class="title-row">
-          <h3 class="animal-type">{{ report.speciesName }}</h3>
-          <span class="severity-badge" :class="`severity-${report.severity}`">
-            {{ report.severity }}
-          </span>
+        <div class="header-row">
+          <div class="thumb" v-if="resolvedPhotoUrl || photoUrl">
+            <img :src="resolvedPhotoUrl || photoUrl" alt="Report photo" />
+          </div>
+          <div class="title-block">
+            <div class="title-row">
+              <h3 class="animal-type">{{ report.speciesName }}</h3>
+              <span class="severity-badge" :class="`severity-${report.severity}`">
+                {{ report.severity }}
+              </span>
+            </div>
+            <span
+              class="incident-badge"
+              :class="`incident-${report.incidentType?.toLowerCase()}`"
+            >
+              {{ report.incidentType }}
+            </span>
+          </div>
         </div>
-        <span class="incident-badge" :class="`incident-${report.incidentType?.toLowerCase()}`">
-          {{ report.incidentType }}
-        </span>
       </div>
 
       <!-- Description -->
@@ -61,7 +71,58 @@ export default {
       default: false,
     },
   },
+  computed: {
+    photoUrl() {
+      const r = this.report || {}
+      const pick = (arr) => Array.isArray(arr) && arr.length > 0 ? arr[0] : ""
+      const candidates = [
+        // Primary source: photoURLs (array) — take first image
+        pick(r.photoURLs),
+        pick(r.photosURL),
+        pick(r.photosUrl),
+        pick(r.photos),
+        // object forms: { url, downloadURL, path }
+        typeof r.photoURLs === 'object' && !Array.isArray(r.photoURLs) ? (r.photoURLs.url || r.photoURLs.downloadURL || r.photoURLs.path) : '',
+        typeof r.photosURL === 'object' && !Array.isArray(r.photosURL) ? (r.photosURL.url || r.photosURL.downloadURL || r.photosURL.path) : '',
+        r.photoURL,
+        r.photoUrl,
+        r.imageURL,
+        r.imageUrl,
+      ].filter(Boolean)
+      const url = candidates.find(u => typeof u === 'string' && (u.startsWith('http') || u.startsWith('data:') || u.startsWith('/') || u.startsWith('gs://')))
+      return url || ""
+    }
+  },
+  data(){
+    return { resolvedPhotoUrl: "" }
+  },
+  async mounted(){
+    await this.resolvePhotoUrl()
+  },
+  watch:{
+    report: { deep:true, handler(){ this.resolvePhotoUrl() } }
+  },
   methods: {
+    async resolvePhotoUrl(){
+      try{
+        if (this.photoUrl && (this.photoUrl.startsWith('http') || this.photoUrl.startsWith('data:') || this.photoUrl.startsWith('/'))){
+          this.resolvedPhotoUrl = this.photoUrl
+          return
+        }
+        const path = this.photoUrl
+        if (path && (path.startsWith('gs://') || !path.startsWith('http'))){
+          const { getStorage, ref, getDownloadURL } = await import('firebase/storage')
+          const storage = getStorage()
+          const storageRef = ref(storage, path)
+          this.resolvedPhotoUrl = await getDownloadURL(storageRef)
+          return
+        }
+        this.resolvedPhotoUrl = ""
+      } catch(e){
+        console.warn('Failed to resolve photo URL', e?.message)
+        this.resolvedPhotoUrl = ""
+      }
+    },
     handleLocation(report){
       if (typeof report.location === 'object'){
         return report.location.address
@@ -131,6 +192,59 @@ export default {
 </script>
 
 <style scoped>
+/* Header row layout */
+.card-header .header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.card-header .title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.card-header .title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.animal-type { /* ensure long names don’t overflow */
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Thumbnail */
+.thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  margin: 8px 0 10px;
+}
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* Thumbnail */
+.thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  margin: 8px 0 10px;
+}
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 .report-card {
   padding: 0;
   border-left: 5px solid #E5E7E8; 

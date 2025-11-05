@@ -11,7 +11,10 @@
   />
   <!-- Left Sidebar -->
   <div class="rescuemapwrapper">
-    <div class="sidebar">
+    <div class="sidebar" :class="{ 'mobile-sheet': true, expanded: isSheetExpanded }">
+      <div class="sheet-handle" @click="toggleSheet" title="Expand/collapse">
+        <span class="sheet-grabber"></span>
+      </div>
       <!-- Header -->
       <div class="header">
         <p class="subtitle">{{ getCount() }} pending reports</p>
@@ -25,16 +28,45 @@
       </div>
 
       <!-- Reports List -->
+      <div class="filters">
+        <div class="filter-group" role="group" aria-label="Urgency filter">
+          <button
+            type="button"
+            class="filter-btn"
+            :class="{ active: severityFilter === 'all' }"
+            @click="severityFilter = 'all'"
+          >All</button>
+          <button
+            type="button"
+            class="filter-btn"
+            :class="{ active: severityFilter === 'urgent' }"
+            @click="severityFilter = 'urgent'"
+          >High</button>
+          <button
+            type="button"
+            class="filter-btn"
+            :class="{ active: severityFilter === 'moderate' }"
+            @click="severityFilter = 'moderate'"
+          >Medium</button>
+          <button
+            type="button"
+            class="filter-btn"
+            :class="{ active: severityFilter === 'low' }"
+            @click="severityFilter = 'low'"
+          >Low</button>
+        </div>
+      </div>
+
       <div class="reports-list">
         <div v-if="loadingReports" class="empty-state">
           <p>Loading Reports...</p>
         </div>
-        <div v-else-if="reports?.length === 0" class="empty-state">
+        <div v-else-if="filteredReports?.length === 0" class="empty-state">
           <p>No reports found</p>
         </div>
         <ReportCard
           v-else
-          v-for="report in reports"
+          v-for="report in filteredReports"
           :key="report.reportId"
           :report="report"
           :selected="selectedReportId === report.reportId"
@@ -51,7 +83,7 @@
     <div class="map-container">
       <MapView
         ref="mapView"
-        :reports="reports"
+        :reports="filteredReports"
         :center="mapCenter"
         @acceptCase="acceptCaseFromCard"
       />
@@ -103,10 +135,20 @@ export default {
       showModal: false,
       selectedLocation: "",
       currentUser: "",
+      severityFilter: "all",
       notificationData: { title: "", message: "", type: "info", duration: 6000 },
+      
+      isSheetExpanded: false,
     };
   },
-  computed: {},
+  computed: {
+    sheetStyles() {
+      if (typeof window === 'undefined') return {};
+      if (window.innerWidth > 768) return {};
+      const h = this.isSheetExpanded ? '70vh' : '120px';
+      return { height: h };
+    },
+  },
   async mounted() {
     // Connect socket immediately; do not block on data/geocoding
     this.connectWebSocket();
@@ -121,21 +163,21 @@ export default {
     // next;
   },
   methods: {
+    toggleSheet() { this.isSheetExpanded = !this.isSheetExpanded; },
     showNotification(title = "", message = "", type = "info", duration = 6000) {
       this.notificationData = { title, message, type, duration };
       this.$nextTick(() => this.$refs.notify?.show());
     },
-    selectReport(report) {
+    async selectReport(report) {
       if (!report) return;
       this.selectedReportId = report.reportId;
       this.selectedDocId = report.id;
       // Immediately open the popup and pan to it for better UX
-      if (report.coordinates) {
-        // Let popup auto-pan keep it fully visible
-        this.$refs.mapView?.openMarkerPopup(report.reportId);
-      } else {
-        // Fallback to existing handler (will try after geocode if needed)
-        this.handleReportSelection();
+      const opened = await this.$refs.mapView?.openMarkerPopup(report.reportId, report);
+      if (!opened) {
+        // Retry on next tick in case markers are rebuilding
+        await this.$nextTick();
+        this.$refs.mapView?.openMarkerPopup(report.reportId, report);
       }
     },
     async ensureMapViewReady() {
@@ -584,6 +626,18 @@ export default {
     selectedReport() {
       return this.reports?.find((r) => r.reportId === this.selectedReportId);
     },
+    filteredReports() {
+      const list = Array.isArray(this.reports) ? this.reports : [];
+      const f = (this.severityFilter || "all").toLowerCase();
+      if (f === "all") return list;
+      if (f === "low") {
+        return list.filter((r) => {
+          const sev = (r?.severity || "").toLowerCase();
+          return sev !== "urgent" && sev !== "moderate";
+        });
+      }
+      return list.filter((r) => (r?.severity || "").toLowerCase() === f);
+    },
   },
   watch: {
     selectedReportId: {
@@ -652,9 +706,103 @@ export default {
   overflow-y: auto; /* Scroll only the report list */
 }
 
+.filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.filter-group { display: flex; gap: 8px; }
+.filter-btn {
+  padding: 6px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fff;
+  color: #374151;
+  font-size: 13px;
+  cursor: pointer;
+}
+.filter-btn:hover { background: #f9fafb; }
+.filter-btn.active {
+  background: #d1fae5;
+  border-color: #10b981;
+  color: #065f46;
+  font-weight: 600;
+}
+
 .empty-state {
   text-align: center;
   color: #6b7280;
   padding: 24px 0;
 }
+
+/* Mobile bottom sheet behavior */
+@media (max-width: 768px) {
+  .rescuemapwrapper {
+    grid-template-columns: 1fr;
+    height: 100vh;
+  }
+  .map-container { height: 100vh; }
+  .sidebar.mobile-sheet {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    height: 120px; /* collapsed default */
+    background: #fff;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    box-shadow: 0 -6px 24px rgba(0,0,0,0.15);
+    z-index: 1100;
+    border-right: none;
+    transition: height 0.25s ease;
+  }
+  .sidebar.mobile-sheet.expanded { height: 70vh; }
+  .sidebar .header { padding-top: 8px; }
+  .sheet-handle {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 8px 0 4px;
+    cursor: pointer;
+  }
+  .sheet-grabber {
+    width: 64px; height: 6px; border-radius: 999px; background: #e5e7eb;
+    display: inline-block;
+  }
+  .sidebar.mobile-sheet .reports-list { -webkit-overflow-scrolling: touch; }
+}
 </style>
+
+
+/* Mobile bottom sheet behavior */
+@media (max-width: 768px) {
+  .rescuemapwrapper {
+    grid-template-columns: 1fr;
+    height: 100vh;
+  }
+  .map-container { height: 100vh; }
+  .sidebar.mobile-sheet {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    height: 120px; /* collapsed default, overridden by inline style */
+    background: #fff;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    box-shadow: 0 -6px 24px rgba(0,0,0,0.15);
+    z-index: 1100;
+    border-right: none;
+  }
+  .sidebar .header { padding-top: 8px; }
+  .sheet-handle {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 8px 0 4px;
+    cursor: pointer;
+  }
+  .sheet-grabber {
+    width: 64px; height: 6px; border-radius: 999px; background: #e5e7eb;
+    display: inline-block;
+  }
+}
+

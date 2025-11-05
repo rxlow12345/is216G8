@@ -91,18 +91,20 @@ export default {
       })
       try {
         // Create Leaflet map
-        this.map = L.map(this.$refs.mapContainer).setView(
+        this.map = L.map(this.$refs.mapContainer, { zoomControl: false }).setView(
           [this.center.lat, this.center.lng],
           10, // zoom level
         )
 
         // Add OpenStreetMap tiles 
+        // Add OpenStreetMap tiles 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© OpenStreetMap contributors',
+          attribution: 'Ac OpenStreetMap contributors',
           maxZoom: 19,
         }).addTo(this.map)
 
-        // resolve promise when map is ready
+        // Add zoom controls at bottom-left to avoid overlay conflicts
+        L.control.zoom({ position: 'bottomleft' }).addTo(this.map)
         if (this.mapReadyResolve) this.mapReadyResolve()
 
         // Add markers for existing reports 
@@ -171,10 +173,17 @@ export default {
       return marker
     },
 
-    async openMarkerPopup(reportId) {
+    async openMarkerPopup(reportId, report = null) {
       // Find by attached reportId to avoid floating point equality issues
       const marker = this.markers.find(m => m.reportId === reportId)
-      if (marker) marker.openPopup()
+      if (marker) { marker.openPopup(); return true }
+      // Fallback: if report and coordinates are provided, drop a temp marker and open
+      if (report && report.coordinates) {
+        const content = this.createPopupContent(report)
+        await this.addPin(report.coordinates, { popupContent: content, persistent: false })
+        return true
+      }
+      return false
     },
     
     async panToLocation(coordinates, zoom = 15) {
@@ -646,8 +655,11 @@ export default {
 }
 
 /* Apply the animation to the custom marker */
-:deep(.custom-marker-bounce) {
-  animation: pulse 1.5s infinite ease-in-out; /* 1.5s duration, repeats infinitely */
+
+
+/* Keep zoom controls clickable above overlays */
+:deep(.leaflet-control-container .leaflet-control-zoom) {
+  z-index: 1200;
 }
 
 /* Ensure Leaflet popups are not hidden behind UI overlays */
