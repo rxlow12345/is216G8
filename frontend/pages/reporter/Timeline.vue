@@ -44,23 +44,23 @@
                 <span class="detail-label">Acceptance Time:</span>
                 <span class="detail-value">{{ toGMT8String(timeAccepted) }}</span>
               </div>
-            </template>
-            <template v-else>
+          </template>
+          <template v-else>
               <!-- Pending State -->
               <div class="detail-item">
                 <span class="detail-label">Status:</span>
                 <span class="detail-value">Waiting for volunteer to accept</span>
               </div>
-            </template>
+          </template>
           </div>
-      </div>
+        </div>
 
       <!-- Loop through checkpoint stages (Stage 2-5) -->
       <div v-for="(stage, index) in checkpointStages" :key="index" class="timeline-card-item" :class="{
-        completed: checkpoints[stage]?.completed,
+          completed: checkpoints[stage]?.completed,
         current: checkpointCurrentIndex === index && !checkpoints[stage]?.completed,
         pending: checkpointCurrentIndex < index && !checkpoints[stage]?.completed
-      }">
+        }">
         <div class="timeline-card-header">
           <span class="timeline-badge" :class="{
             current: checkpointCurrentIndex === index && !checkpoints[stage]?.completed,
@@ -79,10 +79,10 @@
             {{ stageTitles[stage] }}
           </h3>
           <div class="timeline-meta" v-if="checkpoints[stage]?.completed && checkpoints[stage]?.completedAt">
-            <i class="bi bi-calendar-event"></i>
+              <i class="bi bi-calendar-event"></i>
             <span>{{ convertDate(checkpoints[stage].completedAt) }}</span>
+            </div>
           </div>
-        </div>
         <!-- Details Section -->
         <div class="timeline-info">
             <!-- Stage 2: Volunteer Arrival -->
@@ -155,19 +155,19 @@
                 <div class="detail-item" v-if="checkpoints[stage]?.completedAt">
                   <span class="detail-label">Assessment Time:</span>
                   <span class="detail-value">{{ convertDate(checkpoints[stage].completedAt) }}</span>
-                </div>
+            </div>
                 <div class="detail-item" v-if="checkpoints[stage]?.diagnosis">
                   <span class="detail-label">Diagnosis:</span>
                   <span class="detail-value">{{ checkpoints[stage].diagnosis }}</span>
-                </div>
+            </div>
                 <div class="detail-item" v-if="checkpoints[stage]?.treatment">
                   <span class="detail-label">Treatment Provided:</span>
                   <span class="detail-value">{{ checkpoints[stage].treatment }}</span>
-                </div>
+            </div>
                 <div class="detail-item" v-if="checkpoints[stage]?.notes">
                   <span class="detail-label">Notes:</span>
                   <span class="detail-value">{{ checkpoints[stage].notes }}</span>
-                </div>
+            </div>
               </template>
             </template>
 
@@ -178,25 +178,25 @@
                 <div class="detail-item">
                   <span class="detail-label">Status:</span>
                   <span class="detail-value">Case is still in progress</span>
-                </div>
+            </div>
               </template>
               <template v-else>
                 <!-- Completed State -->
                 <div class="detail-item" v-if="checkpoints[stage]?.completedAt">
                   <span class="detail-label">Resolution Time:</span>
                   <span class="detail-value">{{ convertDate(checkpoints[stage].completedAt) }}</span>
-                </div>
+            </div>
                 <div class="detail-item" v-if="checkpoints[stage]?.outcome">
                   <span class="detail-label">Outcome:</span>
                   <span class="detail-value">{{ capitalize(checkpoints[stage].outcome) }}</span>
-                </div>
+            </div>
                 <div class="detail-item" v-if="checkpoints[stage]?.notes">
                   <span class="detail-label">Notes:</span>
                   <span class="detail-value">{{ checkpoints[stage].notes }}</span>
-                </div>
+          </div>
               </template>
             </template>
-          </div>
+        </div>
       </div>
     </div>
   </div>

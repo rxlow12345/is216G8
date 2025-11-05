@@ -62,14 +62,14 @@ Explain the core features and the benefit each provides.
 | <img src="https://raw.githubusercontent.com/github/explore/main/topics/javascript/javascript.png" width="40"> | **JavaScript (ES6)** | Client-side logic and interactivity |
 | <img src="https://vitejs.dev/logo.svg" width="40"> | **Vite** | Development server and build tool |
 | <img src="https://vuejs.org/images/logo.png" width="40"> | **Vue.js 3** | Component-based frontend framework |
-| <img src="https://raw.githubusercontent.com/github/explore/main/topics/vue-router/vue-router.png" width="40"> | **Vue Router** | Client-side routing and navigation |
-| <img src="https://expressjs.com/images/express-facebook-share.png" width="40"> | **Express.js** | Backend server framework and API endpoints |
-| <img src="https://raw.githubusercontent.com/github/explore/main/topics/socket-io/socket-io.png" width="40"> | **Socket.io** | Real-time bidirectional communication (WebSocket) |
-| <img src="https://raw.githubusercontent.com/github/explore/main/topics/axios/axios.png" width="40"> | **Axios** | HTTP client for API requests |
-| <img src="https://raw.githubusercontent.com/github/explore/main/topics/leaflet/leaflet.png" width="40"> | **Leaflet** | Interactive maps and geospatial visualization |
-| <img src="https://firebase.google.com/downloads/brand-guidelines/PNG/logo-logomark.png" width="40"> | **Firebase** | Authentication, Firestore database, and cloud storage |
-| <img src="https://opencagedata.com/images/opencage-logo.png" width="40"> | **OpenCage API** | Geocoding and reverse geocoding services |
-| <img src="https://raw.githubusercontent.com/github/explore/main/topics/python/python.png" width="40"> | **Python / SpeciesNet API** | AI-powered species identification from images |
+| <img src="https://router.vuejs.org/logo.svg" width="40" alt="Vue Router" onerror="this.src='https://via.placeholder.com/40/4FC08D/ffffff?text=VR'"> | **Vue Router** | Client-side routing and navigation |
+| <img src="https://expressjs.com/images/express-facebook-share.png" width="40" alt="Express.js" onerror="this.src='https://via.placeholder.com/40/000000/ffffff?text=EX'"> | **Express.js** | Backend server framework and API endpoints |
+| <img src="https://socket.io/images/logo.svg" width="40" alt="Socket.io" onerror="this.src='https://via.placeholder.com/40/010101/ffffff?text=IO'"> | **Socket.io** | Real-time bidirectional communication (WebSocket) |
+| <img src="https://axios-http.com/assets/logo.svg" width="40" alt="Axios" onerror="this.src='https://via.placeholder.com/40/5A29E4/ffffff?text=AX'"> | **Axios** | HTTP client for API requests |
+| <img src="https://leafletjs.com/docs/images/logo.png" width="40" alt="Leaflet" onerror="this.src='https://via.placeholder.com/40/199900/ffffff?text=LF'"> | **Leaflet** | Interactive maps and geospatial visualization |
+| <img src="https://firebase.google.com/downloads/brand-guidelines/PNG/logo-logomark.png" width="40" alt="Firebase"> | **Firebase** | Authentication, Firestore database, and cloud storage |
+| <img src="https://opencagedata.com/images/opencage-logo.png" width="40" alt="OpenCage API" onerror="this.src='https://via.placeholder.com/40/4A90E2/ffffff?text=OC'"> | **OpenCage API** | Geocoding and reverse geocoding services |
+| <img src="https://www.python.org/static/community_logos/python-logo.png" width="40" alt="Python" onerror="this.src='https://via.placeholder.com/40/3776AB/ffffff?text=PY'"> | **Python / SpeciesNet API** | AI-powered species identification from images |
 
 ---
 
