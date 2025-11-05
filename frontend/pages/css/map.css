@@ -122,7 +122,7 @@
   cursor: pointer;
 }
 
-.leaflet-popup-content:hover button,
+.leaflet-popup-content button:hover,
 .accept-button:hover,
 .search-btn:hover {
   opacity: 0.9; /* subtle hover effect */
