@@ -13,7 +13,7 @@
 
       <!-- Welcome Message -->
       <span v-if="auth.uid" class="welcome-bar order-1 px-3">
-        Welcome back, {{ displayName }} 👋
+        {{ greeting }}, {{ displayName }} {{ emoji }}
       </span>
 
       <!-- Toggler (no data-API; click is programmatic) -->
@@ -124,6 +124,22 @@ export default {
       this.collapseInstance.toggle();
     },
 
+    updateGreeting() {
+      const hour = new Date().getHours()
+      if (hour >= 5 && hour < 12) {
+        this.greeting = 'Good morning';
+        this.emoji = '🌞'
+
+      } else if (hour >= 12 && hour < 18) {
+        this.greeting = 'Good afternoon';
+        this.emoji = '☀️'
+      } else {
+        this.greeting = 'Good evening';
+        this.emoji = '🌙'
+
+      }
+    },
+
     bindCollapseEvents() {
       const el = this.$refs.navbarCollapse;
       const toggler = this.$refs.navbarToggler;
@@ -199,6 +215,7 @@ export default {
   // initial auth + live auth updates
   created() {
     this.fetchCurrentUser();
+    this.updateGreeting();
 
     // stay reactive to auth changes (login/logout/role change)
     onAuthStateChange(async (user) => {
@@ -240,8 +257,8 @@ export default {
 
 .welcome-bar {
   color: #285436;
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 400;
   letter-spacing: 0.5px;
   display: flex;
   align-items: center;

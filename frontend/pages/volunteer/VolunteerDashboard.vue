@@ -12,8 +12,8 @@
 
     <div class="welcomeMessage">
       <div class="alertCustom">
-        <h5 class="alertHeading">Welcome To Your Dashboard</h5>
-        <p>Use the options below to navigate to volunteer tools.</p>
+        <h5 class="alertHeading">Welcome To Your Dashboard </h5>
+        <p> Use the options below to navigate to volunteer tools. ⬇️</p>
       </div>
     </div>
 
@@ -68,7 +68,28 @@ const router = useRouter();
 onMounted(async () => {
   // Use the utility function for cleaner code
   await checkUserAuthAndRole(router, 'volunteer', { userEmail, currentUser });
+  setupScrollAnimations();
 });
+
+const setupScrollAnimations = () => {
+  const sections = document.querySelectorAll('.buttonItem');
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('fadeIn');
+        observer.unobserve(entry.target); // Stop observing once animated
+      }
+    });
+  }, {
+    threshold: 0.2, // Trigger when 20% of the element is visible
+    rootMargin: '0px 0px -50px 0px' // Start slightly before it comes into view
+  });
+  
+  sections.forEach((section) => {
+    observer.observe(section);
+  });
+};
 </script>
 
 <style scoped>
@@ -123,12 +144,41 @@ onMounted(async () => {
   gap: 10px;
   width: 100%;
   max-width: 950px;
-  background-color: white;
+  /* background-color: white; */
+  background: linear-gradient(120deg, #ffffff, #fafdf9);
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   opacity: 1; /* ensure visible by default */
-  transform: none;
-  transition: opacity 1s ease, transform 1s ease;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.buttonItemRight {
+  transform: translateX(100px);
+}
+
+.buttonItemLeft::before,
+.buttonItemRight::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(40, 84, 54, 0.1), transparent);
+  transition: left 0.6s ease;
+}
+
+.buttonItemLeft:hover,
+.buttonItemRight:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(40, 84, 54, 0.2);
+}
+
+.buttonItemLeft:hover::before,
+.buttonItemRight:hover::before {
+  left: 100%;
 }
 
 .buttonItemLeft { flex-direction: row; }
@@ -142,11 +192,15 @@ onMounted(async () => {
   width: 48%;
   height: auto;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: brightness(0.95) saturate(1.1);
 }
 
 .buttonItemLeft .sectionImg:hover,
-.buttonItemRight .sectionImg:hover { transform: scale(1.1); }
+.buttonItemRight .sectionImg:hover { transform: scale(1.1) rotate(2deg); 
+  filter: brightness(1.05) saturate(1.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+ }
 
 .content {
   width: 52%;
@@ -166,7 +220,33 @@ onMounted(async () => {
   border-radius: 10px;
   display: inline-block;
   margin: 0 auto;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.buttonItem .btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+  z-index: -1;
+}
+
+.buttonItem .btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.buttonItem .btn:active {
+  transform: scale(0.95);
 }
 
 .buttonDescription {
@@ -175,17 +255,31 @@ onMounted(async () => {
   padding-bottom: 0px;
   font-size: 15px;
   color: #333;
+  transition: all 0.3s ease;
+}
+
+.buttonItem:hover .buttonDescription {
+  color: #285436;
+  transform: translateY(-2px);
 }
 
 .greenBtnLg {
   background-color: #285436;
   color: rgb(254, 250, 224);
   border: 1px solid #285436;
+  box-shadow: 0 0 0 rgba(184, 108, 46, 0);
+  animation: pulseGlow 2s infinite;
 }
-.greenBtnLg:hover { background-color: #606C38; }
 
-.brownBtn { background-color: #BC6C25; color: rgb(254, 250, 224); }
-.brownBtn:hover { background-color: #DDA15E; }
+.greenBtnLg:hover { 
+  background-color: #606C38;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(40, 84, 54, 0.3);
+}
+
+.brownBtn { background-color: #BC6C25; color: rgb(254, 250, 224); animation: pulseGlow 2s infinite }
+.brownBtn:hover { background-color: #DDA15E; transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(188, 108, 37, 0.3); }
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -206,4 +300,21 @@ onMounted(async () => {
 }
 
 .fadeIn { opacity: 1 !important; transform: translateY(0) !important; }
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(184,108,46,0.0);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(184,108,46,0.6);
+  }
+}
+
+.buttonItem:hover {
+  animation: none;
+}
 </style>

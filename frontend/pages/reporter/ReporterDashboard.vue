@@ -1,7 +1,7 @@
 <template>
-  <OtterCursor animal="🦦" :speed="0.08"/>
-  <BackToTop/>
-  <FloatingBackground/>
+  <OtterCursor animal="🦦" :speed="0.08" />
+  <BackToTop />
+  <FloatingBackground />
   <div class="container-fluid p-0 reporterDashboard">
     <!-- Top Banner -->
     <div id="topBanner" class="bannerTitles">
@@ -14,18 +14,15 @@
     <div class="welcomeMessage">
       <div class="alertCustom">
         <h5 class="alertHeading" v-if="userName">Welcome to {{ userName }}'s Dashboard</h5>
-        <p>Use the options below to create a new report, track the status of existing reports, or view past reports.</p>
+        <p> <i class="bi bi-info-circle-fill text-success me-2"></i> Use the options below to <b>create a new report </b>, track the <b>status of existing reports </b>, or <b>view past reports.</b> ⬇️
+        </p>
       </div>
     </div>
 
     <!-- Button Section with Images -->
     <div class="buttonSections">
-      <div
-        v-for="(item, index) in buttonItems"
-        :key="index"
-        :class="['buttonItem', item.align === 'left' ? 'buttonItemLeft' : 'buttonItemRight']"
-        ref="sectionElements"
-      >
+      <div v-for="(item, index) in buttonItems" :key="index"
+        :class="['buttonItem', item.align === 'left' ? 'buttonItemLeft' : 'buttonItemRight']" ref="sectionElements">
         <img :src="item.imgSrc" :alt="item.imgAlt" class="sectionImg">
         <div class="content">
           <a :href="item.link" class="btn" :class="item.buttonClass">{{ item.buttonText }}</a>
@@ -73,6 +70,7 @@ const buttonItems = ref([
 onMounted(async () => {
   try {
     const user = await getCurrentUser();
+    setupScrollAnimations();
     if (user) {
       userEmail.value = user.username || user.email;
       userId.value = user.uid;
@@ -87,6 +85,26 @@ onMounted(async () => {
   const options = {
     root: null,
     threshold: 0.2
+  };
+
+  const setupScrollAnimations = () => {
+    const sections = document.querySelectorAll('.buttonItem');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('fadeIn');
+          observer.unobserve(entry.target); // Stop observing once animated
+        }
+      });
+    }, {
+      threshold: 0.2, // Trigger when 20% of the element is visible
+      rootMargin: '0px 0px -50px 0px' // Start slightly before it comes into view
+    });
+
+    sections.forEach((section) => {
+      observer.observe(section);
+    });
   };
 
   const observer = new IntersectionObserver((entries, observer) => {
@@ -106,11 +124,22 @@ onMounted(async () => {
 * {
   font-family: Georgia, 'Times New Roman', Times, serif;
 }
+
 .welcomeMessage {
   text-align: center;
   padding: 10px 0;
   margin: 40px 10px 20px 10px;
 }
+
+/* .alertCustom {
+  background: linear-gradient(135deg, #eebf9b 0%, #b5dab7 100%);
+  border-radius: 15px;
+  padding: 25px;
+  max-width: 950px;
+  margin: 0 auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+} */
 
 .alertCustom {
   background: linear-gradient(135deg, #eebf9b 0%, #b5dab7 100%);
@@ -158,12 +187,16 @@ onMounted(async () => {
   gap: 10px;
   width: 100%;
   max-width: 950px;
-  background-color: white;
+  background: linear-gradient(120deg, #ffffff, #fafdf9);
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   opacity: 0;
   transform: translateY(30px);
-  transition: opacity 1s ease, transform 1s ease;
+  /* transition: opacity 1s ease, transform 1s ease; */
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
 }
 
 .buttonItemLeft {
@@ -171,14 +204,32 @@ onMounted(async () => {
 }
 
 .buttonItemRight {
-  flex-direction: row-reverse;
+  /* flex-direction: row-reverse; */
+  transform: translateX(100px);
+
+}
+
+.buttonItemLeft::before,
+.buttonItemRight::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(40, 84, 54, 0.1), transparent);
+  transition: left 0.6s ease;
 }
 
 .buttonItemLeft:hover,
 .buttonItemRight:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-  transition: all 0.3s ease;
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(40, 84, 54, 0.2);
+}
+
+.buttonItemLeft:hover::before,
+.buttonItemRight:hover::before {
+  left: 100%;
 }
 
 
@@ -198,6 +249,8 @@ onMounted(async () => {
   height: auto;
   object-fit: cover;
   transition: transform 0.3s ease;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: brightness(0.95) saturate(1.1);
 }
 
 .buttonItemLeft .sectionImg:hover,
@@ -238,6 +291,8 @@ onMounted(async () => {
   background-color: #285436;
   color: rgb(254, 250, 224);
   border: 1px solid #285436;
+  animation: pulseGlow 2s infinite;
+
 }
 
 .greenBtnLg:hover {
@@ -247,6 +302,7 @@ onMounted(async () => {
 .brownBtn {
   background-color: #BC6C25;
   color: rgb(254, 250, 224);
+  animation: pulseGlow 2s infinite;
 }
 
 .brownBtn:hover {
@@ -321,5 +377,18 @@ onMounted(async () => {
 .fadeIn {
   opacity: 1 !important;
   transform: translateY(0) !important;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 rgba(184,108,46,0.0);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(184,108,46,0.6);
+  }
 }
 </style>
