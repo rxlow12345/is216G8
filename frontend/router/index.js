@@ -1,7 +1,7 @@
 // src/router/index.js
 
 import { createRouter, createWebHistory } from 'vue-router';
-import { onAuthStateChange } from '../src/api/auth.js';
+import { onAuthStateChange, getCurrentUser } from '../src/api/auth.js';
 import App from '../src/App.vue'; // Default app
 import StatusUpdate from '../pages/orgAdmin/StatusUpdate.vue'; // StatusUpdate
 import Home from '../pages/Home.vue'
@@ -187,6 +187,14 @@ router.beforeEach(async (to, from, next) => {
   
   const requiresAuth = to.meta.requiresAuth;
   const allowedRoles = to.meta.roles;
+  
+  // For routes that require auth, always check current auth state directly
+  if (requiresAuth && !currentUser) {
+    const user = await getCurrentUser(); // Directly check Firebase auth
+    if (user) {
+      currentUser = user; // Update currentUser if found
+    }
+  }
   
   // If route doesn't require auth, allow access
   if (!requiresAuth) {
