@@ -13,7 +13,6 @@
           </select>
         </div>
 
-        <!-- Subject (optional but nice to have) -->
         <div class="mb-3">
           <label class="form-label">Subject (optional)</label>
           <input
@@ -85,6 +84,7 @@ import { getCurrentUser, onAuthStateChange } from '../api/auth.js';
 // Adjust the import path if your firebase export lives elsewhere.
 import { db } from '../firebase.js'; // <-- make sure this exports a Firestore instance
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import '../../pages/css/common.css'
 
 export default {
   name: 'FeedbackForm',

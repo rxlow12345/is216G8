@@ -53,6 +53,10 @@
             <router-link class="nav-link navLink" to="/donate" exact-active-class="active" @click="collapseNavbar">Donate</router-link>
           </li>
 
+          <li class="nav-item">
+            <router-link class="nav-link navLink" to="/learn-more" exact-active-class="active" @click="collapseNavbar">Resources</router-link>
+          </li>
+
           <!-- Only if not logged in -->
           <li v-if="!auth.uid" class="nav-item">
             <router-link class="nav-link navLink" to="/login" exact-active-class="active" @click="collapseNavbar">Login</router-link>

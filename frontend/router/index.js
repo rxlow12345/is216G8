@@ -121,7 +121,7 @@ const routes = [
     name: 'New Report',
     component: NewReport,
     meta: { requiresAuth: false }
-  },
+  }
 ];
 
 // 2. Create the router instance
