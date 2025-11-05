@@ -120,18 +120,21 @@
 
                     <div class="mb-4 col-6">
                         <h6 class="fw-bold text-success mb-3">Follow Us</h6>
-                        <div class="d-flex gap-3">
+                        <div class="d-flex flex-wrap gap-3">
                             <a href="https://facebook.com/critterconnect" target="_blank" class="social-link">
-                                <div class="social-icon">📘</div>
+                                <div class="social-icon">
+                                    <img src="../public/assets/facebook.png">
+                                </div>
                             </a>
                             <a href="https://instagram.com/critterconnect" target="_blank" class="social-link">
-                                <div class="social-icon">📷</div>
+                                <div class="social-icon">
+                                    <img src="../public/assets/instagram.png">
+                                </div>
                             </a>
-                            <a href="https://twitter.com/critterconnect" target="_blank" class="social-link">
-                                <div class="social-icon">🐦</div>
-                            </a>
-                            <a href="https://youtube.com/critterconnect" target="_blank" class="social-link">
-                                <div class="social-icon">📺</div>
+                            <a href="https://x.com/critterconnect" target="_blank" class="social-link">
+                                <div class="social-icon">
+                                    <img src="../public/assets/twitter.png">
+                                </div>
                             </a>
                         </div>
                     </div>
@@ -273,9 +276,9 @@ const latestNews = ref([
     text-decoration: none;
 }
 
-.social-icon {
-    width: 50px;
-    height: 50px;
+.social-icon img{
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background-color: #f8f9fa;
     display: flex;
@@ -304,6 +307,15 @@ const latestNews = ref([
         border-radius: 20px 20px 0 0;
     }
 }
+
+@media (max-width: 576px) {
+  .social-icon {
+    width: 35px;
+    height: 35px;
+    font-size: 1.3rem;
+  }
+}
+
 
 .custom-collapse-btn {
     background-color: #285436;
