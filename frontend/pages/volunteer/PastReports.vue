@@ -1,9 +1,8 @@
 <template>
   <div class="container-fluid p-0 reporterDashboard">
     <div id="topBanner" class="bannerTitles">
-      <header class="header-flex">
-        <h1>Past Reports</h1>
-        <span v-if="!loading && reports.length > 0" class="report-count">{{ reports.length }} Resolved Cases</span>
+      <header class="text-center mb-2">
+        <h1>🎉 Your Rescue Impact</h1>
       </header>
     </div>
 
@@ -13,118 +12,310 @@
           <span class="search-icon">🔍</span>
           <input class="search" v-model="search" placeholder="Search by Report ID" />
         </div>
-        <select class="select" v-model="sortBy">
-          <option value="newest">Newest first</option>
-          <option value="oldest">Oldest first</option>
-          <option value="recent">Recently resolved</option>
-        </select>
-        <select class="select" v-model="timeFilter">
-          <option value="all">All time</option>
-          <option value="7days">Last 7 days</option>
-          <option value="30days">Last 30 days</option>
-        </select>
       </div>
+
+      <div v-if="!loading && resolvedReports.length > 0" class="controls-section">
+        <div class="filter-group">
+          <button 
+            @click="timeFilter = 'all'" 
+            :class="{ active: timeFilter === 'all' }"
+            class="control-btn"
+          >
+            All time
+          </button>
+          <button 
+            @click="timeFilter = '7days'" 
+            :class="{ active: timeFilter === '7days' }"
+            class="control-btn"
+          >
+            Last 7 days
+          </button>
+          <button 
+            @click="timeFilter = '30days'" 
+            :class="{ active: timeFilter === '30days' }"
+            class="control-btn"
+          >
+            Last 30 days
+          </button>
+        </div>
+      </div>
+
       <div v-if="loading" class="loading-box">Loading past reports...</div>
 
-      <div v-else-if="reports.length === 0" class="empty-state">
+      <div v-else-if="resolvedReports.length === 0" class="empty-state">
         <p>No resolved reports yet.</p>
       </div>
 
-      <div v-else class="cards">
-        <section
-          v-for="r in displayedReports"
-          :key="r.id"
-          class="report-card"
-        >
-          <div class="card-header">
-            <div class="report-header-left">
-              <div class="report-id">{{ r.data.reportId }}</div>
-              <div class="report-meta">
-                Resolved {{ formatSince(r.data.checkpoints?.reconciled?.completedAt || r.data.lastUpdated) }}
+      <div v-else>
+        <!-- Statistics Cards -->
+        <div class="stats-container">
+          <div class="stat-card">
+            <div class="stat-number">{{ totalResolved }}</div>
+            <div class="stat-label">Animals Saved</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">{{ avgResolutionTime }}</div>
+            <div class="stat-label">Avg. Resolution Time</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">{{ releasedPercentage }}%</div>
+            <div class="stat-label">Released to Wild</div>
+          </div>
+        </div>
+
+        <!-- Section Header -->
+        <div class="section-header">
+          <h2>Recent Success Stories</h2>
+          <button @click="showAllReports" class="view-all-link">View All →</button>
+        </div>
+
+        <!-- Success Stories -->
+        <div class="success-stories">
+          <div 
+            v-for="report in displayedReports" 
+            :key="report.id"
+            class="success-story"
+          >
+            <div class="story-header">
+              <span class="animal-emoji">{{ getAnimalEmoji(report.data.speciesName) }}</span>
+              <span class="story-title">
+                {{ report.data.speciesName || 'Unknown Animal' }} → {{ getFinalOutcome(report.data) }}
+              </span>
+              <span class="outcome-emoji">{{ getOutcomeEmoji(report.data) }}</span>
+            </div>
+            
+            <div class="story-meta">
+              <span class="meta-item">{{ report.data.reportId }}</span>
+              <span class="meta-separator">•</span>
+              <span class="meta-item">{{ formatLocation(report.data.location?.address) }}</span>
+              <span class="meta-separator">•</span>
+              <span class="meta-item">{{ getResolutionDays(report.data) }} days</span>
+              <span class="meta-separator">•</span>
+              <span class="meta-item">{{ formatRelativeTime(report.data.checkpoints?.reconciled?.completedAt) }}</span>
+            </div>
+            
+            <button @click="viewTimeline(report)" class="view-timeline-btn">
+              View Timeline
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Timeline Modal -->
+    <div v-if="showDetailsModal" class="modal-overlay" @click.self="closeDetailsModal" @keydown.esc="closeDetailsModal">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h2 class="report-id">{{ selectedReport?.data?.reportId || '' }}</h2>
+          <button @click="closeDetailsModal" class="close-btn">✕</button>
+        </div>
+        <div class="modal-body">
+          {{ selectedReport?.data?.speciesName || 'Unknown Animal' }} • {{ formatLocation(selectedReport?.data?.location?.address) }}
+        </div>
+        <div class="timeline-container">
+          <!-- Timeline items -->
+          <div class="timeline-item" :class="{ completed: selectedReport?.data?.checkpoints?.arrived?.completed }">
+            <div class="timeline-icon">
+              <span v-if="selectedReport?.data?.checkpoints?.arrived?.completed" class="icon-check">✓</span>
+              <span v-else class="icon-number">1</span>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <span class="timeline-title">Arrived at Location</span>
+                <span v-if="selectedReport?.data?.checkpoints?.arrived?.completedAt" class="timeline-timestamp">
+                  {{ formatRelativeTime(selectedReport.data.checkpoints.arrived.completedAt) }}
+                </span>
+              </div>
+              <div v-if="selectedReport?.data?.checkpoints?.arrived?.notes" class="timeline-details">
+                <span class="detail-value">{{ selectedReport.data.checkpoints.arrived.notes }}</span>
               </div>
             </div>
-            <div class="status-pill status-resolved">✅ Resolved</div>
           </div>
 
-          <div class="outcome-section" v-if="r.data.checkpoints?.reconciled?.outcome">
-            <div class="outcome-label">Final Outcome:</div>
-            <div class="outcome-value">{{ formatOutcome(r.data.checkpoints.reconciled.outcome) }}</div>
-          </div>
-
-          <div class="progress-section">
-            <div class="progress-label">100%</div>
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: 100%"></div>
+          <div class="timeline-item" :class="{ completed: selectedReport?.data?.checkpoints?.handled?.completed }">
+            <div class="timeline-icon">
+              <span v-if="selectedReport?.data?.checkpoints?.handled?.completed" class="icon-check">✓</span>
+              <span v-else class="icon-number">2</span>
             </div>
-          </div>
-
-          <div class="action-buttons">
-            <button class="toggle-btn" @click="toggle(r.id)">
-              {{ expanded.has(r.id) ? 'Hide Details' : 'View Details' }}
-            </button>
-            <router-link class="view-btn" :to="`/status/${r.data.reportId}`">View Original</router-link>
-          </div>
-
-          <transition name="expand">
-            <div v-if="expanded.has(r.id)" class="details">
-              <div class="step completed" 
-                   v-for="(step, idx) in steps" 
-                   :key="step.key">
-                <div class="step-left">
-                  <div class="step-icon-wrapper completed">
-                    <span class="check-icon">✓</span>
-                  </div>
-                  <div class="step-info">
-                    <div class="step-title completed">
-                      {{ step.title }}
-                    </div>
-                    <div class="meta completed-meta">
-                      <span class="meta-time">📅 Completed {{ formatSince(r.data.checkpoints[step.key]?.completedAt) }}</span>
-                      <span v-if="r.data.checkpoints[step.key]?.notes" class="meta-notes">📝 {{ r.data.checkpoints[step.key].notes }}</span>
-                      <span v-if="step.key === 'reconciled' && r.data.checkpoints[step.key]?.outcome" class="meta-outcome">
-                        🎯 Outcome: {{ formatOutcome(r.data.checkpoints[step.key].outcome) }}
-                      </span>
-                    </div>
-                  </div>
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <span class="timeline-title">Animal Handled</span>
+                <span v-if="selectedReport?.data?.checkpoints?.handled?.completedAt" class="timeline-timestamp">
+                  {{ formatRelativeTime(selectedReport.data.checkpoints.handled.completedAt) }}
+                </span>
+              </div>
+              <div v-if="selectedReport?.data?.checkpoints?.handled?.completed" class="timeline-details">
+                <div v-if="selectedReport?.data?.checkpoints?.handled?.condition" class="detail-row">
+                  <span class="detail-label">Condition:</span>
+                  <span class="detail-value">{{ selectedReport.data.checkpoints.handled.condition }}</span>
+                </div>
+                <div v-if="selectedReport?.data?.checkpoints?.handled?.notes" class="detail-row">
+                  <span class="detail-label">Notes:</span>
+                  <span class="detail-value">{{ selectedReport.data.checkpoints.handled.notes }}</span>
                 </div>
               </div>
             </div>
-          </transition>
-        </section>
+          </div>
+
+          <div class="timeline-item" :class="{ completed: selectedReport?.data?.checkpoints?.treated?.completed }">
+            <div class="timeline-icon">
+              <span v-if="selectedReport?.data?.checkpoints?.treated?.completed" class="icon-check">✓</span>
+              <span v-else class="icon-number">3</span>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <span class="timeline-title">Treatment Received</span>
+                <span v-if="selectedReport?.data?.checkpoints?.treated?.completedAt" class="timeline-timestamp">
+                  {{ formatRelativeTime(selectedReport.data.checkpoints.treated.completedAt) }}
+                </span>
+              </div>
+              <div v-if="selectedReport?.data?.checkpoints?.treated?.completed" class="timeline-details">
+                <div v-if="selectedReport?.data?.checkpoints?.treated?.diagnosis" class="detail-row">
+                  <span class="detail-label">Diagnosis:</span>
+                  <span class="detail-value">{{ selectedReport.data.checkpoints.treated.diagnosis }}</span>
+                </div>
+                <div v-if="selectedReport?.data?.checkpoints?.treated?.treatment" class="detail-row">
+                  <span class="detail-label">Treatment:</span>
+                  <span class="detail-value">{{ selectedReport.data.checkpoints.treated.treatment }}</span>
+                </div>
+                <div v-if="selectedReport?.data?.checkpoints?.treated?.notes" class="detail-row">
+                  <span class="detail-label">Notes:</span>
+                  <span class="detail-value">{{ selectedReport.data.checkpoints.treated.notes }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-item" :class="{ completed: selectedReport?.data?.checkpoints?.reconciled?.completed }">
+            <div class="timeline-icon">
+              <span v-if="selectedReport?.data?.checkpoints?.reconciled?.completed" class="icon-check">✓</span>
+              <span v-else class="icon-number">4</span>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-header">
+                <span class="timeline-title">Reconciliation Complete</span>
+                <span v-if="selectedReport?.data?.checkpoints?.reconciled?.completedAt" class="timeline-timestamp">
+                  {{ formatRelativeTime(selectedReport.data.checkpoints.reconciled.completedAt) }}
+                </span>
+              </div>
+              <div v-if="selectedReport?.data?.checkpoints?.reconciled?.completed" class="timeline-details">
+                <div v-if="selectedReport?.data?.checkpoints?.reconciled?.outcome" class="detail-row">
+                  <span class="detail-label">Outcome:</span>
+                  <span class="detail-value">{{ formatOutcome(selectedReport.data.checkpoints.reconciled.outcome) }}</span>
+                </div>
+                <div v-if="selectedReport?.data?.checkpoints?.reconciled?.notes" class="detail-row">
+                  <span class="detail-label">Notes:</span>
+                  <span class="detail-value">{{ selectedReport.data.checkpoints.reconciled.notes }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </main>
+    </div>
+
+    <BackToTop/>
   </div>
-  <BackToTop/>
 </template>
 
 <script setup>
 import '../css/common.css'
 import BackToTop from '../../src/components/BackToTop.vue';
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { db } from '../../src/firebase.js'
 import { collection, query, where, onSnapshot, Timestamp } from 'firebase/firestore'
 import { getCurrentUser } from '../../src/api/auth.js'
-import { formatDistanceToNow } from 'date-fns'
 
 const loading = ref(true)
 const reports = ref([])
-const expanded = ref(new Set())
 const unsubRef = ref(null)
 const search = ref('')
-const sortBy = ref('newest')
 const timeFilter = ref('all')
+const showDetailsModal = ref(false)
+const selectedReport = ref(null)
 
-const steps = [
-  { key: 'arrived',     title: 'Arrived at Location',      icon: '📍' },
-  { key: 'handled',     title: 'Animal Handled',           icon: '🤲' },
-  { key: 'treated',     title: 'Treatment Received',       icon: '💊' },
-  { key: 'reconciled',  title: 'Reconciliation Complete',  icon: '✅' },
-]
+const resolvedReports = computed(() => {
+  return reports.value.map(r => ({ id: r.id, data: r.data }))
+})
 
-function formatSince(ts) {
-  if (!ts) return '—'
-  const date = ts instanceof Timestamp ? ts.toDate() : new Date(ts)
-  return formatDistanceToNow(date, { addSuffix: true })
+const totalResolved = computed(() => resolvedReports.value.length)
+
+const avgResolutionTime = computed(() => {
+  if (resolvedReports.value.length === 0) return '0 days'
+  const totalDays = resolvedReports.value.reduce((sum, report) => {
+    return sum + getResolutionDays(report.data)
+  }, 0)
+  const avg = Math.round(totalDays / resolvedReports.value.length)
+  return `${avg} days`
+})
+
+const releasedPercentage = computed(() => {
+  if (resolvedReports.value.length === 0) return 0
+  const released = resolvedReports.value.filter(report => {
+    const outcome = (report.data.checkpoints?.reconciled?.outcome || '').toLowerCase()
+    return outcome.includes('release')
+  }).length
+  return Math.round((released / resolvedReports.value.length) * 100)
+})
+
+function getResolutionDays(reportData) {
+  const start = reportData.acceptedAt?.seconds ? reportData.acceptedAt.seconds * 1000 : (reportData.acceptedAt?.toMillis ? reportData.acceptedAt.toMillis() : Date.now())
+  const end = reportData.checkpoints?.reconciled?.completedAt?.seconds ? reportData.checkpoints.reconciled.completedAt.seconds * 1000 : (reportData.checkpoints?.reconciled?.completedAt?.toMillis ? reportData.checkpoints.reconciled.completedAt.toMillis() : Date.now())
+  return Math.round((end - start) / (1000 * 60 * 60 * 24))
+}
+
+function getAnimalEmoji(speciesName) {
+  const name = (speciesName || '').toLowerCase()
+  if (name.includes('cat')) return '🐱'
+  if (name.includes('dog')) return '🐕'
+  if (name.includes('bird')) return '🐦'
+  if (name.includes('snake')) return '🐍'
+  if (name.includes('monkey')) return '🐒'
+  if (name.includes('turtle')) return '🐢'
+  if (name.includes('squirrel')) return '🐿️'
+  return '🐾'
+}
+
+function getOutcomeEmoji(reportData) {
+  const outcome = (reportData.checkpoints?.reconciled?.outcome || '').toLowerCase()
+  if (outcome.includes('release')) return '✨'
+  if (outcome.includes('rehome')) return '🏡'
+  if (outcome.includes('sanctuary')) return '🌿'
+  return '✅'
+}
+
+function getFinalOutcome(reportData) {
+  return formatOutcome(reportData.checkpoints?.reconciled?.outcome) || 'Resolved'
+}
+
+function formatLocation(address) {
+  if (!address) return 'Unknown Location'
+  const firstPart = address.split(',')[0]
+  return firstPart.replace(/\d+/g, '').trim() || 'Singapore'
+}
+
+function formatRelativeTime(timestamp) {
+  if (!timestamp) return ''
+  const now = Date.now()
+  let then
+  if (timestamp.seconds) {
+    then = timestamp.seconds * 1000
+  } else if (timestamp.toMillis) {
+    then = timestamp.toMillis()
+  } else if (timestamp instanceof Timestamp) {
+    then = timestamp.toMillis()
+  } else {
+    then = new Date(timestamp).getTime()
+  }
+  const diff = now - then
+  
+  const hours = Math.floor(diff / 3600000)
+  const days = Math.floor(diff / 86400000)
+  
+  if (hours < 24) return `${hours}h ago`
+  if (days < 7) return `${days}d ago`
+  if (days < 30) return `${Math.floor(days/7)}w ago`
+  return `${Math.floor(days/30)}mo ago`
 }
 
 function formatOutcome(outcome) {
@@ -139,9 +330,19 @@ function formatOutcome(outcome) {
   return outcomes[outcome] || outcome
 }
 
-function toggle(id) {
-  if (expanded.value.has(id)) expanded.value.delete(id)
-  else expanded.value.add(id)
+function viewTimeline(report) {
+  selectedReport.value = report
+  showDetailsModal.value = true
+}
+
+function closeDetailsModal() {
+  showDetailsModal.value = false
+  selectedReport.value = null
+}
+
+function showAllReports() {
+  search.value = ''
+  timeFilter.value = 'all'
 }
 
 function isWithinTimeRange(resolvedDate, days) {
@@ -154,7 +355,7 @@ function isWithinTimeRange(resolvedDate, days) {
 }
 
 const displayedReports = computed(() => {
-  let rows = [...reports.value]
+  let rows = [...resolvedReports.value]
   
   // Filter by search
   if (search.value.trim()){
@@ -175,29 +376,23 @@ const displayedReports = computed(() => {
     })
   }
   
-  // Sort
-  if (sortBy.value === 'oldest') {
-    rows.sort((a,b) => {
-      const aDate = a.data.checkpoints?.reconciled?.completedAt?.seconds ?? a.data.lastUpdated?.seconds ?? 0
-      const bDate = b.data.checkpoints?.reconciled?.completedAt?.seconds ?? b.data.lastUpdated?.seconds ?? 0
-      return aDate - bDate
-    })
-  } else if (sortBy.value === 'recent') {
-    rows.sort((a,b) => {
-      const aDate = a.data.checkpoints?.reconciled?.completedAt?.seconds ?? a.data.lastUpdated?.seconds ?? 0
-      const bDate = b.data.checkpoints?.reconciled?.completedAt?.seconds ?? b.data.lastUpdated?.seconds ?? 0
-      return bDate - aDate
-    })
-  } else {
-    // newest (default)
-    rows.sort((a,b) => {
-      const aDate = a.data.checkpoints?.reconciled?.completedAt?.seconds ?? a.data.lastUpdated?.seconds ?? 0
-      const bDate = b.data.checkpoints?.reconciled?.completedAt?.seconds ?? b.data.lastUpdated?.seconds ?? 0
-      return bDate - aDate
-    })
-  }
+  // Sort by newest (most recently resolved)
+  rows.sort((a,b) => {
+    const aDate = a.data.checkpoints?.reconciled?.completedAt?.seconds ?? a.data.lastUpdated?.seconds ?? 0
+    const bDate = b.data.checkpoints?.reconciled?.completedAt?.seconds ?? b.data.lastUpdated?.seconds ?? 0
+    return bDate - aDate
+  })
   
   return rows
+})
+
+// Add/remove body class to blur navbar when modal is open
+watch(showDetailsModal, (isOpen) => {
+  if (isOpen) {
+    document.body.classList.add('modal-open')
+  } else {
+    document.body.classList.remove('modal-open')
+  }
 })
 
 onMounted(async () => {
@@ -244,53 +439,93 @@ onMounted(async () => {
 })
 
 onBeforeUnmount(() => {
+  document.body.classList.remove('modal-open')
   if (unsubRef.value) unsubRef.value()
 })
 </script>
 
 <style scoped>
 /* Header Section */
-.header-flex {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+.bannerTitles {
+  width: 100% !important;
+  max-width: 100vw !important;
+  margin: 0 !important;
+  padding: 48px 20px !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+  background: linear-gradient(135deg, #4a6a4a 0%, #5a7a5a 100%) !important;
 }
 
-.header-flex h1 {
-  font-size: 28px;
-  font-weight: bold;
-  color: #285436;
-  margin: 0;
+.bannerTitles header {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
 }
 
-.report-count {
-  font-size: 14px;
-  color: #6b7280;
-  font-weight: 500;
+.bannerTitles h1 {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  color: white !important;
+  font-size: 36px !important;
+  font-weight: 700 !important;
 }
 
 /* Report Container */
-.report-container { 
-  max-width: 980px; 
-  margin: 0 auto; 
-  padding: 0 1.5rem 2rem 1.5rem; 
+.report-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 80px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+/* Responsive padding for smaller screens */
+@media (max-width: 1200px) {
+  .report-container {
+    padding: 40px 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .report-container {
+    padding: 40px 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .report-container {
+    padding: 30px 20px;
+  }
 }
 
 /* Controls Section */
 .controls { 
-  display: flex; 
-  gap: 10px; 
-  align-items: center; 
-  margin-bottom: 16px; 
-  flex-wrap: wrap; 
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 100%;
 }
 
 .search-wrapper {
-  flex: 1 1 280px;
+  flex: 0 1 500px;
   position: relative;
   display: flex;
   align-items: center;
+  min-width: 280px;
+  max-width: 500px;
 }
 
 .search-icon {
@@ -318,21 +553,57 @@ onBeforeUnmount(() => {
   box-shadow: 0 0 0 3px rgba(90, 122, 90, 0.1);
 }
 
-.select { 
-  height: 36px;
-  border: 1px solid #dbe5d9; 
-  border-radius: 8px; 
-  padding: 8px 12px;
-  font-size: 13px;
-  background: white;
-  cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s;
+/* Controls Section - Clean Standard Style */
+.controls-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+  width: 100%;
+  max-width: 100%;
 }
 
-.select:focus {
-  outline: none;
+.filter-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Clean, simple button style */
+.control-btn {
+  padding: 9px 18px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+/* Hover - subtle green hint */
+.control-btn:hover:not(.active) {
   border-color: #5a7a5a;
-  box-shadow: 0 0 0 3px rgba(90, 122, 90, 0.1);
+  color: #5a7a5a;
+  background: #fafafa;
+}
+
+/* Active - clean green with white text */
+.control-btn.active {
+  background: #5a7a5a !important;
+  border-color: #5a7a5a !important;
+  color: white !important;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(90, 122, 90, 0.25);
+}
+
+/* Pressed effect */
+.control-btn:active {
+  transform: scale(0.98);
 }
 
 /* Loading & Empty States */
@@ -344,270 +615,340 @@ onBeforeUnmount(() => {
   border-radius: 12px; 
   text-align: center;
   font-size: 14px;
+  margin-top: 40px;
 }
 
-/* Cards */
-.cards { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 12px; 
+/* Statistics Cards */
+.stats-container {
+  display: flex;
+  gap: 24px;
+  margin: 40px 0 32px;
 }
 
-.report-card {
-  background: #ffffff; 
-  border: 1px solid #e0e0e0; 
+.stat-card {
+  flex: 1;
+  background: white;
+  border: 1px solid #e0e0e0;
   border-radius: 12px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06); 
-  padding: 16px; 
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  padding: 28px 24px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
 }
 
-.report-card:hover { 
-  transform: translateY(-1px); 
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
 }
 
-.card-header {
+.stat-number {
+  font-size: 40px;
+  font-weight: 700;
+  color: #5a7a5a;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Section Header */
+.section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 20px;
 }
 
-.report-header-left {
-  flex: 1;
-}
-
-.report-id { 
-  font-weight: 600; 
-  color: #285436; 
-  font-size: 16px; 
-  margin-bottom: 4px;
-}
-
-.report-meta { 
-  color: #6b7280; 
-  font-size: 13px; 
-}
-
-.outcome-section {
-  background: #f0fdf4;
-  border: 1px solid #a7f3d0;
-  border-radius: 8px;
-  padding: 10px 12px;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.outcome-label {
+.section-header h2 {
+  font-size: 20px;
   font-weight: 600;
-  color: #065f46;
-  font-size: 13px;
+  color: #333;
+  margin: 0;
 }
 
-.outcome-value {
-  color: #059669;
-  font-weight: 500;
-  font-size: 13px;
-}
-
-/* Progress Section */
-.progress-section {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.progress-label { 
-  font-weight: 600; 
-  color: #285436; 
-  min-width: 38px; 
-  text-align: right;
+.view-all-link {
+  background: none;
+  border: none;
+  color: #5a7a5a;
   font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0;
 }
 
-.progress-bar { 
-  flex: 1;
-  height: 8px; 
-  background: #eef3ee; 
-  border-radius: 999px; 
-  overflow: hidden; 
-  border: 1px solid #dbe5d9;
+.view-all-link:hover {
+  text-decoration: underline;
 }
 
-.progress-fill { 
-  height: 100%; 
-  background: linear-gradient(90deg, #10b981, #34d399);
-  border-radius: 999px;
-}
-
-/* Status Pills */
-.status-pill { 
-  padding: 6px 12px; 
-  border-radius: 999px; 
-  font-size: 12px; 
-  font-weight: 600; 
-  white-space: nowrap; 
-  text-align: center;
-}
-
-.status-pill.status-resolved {
-  background: #d1fae5;
-  color: #065f46;
-  border: 1px solid #a7f3d0;
-}
-
-/* Action Buttons */
-.action-buttons {
+/* Success Stories */
+.success-stories {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.toggle-btn { 
-  background: #285436; 
-  color: #FEFAE0; 
-  border: 1px solid #285436; 
-  padding: 8px 14px; 
-  border-radius: 8px; 
-  cursor: pointer; 
-  font-size: 13px;
-  font-weight: 600;
-  transition: background 0.2s;
-}
-
-.toggle-btn:hover { 
-  background: #1e3a26; 
-}
-
-.view-btn { 
-  background: #eaf5ea; 
-  color: #285436; 
-  border: 1px solid #cfe6cf; 
-  padding: 8px 14px; 
-  border-radius: 8px; 
-  text-decoration: none; 
-  font-weight: 600;
-  font-size: 13px;
-  transition: background 0.2s, border-color 0.2s;
-}
-
-.view-btn:hover {
-  background: #d1fae5;
-  border-color: #a7f3d0;
-}
-
-/* Details Section */
-.details { 
-  padding-top: 16px; 
-  margin-top: 16px;
-  border-top: 1px solid #f3f4f6;
-}
-
-.step { 
-  display: flex; 
-  align-items: flex-start; 
-  padding: 12px; 
+.success-story {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-left: 4px solid #5a7a5a;
   border-radius: 8px;
-  margin-bottom: 8px;
-  background: #f0fdf4;
+  padding: 20px 24px;
+  transition: all 0.2s ease;
 }
 
-.step:last-child {
-  margin-bottom: 0;
+.success-story:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
 }
 
-.step-left { 
-  display: flex; 
-  gap: 12px; 
-  align-items: flex-start; 
+.story-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.animal-emoji {
+  font-size: 24px;
+}
+
+.story-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
   flex: 1;
 }
 
-.step-icon-wrapper {
+.outcome-emoji {
+  font-size: 20px;
+}
+
+.story-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.meta-item {
+  white-space: nowrap;
+}
+
+.meta-separator {
+  color: #ddd;
+}
+
+.view-timeline-btn {
+  padding: 8px 18px;
+  background: white;
+  border: 2px solid #5a7a5a;
+  color: #5a7a5a;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-timeline-btn:hover {
+  background: #5a7a5a;
+  color: white;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header .report-id {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
   width: 32px;
   height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.modal-body {
+  padding: 12px 20px;
+  color: #666;
+  font-size: 14px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.timeline-container {
+  padding: 16px 20px;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.timeline-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 36px;
+  bottom: -20px;
+  width: 2px;
+  background: #e0e0e0;
+}
+
+.timeline-item.completed::after {
+  background: #5a7a5a;
+}
+
+.timeline-icon {
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
+  background: #e0e0e0;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: #10b981;
+  color: #999;
+  font-weight: 600;
 }
 
-.check-icon {
+.timeline-item.completed .timeline-icon {
+  background: #5a7a5a;
   color: white;
-  font-size: 16px;
-  font-weight: bold;
 }
 
-.step-info {
-  flex: 1;
-  min-width: 0;
+.icon-check {
+  font-size: 18px;
+  line-height: 1;
 }
 
-.step-title { 
-  font-weight: 600; 
-  color: #065f46; 
+.icon-number {
   font-size: 14px;
+  line-height: 1;
+}
+
+.timeline-content {
+  flex: 1;
+  padding-top: 4px;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.timeline-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.timeline-timestamp {
+  font-size: 12px;
+  color: #999;
+  white-space: nowrap;
+}
+
+.timeline-details {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 8px;
+  border: 1px solid #f0f0f0;
+}
+
+.detail-row {
+  display: flex;
+  gap: 8px;
   margin-bottom: 6px;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
-.meta { 
-  font-size: 12px; 
-  color: #059669;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.detail-row:last-child {
+  margin-bottom: 0;
 }
 
-.meta-time {
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.detail-label {
+  font-weight: 600;
+  color: #666;
+  min-width: 85px;
+  flex-shrink: 0;
 }
 
-.meta-notes {
-  display: flex;
-  align-items: flex-start;
-  gap: 4px;
-  margin-top: 4px;
-}
-
-.meta-outcome {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 4px;
-  font-weight: 500;
-}
-
-/* Expand Animation */
-.expand-enter-active, .expand-leave-active { 
-  transition: all 0.3s ease; 
-}
-
-.expand-enter-from, .expand-leave-to { 
-  opacity: 0; 
-  transform: translateY(-10px); 
+.detail-value {
+  color: #333;
+  flex: 1;
 }
 
 /* Responsive Design */
-@media (max-width: 720px) {
-  .header-flex {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+@media (max-width: 768px) {
+  .bannerTitles {
+    padding: 32px 16px !important;
   }
-  
-  .header-flex h1 {
-    font-size: 24px;
-  }
-  
-  .report-container {
-    padding: 0 1rem 2rem 1rem;
+
+  .bannerTitles h1 {
+    font-size: 28px !important;
   }
   
   .controls { 
@@ -619,35 +960,37 @@ onBeforeUnmount(() => {
   .search-wrapper {
     flex: 1 1 auto;
   }
-  
-  .card-header {
+
+  .stats-container {
+    flex-direction: column;
+    gap: 16px;
+    margin: 32px 0 24px;
+  }
+
+  .section-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-  
-  .progress-section {
+
+  .story-meta {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 4px;
   }
-  
-  .progress-bar {
-    width: 100%;
+
+  .meta-separator {
+    display: none;
   }
-  
-  .progress-label {
-    text-align: left;
-    min-width: auto;
-  }
-  
-  .action-buttons {
-    width: 100%;
-    flex-direction: column;
-  }
-  
-  .toggle-btn, .view-btn {
-    width: 100%;
-  }
+}
+</style>
+
+<style>
+/* Navbar blur effect when modal is open (non-scoped) */
+body.modal-open header {
+  filter: blur(2px);
+  opacity: 0.6;
+  transition: filter 0.2s ease, opacity 0.2s ease;
+  pointer-events: none;
 }
 </style>

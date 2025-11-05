@@ -113,7 +113,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { login, getCurrentUser } from '../../src/api/auth.js';
+import { login } from '../../src/api/auth.js';
 import confetti from 'canvas-confetti';
 import '../css/common.css'
 import '../css/login.css'
@@ -211,15 +211,6 @@ async function handleLogin() {
     const user = await login(email.value, password.value);
 
     celebrateLogin();
-    
-    // Verify user is available before navigating (this ensures Firebase auth state is ready)
-    const verifiedUser = await getCurrentUser();
-    
-    if (!verifiedUser) {
-      error.value = 'Login verification failed. Please try again.';
-      loading.value = false;
-      return;
-    }
     
     // Redirect based on user role
     switch (user.role) {
