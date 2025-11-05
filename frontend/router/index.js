@@ -92,7 +92,7 @@ const routes = [
     path:'/volunteer/active',
     name: 'Volunteer Active Reports',
     component: VolunteerActive,
-    meta: { requiresAuth: true, roles: ['volunteer'] }
+    meta: { requiresAuth: true, roles: ['volunteer', 'admin'] }
   },
   {
     path:'/volunteer/past',
