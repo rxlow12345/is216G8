@@ -41,13 +41,13 @@
             class="filter-btn"
             :class="{ active: severityFilter === 'urgent' }"
             @click="severityFilter = 'urgent'"
-          >High</button>
+          >Urgent</button>
           <button
             type="button"
             class="filter-btn"
             :class="{ active: severityFilter === 'moderate' }"
             @click="severityFilter = 'moderate'"
-          >Medium</button>
+          >Moderate</button>
           <button
             type="button"
             class="filter-btn"
@@ -111,6 +111,8 @@ import socket from "../../src/api/socket";
 import acceptCaseModal from "../../src/components/acceptCaseModal.vue";
 import BackToTop from "../../src/components/BackToTop.vue";
 import MapNotification from "../../src/components/MapNotification.vue";
+import "../css/common.css"
+import "../css/map.css"
 // import { filter } from "mathjs";
 
 export default {
@@ -653,126 +655,7 @@ export default {
 </script>
 
 <style scoped>
-.rescuemapwrapper {
-  display: grid;
-  grid-template-columns: 400px 1fr;
-  height: 100vh; /* Fill viewport so side can scroll */
-}
-
-.sidebar {
-  border-right: 1px solid #e5e7eb;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden; /* Let inner list control scrolling */
-}
-
-.map-container {
-  /* Ensure Leaflet map has a real height */
-  height: 100%;
-}
-
-.header {
-  padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.subtitle {
-  margin: 0;
-  color: #374151;
-}
-
-.connection-status {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #6b7280;
-}
-
-.status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #d1d5db;
-}
-
-.status-dot.active {
-  background: #10b981;
-}
-
-.reports-list {
-  padding: 8px 12px;
-  flex: 1 1 auto;
-  overflow-y: auto; /* Scroll only the report list */
-}
-
-.filters {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-bottom: 1px solid #e5e7eb;
-}
-.filter-group { display: flex; gap: 8px; }
-.filter-btn {
-  padding: 6px 10px;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  background: #fff;
-  color: #374151;
-  font-size: 13px;
-  cursor: pointer;
-}
-.filter-btn:hover { background: #f9fafb; }
-.filter-btn.active {
-  background: #d1fae5;
-  border-color: #10b981;
-  color: #065f46;
-  font-weight: 600;
-}
-
-.empty-state {
-  text-align: center;
-  color: #6b7280;
-  padding: 24px 0;
-}
-
-/* Mobile bottom sheet behavior */
-@media (max-width: 768px) {
-  .rescuemapwrapper {
-    grid-template-columns: 1fr;
-    height: 100vh;
-  }
-  .map-container { height: 100vh; }
-  .sidebar.mobile-sheet {
-    position: fixed;
-    left: 0; right: 0; bottom: 0;
-    height: 120px; /* collapsed default */
-    background: #fff;
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
-    box-shadow: 0 -6px 24px rgba(0,0,0,0.15);
-    z-index: 1100;
-    border-right: none;
-    transition: height 0.25s ease;
-  }
-  .sidebar.mobile-sheet.expanded { height: 70vh; }
-  .sidebar .header { padding-top: 8px; }
-  .sheet-handle {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding: 8px 0 4px;
-    cursor: pointer;
-  }
-  .sheet-grabber {
-    width: 64px; height: 6px; border-radius: 999px; background: #e5e7eb;
-    display: inline-block;
-  }
-  .sidebar.mobile-sheet .reports-list { -webkit-overflow-scrolling: touch; }
-}
 </style>
-
 
 /* Mobile bottom sheet behavior */
 @media (max-width: 768px) {
