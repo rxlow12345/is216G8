@@ -551,24 +551,111 @@ Test with these viewport dimensions:
 
 ---
 
-## 🚀 Production Build
+## 🚀 Deployment Guide
 
-To build and serve both frontend and backend together on one port:
+This project uses **Firebase Hosting** for the frontend and **Railway** for the backend. After completing local setup, follow these additional steps to deploy.
 
-```bash
-cd backend
-npm run serve:prod
-```
+---
 
-This will:
-- Build the Vue frontend (`npm run build`)
-- Serve it from the Express backend
-- Expose both API and UI on `http://localhost:4100`
+### Prerequisites
 
-For separate deployments:
-- **Frontend**: Deploy the `dist/` folder to Firebase Hosting, Vercel, or Netlify
-- **Backend**: Deploy to Railway, Render, or Google Cloud Run
-- **SpeciesNet API**: Deploy Docker container to Google Cloud Run or similar
+- Firebase CLI: `npm install -g firebase-tools && firebase login`
+- Railway account: [railway.app](https://railway.app/)
+- Code pushed to GitHub
+
+---
+
+### Deploy Backend to Railway
+
+1. **Create Railway Project**
+   - Go to [Railway Dashboard](https://railway.app/dashboard)
+   - **New Project** → **Deploy from GitHub repo**
+   - Select your repository
+   - Set **Root Directory** to `backend`
+
+2. **Configure Environment Variables**
+   
+   In Railway → **Variables** tab, add all variables from your `backend/.env`:
+   - All Firebase service account variables (or use service account file)
+   - `FRONTEND_URL` (update after frontend deployment)
+   - `SPECIESNET_API_URL=http://34.126.93.66:8000`
+   - `NODE_ENV=production`
+
+3. **Get Backend URL**
+   - Railway → **Settings** → **Networking** → **Generate Domain**
+   - Copy the URL (e.g., `your-backend.up.railway.app`)
+
+---
+
+### Deploy Frontend to Firebase Hosting
+
+1. **Initialize Firebase Hosting (First Time Only)**
+   
+   If you haven't set up Firebase Hosting:
+   ```bash
+   # From project root
+   firebase init hosting
+   ```
+   
+   When prompted:
+   - Select **"Use an existing project"** (your Firebase project)
+   - **Public directory**: `frontend/dist`
+   - **Configure as single-page app**: **Yes**
+   - **Set up automatic builds**: **No**
+   - **Overwrite index.html**: **No**
+   
+   > Note: `firebase.json` should already be configured correctly.
+
+2. **Create Production Environment File**
+   
+   Create `frontend/.env.production` with your Railway backend URL:
+   ```bash
+   # Copy all VITE_ variables from .env, but update these:
+   VITE_API_URL=https://your-backend.up.railway.app/api
+   VITE_SOCKET_URL=https://your-backend.up.railway.app
+   ```
+
+3. **Build and Deploy**
+   ```bash
+   cd frontend
+   npm run build
+   cd ..
+   firebase deploy --only hosting
+   ```
+   
+   Your frontend will be live at:
+   - `https://your-project-id.web.app`
+   - `https://your-project-id.firebaseapp.com`
+
+4. **Update Railway CORS**
+   
+   After frontend deployment, update `FRONTEND_URL` in Railway:
+   ```bash
+   FRONTEND_URL=https://your-project-id.web.app,https://your-project-id.firebaseapp.com
+   ```
+
+---
+
+### Key Differences from Local Setup
+
+| Local Development | Production Deployment |
+| :---------------- | :------------------- |
+| `VITE_API_URL=http://localhost:4100/api` | `VITE_API_URL=https://your-backend.up.railway.app/api` |
+| `VITE_SOCKET_URL=http://localhost:4100` | `VITE_SOCKET_URL=https://your-backend.up.railway.app` |
+| `FRONTEND_URL=http://localhost:5175` | `FRONTEND_URL=https://your-project-id.web.app` |
+| Backend runs locally | Backend runs on Railway |
+| Frontend served by Vite dev server | Frontend served by Firebase Hosting |
+
+---
+
+### Troubleshooting
+
+| Issue | Solution |
+| :---- | :------- |
+| CORS errors | Update `FRONTEND_URL` in Railway with Firebase Hosting URLs |
+| Socket.io fails | Ensure `VITE_SOCKET_URL` uses `https://` (not `http://`) |
+| API requests fail | Verify Railway service is running and URL is correct |
+| Build fails | Check Railway logs and ensure all env vars are set |
 
 ---
 
