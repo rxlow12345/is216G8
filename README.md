@@ -1,4 +1,4 @@
-# 🦋 Critter Connects
+# 🦊 CritterConnect
 
 # IS216 Web Application Development II
 
