@@ -541,9 +541,15 @@ export default {
             // The map should show all pending reports based on their actual location
             if (this.isWithinSingapore(coordinates)) {
               report.coordinates = coordinates;
-              // this.reports.push(report); // report only added if in SG
-              reportsToAdd.push(report); // report only added if in SG
-              this.loadingReports = false;
+              reportsToAdd.push(report);
+              addedCount++;
+              console.debug(`Added report ${report.reportId} at ${coordinates.lat}, ${coordinates.lng}`);
+            } else {
+              // Still add it, but use fallback coordinates
+              console.warn(`Report ${report.reportId} coordinates outside Singapore bounds, using fallback`);
+              report.coordinates = this.mapCenter;
+              reportsToAdd.push(report);
+              addedCount++;
             }
           } catch (geocodeError) {
             console.log(
@@ -552,9 +558,8 @@ export default {
             );
             report.coordinates = this.mapCenter;
             // Ensure we still render a fallback marker
-            // this.reports.push(report);
             reportsToAdd.push(report);
-            // break;
+            addedCount++;
           }
         }
         
@@ -839,14 +844,31 @@ export default {
       const list = Array.isArray(this.reports) ? this.reports : [];
       const base = list.filter((r) => this.isDisplayable(r));
       const f = (this.severityFilter || "all").toLowerCase();
-      if (f === "all") return list;
-      if (f === "low") {
-        return list.filter((r) => {
+      let filtered;
+      if (f === "all") {
+        filtered = list;
+      } else if (f === "low") {
+        filtered = list.filter((r) => {
           const sev = (r?.severity || "").toLowerCase();
           return sev !== "urgent" && sev !== "moderate";
         });
+      } else {
+        filtered = list.filter((r) => (r?.severity || "").toLowerCase() === f);
       }
-      return list.filter((r) => (r?.severity || "").toLowerCase() === f);
+      
+      // Debug logging
+      console.error('🔍 filteredReports computed:', {
+        originalCount: list.length,
+        filteredCount: filtered.length,
+        filter: f,
+        reports: filtered.map(r => ({
+          id: r.reportId || r.id,
+          hasCoords: !!r.coordinates,
+          coords: r.coordinates
+        }))
+      });
+      
+      return filtered;
     },
   },
   watch: {
