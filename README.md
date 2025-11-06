@@ -26,18 +26,13 @@ G3 Group 8
 ---
 
 ## Business Problem
-
-Describe the **real-world business or community problem** your project addresses.
-
 Wildlife rescue operations face critical delays due to inefficient public reporting methods and fragmented coordination between rescue organizations. When members of the public encounter wildlife in distress, the lack of a standardized reporting platform creates operational bottlenecks that slow response time, often making the difference between life and death for injured animals. Additionally, rescue organizations struggle to leverage community support at scale, missing opportunities to mobilize volunteers and resources effectively during emergencies.
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Web Solution Overview
 
-### �� Intended Users
+### Intended Users
 
-Identify your target user groups.
-The general public and rescue organisations.
+The general public, volunteers for rescue organisations and rescue organisations themselves.
 
 ### 💡 What Users Can Do & Benefits
 
@@ -83,78 +78,85 @@ Explain the core features and the benefit each provides.
 
 ## Use Case & User Journey (Images NOT YET UPDATED)
 
-General Usage for all roles:
+### General Usage for all roles:
 
-1. **Landing/Home Page**<img src="screenshots/Landing_Page.png" width="600">
+1. **Landing/Home Page**
+   <br><img src="screenshots/Landing_Page.png" width="600">
 
    - Displays the homepage with navigation options.
 
-2. **Guidebook**<img src="screenshots/Guidebook.png" width="600">
+2. **Guidebook**
+   <br><img src="screenshots/Guidebook.png" width="600">
 
    - Users can read the guidebook to learn more about the animals
 3. **Game**
-   <img src="screenshots/Game.png" width="600">
+   <br><img src="screenshots/Game.png" width="600">
 
    - Interactive game users can play to test their knowledge or learn more about animals
 
 4. **Report Status**
-   <img src="screenshots/Status.png" width="600">
+   <br><img src="screenshots/Status.png" width="600">
 
    - Users can view the status and rescue timeline of animal
 
 5. **Donation Page**
-   <img src="screenshots/Donation.png" width="600">
+   <br><img src="screenshots/Donation.png" width="600">
    - Users can donate to our partners
 
 6. **Resources Page**
-   <img src="screenshots/Resources.png" width="600">
+   <br><img src="screenshots/Resources.png" width="600">
 
    - Users can donate to our partners
 
-Reporter Role:
+### Reporter Role:
 
 1. **Reporter Dashboard**
-   <img src="screenshots/ReporterDashboard.png" width="600">
+   <br><img src="screenshots/ReporterDashboard.png" width="600">
 
    - Reporter can report cases or check past reports from here
 
 2. **Report Feature**
-   <img src="screenshots/Report.png" width="600">
+   <br><img src="screenshots/Report.png" width="600">
 
    - Users can report wild distressed animals that they encounter
 
 3. **Past Reports**
-   <img src="screenshots/Report.png" width="600">
+   <br><img src="screenshots/Report.png" width="600">
 
    - Users can check on previously submitted reports
 
-Volunteer Role:
+### Volunteer Role:
 
 1. **Volunteer Dashboard**
-<img src="screenshots/VolunteerDashboard.png" width="600">
+   
+<br><img src="screenshots/VolunteerDashboard.png" width="600">
 
 - Volunteer can open the map to accept cases, view active cases and check cases resolved from here
 
 2. **Map**
-<img src="screenshots/Map.png" width="600">
+   
+<br><img src="screenshots/Map.png" width="600">
 
 - Volunteer can view pending reports and accept them to take on the case
 
 3. **Volunteer Active Reports**
-<img src="screenshots/VolunteerActive.png" width="600">
-<img src="screenshots/VolunteerActiveModal.png" width="600">
+<br><img src="screenshots/VolunteerActive.png" width="600">
+<br><img src="screenshots/VolunteerActiveModal.png" width="600">
+
 - Volunteer can view active reports that he has accepted and update on their progress here
 
 4. **Volunteer Rescue Impact**
-<img src="screenshots/RescueImpact.png" width="600">
+<br><img src="screenshots/RescueImpact.png" width="600">
+
 - Volunteer can view past resolved cases and rescue impact statistics
 
 
-Admin Role:
+### Admin Role:
 
 1. **Admin Dashboard**
-<img src="screenshots/AdminDashboard.png" width="600">
-<img src="screenshots/AdminDashboardModal.png" width="600">
+<br><img src="screenshots/AdminDashboard.png" width="600">
+<br><img src="screenshots/AdminDashboardModal.png" width="600">
+
 - Admin can view all reports and reset the progress of cases as needed
 
 > Save screenshots inside `/screenshots` with clear filenames.
