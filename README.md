@@ -400,16 +400,16 @@ To create accounts with 'volunteer' or 'admin' roles:
    cd frontend
    ```
 
-2. Open `dev-useOnly-create-accounts.js` and edit the function calls at the bottom:
+2. Open `create-test-accounts.js` and edit the function calls at the bottom:
    ```javascript
    // Example:
-   createUser('admin@example.com', 'password123', 'Admin User', 'admin');
-   createUser('volunteer@example.com', 'password123', 'Volunteer User', 'volunteer');
+   createAdminAccount('admin@example.com', 'password123', 'Admin User');
+   createVolunteerAccount('volunteer@example.com', 'password123', 'Volunteer User');
    ```
 
 3. Run the script:
    ```bash
-   node dev-useOnly-create-accounts.js
+   node create-test-accounts.js
    ```
 
 > ⚠️ **Note**: This script is for development only. Remove or secure it in production.

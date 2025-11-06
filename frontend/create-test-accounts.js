@@ -1,5 +1,6 @@
-// If u have npm installed in current folder,  run with: node dev-useOnly-create-admin.js
-// else run: npm install firebase dotenv, then run with: node dev-useOnly-create-admin.js
+// Development script to create test accounts (admin/volunteer)
+// Usage: node create-test-accounts.js
+// Make sure to have firebase and dotenv installed: npm install firebase dotenv
 
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';

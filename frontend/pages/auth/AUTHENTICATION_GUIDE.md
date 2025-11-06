@@ -96,7 +96,7 @@ npm install firebase vue-router
 
   
 
-To create additional admin accounts, you need to modify the `dev-useOnly-create-admin.js` script:
+To create additional admin or volunteer accounts, you need to modify the `create-test-accounts.js` script:
 
   
 
@@ -104,19 +104,13 @@ To create additional admin accounts, you need to modify the `dev-useOnly-create-
 
   
 
-// Edit these values in dev-useOnly-create-admin.js
+// Edit these values in create-test-accounts.js
 
   
 
-const adminEmail = 'newadmin@yourdomain.com';  // Change this
+createAdminAccount('newadmin@yourdomain.com', 'NewSecurePassword123!', 'Admin Name');
 
-  
-
-const adminPassword = 'NewSecurePassword123!';  // Change this
-
-  
-
-const adminRole = 'admin';  // Keep this as 'admin'
+createVolunteerAccount('volunteer@yourdomain.com', 'NewSecurePassword123!', 'Volunteer Name');
 
   
 
@@ -134,7 +128,7 @@ Then run the script:
 
   
 
-node dev-useOnly-create-admin.js
+node create-test-accounts.js
 
   
 
