@@ -81,9 +81,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #285436;
-  font-size: 13px;
-  font-weight: 500;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 0.9rem; /* 14.4px */
+  font-weight: 400;
+  margin-top: 8px;
 }
 
 .status-dot {
@@ -442,18 +443,29 @@
   
   /* Legacy connection status styling */
   .sidebar.mobile-sheet .connection-status {
-    font-size: 12px;
+    font-size: 0.8rem; /* 12.8px on mobile */
     margin-top: 4px;
-    color: #285436; /* Dark green to match theme */
+    color: rgba(255, 255, 255, 0.95);
   }
   
   /* Status dot styling */
   .sidebar.mobile-sheet .status-dot {
-    background: #d1d5db;
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .sidebar.mobile-sheet .status-dot.active {
+    background: #10b981; /* Green dot for online */
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
   }
   
-  .sidebar.mobile-sheet .status-dot.active {
-    background: #10b981; /* Keep green for active state */
+  /* Status dot in header */
+  .header .status-dot {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .header .status-dot.active {
+    background: #10b981; /* Green dot for online */
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
   }
   
   /* Filter buttons - smaller on mobile, match theme */

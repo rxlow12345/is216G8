@@ -8,7 +8,7 @@
     </div>
 
     <!-- Search box (uses OpenCage) -->
-    <div class="search-box">
+    <div v-if="!isLoadingMarkers" class="search-box">
       <input
         v-model="searchQuery"
         @keyup.enter="searchAddress"
@@ -18,7 +18,7 @@
       <button @click="searchAddress" class="search-btn">Search</button>
     </div>
 
-    <div class="re-center">
+    <div v-if="!isLoadingMarkers" class="re-center">
       <button @click="recenterMap(true)" class="recenter-btn" title="Recenter to Singapore">
         <span>🎯</span>
       </button>
@@ -54,6 +54,10 @@ export default {
     center: {
       type: Object,
       default: () => ({ lat: 1.3521, lng: 103.8198 }), // Singapore
+    },
+    isLoadingMarkers: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

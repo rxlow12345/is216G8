@@ -24,12 +24,11 @@
       >
         <span class="sheet-grabber"></span>
       </div>
-      <!-- Header -->
-      <div class="header">
-        <p class="subtitle">{{ getCount() }} Pending Reports</p>
-
-        <!-- Connection Status -->
-        <div class="connection-status">
+      <!-- Reports Banner (matches deployed style) -->
+      <div class="reports-banner">
+        <h2 class="reports-banner-title">Accept Reports</h2>
+        <p class="reports-banner-subtitle">{{ animatedPendingCount }} pending reports</p>
+        <div class="reports-banner-status">
           <span class="status-dot" :class="{ active: isConnected }"></span>
           <span>{{ isConnected ? "Online" : "Offline" }}</span>
           <span v-if="activeUsers > 0">({{ activeUsers }} Active)</span>
@@ -87,10 +86,16 @@
 
     <!-- Right Side: Map -->
     <div class="map-container">
+      <!-- Loading overlay for markers -->
+      <div v-if="isLoadingMarkers" class="map-loading-overlay">
+        <div class="map-loading-spinner"></div>
+        <p class="map-loading-text">Loading rescue locations...</p>
+      </div>
       <MapView
         ref="mapView"
         :reports="filteredReports"
         :center="mapCenter"
+        :isLoadingMarkers="isLoadingMarkers"
         @acceptCase="acceptCaseFromCard"
       />
     </div>
@@ -148,6 +153,10 @@ export default {
       countUpdateTimer: null,
       
       isSheetExpanded: false,
+      // Animated counter for pending reports
+      animatedPendingCount: 0,
+      // Loading state for map markers
+      isLoadingMarkers: false,
       // Drawer drag state
       isDragging: false,
       dragStartY: 0,
@@ -296,6 +305,33 @@ export default {
         this.countUpdating = false;
         this.countUpdateTimer = null;
       }, duration);
+    },
+    animatePendingCount(target) {
+      if (typeof target !== 'number' || isNaN(target)) return;
+      const start = this.animatedPendingCount || 0;
+      const change = target - start;
+      // Shorter duration for single increments, longer for large jumps
+      const duration = Math.abs(change) === 1 ? 300 : 700; // ms
+      const startTime = performance.now();
+
+      const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+      const step = (now) => {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = easeOutCubic(progress);
+        this.animatedPendingCount = Math.max(0, Math.round(start + change * eased));
+        if (progress < 1) {
+          requestAnimationFrame(step);
+        }
+      };
+
+      requestAnimationFrame(step);
+    },
+    // Increment counter by 1 (for real-time updates during geocoding)
+    incrementPendingCount() {
+      const current = this.animatedPendingCount || 0;
+      this.animatePendingCount(current + 1);
     },
     isDisplayable(report) {
       if (!report) return false;
@@ -507,6 +543,7 @@ export default {
       );
     },
     async loadReports() {
+      this.isLoadingMarkers = true;
       try {
         const response = await reportApi.getAllReports();
         const filteredReports = response.filter(
@@ -514,8 +551,11 @@ export default {
         );
 
         console.log(`Total pending reports from API: ${filteredReports.length}`);
-        
-        // Process all reports first, then add them all at once to avoid multiple watch triggers
+
+        // Initialize counter to 0 for visible 0→N animation
+        this.animatedPendingCount = 0;
+
+        // Build reports array without triggering reactivity on each push
         const reportsToAdd = [];
         let processedCount = 0;
         let addedCount = 0;
@@ -526,7 +566,6 @@ export default {
             report.location = "Singapore Management University";
           }
           try {
-            // Prefer full address, then postal code, then fallback
             const addressToGeocode =
               typeof report.location === "object"
                 ? report.location.address ||
@@ -537,19 +576,23 @@ export default {
             const coordinates = await this.geocode(addressToGeocode);
             processedCount++;
 
-            // Always add report with coordinates, even if outside Singapore bounds
-            // The map should show all pending reports based on their actual location
             if (this.isWithinSingapore(coordinates)) {
               report.coordinates = coordinates;
               reportsToAdd.push(report);
               addedCount++;
+
+              // Increment counter for animation
+              this.incrementPendingCount();
+
               console.debug(`Added report ${report.reportId} at ${coordinates.lat}, ${coordinates.lng}`);
             } else {
-              // Still add it, but use fallback coordinates
               console.warn(`Report ${report.reportId} coordinates outside Singapore bounds, using fallback`);
               report.coordinates = this.mapCenter;
               reportsToAdd.push(report);
               addedCount++;
+
+              // Increment counter for animation
+              this.incrementPendingCount();
             }
           } catch (geocodeError) {
             console.log(
@@ -557,25 +600,28 @@ export default {
               geocodeError.message
             );
             report.coordinates = this.mapCenter;
-            // Ensure we still render a fallback marker
             reportsToAdd.push(report);
             addedCount++;
+
+            // Increment counter for animation
+            this.incrementPendingCount();
           }
         }
-        
-        // Add all reports at once to trigger a single watch update
+
+        // FINAL UPDATE - Ensure all reports are added and markers render
         this.reports = reportsToAdd;
+        await this.$nextTick();
+
         skippedCount = filteredReports.length - processedCount;
         this.loadingReports = false;
-        
-        // Log detailed information about reports
+
         console.log(`All Reports Fetched: ${addedCount} added, ${skippedCount} skipped out of ${filteredReports.length} total`);
         console.log(`Reports array length: ${this.reports.length}`);
-        
+
         // Check which reports have valid coordinates
         const reportsWithCoords = this.reports.filter(r => r.coordinates && r.coordinates.lat && r.coordinates.lng);
         const reportsWithoutCoords = this.reports.filter(r => !r.coordinates || !r.coordinates.lat || !r.coordinates.lng);
-        
+
         console.error('📊 Reports Analysis:', {
           total: this.reports.length,
           withCoords: reportsWithCoords.length,
@@ -589,26 +635,12 @@ export default {
             location: r.location
           }))
         });
-        
-        // Force MapView to update markers immediately
-        this.$nextTick(() => {
-          console.error('🔴 Forcing MapView to update markers...');
-          console.error('MapView ref exists:', !!this.$refs.mapView);
-          console.error('FilteredReports length:', this.filteredReports?.length);
-          console.error('FilteredReports:', this.filteredReports);
-          
-          if (this.$refs.mapView) {
-            console.error('✅ MapView ref found, calling updateMarkers');
-            if (this.$refs.mapView.updateMarkers) {
-              console.error('✅ updateMarkers method exists, calling it...');
-              this.$refs.mapView.updateMarkers();
-            } else {
-              console.error('❌ updateMarkers method does not exist on MapView');
-            }
-          } else {
-            console.error('❌ MapView ref not available yet');
-          }
-        });
+
+        // Final marker update to ensure everything renders
+        if (this.$refs.mapView?.updateMarkers) {
+          console.error('✅ Final updateMarkers call');
+          this.$refs.mapView.updateMarkers();
+        }
       } catch (error) {
         console.error("Error loading reports:", error.message);
         this.showNotification(
@@ -616,6 +648,8 @@ export default {
           "Make sure the backend is running and try again.",
           "error",
         );
+      } finally {
+        this.isLoadingMarkers = false;
       }
     },
     async geocode(address) {
@@ -846,19 +880,23 @@ export default {
       const f = (this.severityFilter || "all").toLowerCase();
       let filtered;
       if (f === "all") {
-        filtered = list;
+        // Return base (displayable reports) not list (all reports)
+        filtered = base;
       } else if (f === "low") {
-        filtered = list.filter((r) => {
+        // Filter from base to ensure only displayable reports
+        filtered = base.filter((r) => {
           const sev = (r?.severity || "").toLowerCase();
           return sev !== "urgent" && sev !== "moderate";
         });
       } else {
-        filtered = list.filter((r) => (r?.severity || "").toLowerCase() === f);
+        // Filter from base to ensure only displayable reports
+        filtered = base.filter((r) => (r?.severity || "").toLowerCase() === f);
       }
       
       // Debug logging
       console.error('🔍 filteredReports computed:', {
         originalCount: list.length,
+        displayableCount: base.length,
         filteredCount: filtered.length,
         filter: f,
         reports: filtered.map(r => ({
@@ -880,6 +918,18 @@ export default {
       },
       immediate: true, // Run the handler immediately when the component is mounted
     },
+    // Animate counter whenever the list of reports changes (for socket updates)
+    reports: {
+      handler() {
+        const target = this.getCount();
+        // Only animate if there's a significant change (e.g., from socket updates)
+        // Real-time increments during loadReports are handled by incrementPendingCount()
+        if (Math.abs(target - this.animatedPendingCount) > 1) {
+          this.animatePendingCount(target);
+        }
+      },
+      deep: true,
+    },
   },
 };
 </script>
@@ -893,5 +943,105 @@ export default {
 
 .pending-count .subtitle {
   margin: 0;
+}
+</style>
+
+<style>
+/* Reports Banner styles - keeping in component to prevent merge conflicts */
+/* Using !important to ensure these override any conflicting styles */
+.sidebar .reports-banner,
+.reports-banner {
+  background: #2d5016 !important;
+  color: #FFFFFF !important;
+  padding: 24px 20px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+  font-family: Georgia, 'Times New Roman', Times, serif !important;
+}
+
+.sidebar .reports-banner-title,
+.reports-banner-title {
+  margin: 0 0 8px 0 !important;
+  font-size: 2rem !important;
+  font-weight: 700 !important;
+  color: #FFFFFF !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.5px !important;
+}
+
+.sidebar .reports-banner-subtitle,
+.reports-banner-subtitle {
+  margin: 0 0 8px 0 !important;
+  font-size: 1.1rem !important;
+  font-weight: 400 !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  line-height: 1.4 !important;
+}
+
+.sidebar .reports-banner-status,
+.reports-banner-status {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-top: 8px !important;
+  font-size: 0.9rem !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  font-weight: 400 !important;
+}
+
+.sidebar .reports-banner-status .status-dot,
+.reports-banner-status .status-dot {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.3) !important;
+  flex-shrink: 0 !important;
+}
+
+.sidebar .reports-banner-status .status-dot.active,
+.reports-banner-status .status-dot.active {
+  background: #10b981 !important;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5) !important;
+}
+
+/* Map loading overlay */
+.map-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.map-loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(45, 80, 22, 0.2);
+  border-top-color: #2d5016;
+  border-radius: 50%;
+  animation: map-spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes map-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.map-loading-text {
+  color: #2d5016;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', Times, serif;
 }
 </style>
