@@ -2097,8 +2097,8 @@ textarea:focus {
 
 .upload-area {
   border: 3px dashed #c4b89f;
-  border-radius: 16px;
-  padding: 3rem 2rem;
+  border-radius: 18px;
+  padding: 4rem 2rem;
   text-align: center;
   background: #fdfcfa;
   transition: all 0.3s ease;
@@ -2756,6 +2756,7 @@ div:not(.button-group):not(.content-card):not(.form-group):not(.form-row) {
     margin-bottom: 1.5rem !important;
     width: 100%;
     clear: both !important;
+    height: 50vh;
   }
 
   /* Force map to appear after button */
