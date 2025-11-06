@@ -19,7 +19,7 @@
     </div>
 
     <div class="re-center">
-      <button @click="recenterMap" class="recenter-btn" title="Recenter to Singapore">
+      <button @click="recenterMap(true)" class="recenter-btn" title="Recenter to Singapore">
         <span>🎯</span>
       </button>
     </div>
@@ -66,21 +66,84 @@ export default {
       mapReadyPromise: null,
       lastOpenMarkerId: null,
       _reopenPopupAfterZoom: false,
+      _isInitialLoad: true,
+      _isUserDragging: false,
+      _dragEndTimeout: null,
     }
   },
   async mounted() {
     await this.initMap()
     this.loading = false
+    
+    // Handle window resize to ensure map stays interactive
+    window.addEventListener('resize', this.handleResize)
   },
   watch: {
     reports: {
-      handler() {
-        this.updateMarkers()
+      handler(newReports, oldReports) {
+        console.debug('Reports watch triggered:', {
+          newCount: newReports?.length || 0,
+          oldCount: oldReports?.length || 0,
+          isInitialLoad: this._isInitialLoad,
+          isUserDragging: this._isUserDragging
+        })
+        
+        // Always update markers on initial load (when oldReports is undefined/null or empty)
+        if (!oldReports || oldReports.length === 0) {
+          console.debug('Initial load detected, updating markers')
+          this.updateMarkers()
+          return
+        }
+        
+        // If no new reports, don't update
+        if (!newReports || newReports.length === 0) {
+          console.debug('No new reports, clearing markers')
+          if (this.map) {
+            this.markers.forEach((marker) => this.map.removeLayer(marker))
+            this.markers = []
+          }
+          return
+        }
+        
+        // Only update markers if the array length or IDs changed, not on property updates
+        // This prevents unnecessary updates when report properties change
+        const newIds = new Set((newReports || []).map(r => r.reportId || r.id).filter(Boolean))
+        const oldIds = new Set((oldReports || []).map(r => r.reportId || r.id).filter(Boolean))
+        
+        // Check if reports were added/removed (not just updated)
+        const idsChanged = newIds.size !== oldIds.size || 
+          [...newIds].some(id => !oldIds.has(id)) ||
+          [...oldIds].some(id => !newIds.has(id))
+        
+        console.debug('Reports comparison:', {
+          newIds: newIds.size,
+          oldIds: oldIds.size,
+          idsChanged,
+          isInitialLoad: this._isInitialLoad
+        })
+        
+        if (idsChanged || this._isInitialLoad) {
+          console.debug('Updating markers due to ID changes or initial load')
+          this.updateMarkers()
+        }
+        // If only properties changed and user is dragging, skip update to avoid resetting map position
+        else if (!this._isUserDragging) {
+          console.debug('Updating popup contents only (no marker recreation)')
+          // Only update popup content if needed, don't recreate markers
+          this.updatePopupContents(newReports || [])
+        } else {
+          console.debug('Skipping update - user is dragging')
+        }
       },
       deep: true,
+      immediate: false, // Don't run on mount, let mounted() handle initial load
     },
   },
   beforeUnmount() {
+    window.removeEventListener('resize', this.handleResize)
+    if (this._dragEndTimeout) {
+      clearTimeout(this._dragEndTimeout)
+    }
     if (this.map) {
       this.map.remove()
     }
@@ -92,8 +155,17 @@ export default {
         this.mapReadyResolve = resolve
       })
       try {
-        // Create Leaflet map
-        this.map = L.map(this.$refs.mapContainer, { zoomControl: false }).setView(
+        // Create Leaflet map with explicit dragging enabled
+        this.map = L.map(this.$refs.mapContainer, { 
+          zoomControl: false,
+          dragging: true,
+          touchZoom: true,
+          doubleClickZoom: true,
+          scrollWheelZoom: true,
+          boxZoom: true,
+          keyboard: true,
+          tap: true
+        }).setView(
           [this.center.lat, this.center.lng],
           10, // zoom level
         )
@@ -107,6 +179,49 @@ export default {
 
         // Add zoom controls at bottom-left to avoid overlay conflicts
         L.control.zoom({ position: 'bottomleft' }).addTo(this.map)
+        
+        // Critical: Invalidate size to ensure map renders correctly and interactions work
+        this.$nextTick(() => {
+          if (this.map) {
+            this.map.invalidateSize()
+            // Force a resize event to ensure proper initialization
+            setTimeout(() => {
+              this.map.invalidateSize()
+            }, 100)
+          }
+        })
+        
+        // Track user dragging to prevent auto-recentering
+        this.map.on('dragstart', () => {
+          this._isUserDragging = true
+          this._isInitialLoad = false // Immediately disable auto-fit once user starts dragging
+          console.debug('User started dragging map')
+          // Close any open popups to prevent autoPan from interfering
+          this.map.closePopup()
+        })
+        
+        this.map.on('dragend', () => {
+          console.debug('User finished dragging map')
+          // After drag ends, mark that initial load should be disabled
+          // This prevents any future auto-fit operations
+          this._isInitialLoad = false
+          // After drag ends, wait longer before resetting dragging flag to prevent auto-recenter
+          clearTimeout(this._dragEndTimeout)
+          this._dragEndTimeout = setTimeout(() => {
+            this._isUserDragging = false
+            console.debug('User drag flag reset, auto-recenter allowed again')
+          }, 2000) // Wait 2 seconds after drag ends to be safe
+        })
+        
+        // Also track move events to detect programmatic moves vs user drags
+        this.map.on('moveend', (e) => {
+          // If this move was programmatic (not from user drag), it's okay
+          // But we should still prevent auto-recenter if user was dragging recently
+          if (this._isUserDragging) {
+            console.debug('Move detected while user dragging flag is true')
+          }
+        })
+        
         if (this.mapReadyResolve) this.mapReadyResolve()
 
         // Add markers for existing reports 
@@ -175,10 +290,26 @@ export default {
       return marker
     },
 
-    async openMarkerPopup(reportId, report = null) {
+    async openMarkerPopup(reportId, report = null, shouldPan = false) {
       // Find by attached reportId to avoid floating point equality issues
       const marker = this.markers.find(m => m.reportId === reportId)
-      if (marker) { marker.openPopup(); return true }
+      if (marker) { 
+        // Only pan to marker if explicitly requested and user is not currently dragging
+        // By default, don't pan to avoid resetting user's map position
+        if (shouldPan && !this._isUserDragging && this.map) {
+          // Check if marker is already visible in current view
+          const bounds = this.map.getBounds()
+          const markerLatLng = marker.getLatLng()
+          if (!bounds.contains(markerLatLng)) {
+            // Only pan if marker is outside current view
+            this.map.setView(markerLatLng, this.map.getZoom(), {
+              animate: false // Don't animate to avoid conflicting with user's drag
+            })
+          }
+        }
+        marker.openPopup()
+        return true 
+      }
       // Fallback: if report and coordinates are provided, drop a temp marker and open
       if (report && report.coordinates) {
         const content = this.createPopupContent(report)
@@ -199,7 +330,15 @@ export default {
 
 
     updateMarkers() {
-      if (!this.map) return
+      if (!this.map) {
+        console.warn('updateMarkers: map not initialized')
+        return
+      }
+
+      console.debug('updateMarkers called with', this.reports?.length || 0, 'reports')
+
+      // Ensure map is properly sized before updating markers
+      this.map.invalidateSize();
 
       // Remove old markers
       this.markers.forEach((marker) => this.map.removeLayer(marker))
@@ -207,40 +346,41 @@ export default {
 
       // Add new markers
       let created = 0
+      let skipped = 0
+      
+      if (!this.reports || this.reports.length === 0) {
+        console.debug('No reports to display')
+        return
+      }
+      
       this.reports.forEach((report) => {
         const coords = report.coordinates;
         const lat = coords ? Number(coords.lat) : NaN
         const lng = coords ? Number(coords.lng) : NaN
         if (!coords || Number.isNaN(lat) || Number.isNaN(lng)){
-          console.log(`Report ${report.id} skipped due to invalid coordinates`, report);
+          console.log(`Report ${report.id || report.reportId} skipped due to invalid coordinates`, report);
+          skipped += 1
           return;
         }
-        // Use high-visibility circle markers to ensure pins are unmistakable
-        // const marker = L.circleMarker([lat, lng], {
-        //   radius: 12,
-        //   color: '#111827',
-        //   weight: 2,
-        //   fillColor: '#f59e0b',
-        //   fillOpacity: 0.95,
-        // }).addTo(this.map)
+        
+        // Create marker and add to map
         const marker = L.marker([lat, lng]).addTo(this.map)
-        // marker.bringToFront()
 
-        marker.reportId = report.reportId;
+        marker.reportId = report.reportId || report.id;
 
         // Create popup content
         const popupContent = this.createPopupContent(report)
         marker.bindPopup(popupContent, {
-          autoPan: true,
-          keepInView: true,
+          autoPan: false, // Disable autoPan to prevent map movement when user is dragging
+          keepInView: false, // Don't auto-adjust view when popup opens
           maxWidth: 360,
           autoPanPaddingTopLeft: [360, 120],
           autoPanPaddingBottomRight: [120, 80],
         })
 
         marker.on('popupopen', () => {
-          this.lastOpenMarkerId = report.reportId
-          const button = document.getElementById(`accept-btn-${report.reportId}`)
+          this.lastOpenMarkerId = report.reportId || report.id
+          const button = document.getElementById(`accept-btn-${report.reportId || report.id}`)
           if (button) {
             button.addEventListener('click', () => {
               this.handleAcceptCase(report)
@@ -256,15 +396,34 @@ export default {
         created += 1
       })
 
-      // Fit map to show all markers and avoid UI overlays
-      if (this.markers.length > 0) {
+      console.debug(`Markers: ${created} created, ${skipped} skipped, total: ${this.markers.length}`)
+
+      // Only auto-fit bounds on the very first load, never again after that
+      // This prevents the map from snapping back to original position after user drags
+      if (this.markers.length > 0 && this._isInitialLoad) {
+        console.debug('Auto-fitting bounds on initial load with', this.markers.length, 'markers')
         const group = L.featureGroup(this.markers)
         this.map.fitBounds(group.getBounds().pad(0.1), {
           paddingTopLeft: [300, 70], // leave space for search box
           paddingBottomRight: [70, 40], // leave space for recenter button
         })
+        // Mark as no longer initial load - never auto-fit again
+        this._isInitialLoad = false
+      } else {
+        console.debug('Skipping auto-fit: isInitialLoad=', this._isInitialLoad, 'markers=', this.markers.length)
       }
-      console.debug('Markers created:', created)
+    },
+    
+    // Update popup contents without recreating markers (for property updates only)
+    updatePopupContents(reports) {
+      if (!this.map) return
+      reports.forEach((report) => {
+        const marker = this.markers.find(m => m.reportId === report.reportId)
+        if (marker) {
+          const newContent = this.createPopupContent(report)
+          marker.setPopupContent(newContent)
+        }
+      })
     },
     severityColor(report){
       // colour of icon determined based on severity
@@ -486,19 +645,68 @@ export default {
       }).format(date);
     },
 
-    recenterMap() {
+    recenterMap(force = false) {
       if (!this.map) return;
+      
+      // Only allow recenter if forced (button click) or it's the initial load
+      // Once user interacts with map, don't auto-recenter unless forced
+      if (!force && this._isInitialLoad === false) {
+        console.debug('Skipping auto-recenter, user has interacted with map')
+        return;
+      }
+      
+      console.debug('RecenterMap called, force=', force)
+      
+      // Invalidate size before recentering to ensure proper calculations
+      this.map.invalidateSize();
       
       // If there are markers, fit bounds to show all of them
       if (this.markers.length > 0) {
         const group = L.featureGroup(this.markers);
-        this.map.fitBounds(group.getBounds().pad(0.1));
+        this.map.fitBounds(group.getBounds().pad(0.1), {
+          paddingTopLeft: [300, 70],
+          paddingBottomRight: [70, 40],
+        });
       } else {
         // Otherwise, center on Singapore with default zoom
         this.map.setView([this.center.lat, this.center.lng], 11);
       }
+      
+      // After manual recenter, mark as no longer initial load
+      if (force) {
+        this._isInitialLoad = false
+      }
     },
 
+    handleResize() {
+      if (this.map) {
+        // Debounce resize handling
+        clearTimeout(this._resizeTimeout);
+        this._resizeTimeout = setTimeout(() => {
+          if (this.map) {
+            this.map.invalidateSize();
+            // Re-enable dragging in case it was disabled
+            if (!this.map.dragging.enabled()) {
+              this.map.dragging.enable();
+            }
+            if (!this.map.touchZoom.enabled()) {
+              this.map.touchZoom.enable();
+            }
+          }
+        }, 150);
+      }
+    },
+
+    // Public method to re-enable dragging if it gets disabled
+    enableDragging() {
+      if (this.map) {
+        this.map.dragging.enable();
+        this.map.touchZoom.enable();
+        this.map.doubleClickZoom.enable();
+        this.map.scrollWheelZoom.enable();
+        this.map.invalidateSize();
+      }
+    },
     
   },
 }
@@ -514,12 +722,15 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
+  touch-action: pan-x pan-y;
 }
 
 .leaflet-map {
   width: 100%;
   height: 100%;
   z-index: 1;
+  touch-action: pan-x pan-y;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .loading-overlay {
@@ -548,6 +759,7 @@ export default {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   background: white;
+  pointer-events: auto;
 }
 
 .search-input {
@@ -628,6 +840,7 @@ export default {
   justify-content: center;
   font-size: 20px;
   transition: all 0.2s ease;
+  pointer-events: auto;
 }
 
 .recenter-btn:hover {
@@ -667,5 +880,27 @@ export default {
 /* Ensure Leaflet popups are not hidden behind UI overlays */
 :deep(.leaflet-pane.leaflet-popup-pane) {
   z-index: 1200 !important;
+}
+
+/* Ensure all Leaflet map panes are interactive */
+:deep(.leaflet-pane) {
+  pointer-events: auto !important;
+}
+
+:deep(.leaflet-tile-pane),
+:deep(.leaflet-overlay-pane),
+:deep(.leaflet-shadow-pane),
+:deep(.leaflet-marker-pane),
+:deep(.leaflet-tooltip-pane),
+:deep(.leaflet-map-pane) {
+  pointer-events: auto !important;
+  touch-action: pan-x pan-y;
+}
+
+/* Ensure map wrapper and container are interactive */
+.map-wrapper,
+.leaflet-map {
+  pointer-events: auto !important;
+  touch-action: pan-x pan-y;
 }
 </style>

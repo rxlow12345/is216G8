@@ -10,9 +10,27 @@
     @close="notificationData = {}"
   />
   <!-- Left Sidebar -->
-  <div class="rescuemapwrapper">
-    <div class="sidebar" :class="{ 'mobile-sheet': true, expanded: isSheetExpanded }">
-      <div class="sheet-handle" @click="toggleSheet" title="Expand/collapse">
+  <div class="rescuemapwrapper" :class="{ 'sidebar-expanded': isSheetExpanded }">
+    <div 
+      class="sidebar" 
+      :class="{ 
+        'mobile-sheet': true, 
+        expanded: isSheetExpanded,
+        'is-dragging': isDragging
+      }"
+      :style="drawerStyle"
+      @touchstart="handleTouchStart"
+      @touchmove="handleTouchMove"
+      @touchend="handleTouchEnd"
+    >
+      <div 
+        class="sheet-handle" 
+        @click="toggleSheet" 
+        @touchstart.stop="handleDragStart"
+        @touchmove.stop="handleDragMove"
+        @touchend.stop="handleDragEnd"
+        title="Expand/collapse"
+      >
         <span class="sheet-grabber"></span>
       </div>
       <!-- Header -->
@@ -138,6 +156,12 @@ export default {
       notificationData: { title: "", message: "", type: "info", duration: 6000 },
       
       isSheetExpanded: false,
+      // Drawer drag state
+      isDragging: false,
+      dragStartY: 0,
+      dragCurrentY: 0,
+      drawerHeight: 0, // Dynamic height during drag
+      drawerStartHeight: 0,
     };
   },
   computed: {
@@ -146,6 +170,25 @@ export default {
       if (window.innerWidth > 768) return {};
       const h = this.isSheetExpanded ? '70vh' : '120px';
       return { height: h };
+    },
+    drawerStyle() {
+      if (typeof window === 'undefined' || window.innerWidth > 768) return {};
+      
+      // If dragging, use dynamic height
+      if (this.isDragging && this.drawerHeight > 0) {
+        return {
+          height: `${this.drawerHeight}px`,
+          transform: `translateY(${this.dragCurrentY}px)`,
+          transition: 'none'
+        };
+      }
+      
+      // Normal state
+      return {
+        height: this.isSheetExpanded ? '70vh' : '180px',
+        transform: 'translateY(0)',
+        transition: 'height 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+      };
     },
   },
   async mounted() {
@@ -159,10 +202,96 @@ export default {
   // async unmounted(to, from, next) {
   async unmounted() {
     socket.disconnect();
+    // Clean up drag state
+    if (this.isDragging) {
+      document.body.style.overflow = '';
+    }
     // next;
   },
   methods: {
-    toggleSheet() { this.isSheetExpanded = !this.isSheetExpanded; },
+    toggleSheet() { 
+      this.isSheetExpanded = !this.isSheetExpanded;
+    },
+    // Touch handlers for drawer dragging
+    handleTouchStart(e) {
+      // Only allow dragging from the handle area when collapsed
+      if (!this.isSheetExpanded) {
+        const touch = e.touches[0];
+        if (touch.clientY > window.innerHeight - 200) {
+          this.handleDragStart(e);
+        }
+      }
+    },
+    handleTouchMove(e) {
+      if (this.isDragging) {
+        this.handleDragMove(e);
+      }
+    },
+    handleTouchEnd(e) {
+      if (this.isDragging) {
+        this.handleDragEnd(e);
+      }
+    },
+    handleDragStart(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const touch = e.touches ? e.touches[0] : e;
+      this.isDragging = true;
+      this.dragStartY = touch.clientY;
+      this.drawerStartHeight = this.isSheetExpanded ? window.innerHeight * 0.7 : 180;
+      this.drawerHeight = this.drawerStartHeight;
+      // Prevent body scroll during drag
+      document.body.style.overflow = 'hidden';
+    },
+    handleDragMove(e) {
+      if (!this.isDragging) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const touch = e.touches ? e.touches[0] : e;
+      const deltaY = this.dragStartY - touch.clientY; // Positive = dragging up
+      
+      // Calculate new height
+      let newHeight = this.drawerStartHeight + deltaY;
+      
+      // Constrain height between min (180px) and max (70vh)
+      const minHeight = 180;
+      const maxHeight = window.innerHeight * 0.7;
+      newHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
+      
+      this.drawerHeight = newHeight;
+      this.dragCurrentY = 0; // Don't translate, just resize
+    },
+    handleDragEnd(e) {
+      if (!this.isDragging) return;
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Restore body scroll
+      document.body.style.overflow = '';
+      
+      const touch = e.changedTouches ? e.changedTouches[0] : e;
+      const totalDelta = this.drawerHeight - this.drawerStartHeight;
+      
+      // Determine if should expand or collapse based on drag distance
+      const threshold = 50; // Minimum drag distance to trigger state change
+      const midPoint = (180 + window.innerHeight * 0.7) / 2;
+      
+      if (Math.abs(totalDelta) > threshold) {
+        // User dragged significantly
+        this.isSheetExpanded = totalDelta > 0; // Dragged up = expand
+      } else {
+        // Small drag, toggle based on current position
+        this.isSheetExpanded = this.drawerHeight > midPoint;
+      }
+      
+      // Reset drag state
+      this.isDragging = false;
+      this.dragStartY = 0;
+      this.dragCurrentY = 0;
+      this.drawerHeight = 0;
+      this.drawerStartHeight = 0;
+    },
     showNotification(title = "", message = "", type = "info", duration = 6000) {
       this.notificationData = { title, message, type, duration };
       this.$nextTick(() => this.$refs.notify?.show());
@@ -171,12 +300,12 @@ export default {
       if (!report) return;
       this.selectedReportId = report.reportId;
       this.selectedDocId = report.id;
-      // Immediately open the popup and pan to it for better UX
-      const opened = await this.$refs.mapView?.openMarkerPopup(report.reportId, report);
+      // Open the popup but don't pan to it (shouldPan = false) to respect user's map position
+      const opened = await this.$refs.mapView?.openMarkerPopup(report.reportId, report, false);
       if (!opened) {
         // Retry on next tick in case markers are rebuilding
         await this.$nextTick();
-        this.$refs.mapView?.openMarkerPopup(report.reportId, report);
+        this.$refs.mapView?.openMarkerPopup(report.reportId, report, false);
       }
     },
     async ensureMapViewReady() {
@@ -190,10 +319,8 @@ export default {
         return;
       }
 
-      // to emit event to the map view to ensure the pop up opens
-      this.$refs.mapView?.openMarkerPopup(report.reportId);
-
-      // Let popup autoPan handle map movement to keep fully in view
+      // Open popup without panning to respect user's map position
+      this.$refs.mapView?.openMarkerPopup(report.reportId, null, false);
     },
     getCount() {
       if (!Array.isArray(this.reports)) return 0;
@@ -264,8 +391,8 @@ export default {
           const species = report?.speciesName || report?.animalType || "An animal";
           this.showNotification("New Report", `${species} needs help!`, "info", 7000);
         }
-        // Recenter so the new marker is visible
-        this.$nextTick(() => this.$refs.mapView?.recenterMap());
+        // Don't auto-recenter - let user decide where to view the map
+        // The new marker will appear but won't force map movement
       });
 
       // Listen for report updates
@@ -394,8 +521,8 @@ export default {
           // to handle geocoding errors
         }
         this.loadingReports = false;
-        // Ensure map view fits markers after first load
-        this.$nextTick(() => this.$refs.mapView?.recenterMap());
+        // Map will auto-fit on initial load in MapView component
+        // Don't force recenter after initial load to respect user's map position
         console.log("All Reports Fetched");
         // this.reports = validReports;
         // console.log(
