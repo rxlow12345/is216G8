@@ -105,7 +105,7 @@ Explain the core features and the benefit each provides.
 6. **Resources Page**
    <br><img src="screenshots/Resources.png" width="600">
 
-   - Users can donate to our partners
+   - Users can view updates on wildlife rescue and provide feedback
 
 ### Reporter Role:
 

@@ -27,7 +27,7 @@
       </div>
       <!-- Reports Banner (matches deployed style) -->
       <div class="reports-banner">
-        <h2 class="reports-banner-title">Accept Reports</h2>
+        <h2 class="reports-banner-title">🌿 Accept Reports 🌿</h2>
         <p class="reports-banner-subtitle">{{ animatedPendingCount }} pending reports</p>
         <div class="reports-banner-status">
           <span class="status-dot" :class="{ active: isConnected }"></span>
