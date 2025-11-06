@@ -1,5 +1,6 @@
 <template>
   <BackToTop />
+  
   <!-- Left Sidebar -->
   <div class="rescuemapwrapper" :class="{ 'sidebar-expanded': isSheetExpanded }">
     <div 
@@ -439,8 +440,7 @@ export default {
           this.reports?.unshift(report);
           if (this.getCount() !== beforeCount) this.pulseCountSpinner();
           // Notify about new report
-          const species = report?.speciesName || report?.animalType || "An animal";
-          this.showNotification("New Report", `${species} needs help!`, "info", 7000);
+          // Optional: could trigger a subtle UI pulse instead of a toast
         }
         // Don't auto-recenter - let user decide where to view the map
         // The new marker will appear but won't force map movement
@@ -581,8 +581,10 @@ export default {
               reportsToAdd.push(report);
               addedCount++;
 
-              // Increment counter for animation
-              this.incrementPendingCount();
+              // Increment counter only if report will be displayable
+              if (this.isDisplayable(report)) {
+                this.incrementPendingCount();
+              }
 
               console.debug(`Added report ${report.reportId} at ${coordinates.lat}, ${coordinates.lng}`);
             } else {
@@ -591,8 +593,10 @@ export default {
               reportsToAdd.push(report);
               addedCount++;
 
-              // Increment counter for animation
-              this.incrementPendingCount();
+              // Increment counter only if report will be displayable
+              if (this.isDisplayable(report)) {
+                this.incrementPendingCount();
+              }
             }
           } catch (geocodeError) {
             console.log(
@@ -603,14 +607,23 @@ export default {
             reportsToAdd.push(report);
             addedCount++;
 
-            // Increment counter for animation
-            this.incrementPendingCount();
+            // Increment counter only if report will be displayable
+            if (this.isDisplayable(report)) {
+              this.incrementPendingCount();
+            }
           }
         }
 
         // FINAL UPDATE - Ensure all reports are added and markers render
         this.reports = reportsToAdd;
         await this.$nextTick();
+
+        // Reconcile animated counter with actual displayable count
+        const actualDisplayableCount = this.getCount();
+        if (this.animatedPendingCount !== actualDisplayableCount) {
+          console.warn(`Counter mismatch! Animated: ${this.animatedPendingCount}, Actual: ${actualDisplayableCount}`)
+          this.animatePendingCount(actualDisplayableCount);
+        }
 
         skippedCount = filteredReports.length - processedCount;
         this.loadingReports = false;
@@ -643,11 +656,6 @@ export default {
         }
       } catch (error) {
         console.error("Error loading reports:", error.message);
-        this.showNotification(
-          "Failed to Load Reports",
-          "Make sure the backend is running and try again.",
-          "error",
-        );
       } finally {
         this.isLoadingMarkers = false;
       }
@@ -802,11 +810,6 @@ export default {
         };
       } catch (error) {
         console.error("Error accepting case:", error);
-        this.showNotification(
-          "Failed to Accept Case",
-          "There was an error accepting the case. Please try again.",
-          "error",
-        );
       }
     },
 
@@ -862,10 +865,17 @@ export default {
         return result.uid;
       } catch (e) {
         console.log("Error getting user", e);
-        this.showNotification("Current user not found", "Please log in again.", "warning");
       }
     },
 
+    // showNotification(title = "", message) {
+    //   if ("Notification" in window && Notification.permission === "granted") {
+    //     new Notification(title, {
+    //       body: message,
+    //       icon: "/favicon.ico",
+    //     });
+    //   }
+    // },
   },
   computed: {
     selectedReport() {
