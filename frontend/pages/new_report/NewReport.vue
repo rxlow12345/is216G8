@@ -2366,6 +2366,9 @@ textarea:focus {
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
   margin: 1.5rem 0;
   border: 2px solid #d4cdb8;
+  position: relative;
+  display: block;
+  width: 100%;
 }
 
 .map-hint {
@@ -2630,14 +2633,31 @@ div:not(.button-group):not(.content-card):not(.form-group):not(.form-row) {
 @media (max-width: 768px) {
   .report-container {
     padding: 0 1rem;
+    margin: 1rem auto;
   }
   
   .content-card {
     padding: 1.5rem;
+    margin-top: 1rem;
+    border-radius: 16px;
+  }
+
+  /* Ensure proper document flow for active step */
+  .step-pane {
+    position: relative !important;
+    width: 100% !important;
+    order: unset !important;
+  }
+
+  .step-pane.active {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
   }
   
   .progress-indicator {
     font-size: 0.875rem;
+    margin: 2rem 0;
   }
   
   .step-label {
@@ -2647,17 +2667,197 @@ div:not(.button-group):not(.content-card):not(.form-group):not(.form-row) {
   .button-group {
     flex-direction: column;
     gap: 1rem;
+    margin-top: 2rem;
   }
   
   .button-group .btn {
     width: 100%;
     max-width: 100%;
+    min-width: auto !important;
     justify-content: center;
   }
 
   .form-row {
     grid-template-columns: 1fr;
-    gap: 0;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Ensure sections are in proper order */
+  .upload-section,
+  .location-section,
+  .datetime-section {
+    display: block !important;
+    position: relative !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    float: none !important;
+  }
+
+  /* Fix section titles */
+  h2.section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  /* Add MORE spacing between upload section and location section on mobile */
+  .upload-section {
+    margin-bottom: 3rem !important;
+    padding-bottom: 1rem;
+  }
+
+  /* Add MORE spacing for location section (which contains the map) */
+  .location-section {
+    margin-top: 3.5rem !important;
+  }
+
+  /* Add MORE spacing before map container */
+  .map-container {
+    margin-top: 2.5rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  /* Add spacing for file preview grid if it exists */
+  .upload-section .file-preview-grid {
+    margin-bottom: 2rem;
+  }
+
+  /* Ensure location-section is block layout (not flex/grid that could reorder) */
+  .location-section {
+    display: block !important;
+    position: relative !important;
+  }
+
+  /* Ensure label and input stay in order */
+  .location-section .form-label {
+    order: 0 !important;
+  }
+
+  .location-section .input-wrapper {
+    order: 0 !important;
+  }
+
+  /* Ensure button stays in correct position */
+  .btn-live-location {
+    margin-top: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+    order: 0 !important;
+    position: relative !important;
+    display: inline-flex !important;
+    width: 100%;
+  }
+
+  /* Ensure map container is AFTER button - use negative margin reset if needed */
+  .map-container {
+    order: 0 !important;
+    position: relative !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+    width: 100%;
+    clear: both !important;
+  }
+
+  /* Force map to appear after button */
+  .btn-live-location + .map-container {
+    margin-top: 1.5rem !important;
+    order: 0 !important;
+  }
+
+  /* Ensure form-hint after map stays in order */
+  .map-container + .form-hint {
+    order: 0 !important;
+    margin-top: 0.75rem;
+  }
+
+  /* Ensure form-hint after upload section has spacing */
+  .upload-section + .form-hint,
+  .upload-section ~ .form-hint {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  /* Reduce upload area padding on mobile */
+  .upload-area {
+    padding: 2rem 1rem;
+    min-height: 150px;
+  }
+
+  .upload-icon {
+    font-size: 36px;
+    margin-bottom: 0.75rem;
+  }
+
+  .upload-text {
+    font-size: 0.9rem;
+  }
+
+  .upload-text.primary {
+    font-size: 1rem;
+  }
+
+  .upload-hint {
+    font-size: 0.8rem;
+  }
+
+  /* Map adjustments */
+  #osm-map {
+    height: 300px;
+  }
+
+  .map-hint {
+    font-size: 0.8rem;
+    margin-bottom: 0.75rem;
+    padding: 0.5rem;
+  }
+
+  /* Ensure radio groups wrap properly */
+  .radio-group {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .radio-label {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+  }
+
+  /* Fix input wrapper */
+  .input-wrapper {
+    width: 100%;
+    display: block;
+  }
+
+  .modern-input,
+  .modern-select,
+  .modern-textarea {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Ensure form groups have proper spacing */
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  /* Fix datetime section */
+  .datetime-section {
+    margin-top: 2rem;
+  }
+
+  /* Ensure all labels are visible */
+  .form-label {
+    font-size: 0.9375rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Fix any absolute positioning issues */
+  .input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
   }
 }
 

@@ -486,7 +486,13 @@ export default {
           (report) => report.status === "pending"
         );
 
-        this.reports = [];
+        console.log(`Total pending reports from API: ${filteredReports.length}`);
+        
+        // Process all reports first, then add them all at once to avoid multiple watch triggers
+        const reportsToAdd = [];
+        let processedCount = 0;
+        let addedCount = 0;
+        let skippedCount = 0;
 
         for (const report of filteredReports) {
           if (report.location == null) {
@@ -502,11 +508,21 @@ export default {
                 : report.location;
 
             const coordinates = await this.geocode(addressToGeocode);
+            processedCount++;
 
+            // Always add report with coordinates, even if outside Singapore bounds
+            // The map should show all pending reports based on their actual location
             if (this.isWithinSingapore(coordinates)) {
               report.coordinates = coordinates;
-              this.reports.push(report); // report only added if in SG
-              this.loadingReports = false;
+              reportsToAdd.push(report);
+              addedCount++;
+              console.debug(`Added report ${report.reportId} at ${coordinates.lat}, ${coordinates.lng}`);
+            } else {
+              // Still add it, but use fallback coordinates
+              console.warn(`Report ${report.reportId} coordinates outside Singapore bounds, using fallback`);
+              report.coordinates = this.mapCenter;
+              reportsToAdd.push(report);
+              addedCount++;
             }
           } catch (geocodeError) {
             console.log(
@@ -515,20 +531,57 @@ export default {
             );
             report.coordinates = this.mapCenter;
             // Ensure we still render a fallback marker
-            this.reports.push(report);
-            // break;
+            reportsToAdd.push(report);
+            addedCount++;
           }
-          // to handle geocoding errors
         }
+        
+        // Add all reports at once to trigger a single watch update
+        this.reports = reportsToAdd;
+        skippedCount = filteredReports.length - processedCount;
         this.loadingReports = false;
-        // Map will auto-fit on initial load in MapView component
-        // Don't force recenter after initial load to respect user's map position
-        console.log("All Reports Fetched");
-        // this.reports = validReports;
-        // console.log(
-        //   `Only loaded ${validReports.length} valid reports out of ${filteredReports.length} total`
-        // );
-        console.log("Reports:", this.reports);
+        
+        // Log detailed information about reports
+        console.log(`All Reports Fetched: ${addedCount} added, ${skippedCount} skipped out of ${filteredReports.length} total`);
+        console.log(`Reports array length: ${this.reports.length}`);
+        
+        // Check which reports have valid coordinates
+        const reportsWithCoords = this.reports.filter(r => r.coordinates && r.coordinates.lat && r.coordinates.lng);
+        const reportsWithoutCoords = this.reports.filter(r => !r.coordinates || !r.coordinates.lat || !r.coordinates.lng);
+        
+        console.error('📊 Reports Analysis:', {
+          total: this.reports.length,
+          withCoords: reportsWithCoords.length,
+          withoutCoords: reportsWithoutCoords.length,
+          reportsWithCoords: reportsWithCoords.map(r => ({
+            id: r.reportId || r.id,
+            coords: r.coordinates
+          })),
+          reportsWithoutCoords: reportsWithoutCoords.map(r => ({
+            id: r.reportId || r.id,
+            location: r.location
+          }))
+        });
+        
+        // Force MapView to update markers immediately
+        this.$nextTick(() => {
+          console.error('🔴 Forcing MapView to update markers...');
+          console.error('MapView ref exists:', !!this.$refs.mapView);
+          console.error('FilteredReports length:', this.filteredReports?.length);
+          console.error('FilteredReports:', this.filteredReports);
+          
+          if (this.$refs.mapView) {
+            console.error('✅ MapView ref found, calling updateMarkers');
+            if (this.$refs.mapView.updateMarkers) {
+              console.error('✅ updateMarkers method exists, calling it...');
+              this.$refs.mapView.updateMarkers();
+            } else {
+              console.error('❌ updateMarkers method does not exist on MapView');
+            }
+          } else {
+            console.error('❌ MapView ref not available yet');
+          }
+        });
       } catch (error) {
         console.error("Error loading reports:", error.message);
         this.showNotification(
@@ -768,14 +821,31 @@ export default {
     filteredReports() {
       const list = Array.isArray(this.reports) ? this.reports : [];
       const f = (this.severityFilter || "all").toLowerCase();
-      if (f === "all") return list;
-      if (f === "low") {
-        return list.filter((r) => {
+      let filtered;
+      if (f === "all") {
+        filtered = list;
+      } else if (f === "low") {
+        filtered = list.filter((r) => {
           const sev = (r?.severity || "").toLowerCase();
           return sev !== "urgent" && sev !== "moderate";
         });
+      } else {
+        filtered = list.filter((r) => (r?.severity || "").toLowerCase() === f);
       }
-      return list.filter((r) => (r?.severity || "").toLowerCase() === f);
+      
+      // Debug logging
+      console.error('🔍 filteredReports computed:', {
+        originalCount: list.length,
+        filteredCount: filtered.length,
+        filter: f,
+        reports: filtered.map(r => ({
+          id: r.reportId || r.id,
+          hasCoords: !!r.coordinates,
+          coords: r.coordinates
+        }))
+      });
+      
+      return filtered;
     },
   },
   watch: {

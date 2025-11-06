@@ -72,34 +72,73 @@ export default {
     }
   },
   async mounted() {
+    console.log('MapView mounted - starting initialization')
     await this.initMap()
     this.loading = false
+    console.log('MapView: map initialized, loading = false')
     
     // Handle window resize to ensure map stays interactive
     window.addEventListener('resize', this.handleResize)
     
     // Ensure markers are created after map is ready
     this.$nextTick(() => {
-      if (this.map && this.reports && this.reports.length > 0 && this.markers.length === 0) {
-        console.debug('Mount check: creating markers if missing')
-        this.updateMarkers()
+      console.log('Mount check:', {
+        map: !!this.map,
+        reportsCount: this.reports?.length || 0,
+        markersCount: this.markers.length,
+        reports: this.reports
+      })
+      if (this.map && this.reports && this.reports.length > 0) {
+        if (this.markers.length === 0) {
+          console.log('Mount check: creating markers - calling updateMarkers')
+          this.updateMarkers()
+        } else {
+          console.log('Mount check: markers already exist, skipping')
+        }
+      } else {
+        console.warn('Mount check: cannot create markers', {
+          map: !!this.map,
+          reports: this.reports?.length || 0,
+          reportsArray: this.reports
+        })
       }
     })
+    
+    // Also check again after a delay in case reports are loaded asynchronously
+    setTimeout(() => {
+      console.log('Delayed mount check:', {
+        map: !!this.map,
+        reportsCount: this.reports?.length || 0,
+        markersCount: this.markers.length
+      })
+      if (this.map && this.reports && this.reports.length > 0 && this.markers.length === 0) {
+        console.log('Delayed mount check: creating markers - calling updateMarkers')
+        this.updateMarkers()
+      }
+    }, 1000)
   },
   watch: {
     reports: {
       handler(newReports, oldReports) {
-        console.debug('Reports watch triggered:', {
+        console.error('🟢 Reports watch triggered!', {
           newCount: newReports?.length || 0,
           oldCount: oldReports?.length || 0,
           isInitialLoad: this._isInitialLoad,
-          isUserDragging: this._isUserDragging
+          isUserDragging: this._isUserDragging,
+          mapReady: !!this.map,
+          newReports: newReports,
+          oldReports: oldReports
         })
         
         // Always update markers on initial load (when oldReports is undefined/null or empty)
         if (!oldReports || oldReports.length === 0) {
-          console.debug('Initial load detected, updating markers')
-          this.updateMarkers()
+          console.error('🟢 Initial load detected, updating markers')
+          if (this.map) {
+            console.error('🟢 Map is ready, calling updateMarkers from watch')
+            this.updateMarkers()
+          } else {
+            console.error('🟡 Map not ready yet, will update markers after map initializes')
+          }
           return
         }
         
@@ -158,7 +197,7 @@ export default {
         }
       },
       deep: true,
-      immediate: false, // Let initMap handle initial load, watch handles updates
+      immediate: true, // Trigger immediately to handle initial reports
     },
   },
   beforeUnmount() {
@@ -248,9 +287,19 @@ export default {
 
         // Add markers for existing reports after a short delay to ensure map is fully ready
         this.$nextTick(() => {
+          console.log('initMap $nextTick: checking for reports', {
+            map: !!this.map,
+            reportsCount: this.reports?.length || 0,
+            reports: this.reports
+          })
           if (this.map && this.reports && this.reports.length > 0) {
-            console.debug('Initial marker creation from initMap')
+            console.log('Initial marker creation from initMap - calling updateMarkers')
             this.updateMarkers()
+          } else {
+            console.warn('initMap: Cannot create markers yet', {
+              map: !!this.map,
+              reportsCount: this.reports?.length || 0
+            })
           }
         })
 
@@ -357,35 +406,59 @@ export default {
 
 
     updateMarkers() {
+      console.error('🔵 updateMarkers called!', {
+        map: !!this.map,
+        reportsCount: this.reports?.length || 0,
+        reports: this.reports
+      })
+      
       if (!this.map) {
-        console.warn('updateMarkers: map not initialized')
+        console.error('❌ updateMarkers: map not initialized - ABORTING')
         return
       }
 
-      console.debug('updateMarkers called with', this.reports?.length || 0, 'reports')
+      console.error('✅ updateMarkers: map is ready, processing reports...')
+      console.log('updateMarkers called with', this.reports?.length || 0, 'reports')
+      console.log('Reports array:', this.reports)
 
       // Ensure map is properly sized before updating markers
       this.map.invalidateSize();
 
       // Remove old markers
+      const oldMarkerCount = this.markers.length
       this.markers.forEach((marker) => this.map.removeLayer(marker))
       this.markers = []
+      console.log(`Removed ${oldMarkerCount} old markers`)
 
       // Add new markers
       let created = 0
       let skipped = 0
       
       if (!this.reports || this.reports.length === 0) {
-        console.debug('No reports to display')
+        console.warn('No reports to display')
         return
       }
       
-      this.reports.forEach((report) => {
+      this.reports.forEach((report, index) => {
         const coords = report.coordinates;
         const lat = coords ? Number(coords.lat) : NaN
         const lng = coords ? Number(coords.lng) : NaN
+        
+        console.log(`Processing report ${index + 1}/${this.reports.length}:`, {
+          reportId: report.reportId || report.id,
+          hasCoordinates: !!coords,
+          lat,
+          lng,
+          isValid: !Number.isNaN(lat) && !Number.isNaN(lng)
+        })
+        
         if (!coords || Number.isNaN(lat) || Number.isNaN(lng)){
-          console.log(`Report ${report.id || report.reportId} skipped due to invalid coordinates`, report);
+          console.warn(`Report ${report.id || report.reportId} skipped due to invalid coordinates`, {
+            report,
+            coords,
+            lat,
+            lng
+          });
           skipped += 1
           return;
         }
@@ -394,6 +467,8 @@ export default {
         const marker = L.marker([lat, lng]).addTo(this.map)
 
         marker.reportId = report.reportId || report.id;
+        // Store coordinates on marker for later use
+        marker.coordinates = { lat, lng };
 
         // Create popup content
         const popupContent = this.createPopupContent(report)
@@ -406,11 +481,30 @@ export default {
         })
 
         marker.on('popupopen', () => {
-          this.lastOpenMarkerId = report.reportId || report.id
-          const button = document.getElementById(`accept-btn-${report.reportId || report.id}`)
+          const reportId = report.reportId || report.id
+          this.lastOpenMarkerId = reportId
+          
+          // Get the latest report object from the reports array (in case it was updated)
+          const currentReport = this.reports.find(r => (r.reportId || r.id) === reportId) || report
+          
+          // Ensure report has coordinates when popup opens (refresh scenario)
+          if (!currentReport.coordinates || !currentReport.coordinates.lat || !currentReport.coordinates.lng) {
+            if (marker.coordinates) {
+              currentReport.coordinates = marker.coordinates
+            } else {
+              const markerLatLng = marker.getLatLng()
+              if (markerLatLng) {
+                currentReport.coordinates = { lat: markerLatLng.lat, lng: markerLatLng.lng }
+              }
+            }
+            // Update popup content with coordinates
+            const updatedContent = this.createPopupContent(currentReport)
+            marker.setPopupContent(updatedContent)
+          }
+          const button = document.getElementById(`accept-btn-${reportId}`)
           if (button) {
             button.addEventListener('click', () => {
-              this.handleAcceptCase(report)
+              this.handleAcceptCase(currentReport)
             })
           }
         })
@@ -421,9 +515,35 @@ export default {
 
         this.markers.push(marker)
         created += 1
+        console.log(`Created marker ${created} for report ${report.reportId || report.id} at [${lat}, ${lng}]`)
       })
 
-      console.debug(`Markers: ${created} created, ${skipped} skipped, total: ${this.markers.length}`)
+      console.log(`Markers: ${created} created, ${skipped} skipped, total: ${this.markers.length}`)
+      
+      // Log marker positions to check for overlaps
+      const markerPositions = this.markers.map(m => {
+        const pos = m.getLatLng();
+        return { reportId: m.reportId, lat: pos.lat, lng: pos.lng };
+      });
+      console.log('All marker positions:', markerPositions);
+      
+      // Check for duplicate positions
+      const positionMap = new Map();
+      markerPositions.forEach(pos => {
+        const key = `${pos.lat.toFixed(6)},${pos.lng.toFixed(6)}`;
+        if (!positionMap.has(key)) {
+          positionMap.set(key, []);
+        }
+        positionMap.get(key).push(pos.reportId);
+      });
+      
+      const duplicates = Array.from(positionMap.entries()).filter(([key, ids]) => ids.length > 1);
+      if (duplicates.length > 0) {
+        console.warn('Found markers with duplicate positions:', duplicates);
+        duplicates.forEach(([key, ids]) => {
+          console.warn(`Position ${key} has ${ids.length} markers:`, ids);
+        });
+      }
       
       // Verify markers are actually on the map
       const markersOnMap = this.markers.filter(m => this.map.hasLayer(m)).length
@@ -459,6 +579,17 @@ export default {
       reports.forEach((report) => {
         const marker = this.markers.find(m => m.reportId === report.reportId)
         if (marker) {
+          // Ensure report has coordinates - prefer marker's stored coordinates, then getLatLng()
+          if (!report.coordinates || !report.coordinates.lat || !report.coordinates.lng) {
+            if (marker.coordinates) {
+              report.coordinates = marker.coordinates
+            } else {
+              const markerLatLng = marker.getLatLng()
+              if (markerLatLng) {
+                report.coordinates = { lat: markerLatLng.lat, lng: markerLatLng.lng }
+              }
+            }
+          }
           const newContent = this.createPopupContent(report)
           marker.setPopupContent(newContent)
         }
@@ -541,6 +672,41 @@ export default {
       const displayLocation = typeof report.location === 'object' 
     ? report.location.address 
     : report.location;
+      
+      // Ensure coordinates exist - try to get from marker if report doesn't have them
+      let coordinates = report.coordinates;
+      if (!coordinates || !coordinates.lat || !coordinates.lng) {
+        // Try to find marker and get coordinates from it
+        const reportId = report.reportId || report.id;
+        if (reportId) {
+          const marker = this.markers.find(m => m.reportId === reportId);
+          if (marker) {
+            if (marker.coordinates) {
+              coordinates = marker.coordinates;
+            } else {
+              const markerLatLng = marker.getLatLng();
+              if (markerLatLng) {
+                coordinates = { lat: markerLatLng.lat, lng: markerLatLng.lng };
+              }
+            }
+          }
+        }
+      }
+      
+      // Format coordinates if available
+      let coordinatesDisplay = '';
+      if (coordinates && coordinates.lat != null && coordinates.lng != null) {
+        const lat = Number(coordinates.lat);
+        const lng = Number(coordinates.lng);
+        if (!isNaN(lat) && !isNaN(lng)) {
+          coordinatesDisplay = `
+            <p style="margin: 3px 0; color: #9ca3af; font-size: 11px; display: flex; align-items: center;">
+              <span style="margin-right: 6px;">🗺️</span>
+              <span>${lat.toFixed(6)}, ${lng.toFixed(6)}</span>
+            </p>`;
+        }
+      }
+      
       return `
         <div style="min-width: 280px; padding: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
           <h3 style="margin: 0 0 12px; color: #065f46; font-size: 18px; font-weight: 700; letter-spacing: -0.5px;">
@@ -594,6 +760,8 @@ export default {
               <span style="margin-right: 6px;">📍</span>
               <span>${displayLocation}</span>
             </p>
+
+            ${coordinatesDisplay}
 
             <p style="margin: 3px 0 0; color: #9ca3af; font-size: 11px; display: flex; align-items: center;">
               <span style="margin-right: 6px;">🕐</span>
