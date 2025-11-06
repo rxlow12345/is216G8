@@ -133,6 +133,7 @@ VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id_here
 VITE_FIREBASE_APP_ID=your_app_id_here
 VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id_here
+VITE_OPENCAGE_API_KEY="your_api_key_here"
 ```
 
 > ⚠️ Never commit `.env` or `service-account.json` to GitHub.
@@ -145,6 +146,8 @@ Open your terminal in the project folder and run the following commands to insta
 
 ```bash
 npm install confetti-canvas
+npm install mathjs
+npm intall date-fns
 
 # Backend
 cd backend
@@ -325,7 +328,7 @@ Each member should contribute 2–3 sentences on their learning and project expe
 > - Haoyue:
 > - Charlize: I feel like this project has been challenging and complicated, but it was really insightful in helping me realise how a proper project works. I learnt how to efficiently split up and delegate tasks based on our strengths, how to work together as a group to integrate our code and our ideas together, how to debug and fix errors that we came across and more. I think the biggest challenge was getting all our ideas aligned, and ensuring everyone was on the same page, since we all had different impressions of the same feature, which led to a lot of miscommunication and extra work.
 > - Amelia:
-> - Jessica:
+> - Jessica: With a tight schedule, it was challenging juggling all the work at hand. This experience has taught me how to prioritise tasks and manage my time effectively. Furthermore, as there are multiple people working on the same project, we had multiple ideas for the UI. Through this, I leanred how to integrate our UI designs to make them more cohesive and flow better.
 > - Rui Xuan: I thought it was difficult since I was learning an entirely new language and have to use that knowledge to build the app, however, I thought it was a good learning experience and this helped me build my fundamentals for the module. Ensuring everyone could code without merge conflicts was definitely a pain, but it was worthwhile seeing everyone come together and helping each other solve their bugs. We did have miscommunications here and there, but we sat down with each other and fought it out, eventually coming to a conclusion.
 
 As a team, reflect on:
