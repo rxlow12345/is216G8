@@ -43,14 +43,17 @@ The general public and rescue organisations.
 
 Explain the core features and the benefit each provides.
 
-| Feature                                      | Description                                                                             | User Benefit                                                                                  |
-| :------------------------------------------- | :-------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
-| Register & Login                             | Secure authentication system                                                            | Personalized experience and data security                                                     |
-| GuideBook                                    | Educational Guide for all users, along with a game function                             | Increase knowledge of animals while improving app interactivity                               |
-| Reporting function with integrated AI camera | Helps to identify the animal and pre-fill the report page with the animal               | Makes the reporting process smooth and easy for users                                         |
-| Live Incident Map                            | Volunteers can access map which will provide them with real time location of the animal | Allow volunteers to easily locate the animal                                                  |
-| Status Page                                  | Page will update and reporters can see live updates of the animal they rescued          | Allows reporters to gain a sense of fulfilment when they see that the animal has been rescued |
-| Donation Page                                | Page that will accept donation from users                                               | Clear and informative donation page for users to donate to the cause easily                   |
+| Feature                                      | Description                                                                                            | User Benefit                                                                                            |
+| :------------------------------------------- | :----------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------ |
+| Register & Login                             | Secure authentication system                                                                           | Personalized experience and data security                                                               |
+| GuideBook                                    | Educational Guide for all users, along with a game function                                            | Increase knowledge of animals while improving app interactivity                                         |
+| Reporting function with integrated AI camera | Helps to identify the animal and pre-fill the report page with the animal                              | Makes the reporting process smooth and easy for users                                                   |
+| Live Incident Map                            | Volunteers can access map which will provide them with real time location of the animal                | Allow volunteers to easily locate the animal                                                            |
+| Status Page                                  | Page will update and reporters can see live updates of the animal they rescued                         | Allows reporters to gain a sense of fulfilment when they see that the animal has been rescued           |
+| Donation Page                                | Page that will accept donation from users                                                              | Clear and informative donation page for users to donate to the cause easily                             |
+| Reporter Dashboard                           | Reports made by users show up here and can be sorted                                                   | Allows users to check the cases that they reported                                                      |
+| Volunteer Dashboard                          | Cases accepted by volunteers show up here and they can update the details of the case as it progresses | Allows volunteers to easily manage cases that they accepted and have a standard workflow for each case  |
+| Admin Dashboard                              | All reports show up here and it is possible to reset/change the progress of each case                 | Allows admin to check the details of all reports and change/reset the progress of each case if neededof |
 
 ---
 
