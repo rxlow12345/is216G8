@@ -16,7 +16,7 @@ G3 Group 8
 | :----------------------------------------------------------------: | :------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <img src="frontend/src/public/assets/Jessica.png" width="80"> | Ang Hui Peng Jessica | Designed the Home page                                                                                                                                                                                                                                                                                                        |
 | <img src="frontend/src/public/assets/Charlize.png" width="80"> | Charlize Teo Hui Zi  | Designed the Guidebook game function and Volunteer map page                                                                                                                                                                                                                                                                   |
-|  <img src="frontend/src/public/assets/Haoyue.png" width="80">  | Wu Haoyue            | System architecture: Project setup, database management, cloud deployment.`<br>`System Logic: Role-based access control, authentication (Signup & Login), integration test & debug.`<br>`Features: Report page backend, Volunteer Active Report Summary (frontend & backend), Volunteer Past Report (frontend & backend). |
+|  <img src="frontend/src/public/assets/Haoyue.png" width="80">  | Wu Haoyue            | System Architecture: Project setup, database management, cloud deployment<br> System Logic: Role-based access control, authentication (Signup & Login), integration test & debug<br> Features: Report page backend, Volunteer Active Report Summary (frontend & backend), Volunteer Past Report (frontend & backend) |
 |  <img src="frontend/src/public/assets/Amelia.png" width="80">  | Soh Li Qing Amelia   | Designed Report, Resources/Donate page                                                                                                                                                                                                                                                                                        |
 |   <img src="frontend/src/public/assets/Ryan.png" width="80">   | Chua Wee Chye Ryan   | integrated the backend logic for AI Camera and Status Page                                                                                                                                                                                                                                                                    |
 | <img src="frontend/src/public/assets/Ruixuan.png" width="80"> | Low Rui Xuan         | Designed Guidebook, Login & Signup page                                                                                                                                                                                                                                                                                       |
@@ -164,59 +164,102 @@ Explain the core features and the benefit each provides.
 
 ## Developers Setup Guide
 
-### 0) Prerequisites
+### Prerequisites
 
 #### Required Software
 
-- [Git](https://git-scm.com/) v2.4+
-- [Node.js](https://nodejs.org/) v18+ and npm v9+
+- [Git](https://git-scm.com/) v2.4+ - Version control
+- [Node.js](https://nodejs.org/) v18+ and npm v9+ - JavaScript runtime and package manager
+- [Python](https://www.python.org/) 3.12+ (optional, for local SpeciesNet API development)
+- [Docker](https://www.docker.com/) (optional, for running SpeciesNet API locally)
 
 #### Cloud Services & APIs
 
 - **Firebase Project** (required)
-
   - [Firebase Console](https://console.firebase.google.com/) account
   - Firestore Database enabled
   - Authentication enabled (Email/Password provider)
   - Firebase Storage enabled (for image uploads)
-  - Firebase Hosting (optional, for frontend deployment)
   - Service Account JSON file (for backend admin operations)
-- **Railway Account** (optional, for backend deployment)
+  - Firebase Hosting (optional, for frontend deployment)
 
-  - [Railway](https://railway.app/) account for cloud backend hosting
 - **OpenCage API Key** (required for geocoding)
+  - Get your free API key from [OpenCage Data](https://opencagedata.com/api)
+  - Free tier: 2,500 requests/day
 
-  - Get your API key from [OpenCage Data](https://opencagedata.com/api)
 - **SpeciesNet API** (optional, for species identification)
-
-  - Access to SpeciesNet API endpoint (default: `http://34.126.93.66:8000`)
+  - Default endpoint: `http://34.126.93.66:8000` (hosted instance)
+  - Or run locally using Docker (see SpeciesNet API Setup below)
 
 ---
 
-### 1) Download the Project
+### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/<org-or-user>/<repo-name>.git
-cd <repo-name>
-npm install
+git clone https://github.com/rxlow12345/is216G8.git
+cd is216G8
 ```
 
 ---
 
-### 2) Create `.env` files
+### Step 2: Firebase Setup
 
-- In your root folder, copy the example file `.env.example` and rename it to `.env`, then update the API keys or credentials as needed.
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create a new project or select an existing one
+3. Enable the following services:
+   - **Authentication** → Email/Password sign-in method
+   - **Firestore Database** → Create database in production mode (you'll configure rules later)
+   - **Storage** → Enable Firebase Storage
+4. Get your Firebase configuration:
+   - Go to **Project Settings** → **General** → **Your apps**
+   - Click on the web app icon (`</>`) or create a new web app
+   - Copy the Firebase configuration object
+5. Generate Service Account Key:
+   - Go to **Project Settings** → **Service Accounts**
+   - Click **Generate new private key**
+   - Save the JSON file as `service-account.json` in the `/backend/` folder
+   - ⚠️ **Never commit this file to version control**
 
-#### Backend `.env`
+---
+
+### Step 3: Environment Configuration
+
+#### Backend Environment Variables
+
+Create a `.env` file in the `/backend/` directory:
 
 ```bash
+# Backend Port
 PORT=4100
-SERVICE_ACCOUNT_PATH=C:\path\to\service-account.json
+
+# Firebase Service Account (optional if using service-account.json file)
+# You can either use the JSON file OR environment variables
+FIREBASE_PROJECT_ID=your_project_id
+FIREBASE_PRIVATE_KEY_ID=your_private_key_id
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+FIREBASE_CLIENT_EMAIL=your_client_email
+FIREBASE_CLIENT_ID=your_client_id
+FIREBASE_AUTH_URI=https://accounts.google.com/o/oauth2/auth
+FIREBASE_TOKEN_URI=https://oauth2.googleapis.com/token
+FIREBASE_AUTH_PROVIDER_X509_CERT_URL=https://www.googleapis.com/oauth2/v1/certs
+FIREBASE_CLIENT_X509_CERT_URL=your_client_x509_cert_url
+
+# Service Account File Path (alternative to env vars above)
+SERVICE_ACCOUNT_PATH=./service-account.json
+
+# Frontend URL for CORS (comma-separated for multiple origins)
+FRONTEND_URL=http://localhost:5175
+
+# SpeciesNet API URL (optional, defaults to hosted instance)
+SPECIESNET_API_URL=http://34.126.93.66:8000
 ```
 
-#### Frontend `.env`
+#### Frontend Environment Variables
+
+Create a `.env` file in the `/frontend/` directory:
 
 ```bash
+# Firebase Configuration
 VITE_FIREBASE_API_KEY=your_api_key_here
 VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=your_project_id_here
@@ -224,99 +267,253 @@ VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id_here
 VITE_FIREBASE_APP_ID=your_app_id_here
 VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id_here
+
+# OpenCage API Key (for geocoding)
 VITE_OPENCAGE_API_KEY=your_opencage_api_key_here
+
+# Backend API URLs
 VITE_API_URL=http://localhost:4100/api
 VITE_SOCKET_URL=http://localhost:4100
+
+# Development Port (optional, defaults to 5175)
+VITE_PORT=5175
 ```
 
-> ⚠️ Never commit `.env` or `service-account.json` to GitHub.
+> ⚠️ **Security Note**: Never commit `.env` files or `service-account.json` to version control. Add them to `.gitignore`.
 
 ---
 
-### 3) Install dependencies
+### Step 4: Install Dependencies
 
-Open your terminal in the project folder and run the following commands to install packages for both backend and frontend:
+#### Root Dependencies (if needed)
 
 ```bash
-npm install confetti-canvas
-npm install mathjs
-npm intall date-fns
+# From project root
+npm install
+```
 
-# Backend
+#### Backend Dependencies
+
+```bash
 cd backend
 npm install
+```
 
-# Frontend
+#### Frontend Dependencies
+
+```bash
 cd ../frontend
 npm install
 ```
 
----
-
-------------------------------------Have yet to change these---------------------------------------------------
-
-### 3) Backend / Cloud Service Setup
-
-#### Firebase
-
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Create a new project.
-3. Enable the following:
-   - **Authentication** → Email/Password sign-in
-   - **Firestore Database** or **Realtime Database**
-   - **Hosting (optional)** if you plan to deploy your web app
-4. Copy the Firebase configuration into your `.env` file.
-
-#### Optional: Express.js / MongoDB
-
-If your app includes a backend:
-
-1. Create a `/server` folder for backend code.
-2. Inside `/server`, create a `.env` file with:
-   ```bash
-   MONGO_URI=<your_mongodb_connection_string>
-   JWT_SECRET=<your_jwt_secret_key>
-   ```
-3. Start the backend:
-   ```bash
-   cd server
-   npm install
-   npm start
-   ```
+> **Note**: The root `package.json` includes some shared dependencies. The main dependencies are installed in their respective `backend/` and `frontend/` directories.
 
 ---
 
-### 4) Run the Frontend
+### Step 5: SpeciesNet API Setup (Optional)
 
-To start the development server:
+The SpeciesNet API is used for AI-powered species identification from images. You can either:
+
+#### Option A: Use Hosted Instance (Recommended for Development)
+
+The API is already hosted at `http://34.126.93.66:8000`. No additional setup needed if you're using the default endpoint.
+
+#### Option B: Run Locally with Docker
+
+1. Navigate to the SpeciesNet API directory:
+   ```bash
+   cd speciesnet-api
+   ```
+
+2. Build the Docker image:
+   ```bash
+   docker build -t speciesnet-api .
+   ```
+
+3. Run the container:
+   ```bash
+   docker run -d -p 8000:8000 --name speciesnet speciesnet-api
+   ```
+
+4. Update your backend `.env` to use local instance:
+   ```bash
+   SPECIESNET_API_URL=http://localhost:8000
+   ```
+
+5. Test the API:
+   ```bash
+   curl http://localhost:8000/docs
+   ```
+
+For more details, see `speciesnet-api/README.md`.
+
+---
+
+### Step 6: Start the Development Servers
+
+You need to run both the backend and frontend servers simultaneously. Open **two separate terminal windows/tabs**.
+
+#### Terminal 1: Backend Server
 
 ```bash
+cd backend
 npm run dev
 ```
 
-The project will run on [http://localhost:5173](http://localhost:5173) by default.
+The backend will run on [http://localhost:4100](http://localhost:4100)
 
-To build and preview the production version:
+#### Terminal 2: Frontend Server
 
 ```bash
-npm run build
-npm run preview
+cd frontend
+npm run dev
+```
+
+The frontend will run on [http://localhost:5175](http://localhost:5175) (or the port specified in your `VITE_PORT` env variable)
+
+> **Note**: The frontend Vite dev server is configured to proxy API requests to the backend automatically.
+
+---
+
+### Step 7: Verify Installation
+
+1. **Check Backend**: Visit [http://localhost:4100/api](http://localhost:4100/api) - you should see API routes or a welcome message
+2. **Check Frontend**: Visit [http://localhost:5175](http://localhost:5175) - you should see the application homepage
+3. **Check Firebase Connection**: Try creating an account on the signup page
+4. **Check Socket.io**: Real-time features should work automatically when both servers are running
+
+---
+
+### Step 8: Create Test Users
+
+#### Default User Creation
+
+1. Navigate to the signup page: `http://localhost:5175/signup`
+2. Create a user account - accounts default to the **'reporter'** role
+
+#### Create Admin/Volunteer Accounts
+
+To create accounts with 'volunteer' or 'admin' roles:
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+
+2. Open `dev-useOnly-create-accounts.js` and edit the function calls at the bottom:
+   ```javascript
+   // Example:
+   createUser('admin@example.com', 'password123', 'Admin User', 'admin');
+   createUser('volunteer@example.com', 'password123', 'Volunteer User', 'volunteer');
+   ```
+
+3. Run the script:
+   ```bash
+   node dev-useOnly-create-accounts.js
+   ```
+
+> ⚠️ **Note**: This script is for development only. Remove or secure it in production.
+
+---
+
+## 🧰 Available Scripts
+
+### Backend Scripts (`backend/`)
+
+| Command                | Description                                         |
+| ---------------------- | --------------------------------------------------- |
+| `npm run dev`          | Start development server with hot reload (nodemon) |
+| `npm start`            | Start production server                             |
+| `npm run serve:prod`   | Build frontend and serve both on one port (4100)    |
+| `npm run upload-assets`| Upload assets to Firebase Storage                   |
+| `npm run update-guidebook` | Update guidebook assets in Firebase            |
+| `npm run verify-storage` | Verify Firebase Storage permissions            |
+
+### Frontend Scripts (`frontend/`)
+
+| Command                | Description                                         |
+| ---------------------- | --------------------------------------------------- |
+| `npm run dev`          | Start Vite development server                      |
+| `npm run build`        | Build for production                                |
+| `npm run preview`      | Preview production build locally                    |
+
+---
+
+## 🏗️ Project Structure
+
+This structure helps keep the code modular and maintainable.
+
+### Backend Structure (`backend/`)
+
+```
+backend/
+├── index.js                 # Express server entry point
+├── service-account.json     # Firebase service account (gitignored)
+├── package.json
+├── scripts/                 # Utility scripts
+│   ├── upload-assets.js
+│   └── update-guidebook-assets.js
+└── src/
+    ├── firebase.js          # Firebase Admin SDK initialization
+    ├── controllers/         # Request handlers (business logic)
+    │   ├── mapController.js
+    │   ├── reportController.js
+    │   └── taskController.js
+    ├── routes/              # API route definitions
+    │   ├── maps.js
+    │   ├── reports.js
+    │   └── tasks.js
+    └── middleware/          # Express middleware
+        └── auth.js          # Authentication middleware
+```
+
+### Frontend Structure (`frontend/`)
+
+```
+frontend/
+├── src/
+│   ├── main.js             # Vue app entry point
+│   ├── App.vue             # Root component
+│   ├── firebase.js         # Firebase client SDK initialization
+│   ├── api/                # API client functions
+│   │   ├── auth.js
+│   │   ├── http.js
+│   │   ├── mapapi.js
+│   │   ├── reportApi.js
+│   │   ├── socket.js
+│   │   └── tasks.js
+│   ├── components/         # Reusable Vue components
+│   ├── config/             # Configuration files
+│   │   └── asset-urls.json
+│   ├── utils/              # Utility functions
+│   │   └── getAssetUrl.js
+│   └── public/             # Static assets
+│       ├── assets/         # Images, icons, etc.
+│       └── guidebook.json
+├── pages/                  # Page components
+│   ├── auth/               # Login, Signup
+│   ├── map/                # Map view
+│   ├── new_report/         # Report creation
+│   ├── reporter/           # Reporter dashboards
+│   ├── volunteer/          # Volunteer dashboards
+│   └── orgAdmin/           # Admin dashboards
+├── router/                 # Vue Router configuration
+│   └── index.js
+├── vite.config.js          # Vite configuration
+└── package.json
 ```
 
 ---
 
-### 5) Testing the Application
-#### Creating Users
-1. Navigate to the signup page and create a user account. The accounts will have the 'reporter' role by default.
-2. To create accounts with 'volunteer' and 'admin' roles, navigate to /frontend and open dev-useOnly-create-accounts.js. Edit the function calls at the bottom to edit the email, password and username of the accounts.
-3. Run `node dev-useOnly-create-accounts.js` to create accounts
+## 🧪 Testing the Application
 
-#### Manual Testing
-Working with these dimensions:
-- Mobile M - width: 375px
-- Tablet  - width: 768px
-- Laptop - width: 1024px
-- Laptop L - width: 1440px
+### Manual Testing Checklist
+
+Test with these viewport dimensions:
+- **Mobile M**: 375px width
+- **Tablet**: 768px width
+- **Laptop**: 1024px width
+- **Laptop L**: 1440px width
 
 | Area            | Test Description               | Expected Outcome                       |
 | :-------------- | :----------------------------- | :------------------------------------- |
@@ -325,106 +522,73 @@ Working with these dimensions:
 | Responsiveness  | Test on mobile & desktop       | Layout adjusts without distortion      |
 | Navigation      | All menu links functional      | Pages route correctly                  |
 | Error Handling  | Invalid inputs or missing data | User-friendly error messages displayed |
+| Real-time Updates | Socket.io connections        | Live updates work across clients       |
+| File Upload     | Image uploads to Firebase      | Images upload and display correctly    |
 
-### 6) Common Issues & Fixes
+---
+
+## 🐛 Common Issues & Troubleshooting
 
 | Issue                           | Cause                            | Fix                                      |
 | :------------------------------ | :------------------------------- | :--------------------------------------- |
-| `Module not found`            | Missing dependencies             | Run `npm install` again                |
-| `Firebase: permission-denied` | Firestore security rules not set | Check rules under Firestore → Rules     |
-| `CORS policy error`           | Backend not allowing requests    | Enable your domain in CORS settings      |
-| `.env` variables undefined    | Missing `VITE_` prefix         | Rename variables to start with `VITE_` |
-| `npm run dev` fails           | Node version mismatch            | Check Node version (`node -v` ≥ 18)   |
+| `Module not found`              | Missing dependencies             | Run `npm install` in the respective directory |
+| `Firebase: permission-denied`   | Firestore security rules not set | Check rules under Firestore → Rules in Firebase Console |
+| `CORS policy error`             | Backend not allowing requests    | Check `FRONTEND_URL` in backend `.env` and CORS settings |
+| `.env` variables undefined     | Missing `VITE_` prefix          | Frontend env vars must start with `VITE_` |
+| `npm run dev` fails             | Node version mismatch            | Check Node version (`node -v` ≥ 18)      |
+| `Port already in use`           | Another process using the port   | Change port in `.env` or kill the process |
+| `Firebase service account error`| Missing or invalid JSON file     | Verify `service-account.json` exists in `/backend/` |
+| `Socket.io connection failed`   | Backend not running              | Ensure backend server is running on port 4100 |
+| `SpeciesNet API timeout`        | API endpoint unreachable          | Check `SPECIESNET_API_URL` or use hosted instance |
+
+### Debugging Tips
+
+1. **Check Console Logs**: Both browser console and terminal output provide valuable error messages
+2. **Verify Environment Variables**: Use `console.log(import.meta.env)` in frontend or `console.log(process.env)` in backend to verify env vars
+3. **Firebase Console**: Check Firebase Console for authentication and database errors
+4. **Network Tab**: Use browser DevTools Network tab to inspect API requests
+5. **Backend Logs**: Check terminal running `npm run dev` in backend for server-side errors
 
 ---
 
-------------------------------------Please don't touch these---------------------------------------------------
-
-### Project Structure Overview
-
-This structure helps keep the code modular and maintainable.
-
-#### 📦 Backend folders (`backend/src`)
-
-| Folder                 | Description                                                  |
-| ---------------------- | ------------------------------------------------------------ |
-| **controllers/** | Contains logic for handling requests (e.g. CRUD operations). |
-| **routes/**      | Maps URL endpoints to controller functions.                  |
-| **firebase.js**  | Initializes Firebase Admin SDK.                              |
-
-#### 💻 Frontend folders (`frontend/src`)
-
-| Folder                      | Description                                             |
-| --------------------------- | ------------------------------------------------------- |
-| **api/**              | Functions that make HTTP requests to your backend APIs. |
-| **components/**       | Vue components that render the user interface.          |
-| **App.vue / main.js** | Entry point and root component setup.                   |
-
----
-
-### 4. Start Servers
-
-#### 🧱 Backend (runs on http://localhost:4100)
-
-```bash
-#open new Terminal
-cd backend
-npm run dev
-```
-
-#### 💻 Frontend (runs on http://localhost:5175)
-
-```bash
-#open new Terminal
-cd frontend
-npm run dev
-```
-
----
-
-### 5. Build for Production (optional)
+## 🚀 Production Build
 
 To build and serve both frontend and backend together on one port:
 
 ```bash
-# From backend folder
+cd backend
 npm run serve:prod
 ```
 
 This will:
-
 - Build the Vue frontend (`npm run build`)
 - Serve it from the Express backend
 - Expose both API and UI on `http://localhost:4100`
 
----
-
-## 🧰 Useful Scripts
-
-| Command                | Description                                         |
-| ---------------------- | --------------------------------------------------- |
-| `npm run dev`        | Start local dev server (backend or frontend)        |
-| `npm run build`      | Build the frontend for production                   |
-| `npm run serve:prod` | Build and serve both frontend + backend on one port |
-| `npm run preview`    | Preview frontend build locally                      |
+For separate deployments:
+- **Frontend**: Deploy the `dist/` folder to Firebase Hosting, Vercel, or Netlify
+- **Backend**: Deploy to Railway, Render, or Google Cloud Run
+- **SpeciesNet API**: Deploy Docker container to Google Cloud Run or similar
 
 ---
 
-## 🔥 Firebase Setup
+## 📎 Configuration Notes
 
-1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Navigate to **Project Settings → Service Accounts**
-3. Click **Generate new private key** → rename it to `service-account.json`
-4. Place it in `/backend/`
+- **Backend Port**: `4100` (configurable via `PORT` in backend `.env`)
+- **Frontend Port**: `5175` (configurable via `VITE_PORT` in frontend `.env` or `vite.config.js`)
+- **Socket.io**: Automatically connects to backend on startup
+- **API Proxy**: Frontend Vite dev server proxies `/api` requests to backend automatically
+- **Firebase**: Uses both client SDK (frontend) and Admin SDK (backend)
 
 ---
 
-## 📎 Notes
+## 📚 Additional Resources
 
-- Backend port: `4100`
-- Frontend port: `5175`
-- Change ports easily in `.env` (backend) and `vite.config.js` (frontend)
-- Compatible with deployment platforms like **Render**, **Railway**, or **Firebase Hosting**
+- [Vue.js Documentation](https://vuejs.org/)
+- [Express.js Documentation](https://expressjs.com/)
+- [Firebase Documentation](https://firebase.google.com/docs)
+- [Socket.io Documentation](https://socket.io/docs/v4/)
+- [Vite Documentation](https://vitejs.dev/)
 
 ---
 
