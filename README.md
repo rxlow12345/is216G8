@@ -26,18 +26,13 @@ G3 Group 8
 ---
 
 ## Business Problem
-
-Describe the **real-world business or community problem** your project addresses.
-
 Wildlife rescue operations face critical delays due to inefficient public reporting methods and fragmented coordination between rescue organizations. When members of the public encounter wildlife in distress, the lack of a standardized reporting platform creates operational bottlenecks that slow response time, often making the difference between life and death for injured animals. Additionally, rescue organizations struggle to leverage community support at scale, missing opportunities to mobilize volunteers and resources effectively during emergencies.
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ## Web Solution Overview
 
-### �� Intended Users
+### Intended Users
 
-Identify your target user groups.
-The general public and rescue organisations.
+The general public, volunteers for rescue organisations and rescue organisations themselves.
 
 ### 💡 What Users Can Do & Benefits
 
@@ -83,7 +78,7 @@ Explain the core features and the benefit each provides.
 
 ## Use Case & User Journey (Images NOT YET UPDATED)
 
-General Usage for all roles:
+### General Usage for all roles:
 
 1. **Landing/Home Page**
    <br><img src="screenshots/Landing_Page.png" width="600">
@@ -113,7 +108,7 @@ General Usage for all roles:
 
    - Users can donate to our partners
 
-Reporter Role:
+### Reporter Role:
 
 1. **Reporter Dashboard**
    <br><img src="screenshots/ReporterDashboard.png" width="600">
@@ -130,7 +125,7 @@ Reporter Role:
 
    - Users can check on previously submitted reports
 
-Volunteer Role:
+### Volunteer Role:
 
 1. **Volunteer Dashboard**
    
@@ -156,7 +151,7 @@ Volunteer Role:
 - Volunteer can view past resolved cases and rescue impact statistics
 
 
-Admin Role:
+### Admin Role:
 
 1. **Admin Dashboard**
 <br><img src="screenshots/AdminDashboard.png" width="600">
