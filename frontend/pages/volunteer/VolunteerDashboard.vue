@@ -4,10 +4,10 @@
   <BackToTop/>
   <FloatingBackground/>
   <div class="container-fluid p-0 reporterDashboard">
-    <div id="topBanner" class="bannerTitles">
+    <div class="bannerTitles">
       <header class="text-center mb-2">
         <h1>🌿 Volunteer Dashboard 🌿</h1>
-        <p class="hero-subtitle">Manage your rescue operations and track your impact</p>
+        <p>Manage your rescue operations and track your impact</p>
       </header>
     </div>
 
@@ -93,15 +93,7 @@ const setupScrollAnimations = () => {
 </script>
 
 <style scoped>
-/* Banner styling - matching common.css */
-.bannerTitles .hero-subtitle,
-.bannerTitles p {
-  font-weight: 200 !important;
-  color: rgb(254, 250, 224) !important;
-  font-size: 20px !important;
-  margin-top: 8px !important;
-  margin-bottom: 0 !important;
-}
+
 
 .welcomeMessage {
   text-align: center;
@@ -201,7 +193,8 @@ const setupScrollAnimations = () => {
 }
 
 .buttonItemLeft .sectionImg:hover,
-.buttonItemRight .sectionImg:hover { transform: scale(1.1) rotate(2deg); 
+.buttonItemRight .sectionImg:hover { 
+  transform: scale(1.1) rotate(2deg); 
   filter: brightness(1.05) saturate(1.2);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
  }
