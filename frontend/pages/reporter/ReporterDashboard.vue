@@ -6,14 +6,13 @@
     <!-- Top Banner -->
     <div id="topBanner" class="bannerTitles">
       <header class="text-center mb-2">
-        <h1>Reporter's Dashboard</h1>
+        <h1>🌿 Reporter's Dashboard 🌿</h1>
       </header>
     </div>
 
     <!-- Welcome Message -->
     <div class="welcomeMessage">
       <div class="alertCustom">
-        <h5 class="alertHeading" v-if="userName">Welcome to {{ userName }}'s Dashboard</h5>
         <p> <i class="bi bi-info-circle-fill text-success me-2"></i> Use the options below to <b>create a new report </b>, track the <b>status of existing reports </b>, or <b>view past reports.</b> ⬇️
         </p>
       </div>
@@ -199,7 +198,7 @@ onMounted(async () => {
 }
 
 .buttonItemRight {
-  /* flex-direction: row-reverse; */
+  flex-direction: row-reverse; 
   transform: translateX(100px);
 
 }
@@ -243,14 +242,15 @@ onMounted(async () => {
   width: 48%;
   height: auto;
   object-fit: cover;
-  transition: transform 0.3s ease;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   filter: brightness(0.95) saturate(1.1);
 }
 
 .buttonItemLeft .sectionImg:hover,
 .buttonItemRight .sectionImg:hover {
-  transform: scale(1.1);
+  transform: scale(1.1) rotate(2deg);
+  filter: brightness(1.05) saturate(1.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .content {
@@ -271,9 +271,32 @@ onMounted(async () => {
   border-radius: 10px;
   display: inline-block;
   margin: 0 auto;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: all 0.3s ease;
   text-decoration: none;
   cursor: pointer;
+}
+
+.buttonItem .btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+  z-index: -1;
+}
+
+.buttonItem .btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.buttonItem .btn:active {
+  transform: scale(0.95);
 }
 
 .buttonDescription {

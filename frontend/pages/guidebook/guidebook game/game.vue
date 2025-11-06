@@ -8,9 +8,10 @@ import { getCurrentUser } from '../../../src/api/auth.js';
 import { db } from '../../../src/firebase.js';
 import confetti from 'canvas-confetti';
 import { collection, addDoc, query, orderBy, limit, getDocs, where } from 'firebase/firestore';
+import BackToTop from '../../../src/components/BackToTop.vue';
 
 export default {
-  components: { OtterCursor, FloatingBackground },
+  components: { OtterCursor, FloatingBackground, BackToTop},
   data() {
     return {
       allAnimals: animalsData,
@@ -399,6 +400,9 @@ export default {
 
   <!-- Floating Background -->
   <FloatingBackground />
+
+  <!-- Back To Top -->
+   <BackToTop/>
 
   <!-- Top Banner -->
   <div class="bannerTitles">
