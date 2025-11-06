@@ -155,7 +155,7 @@ export default {
   border-radius: 16px;
   width: min(50vw, 440px);
   max-width: 100%;
-  height: 85vh;
+  /* height: 85vh; */
   max-height: 85vh;
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.25);
   display: flex;
@@ -291,36 +291,6 @@ export default {
   align-items: center;
   justify-content: center;
 }
-
-/* .success-message {
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 16px;
-  margin-bottom: 20px;
-  text-align: left;
-  flex-wrap: nowrap;
-}
-
-.success-text {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-}
-
-.success-text h3 {
-  color: #1a5f47;
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0 0 6px;
-}
-
-.success-text p {
-  color: #666;
-  font-size: 14px;
-  margin: 0;
-  line-height: 1.5;
-} */
 
 /* Details Section */
 .details {
@@ -477,8 +447,8 @@ export default {
   .new-report-modal {
     width: 100%;
     max-width: 100%;
-    height: 85vh;
-    max-height: 85vh;
+    /* height: 85vh; */
+    /* max-height: 85vh; */
     margin: 0 auto;
   }
   
