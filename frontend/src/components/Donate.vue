@@ -36,7 +36,7 @@
                     </div>
 
                     <!-- Button at bottom left -->
-                    <div class="mt-4">
+                    <div class="mt-4 learnMoreBtnBig">
                         <router-link to="/learn-more" class="btn green-btn-lg">
                             More about CritterConnect
                         </router-link>
@@ -44,7 +44,8 @@
                 </div>
 
                 <!-- Right Column: Carousel -->
-                <div class="d-flex justify-content-center col-lg-6">
+                <div class="d-flex justify-content-center col-lg-6 col-md-12">
+                <!-- <div class="d-flex justify-content-center col-lg-6"> -->
                     <div class="about-image" style="width: 100%; max-width: 100%;">
                         <div class="carousel-wrapper" @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
                             <div class="carousel-container" style="overflow: hidden; border-radius: 20px;">
@@ -72,7 +73,14 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="mt-4 learnMoreBtnSmall">
+                    <router-link to="/learn-more" class="btn green-btn-lg">
+                        More about CritterConnect
+                    </router-link>
+                </div>
             </div>
+            
         </div>
 
         <!-- your partner cards go here below -->

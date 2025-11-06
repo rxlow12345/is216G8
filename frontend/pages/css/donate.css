@@ -10,6 +10,7 @@ body .bannerTitles {
 
 
 .donationWrapper {
+    margin: 0 auto;
     display: flex;
     background: rgba(255,255,255,0.1);
     backdrop-filter: blur(20px);
@@ -17,7 +18,7 @@ body .bannerTitles {
     padding: 60px;
     border: 1px solid rgba(255, 255, 255, 0);
     box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    
+    width: 90%;
 }
 
 .donationWrapper .helpColumn {
@@ -32,7 +33,7 @@ body .bannerTitles {
 }
 
 .helpTitle {
-    font-size: 48px;
+    font-size: 42px;
     font-weight: 600;
     color: #285436;
     margin-top: 20px;
@@ -42,10 +43,30 @@ body .bannerTitles {
 
 .helpDescription {
     margin-top: 30px;
+    margin-bottom: 30px;
     font-size: 18px;
     line-height: 1.4;
     color: #285436;
 }
+
+.mt-4 {
+    margin: 0 auto !important;
+}
+
+.mt-4 router-link {
+    margin-top: 50px;
+}
+
+.about-image {
+    margin-left: 15px;
+}
+
+@media (max-width: 991px) {
+    .about-image {
+        margin-left: 0;
+    }
+}
+
 .carousel-img {
     width: 100%;
     height: 100%;
@@ -161,4 +182,45 @@ body .bannerTitles {
     font-size: 1em;
     line-height: 1.5;
     color: #333;
+}
+
+@media (min-width: 992px) {
+    .learnMoreBtnBig {
+        display: block;
+    }
+
+    .learnMoreBtnSmall {
+        display: none;
+    }
+
+    .learnMoreBtnSmall {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 991px) {
+    .learnMoreBtnBig {
+        display: none;
+    }
+
+    .learnMoreBtnSmall {
+        display: block;
+        margin-top: 30px !important;
+    }
+
+    .donationWrapper {
+        flex-direction: column;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .helpTitle { font-size: 37px; }
+    .helpDescription { font-size: 16px; }
+}
+
+
+@media (max-width: 520px) {
+    .helpTitle { font-size: 32px; }
+    .helpDescription { font-size: 15px; }
 }

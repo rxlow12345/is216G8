@@ -29,7 +29,6 @@ if (missingVars.length > 0) {
 }
 
 const firebaseConfig = {
-<<<<<<< HEAD
   apiKey: process.env.VITE_FIREBASE_API_KEY,
   authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.VITE_FIREBASE_PROJECT_ID,
@@ -37,9 +36,6 @@ const firebaseConfig = {
   messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.VITE_FIREBASE_APP_ID,
   measurementId: process.env.VITE_FIREBASE_MEASUREMENT_ID
-=======
-  // Replace with .env data
->>>>>>> d8401f2238fd3dd53de72c30562fcb65f724a231
 };
 
 // Initialize Firebase
@@ -47,11 +43,8 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-async function createAdminAccount() {
-  try {
-    const adminEmail = 'admin@gmail.com';
-    const adminPassword = '123456';
-    
+async function createAdminAccount(adminEmail, adminPassword, username) {
+  try {    
     console.log('Creating admin account...');
     
     // Create user with Firebase Auth
@@ -64,7 +57,9 @@ async function createAdminAccount() {
     await setDoc(doc(db, 'users', user.uid), {
       email: adminEmail,
       role: 'admin',
-      createdAt: serverTimestamp()
+      username: username,
+      createdAt: serverTimestamp(),
+      user: user.uid
     });
     
     console.log('✅ Admin profile created in Firestore');
@@ -77,5 +72,35 @@ async function createAdminAccount() {
   }
 }
 
-// Run the function
-createAdminAccount();
+async function createVolunteerAccount(volunteerEmail, volunteerPassword, username) {
+  try {
+    console.log('Creating volunteer account...');
+    
+    // Create user with Firebase Auth
+    const userCredential = await createUserWithEmailAndPassword(auth, volunteerEmail, volunteerPassword);
+    const user = userCredential.user;
+    
+    console.log('✅ Volunteer user created in Firebase Auth:', user.uid);
+    
+    // Create user profile in Firestore with admin role
+    await setDoc(doc(db, 'users', user.uid), {
+      email: volunteerEmail,
+      role: 'volunteer',
+      username: username,
+      createdAt: serverTimestamp(),
+      user: user.uid
+    });
+    
+    console.log('✅ Volunteer profile created in Firestore');
+    console.log('Email:', volunteerEmail);
+    console.log('Password:', volunteerPassword);
+    console.log('Role: volunteer');
+    
+  } catch (error) {
+    console.error('❌ Error creating volunteer account:', error.message);
+  }
+}
+
+// Run the functions
+createAdminAccount('supremeadmin@gmail.com', '123456', 'supreme admin');
+createVolunteerAccount('volunteer999@gmail.com', '123456', 'supreme volunteer');

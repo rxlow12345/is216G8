@@ -63,9 +63,8 @@ Explain the core features and the benefit each provides.
 |                                       <img src="https://raw.githubusercontent.com/github/explore/main/topics/css/css.png" width="40">                                       | **CSS3 / Bootstrap**        | Styling and responsiveness                            |
 |                                <img src="https://raw.githubusercontent.com/github/explore/main/topics/javascript/javascript.png" width="40">                                | **JavaScript (ES6)**        | Client-side logic and interactivity                   |
 |                                                             <img src="https://vitejs.dev/logo.svg" width="40">                                                             | **Vite**                    | Development server and build tool                     |
-|                                                          <img src="https://vuejs.org/images/logo.png" width="40">                                                          | **Vue.js 3**                | Component-based frontend framework                    |
-|             <img src="https://router.vuejs.org/logo.svg" width="40" alt="Vue Router" onerror="this.src='https://via.placeholder.com/40/4FC08D/ffffff?text=VR'">             | **Vue Router**              | Client-side routing and navigation                    |
-|  <img src="https://expressjs.com/images/express-facebook-share.png" width="40" alt="Express.js" onerror="this.src='https://via.placeholder.com/40/000000/ffffff?text=EX'">  | **Express.js**              | Backend server framework and API endpoints            |
+|                                                          <img src="https://vuejs.org/images/logo.png" width="40">                                                          | **Vue.js 3**                | Component-based frontend framework                    |                   |
+|  <img src="https://upload.wikimedia.org/wikipedia/commons/6/64/Expressjs.png" width="40" alt="Express.js" onerror="this.src='https://via.placeholder.com/40/000000/ffffff?text=EX'">  | **Express.js**              | Backend server framework and API endpoints            |
 |             <img src="https://socket.io/images/logo.svg" width="40" alt="Socket.io" onerror="this.src='https://via.placeholder.com/40/010101/ffffff?text=IO'">             | **Socket.io**               | Real-time bidirectional communication (WebSocket)     |
 |             <img src="https://axios-http.com/assets/logo.svg" width="40" alt="Axios" onerror="this.src='https://via.placeholder.com/40/5A29E4/ffffff?text=AX'">             | **Axios**                   | HTTP client for API requests                          |
 |          <img src="https://leafletjs.com/docs/images/logo.png" width="40" alt="Leaflet" onerror="this.src='https://via.placeholder.com/40/199900/ffffff?text=LF'">          | **Leaflet**                 | Interactive maps and geospatial visualization         |
@@ -308,13 +307,16 @@ npm run preview
 
 ### 5) Testing the Application
 #### Creating Users
-1. Navigate to the signup page and create a few user accounts. The accounts will have the 'reporter' role by default.
-2. Create accounts with the 'volunteer' and 'admin' roles by changing the roles of some accounts in the Firebase console:
-<br><img src="screenshots/changingUserRole.png" width="600">
+1. Navigate to the signup page and create a user account. The accounts will have the 'reporter' role by default.
+2. To create accounts with 'volunteer' and 'admin' roles, navigate to /frontend and open dev-useOnly-create-accounts.js. Edit the function calls at the bottom to edit the email, password and username of the accounts.
+3. Run `node dev-useOnly-create-accounts.js` to create accounts
 
 #### Manual Testing
-
-Perform the following checks before submission:
+Working with these dimensions:
+- Mobile M - width: 375px
+- Tablet  - width: 768px
+- Laptop - width: 1024px
+- Laptop L - width: 1440px
 
 | Area            | Test Description               | Expected Outcome                       |
 | :-------------- | :----------------------------- | :------------------------------------- |
