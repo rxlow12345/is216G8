@@ -345,7 +345,9 @@ h2 {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 }
 
-
+.text-center-custom {
+  text-align: center;
+}
 
 .collapse-content {
   max-height: 0;
@@ -364,12 +366,9 @@ h2 {
   transform: translateY(0);
 }
 
-
-
 .custom-collapse-btn {
   background-color: #285436;
   color: rgb(254, 250, 224);
-
 
   /* Interaction & Display */
   cursor: pointer;
@@ -378,7 +377,7 @@ h2 {
 }
 
 .custom-collapse-btn:hover {
-  background-color: #d1ccb0;
+  background-color: #606C38;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
