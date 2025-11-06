@@ -1,26 +1,74 @@
 .rescuemapwrapper {
-  display: grid;
-  grid-template-columns: 400px 1fr;
-  /* height: 100vh - 96.5px; */
+  display: flex;
   height: 100vh;
+  width: 100%;
+  overflow: hidden;
 }
 
+/* Desktop: Side by side layout */
 .sidebar {
-  border-right: 1px solid #e5e7eb;
+  width: 400px;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(101, 67, 33, 0.15);
   height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: 0;
+  background: #FEFAE0;
+  position: relative;
+  z-index: 1;
 }
 
 .map-container {
+  flex: 1;
+  min-width: 0;
   height: 100%;
+  position: relative;
+  pointer-events: auto;
+  touch-action: pan-x pan-y;
+  z-index: 1;
 }
 
-.header {
-  padding: 16px;
-  border-bottom: 1px solid #e5e7eb;
-  margin-bottom: 0;
+/* Reports Banner - Green banner matching system style */
+.reports-banner {
+  background: #2d5016; /* Deep green background */
+  color: #FFFFFF;
+  padding: 24px 20px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+/* Main title - "🌿 Active Reports" */
+.reports-banner-title {
+  margin: 0 0 8px 0;
+  font-size: 2rem; /* 32px */
+  font-weight: 700;
+  color: #FFFFFF;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+}
+
+/* Subtitle - "29 pending reports" */
+.reports-banner-subtitle {
+  margin: 0 0 8px 0;
+  font-size: 1.1rem; /* 17.6px */
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+}
+
+/* Status indicator - "🟢 Online (1 Active)" */
+.reports-banner-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 0.9rem; /* 14.4px */
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 400;
 }
 
 .subtitle {
@@ -28,11 +76,14 @@
   color: #374151;
 }
 
+/* Legacy connection-status - kept for compatibility */
 .connection-status {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #6b7280;
+  color: #285436;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .status-dot {
@@ -50,6 +101,9 @@
   padding: 8px 12px;
   flex: 1 1 auto;
   overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
+  background: #FEFAE0; /* Cream background matching CritterConnect theme */
 }
 
 .report-card {
@@ -67,8 +121,10 @@
   display: flex;
   justify-content: center; 
   align-items: center;
-  padding: 20px 0;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 16px;
+  border-bottom: 1px solid rgba(101, 67, 33, 0.15);
+  background: #FEFAE0; /* Cream background matching CritterConnect theme */
+  flex-shrink: 0;
 }
 
 .filter-group {
@@ -184,34 +240,245 @@
 
 @media (max-width: 768px) {
   .rescuemapwrapper {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     height: 100vh;
+    position: relative;
+    overflow: hidden;
   }
-  .map-container { height: 100vh; }
+  
+  /* Map container - full screen, behind drawer */
+  .map-container { 
+    height: 100vh;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+  }
+  
+  /* Mobile: Sidebar as bottom drawer (fixed position) */
   .sidebar.mobile-sheet {
     position: fixed;
-    left: 0; right: 0; bottom: 0;
-    height: 120px;
-    background: #fff;
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
-    box-shadow: 0 -6px 24px rgba(0,0,0,0.15);
-    z-index: 1100;
+    left: 0; 
+    right: 0; 
+    bottom: 0;
+    width: 100%;
+    height: 180px; /* Default: shows banner + 1-2 reports preview */
+    max-height: 70vh;
+    min-height: 180px;
+    background: #FEFAE0; /* Cream/beige background matching CritterConnect theme */
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    border-top: 1px solid rgba(101, 67, 33, 0.1);
+    box-shadow: 0 -4px 20px rgba(101, 67, 33, 0.15), 0 -2px 8px rgba(101, 67, 33, 0.1);
+    z-index: 1100; /* Above map */
     border-right: none;
-    transition: height 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    touch-action: pan-y;
+    /* Smooth transition for expand/collapse */
+    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .sidebar.mobile-sheet.expanded { height: 70vh; }
-  .sidebar .header { padding-top: 8px; }
+  
+  /* Expanded state */
+  .sidebar.mobile-sheet.expanded { 
+    height: 70vh;
+  }
+  
+  /* Disable transition during drag */
+  .sidebar.mobile-sheet.is-dragging {
+    transition: none;
+  }
+  
+  /* Handle area - drag handle at top */
   .sheet-handle {
     width: 100%;
     display: flex;
     justify-content: center;
-    padding: 8px 0 4px;
-    cursor: pointer;
+    align-items: center;
+    padding: 12px 0 8px;
+    cursor: grab;
+    flex-shrink: 0;
+    background: #FEFAE0; /* Match drawer background */
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
   }
+  
+  .sheet-handle:active {
+    cursor: grabbing;
+  }
+  
+  /* Grabber bar */
   .sheet-grabber {
-    width: 64px; height: 6px; border-radius: 999px; background: #e5e7eb;
+    width: 50px; 
+    height: 5px; 
+    border-radius: 999px; 
+    background: #285436; /* Dark green matching CritterConnect theme */
     display: inline-block;
+    transition: background 0.2s ease;
   }
-  .sidebar.mobile-sheet .reports-list { -webkit-overflow-scrolling: touch; }
+  
+  .sidebar.mobile-sheet.expanded .sheet-grabber {
+    background: #654321; /* Darker brown when expanded */
+  }
+  
+  /* Reports Banner - mobile drawer version */
+  .sidebar.mobile-sheet .reports-banner {
+    padding: 16px 16px 12px;
+    flex-shrink: 0;
+  }
+  
+  .sidebar.mobile-sheet .reports-banner-title {
+    font-size: 1.5rem; /* 24px on mobile */
+    margin-bottom: 6px;
+  }
+  
+  .sidebar.mobile-sheet .reports-banner-subtitle {
+    font-size: 0.95rem; /* 15.2px on mobile */
+    margin-bottom: 6px;
+  }
+  
+  .sidebar.mobile-sheet .reports-banner-status {
+    font-size: 0.8rem; /* 12.8px on mobile */
+    margin-top: 4px;
+  }
+  
+  /* Filters */
+  .sidebar .filters {
+    padding: 12px 16px;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(101, 67, 33, 0.15); /* Warm-toned border */
+    background: #FEFAE0; /* Match drawer background */
+  }
+  
+  /* Reports list - scrollable when expanded */
+  .sidebar.mobile-sheet .reports-list { 
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 12px 16px;
+    min-height: 0;
+    /* Smooth scrolling */
+    scroll-behavior: smooth;
+  }
+  
+  /* Filters - mobile drawer */
+  .sidebar.mobile-sheet .filters {
+    padding: 12px 16px;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(101, 67, 33, 0.15);
+  }
+  
+  /* Reports list - scrollable when expanded */
+  .sidebar.mobile-sheet .reports-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    -webkit-overflow-scrolling: touch;
+    padding: 8px 12px 16px;
+  }
+  
+  /* When collapsed, hide overflow to show only preview */
+  .sidebar.mobile-sheet:not(.expanded) .reports-list {
+    overflow: hidden;
+    /* Show only first 1-2 cards - adjust based on actual header/filter height */
+    max-height: calc(180px - 200px); /* Total height minus banner/filters */
+  }
+  
+  /* When dragging, prevent scrolling in reports list */
+  .sidebar.mobile-sheet.is-dragging .reports-list {
+    overflow: hidden;
+    pointer-events: none;
+  }
+  
+  /* When expanded, show all with scrolling */
+  .sidebar.mobile-sheet.expanded .reports-list {
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: none;
+    pointer-events: auto;
+  }
+  
+  /* Report cards */
+  .sidebar.mobile-sheet .report-card {
+    margin-bottom: 12px;
+    min-height: auto;
+  }
+  
+  .sidebar.mobile-sheet.expanded .report-card {
+    margin-bottom: 16px;
+  }
+  
+  /* Empty state */
+  .sidebar.mobile-sheet .empty-state {
+    padding: 24px 20px;
+    text-align: center;
+    color: #64748b;
+  }
+  
+  .sidebar.mobile-sheet.expanded .empty-state {
+    padding: 40px 20px;
+  }
+  
+  /* Reports banner status dot styling */
+  .reports-banner-status .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    flex-shrink: 0;
+  }
+  
+  .reports-banner-status .status-dot.active {
+    background: #10b981; /* Green dot for online */
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+  }
+  
+  /* Legacy connection status styling */
+  .sidebar.mobile-sheet .connection-status {
+    font-size: 12px;
+    margin-top: 4px;
+    color: #285436; /* Dark green to match theme */
+  }
+  
+  /* Status dot styling */
+  .sidebar.mobile-sheet .status-dot {
+    background: #d1d5db;
+  }
+  
+  .sidebar.mobile-sheet .status-dot.active {
+    background: #10b981; /* Keep green for active state */
+  }
+  
+  /* Filter buttons - smaller on mobile, match theme */
+  .sidebar.mobile-sheet .filter-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    background: #fff;
+    border: 1px solid rgba(101, 67, 33, 0.2);
+    color: #285436;
+  }
+  
+  .sidebar.mobile-sheet .filter-btn:hover {
+    background: #DDA15E; /* Light brown hover */
+    color: #fff;
+    border-color: #DDA15E;
+  }
+  
+  .sidebar.mobile-sheet .filter-btn.active {
+    background: #BC6C25; /* Darker brown active */
+    color: #fff;
+    border-color: #BC6C25;
+  }
+  
+  /* Ensure report cards blend well with drawer background */
+  .sidebar.mobile-sheet .report-card {
+    background: #fff; /* White cards on cream background for contrast */
+  }
 }

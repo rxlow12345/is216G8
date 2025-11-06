@@ -10,9 +10,27 @@
     @close="notificationData = {}"
   />
   <!-- Left Sidebar -->
-  <div class="rescuemapwrapper">
-    <div class="sidebar" :class="{ 'mobile-sheet': true, expanded: isSheetExpanded }">
-      <div class="sheet-handle" @click="toggleSheet" title="Expand/collapse">
+  <div class="rescuemapwrapper" :class="{ 'sidebar-expanded': isSheetExpanded }">
+    <div 
+      class="sidebar" 
+      :class="{ 
+        'mobile-sheet': true, 
+        expanded: isSheetExpanded,
+        'is-dragging': isDragging
+      }"
+      :style="drawerStyle"
+      @touchstart="handleTouchStart"
+      @touchmove="handleTouchMove"
+      @touchend="handleTouchEnd"
+    >
+      <div 
+        class="sheet-handle" 
+        @click="toggleSheet" 
+        @touchstart.stop="handleDragStart"
+        @touchmove.stop="handleDragMove"
+        @touchend.stop="handleDragEnd"
+        title="Expand/collapse"
+      >
         <span class="sheet-grabber"></span>
       </div>
       <!-- Header -->
@@ -100,6 +118,7 @@
 <script>
 import MapView from "../../src/components/MapView.vue";
 import ReportCard from "../../src/components/ReportCard.vue";
+import Spinner from "../../src/components/Spinner.vue";
 import reportApi from "../../src/api/reportApi";
 import { db } from "../../src/firebase.js";
 import { collection, addDoc, doc as fsDoc, updateDoc, Timestamp, serverTimestamp } from "firebase/firestore";
@@ -117,6 +136,7 @@ export default {
   components: {
     MapView,
     ReportCard,
+    Spinner,
     acceptCaseModal,
     BackToTop,
     MapNotification,
@@ -136,8 +156,17 @@ export default {
       currentUser: "",
       severityFilter: "all",
       notificationData: { title: "", message: "", type: "info", duration: 6000 },
+      countUpdating: false,
+      countUpdateTimer: null,
       
       isSheetExpanded: false,
+      // Drawer drag state
+      isDragging: false,
+      dragStartY: 0,
+      dragCurrentY: 0,
+      drawerHeight: 0, // Dynamic height during drag
+      drawerStartHeight: 0,
+      _pendingNavigation: null, // Store pending navigation after accept
     };
   },
   computed: {
@@ -146,6 +175,25 @@ export default {
       if (window.innerWidth > 768) return {};
       const h = this.isSheetExpanded ? '70vh' : '120px';
       return { height: h };
+    },
+    drawerStyle() {
+      if (typeof window === 'undefined' || window.innerWidth > 768) return {};
+      
+      // If dragging, use dynamic height
+      if (this.isDragging && this.drawerHeight > 0) {
+        return {
+          height: `${this.drawerHeight}px`,
+          transform: `translateY(${this.dragCurrentY}px)`,
+          transition: 'none'
+        };
+      }
+      
+      // Normal state - controlled by CSS and expanded class
+      return {
+        height: this.isSheetExpanded ? '70vh' : '180px',
+        transform: 'translateY(0)',
+        transition: 'height 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+      };
     },
   },
   async mounted() {
@@ -159,24 +207,137 @@ export default {
   // async unmounted(to, from, next) {
   async unmounted() {
     socket.disconnect();
+    // Clean up drag state
+    if (this.isDragging) {
+      document.body.style.overflow = '';
+    }
     // next;
+    if (this.countUpdateTimer) {
+      clearTimeout(this.countUpdateTimer);
+      this.countUpdateTimer = null;
+    }
   },
   methods: {
-    toggleSheet() { this.isSheetExpanded = !this.isSheetExpanded; },
+    toggleSheet() { 
+      this.isSheetExpanded = !this.isSheetExpanded;
+    },
+    // Touch handlers for drawer dragging
+    handleTouchStart(e) {
+      // Only allow dragging from the handle area when collapsed
+      if (!this.isSheetExpanded) {
+        const touch = e.touches[0];
+        if (touch.clientY > window.innerHeight - 200) {
+          this.handleDragStart(e);
+        }
+      }
+    },
+    handleTouchMove(e) {
+      if (this.isDragging) {
+        this.handleDragMove(e);
+      }
+    },
+    handleTouchEnd(e) {
+      if (this.isDragging) {
+        this.handleDragEnd(e);
+      }
+    },
+    handleDragStart(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const touch = e.touches ? e.touches[0] : e;
+      this.isDragging = true;
+      this.dragStartY = touch.clientY;
+      this.drawerStartHeight = this.isSheetExpanded ? window.innerHeight * 0.7 : 180;
+      this.drawerHeight = this.drawerStartHeight;
+      // Prevent body scroll during drag
+      document.body.style.overflow = 'hidden';
+    },
+    handleDragMove(e) {
+      if (!this.isDragging) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const touch = e.touches ? e.touches[0] : e;
+      const deltaY = this.dragStartY - touch.clientY; // Positive = dragging up
+      
+      // Calculate new height
+      let newHeight = this.drawerStartHeight + deltaY;
+      
+      // Constrain height between min (180px) and max (70vh)
+      const minHeight = 180;
+      const maxHeight = window.innerHeight * 0.7;
+      newHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
+      
+      this.drawerHeight = newHeight;
+      this.dragCurrentY = 0; // Don't translate, just resize
+    },
+    handleDragEnd(e) {
+      if (!this.isDragging) return;
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Restore body scroll
+      document.body.style.overflow = '';
+      
+      const touch = e.changedTouches ? e.changedTouches[0] : e;
+      const totalDelta = this.drawerHeight - this.drawerStartHeight;
+      
+      // Determine if should expand or collapse based on drag distance
+      const threshold = 50; // Minimum drag distance to trigger state change
+      const midPoint = (180 + window.innerHeight * 0.7) / 2;
+      
+      if (Math.abs(totalDelta) > threshold) {
+        // User dragged significantly
+        this.isSheetExpanded = totalDelta > 0; // Dragged up = expand
+      } else {
+        // Small drag, toggle based on current position
+        this.isSheetExpanded = this.drawerHeight > midPoint;
+      }
+      
+      // Reset drag state
+      this.isDragging = false;
+      this.dragStartY = 0;
+      this.dragCurrentY = 0;
+      this.drawerHeight = 0;
+      this.drawerStartHeight = 0;
+    },
     showNotification(title = "", message = "", type = "info", duration = 6000) {
       this.notificationData = { title, message, type, duration };
       this.$nextTick(() => this.$refs.notify?.show());
+    },
+    pulseCountSpinner(duration = 600) {
+      this.countUpdating = true;
+      if (this.countUpdateTimer) clearTimeout(this.countUpdateTimer);
+      this.countUpdateTimer = setTimeout(() => {
+        this.countUpdating = false;
+        this.countUpdateTimer = null;
+      }, duration);
+    },
+    isDisplayable(report) {
+      if (!report) return false;
+      const statusOk = (report?.status || "").toLowerCase().trim() === "pending";
+      const hasBasics =
+        !!(report?.speciesName || report?.animalType) &&
+        !!report?.severity &&
+        !!report?.incidentType;
+      const coords = report?.coordinates;
+      const coordsOk =
+        coords &&
+        typeof coords.lat === "number" &&
+        typeof coords.lng === "number" &&
+        this.isWithinSingapore(coords);
+      return statusOk && hasBasics && coordsOk;
     },
     async selectReport(report) {
       if (!report) return;
       this.selectedReportId = report.reportId;
       this.selectedDocId = report.id;
-      // Immediately open the popup and pan to it for better UX
-      const opened = await this.$refs.mapView?.openMarkerPopup(report.reportId, report);
+      // Open the popup but don't pan to it (shouldPan = false) to respect user's map position
+      const opened = await this.$refs.mapView?.openMarkerPopup(report.reportId, report, false);
       if (!opened) {
         // Retry on next tick in case markers are rebuilding
         await this.$nextTick();
-        this.$refs.mapView?.openMarkerPopup(report.reportId, report);
+        this.$refs.mapView?.openMarkerPopup(report.reportId, report, false);
       }
     },
     async ensureMapViewReady() {
@@ -190,17 +351,12 @@ export default {
         return;
       }
 
-      // to emit event to the map view to ensure the pop up opens
-      this.$refs.mapView?.openMarkerPopup(report.reportId);
-
-      // Let popup autoPan handle map movement to keep fully in view
+      // Open popup without panning to respect user's map position
+      this.$refs.mapView?.openMarkerPopup(report.reportId, null, false);
     },
     getCount() {
       if (!Array.isArray(this.reports)) return 0;
-      return this.reports.filter((r) => {
-        const statusOk = (r?.status || "").toLowerCase().trim() === "pending";
-        return statusOk && this.isWithinSingapore(r?.coordinates);
-      }).length;
+      return this.reports.filter((r) => this.isDisplayable(r)).length;
     },
     connectWebSocket() {
       socket.connect();
@@ -259,13 +415,15 @@ export default {
           }
 
           // Then update reactive list so MapView rebuilds persistent markers
+          const beforeCount = this.getCount();
           this.reports?.unshift(report);
+          if (this.getCount() !== beforeCount) this.pulseCountSpinner();
           // Notify about new report
           const species = report?.speciesName || report?.animalType || "An animal";
           this.showNotification("New Report", `${species} needs help!`, "info", 7000);
         }
-        // Recenter so the new marker is visible
-        this.$nextTick(() => this.$refs.mapView?.recenterMap());
+        // Don't auto-recenter - let user decide where to view the map
+        // The new marker will appear but won't force map movement
       });
 
       // Listen for report updates
@@ -290,13 +448,25 @@ export default {
             }
           }
 
-          this.reports?.splice(index, 1, updatedReport);
+          const wasDisplayable = this.isDisplayable(this.reports?.[index]);
+          const nowDisplayable = this.isDisplayable(updatedReport);
+          if (nowDisplayable) {
+            this.reports?.splice(index, 1, updatedReport);
+            if (!wasDisplayable) this.pulseCountSpinner();
+          } else if (wasDisplayable) {
+            this.reports?.splice(index, 1);
+            this.pulseCountSpinner();
+          } else {
+            this.reports?.splice(index, 1);
+          }
         }
       });
 
       // Listen for deleted reports
       socket.on("report-deleted", (reportId) => {
+        const beforeCount = this.getCount();
         this.reports = this.reports?.filter((r) => r.id !== reportId);
+        if (this.getCount() !== beforeCount) this.pulseCountSpinner();
       });
 
       // Connection status
@@ -359,7 +529,13 @@ export default {
           (report) => report.status === "pending"
         );
 
-        this.reports = [];
+        console.log(`Total pending reports from API: ${filteredReports.length}`);
+        
+        // Process all reports first, then add them all at once to avoid multiple watch triggers
+        const reportsToAdd = [];
+        let processedCount = 0;
+        let addedCount = 0;
+        let skippedCount = 0;
 
         for (const report of filteredReports) {
           if (report.location == null) {
@@ -375,10 +551,14 @@ export default {
                 : report.location;
 
             const coordinates = await this.geocode(addressToGeocode);
+            processedCount++;
 
+            // Always add report with coordinates, even if outside Singapore bounds
+            // The map should show all pending reports based on their actual location
             if (this.isWithinSingapore(coordinates)) {
               report.coordinates = coordinates;
-              this.reports.push(report); // report only added if in SG
+              // this.reports.push(report); // report only added if in SG
+              reportsToAdd.push(report); // report only added if in SG
               this.loadingReports = false;
             }
           } catch (geocodeError) {
@@ -388,20 +568,58 @@ export default {
             );
             report.coordinates = this.mapCenter;
             // Ensure we still render a fallback marker
-            this.reports.push(report);
+            // this.reports.push(report);
+            reportsToAdd.push(report);
             // break;
           }
-          // to handle geocoding errors
         }
+        
+        // Add all reports at once to trigger a single watch update
+        this.reports = reportsToAdd;
+        skippedCount = filteredReports.length - processedCount;
         this.loadingReports = false;
-        // Ensure map view fits markers after first load
-        this.$nextTick(() => this.$refs.mapView?.recenterMap());
-        console.log("All Reports Fetched");
-        // this.reports = validReports;
-        // console.log(
-        //   `Only loaded ${validReports.length} valid reports out of ${filteredReports.length} total`
-        // );
-        console.log("Reports:", this.reports);
+        
+        // Log detailed information about reports
+        console.log(`All Reports Fetched: ${addedCount} added, ${skippedCount} skipped out of ${filteredReports.length} total`);
+        console.log(`Reports array length: ${this.reports.length}`);
+        
+        // Check which reports have valid coordinates
+        const reportsWithCoords = this.reports.filter(r => r.coordinates && r.coordinates.lat && r.coordinates.lng);
+        const reportsWithoutCoords = this.reports.filter(r => !r.coordinates || !r.coordinates.lat || !r.coordinates.lng);
+        
+        console.error('📊 Reports Analysis:', {
+          total: this.reports.length,
+          withCoords: reportsWithCoords.length,
+          withoutCoords: reportsWithoutCoords.length,
+          reportsWithCoords: reportsWithCoords.map(r => ({
+            id: r.reportId || r.id,
+            coords: r.coordinates
+          })),
+          reportsWithoutCoords: reportsWithoutCoords.map(r => ({
+            id: r.reportId || r.id,
+            location: r.location
+          }))
+        });
+        
+        // Force MapView to update markers immediately
+        this.$nextTick(() => {
+          console.error('🔴 Forcing MapView to update markers...');
+          console.error('MapView ref exists:', !!this.$refs.mapView);
+          console.error('FilteredReports length:', this.filteredReports?.length);
+          console.error('FilteredReports:', this.filteredReports);
+          
+          if (this.$refs.mapView) {
+            console.error('✅ MapView ref found, calling updateMarkers');
+            if (this.$refs.mapView.updateMarkers) {
+              console.error('✅ updateMarkers method exists, calling it...');
+              this.$refs.mapView.updateMarkers();
+            } else {
+              console.error('❌ updateMarkers method does not exist on MapView');
+            }
+          } else {
+            console.error('❌ MapView ref not available yet');
+          }
+        });
       } catch (error) {
         console.error("Error loading reports:", error.message);
         this.showNotification(
@@ -552,9 +770,13 @@ export default {
           },
         });
 
-        // Close modal and redirect to Active Reports with case pre-open
-        this.handleModalClose();
-        this.$router.push({ path: '/volunteer/active', query: { caseId: reportIdtoUpload } });
+        // Don't close modal yet - let it show success state
+        // The modal will handle navigation when user clicks the link
+        // If user closes without clicking, we'll handle navigation on close
+        this._pendingNavigation = {
+          path: '/volunteer/active',
+          query: { caseId: reportIdtoUpload }
+        };
       } catch (error) {
         console.error("Error accepting case:", error);
         this.showNotification(
@@ -567,11 +789,26 @@ export default {
 
     handleModalClose() {
       this.showModal = false;
+      // If there's pending navigation and user didn't click the link, navigate now
+      if (this._pendingNavigation) {
+        this.$router.push(this._pendingNavigation);
+        this._pendingNavigation = null;
+      }
       this.selectedReportId = null;
       this.selectedDocId = null;
       this.selectReportCoordinates = { lat: null, lng: null };
       this.selectedLocation = "";
       console.log("Modal closed - report deselected");
+    },
+    
+    handleOpenRescueStages(reportId) {
+      // Navigate to Active Reports with caseId to open the modal
+      this.$router.push({ 
+        path: '/volunteer/active', 
+        query: { caseId: reportId || this.selectedReportId } 
+      });
+      // Clear pending navigation since we're navigating now
+      this._pendingNavigation = null;
     },
 
     async updateReportStatus(docIdtoUpdate) {
@@ -619,8 +856,12 @@ export default {
     selectedReport() {
       return this.reports?.find((r) => r.reportId === this.selectedReportId);
     },
+    isCountLoading() {
+      return this.loadingReports || this.countUpdating;
+    },
     filteredReports() {
       const list = Array.isArray(this.reports) ? this.reports : [];
+      const base = list.filter((r) => this.isDisplayable(r));
       const f = (this.severityFilter || "all").toLowerCase();
       if (f === "all") return list;
       if (f === "low") {
@@ -646,4 +887,13 @@ export default {
 </script>
 
 <style scoped>
+.pending-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pending-count .subtitle {
+  margin: 0;
+}
 </style>

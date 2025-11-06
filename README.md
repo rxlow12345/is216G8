@@ -1,6 +1,6 @@
 # 🦋 Critter Connects
 
-# �� IS216 Web Application Development II
+#     IS216 Web Application Development II
 
 ---
 
@@ -15,7 +15,7 @@ G3 Group 8
 |:--:|:--|:--|
 | <img src="frontend/src/public/assets/Jessica.png" width="80"> | Ang Hui Peng Jessica | Designed the Home page |
 | <img src="frontend/src/public/assets/Charlize.png" width="80"> | Charlize Teo Hui Zi | Designed the Guidebook game function and Volunteer map page |
-| <img src="frontend/src/public/assets/Haoyue.png" width="80"> | Wu Haoyue | Database & Auth - Firebase Integration, Integrate backend logic for Report, Login & Signup page |
+| <img src="frontend/src/public/assets/Haoyue.png" width="80"> | Wu Haoyue | System architecture: Project setup, database management, cloud deployment.<br>System Logic: Role-based access control, authentication (Signup & Login), integration test & debug.<br>Features: Report page backend, Volunteer Active Report Summary (frontend & backend), Volunteer Past Report (frontend & backend). |
 | <img src="frontend/src/public/assets/Amelia.png" width="80"> | Soh Li Qing Amelia | Designed Report, Resources/Donate page |
 | <img src="frontend/src/public/assets/Ryan.png" width="80"> | Chua Wee Chye Ryan | integrated the backend logic for AI Camera and Status Page |
 | <img src="frontend/src/public/assets/Ruixuan.png" width="80"> | Low Rui Xuan | Designed Guidebook, Login & Signup page |
@@ -28,10 +28,7 @@ G3 Group 8
 
 Describe the **real-world business or community problem** your project addresses.
 
-> *Example:*  
-> Singapore's current wildlife rescue system faces slow response timings & inefficient processes
-> Our web application aims to enhance coordination with resuce organisations by enabling the public to make faster, more efficient reports which results in quicker case response. It also aims to educate, empower and increase community involvement and support among the general public.
-
+Wildlife rescue operations face critical delays due to inefficient public reporting methods and fragmented coordination between rescue organizations. When members of the public encounter wildlife in distress, the lack of a standardized reporting platform creates operational bottlenecks that slow response time, often making the difference between life and death for injured animals. Additionally, rescue organizations struggle to leverage community support at scale, missing opportunities to mobilize volunteers and resources effectively during emergencies.
 ---
 
 ## Web Solution Overview
@@ -46,7 +43,7 @@ Explain the core features and the benefit each provides.
 | Feature | Description | User Benefit |
 |:--|:--|:--|
 | Register & Login | Secure authentication system | Personalized experience and data security |
-| GuideBook | Educational Guide for all users with game function| Increase knowledge of animals while improving app interactivity|
+| GuideBook | Educational Guide for all users, along with a game function| Increase knowledge of animals while improving app interactivity|
 | Reporting function with integrated AI camera | Helps to identify the animal and pre-fill the report page with the animal| Makes the reporting process smooth and easy for users |
 |Live Incident Map| Volunteers can access map which will provide them with real time location of the animal | Allow volunteers to easily locate the animal |
 |Status Page| Page will update and reporters can see live updates of the animal they rescued | Allows reporters to gain a sense of fulfilment when they see that the animal has been rescued |
@@ -62,7 +59,14 @@ Explain the core features and the benefit each provides.
 | <img src="https://raw.githubusercontent.com/github/explore/main/topics/javascript/javascript.png" width="40"> | **JavaScript (ES6)** | Client-side logic and interactivity |
 | <img src="https://vitejs.dev/logo.svg" width="40"> | **Vite** | Development server and build tool |
 | <img src="https://vuejs.org/images/logo.png" width="40"> | **Vue.js 3** | Component-based frontend framework |
-| <img src="https://firebase.google.com/downloads/brand-guidelines/PNG/logo-logomark.png" width="40"> | **Firebase** | Authentication and database services |
+| <img src="https://router.vuejs.org/logo.svg" width="40" alt="Vue Router" onerror="this.src='https://via.placeholder.com/40/4FC08D/ffffff?text=VR'"> | **Vue Router** | Client-side routing and navigation |
+| <img src="https://expressjs.com/images/express-facebook-share.png" width="40" alt="Express.js" onerror="this.src='https://via.placeholder.com/40/000000/ffffff?text=EX'"> | **Express.js** | Backend server framework and API endpoints |
+| <img src="https://socket.io/images/logo.svg" width="40" alt="Socket.io" onerror="this.src='https://via.placeholder.com/40/010101/ffffff?text=IO'"> | **Socket.io** | Real-time bidirectional communication (WebSocket) |
+| <img src="https://axios-http.com/assets/logo.svg" width="40" alt="Axios" onerror="this.src='https://via.placeholder.com/40/5A29E4/ffffff?text=AX'"> | **Axios** | HTTP client for API requests |
+| <img src="https://leafletjs.com/docs/images/logo.png" width="40" alt="Leaflet" onerror="this.src='https://via.placeholder.com/40/199900/ffffff?text=LF'"> | **Leaflet** | Interactive maps and geospatial visualization |
+| <img src="https://firebase.google.com/downloads/brand-guidelines/PNG/logo-logomark.png" width="40" alt="Firebase"> | **Firebase** | Authentication, Firestore database, and cloud storage |
+| <img src="https://opencagedata.com/images/opencage-logo.png" width="40" alt="OpenCage API" onerror="this.src='https://via.placeholder.com/40/4A90E2/ffffff?text=OC'"> | **OpenCage API** | Geocoding and reverse geocoding services |
+| <img src="https://www.python.org/static/community_logos/python-logo.png" width="40" alt="Python" onerror="this.src='https://via.placeholder.com/40/3776AB/ffffff?text=PY'"> | **Python / SpeciesNet API** | AI-powered species identification from images |
 
 ---
 
@@ -99,9 +103,28 @@ Provide screenshots and captions showing how users interact with your app.
 ## Developers Setup Guide
 
 ### 0) Prerequisites
-- [Git](https://git-scm.com/) v2.4+  
-- [Node.js](https://nodejs.org/) v18+ and npm v9+  
-- Access to backend or cloud services used (Firebase, MongoDB Atlas, AWS S3, etc.)
+
+#### Required Software
+- [Git](https://git-scm.com/) v2.4+ 
+- [Node.js](https://nodejs.org/) v18+ and npm v9+ 
+
+#### Cloud Services & APIs
+- **Firebase Project** (required)
+  - [Firebase Console](https://console.firebase.google.com/) account
+  - Firestore Database enabled
+  - Authentication enabled (Email/Password provider)
+  - Firebase Storage enabled (for image uploads)
+  - Firebase Hosting (optional, for frontend deployment)
+  - Service Account JSON file (for backend admin operations)
+  
+- **Railway Account** (optional, for backend deployment)
+  - [Railway](https://railway.app/) account for cloud backend hosting
+  
+- **OpenCage API Key** (required for geocoding)
+  - Get your API key from [OpenCage Data](https://opencagedata.com/api)
+  
+- **SpeciesNet API** (optional, for species identification)
+  - Access to SpeciesNet API endpoint (default: `http://34.126.93.66:8000`)
 
 ---
 
@@ -133,7 +156,9 @@ VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id_here
 VITE_FIREBASE_APP_ID=your_app_id_here
 VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id_here
-VITE_OPENCAGE_API_KEY="your_api_key_here"
+VITE_OPENCAGE_API_KEY=your_opencage_api_key_here
+VITE_API_URL=http://localhost:4100/api
+VITE_SOCKET_URL=http://localhost:4100
 ```
 
 > ⚠️ Never commit `.env` or `service-account.json` to GitHub.
@@ -324,12 +349,21 @@ This will:
 Each member should contribute 2–3 sentences on their learning and project experience.
 
 > **Reflections:**  
-> - Ryan:  
-> - Haoyue:
+Each member should contribute 2–3 sentences on their learning and project experience.
+
+> **Reflections:**  
+> - Ryan:
+
+> - Haoyue: I feel the biggest problem we had in the project was not planning ahead.  We started development without proper design artifacts, like UML models, use case diagrams, or detailed user stories.  We don't need to have comprehensive documentation, but I've learned that these tools are necessary for getting everyone on the same page with a common goal.  We often had problems with confusion, different expectations, and expensive rework without them. I also learned that well-written user stories with clear acceptance criteria are not just rules and regulations; they are necessary to keep everyone on the same page and stop uncontrolled scope creep. It was hard to deal with last-minute changes, but it taught me that setting limits isn't about being rigid; it's about keeping the project's integrity and the quality of the code. Additionaly, I learned that every team member should know how data flow through the whole system, even though we split up the work between the front end and the back end.  These aren't just theoretical best practices; they're real habits that help teams make software that works well and lasts.
+
 > - Charlize: I feel like this project has been challenging and complicated, but it was really insightful in helping me realise how a proper project works. I learnt how to efficiently split up and delegate tasks based on our strengths, how to work together as a group to integrate our code and our ideas together, how to debug and fix errors that we came across and more. I think the biggest challenge was getting all our ideas aligned, and ensuring everyone was on the same page, since we all had different impressions of the same feature, which led to a lot of miscommunication and extra work.
-> - Amelia:
+
+> - Amelia: I've not only learned how to design a website, but also how to debug code  and understand why the code or certain features may not work as expected across different screens and devices. This project has taught me to be patient, pay attention to detail that I thought was not that significant, and recognise the importance of testing every small component before merging into the main system. Initially, there were a lot of challenges faced because some parts were not integrated well, but working as a team has made the process much easier because we do not struggle with this alone. Instead, we were able to ask questions and collaborated with each other out to solve problems together.
+
 > - Jessica: With a tight schedule, it was challenging juggling all the work at hand. This experience has taught me how to prioritise tasks and manage my time effectively. Furthermore, as there are multiple people working on the same project, we had multiple ideas for the UI. Through this, I leanred how to integrate our UI designs to make them more cohesive and flow better.
+
 > - Rui Xuan: I thought it was difficult since I was learning an entirely new language and have to use that knowledge to build the app, however, I thought it was a good learning experience and this helped me build my fundamentals for the module. Ensuring everyone could code without merge conflicts was definitely a pain, but it was worthwhile seeing everyone come together and helping each other solve their bugs. We did have miscommunications here and there, but we sat down with each other and fought it out, eventually coming to a conclusion.
+
 
 As a team, reflect on:
 - Key takeaways from working with real-world frameworks  

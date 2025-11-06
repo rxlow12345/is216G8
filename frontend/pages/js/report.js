@@ -1,17 +1,28 @@
-// Backend API configuration, automatically detect environment
-// if in production, frontend and backend would host together whereas development would separate
-// Check if we are running the app locally (on our own computer)
-const isDevelopment =
-  window.location.hostname === 'localhost' ||   
-  window.location.hostname === '127.0.0.1';     
-
-// If we are in development (local testing):
-// → use the backend that runs on port 4100 (your Express server)
-// Otherwise (in production):
-// → use the same domain as the website
-const API_BASE_URL = isDevelopment
-  ? `${window.location.protocol}//${window.location.hostname}:4100/api`
-  : '/api';
+// Backend API configuration
+// Supports both localhost (dev) and cloud (production)
+// For localhost: uses relative /api path (Vite proxy handles it)
+// For production: expects VITE_API_URL to be injected as a global variable
+var API_BASE_URL = '/api'; // Default fallback (uses Vite proxy in dev)
+(function() {
+  var isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  
+  if (isDevelopment) {
+    // Localhost: use proxy (relative path)
+    API_BASE_URL = '/api';
+  } else {
+    // Production: check for global VITE_API_URL (injected by build process)
+    if (window.VITE_API_URL) {
+      var viteUrl = window.VITE_API_URL;
+      // Check if it already includes /api
+      if (viteUrl.endsWith('/api')) {
+        API_BASE_URL = viteUrl;
+      } else {
+        API_BASE_URL = viteUrl + '/api';
+      }
+    }
+    // Otherwise use default '/api' (relative path)
+  }
+})();
 
 // Example results:
 // When testing locally:  "http://localhost:4100/api"

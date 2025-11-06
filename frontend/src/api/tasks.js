@@ -1,8 +1,20 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL 
-  ? `${import.meta.env.VITE_API_URL}/api/tasks`
-  : "/api/tasks"; // Use relative URL for production (proxied or same origin)
+// Support both localhost (via proxy) and cloud (via VITE_API_URL)
+let API_URL = '/api/tasks'; // Default: relative path (uses Vite proxy in dev)
+
+if (import.meta.env.VITE_API_URL && !import.meta.env.VITE_API_URL.includes('localhost')) {
+  // Production: use full URL, check if /api is already included
+  const viteUrl = import.meta.env.VITE_API_URL;
+  if (viteUrl.endsWith('/api')) {
+    API_URL = `${viteUrl}/tasks`;
+  } else {
+    API_URL = `${viteUrl}/api/tasks`;
+  }
+} else {
+  // Localhost or no VITE_API_URL: use relative path (Vite proxy)
+  API_URL = '/api/tasks';
+}
 
 // Fetch all tasks
 export const fetchTasks = async () => {

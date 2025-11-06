@@ -144,7 +144,7 @@
               </p>
               <p class="reportInfo mb-1">
                 <i class="bi bi-geo-alt me-2"></i>
-                <strong>Location: </strong> {{ report.location }}
+                <strong>Location: </strong> {{ report.location?.address || report.location || 'Unknown Location' }}
               </p>
               <p class="reportInfo mb-1">
                 <i class="bi bi-calendar-event me-2"></i>

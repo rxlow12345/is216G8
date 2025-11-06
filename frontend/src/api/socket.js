@@ -7,7 +7,26 @@ class SocketService {
   }
 
   // Connect to WebSocket server
-  connect(url = import.meta.env.VITE_SOCKET_URL || "http://localhost:4100") {
+  connect(url = null) {
+    // Use provided URL, or VITE_SOCKET_URL, or fallback to localhost for dev
+    if (!url) {
+      if (import.meta.env.VITE_SOCKET_URL && !import.meta.env.VITE_SOCKET_URL.includes('localhost')) {
+        // Production: use VITE_SOCKET_URL
+        url = import.meta.env.VITE_SOCKET_URL;
+      } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        // Localhost: use local backend
+        url = "http://localhost:4100";
+      } else {
+        // Production without VITE_SOCKET_URL: try to derive from window.location
+        // This won't work for WebSocket, so we need VITE_SOCKET_URL
+        url = null;
+      }
+    }
+    
+    if (!url) {
+      console.warn("No socket URL configured. Please set VITE_SOCKET_URL environment variable.");
+      return;
+    }
     if (this.socket?.connected) {
       console.log("Already connected");
       return;

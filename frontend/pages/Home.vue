@@ -53,7 +53,7 @@
                   dedicated to helping our local critters thrive. 
                   <br><br>
                   Our <router-link to="/guidebook" class="description-link">Guidebook</router-link> helps you identify and
-                  learn about common species in Singapore and you can even test your knowledge with our <strong>"Match the Card"</strong> game.
+                  learn about common species in Singapore. You can even test your knowledge with our <strong>"Match the Card"</strong> game!
                   <br><br>
                   Spotted an injured critter? 
                   <router-link to='/login' class = "description-link">Submit a report</router-link> now and <strong>gain access to more features</strong> designed to help you stay connected and informed.

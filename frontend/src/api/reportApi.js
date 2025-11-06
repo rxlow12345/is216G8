@@ -1,11 +1,21 @@
-// Backend API configuration, automatically detect environment
-const isDevelopment =
-    window.location.hostname === 'localhost' ||
-    window.location.hostname === '127.0.0.1';
+// Backend API base URL
+// Support both localhost (via proxy) and cloud (via VITE_API_URL)
+// For localhost: uses relative /api path (Vite proxy handles it)
+// For production: uses VITE_API_URL if set, otherwise falls back to relative /api
+let API_BASE_URL = '/api'; // Default: relative path (uses Vite proxy in dev)
 
-const API_BASE_URL = isDevelopment
-    ? `${window.location.protocol}//${window.location.hostname}:4100/api`
-    : '/api';
+if (import.meta.env.VITE_API_URL && !import.meta.env.VITE_API_URL.includes('localhost')) {
+  // Production: use full URL, check if /api is already included
+  const viteUrl = import.meta.env.VITE_API_URL;
+  if (viteUrl.endsWith('/api')) {
+    API_BASE_URL = viteUrl;
+  } else {
+    API_BASE_URL = `${viteUrl}/api`;
+  }
+} else {
+  // Localhost or no VITE_API_URL: use relative path (Vite proxy)
+  API_BASE_URL = '/api';
+}
 
 // --- API Helper Functions ---
 

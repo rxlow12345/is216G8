@@ -6,14 +6,14 @@
   <div class="container-fluid p-0 reporterDashboard">
     <div id="topBanner" class="bannerTitles">
       <header class="text-center mb-2">
-        <h1>Volunteer Dashboard</h1>
+        <h1>🌿 Volunteer Dashboard 🌿</h1>
+        <p class="hero-subtitle">Manage your rescue operations and track your impact</p>
       </header>
     </div>
 
     <div class="welcomeMessage">
       <div class="alertCustom">
-        <h5 class="alertHeading">Welcome To Your Dashboard </h5>
-        <p> Use the options below to navigate to volunteer tools. ⬇️</p>
+        <p> Select an option below to see your live, active, and past reports ⬇️</p>
       </div>
     </div>
 
@@ -93,6 +93,16 @@ const setupScrollAnimations = () => {
 </script>
 
 <style scoped>
+/* Banner styling - matching common.css */
+.bannerTitles .hero-subtitle,
+.bannerTitles p {
+  font-weight: 200 !important;
+  color: rgb(254, 250, 224) !important;
+  font-size: 20px !important;
+  margin-top: 8px !important;
+  margin-bottom: 0 !important;
+}
+
 .welcomeMessage {
   text-align: center;
   padding: 10px 0;
@@ -100,7 +110,7 @@ const setupScrollAnimations = () => {
 }
 
 .alertCustom {
-  background: linear-gradient(135deg, #eebf9b 0%, #b5dab7 100%);
+  background: linear-gradient(135deg, #f4c27b 0%, #c6e0b4 100%);
   border-radius: 15px;
   padding: 25px;
   max-width: 950px;
@@ -109,20 +119,14 @@ const setupScrollAnimations = () => {
   transition: transform 0.3s ease;
 }
 
+.alertCustom p {
+  color: #2c3e1f;
+  margin-top: 10px;
+  font-size:18px;
+}
+
 .alertCustom:hover {
   transform: translateY(-5px);
-}
-
-.alertHeading {
-  font-size: 30px;
-  font-weight: 400;
-  color: #285436;
-}
-
-.welcomeMessage p {
-  font-size: 18px;
-  color: #3A4D37;
-  margin-top: 10px;
 }
 
 /* Button Sections */
@@ -297,6 +301,9 @@ const setupScrollAnimations = () => {
 @media (max-width: 520px) {
   .welcomeMessage { margin: 10px 10px 0px 10px; }
   .buttonItemLeft img, .buttonItemRight img { margin: 10px; }
+  .bannerTitles h1 { font-size: 40px !important; }
+  .bannerTitles .hero-subtitle,
+  .bannerTitles p { font-size: 20px !important; }
 }
 
 .fadeIn { opacity: 1 !important; transform: translateY(0) !important; }

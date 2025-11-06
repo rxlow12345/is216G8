@@ -551,7 +551,7 @@ export default {
   <!-- Win Modal -->
   <div v-if="showWinModal" class="modal-overlay" @click="closeWinModal">
     <div class="modal-content" @click.stop>
-      <button class="modal-close" @click="closeWinModal">×</button>
+      <button class="modal-close" @click="restartGame(); closeWinModal();">×</button>
 
       <div class="modal-header">
         <h2 v-if="winModalData.isNewBest" class="modal-title new-best">
@@ -579,6 +579,10 @@ export default {
             <div class="stat-label">Score</div>
             <div class="stat-value">{{ winModalData.score.toLocaleString() }}</div>
           </div>
+
+          <button class="modal-btn primary" @click="restartGame(); closeWinModal();">
+            ⟳ Restart Game
+          </button>
         </div>
 
         <div v-if="!winModalData.isNewBest && !winModalData.needsLogin" class="encouragement">
