@@ -557,7 +557,8 @@ export default {
             // The map should show all pending reports based on their actual location
             if (this.isWithinSingapore(coordinates)) {
               report.coordinates = coordinates;
-              this.reports.push(report); // report only added if in SG
+              // this.reports.push(report); // report only added if in SG
+              reportsToAdd.push(report); // report only added if in SG
               this.loadingReports = false;
             }
           } catch (geocodeError) {
@@ -567,7 +568,8 @@ export default {
             );
             report.coordinates = this.mapCenter;
             // Ensure we still render a fallback marker
-            this.reports.push(report);
+            // this.reports.push(report);
+            reportsToAdd.push(report);
             // break;
           }
         }
