@@ -614,7 +614,6 @@ function loadLeaflet() {
     script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
     script.onload = () => resolve(window.L);
     script.onerror = () => {
-      console.error('Failed to load Leaflet');
       resolve(null);
     };
     document.head.appendChild(script);
@@ -1051,7 +1050,6 @@ async function uploadFile(file) {
         throw new Error(result.message || result.error || 'Failed to upload image');
       }
     } catch (error) {
-      console.error('Image upload error:', error);
       let errorMsg = error.message || 'Unknown error';
       
       if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
@@ -1144,34 +1142,26 @@ function getCurrentLocation() {
 }
 
 async function reverseGeocode(lat, lon) {
-  console.log(`🔄 Reverse geocoding: ${lat}, ${lon}`);
-
   // Try OpenCage first (if key is available and not exhausted)
   if (OPENCAGE_API_KEY && OPENCAGE_API_KEY !== 'undefined') {
-  try {
+    try {
       const url = `${OPENCAGE_BASE_URL}?q=${lat}+${lon}&key=${OPENCAGE_API_KEY}&language=en`;
-    const response = await fetch(url);
-
+      const response = await fetch(url);
+      
       if (response.ok) {
-    const data = await response.json();
-    if (data.results && data.results.length > 0) {
+        const data = await response.json();
+        if (data.results && data.results.length > 0) {
           const info = parseOpenCageInfo(data);
-          console.log('✅ OpenCage reverse geocoding succeeded');
           return info;
         }
-      } else if (response.status === 402) {
-        console.warn('⚠️ OpenCage API quota exceeded (402), using backend proxy...');
-    } else {
-        console.warn(`⚠️ OpenCage API error ${response.status}, using backend proxy...`);
-    }
-  } catch (error) {
-      console.warn('⚠️ OpenCage error:', error.message, '- using backend proxy...');
+      }
+    } catch (error) {
+      // OpenCage failed, fall through to backend proxy
     }
   }
   
   // Fallback: Use our backend proxy endpoint
   try {
-    console.log('🔄 Calling backend reverse geocoding endpoint...');
     const response = await fetch(`${API_BASE_URL}/reports/reverse-geocode?lat=${lat}&lon=${lon}`);
     
     if (!response.ok) {
@@ -1181,11 +1171,12 @@ async function reverseGeocode(lat, lon) {
     const result = await response.json();
     
     if (result.success && result.data) {
-      console.log('✅ Backend reverse geocoding succeeded:', result.data.address);
+      // Normalize countryCode to lowercase for consistency with OpenCage format
+      const countryCode = result.data.countryCode ? result.data.countryCode.toLowerCase() : 'sg';
       return {
         address: result.data.address,
         postalCode: result.data.postalCode,
-        countryCode: result.data.countryCode,
+        countryCode: countryCode,
         isWater: result.data.isWater,
         point: { lat: result.data.lat, lon: result.data.lon }
       };
@@ -1193,10 +1184,7 @@ async function reverseGeocode(lat, lon) {
       throw new Error(result.error || 'Backend reverse geocode returned no data');
     }
   } catch (error) {
-    console.error('❌ Backend reverse geocoding failed:', error);
-    
     // Last resort: return coordinates
-    console.warn('⚠️ Falling back to coordinates');
     return {
       address: `Coordinates: ${lat.toFixed(6)}, ${lon.toFixed(6)}`,
       postalCode: null,
@@ -1216,7 +1204,6 @@ async function embedMap(lat, lon) {
   if (!mapContainer.value) {
     // Don't log error if we're not on step 1 - the container just isn't visible yet
     if (currentStep.value === 1) {
-      console.error("Map container not found!");
     }
     return;
   }
@@ -1307,7 +1294,6 @@ async function validateAndSetLocation(lat, lon) {
       info = await reverseGeocode(lat, lon);
     } catch (geErr) {
       // Handle OpenCage failures (e.g., 402 quota) gracefully – fall back to Nominatim only
-      console.warn('Reverse Geocoding (OpenCage) failed, falling back to Nominatim:', geErr?.message || geErr);
       info = null;
     }
     let nominatim = null;
@@ -1315,16 +1301,18 @@ async function validateAndSetLocation(lat, lon) {
       nominatim = await nominatimReverse(lat, lon);
     } catch (nomErr) {
       // Nominatim also failed - that's okay, we'll use coordinates
-      console.warn('Nominatim reverse geocoding failed:', nomErr?.message || nomErr);
       nominatim = null;
     }
     
     // If OpenCage failed, be more lenient - only check basic bounds (already done above)
     // Only do strict validation if we have OpenCage data
+    // Backend proxy data should be more lenient since we already checked Singapore bounds
     if (info) {
-      // We have OpenCage data, do full validation
-      const countryOk = info.countryCode === 'sg';
-    const waterOk = !info.isWater && !(nominatim && nominatim.isWater);
+      // We have geocoding data, do validation
+      // countryCode is now normalized to lowercase in reverseGeocode, so check should pass
+      // But be lenient: if countryCode is null or 'sg', accept it (we already checked bounds)
+      const countryOk = !info.countryCode || info.countryCode === 'sg';
+      const waterOk = !info.isWater && !(nominatim && nominatim.isWater);
 
     // Distance sanity check: if reverse-geocoded point is far from marker, likely offshore
     let distanceOk = true;
@@ -1364,7 +1352,6 @@ async function validateAndSetLocation(lat, lon) {
       marker.value.bindPopup(`<div style=\"color:#2d6b2f;font-weight:600;\">✓ Valid Location</div><div>${addressText}</div>`).openPopup();
     }
   } catch (e) {
-    console.error('Unexpected error in validateAndSetLocation:', e);
     locationValid.value = false;
     errors.location = 'Failed to verify location. Please try again.';
     locationStatusHtml.value = '';
@@ -1378,98 +1365,62 @@ async function validateAndSetLocation(lat, lon) {
 let pendingPermissionListener = null;
 
 async function handleLiveLocation() {
-  console.log('=== GEOLOCATION DEBUG START ===');
-  console.log('1. Button clicked');
-  console.log('2. Current URL:', window.location.href);
-  console.log('3. Protocol:', window.location.protocol);
-  console.log('4. Is HTTPS or localhost?', window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-  
   isGettingLocation.value = true;
   formData.location = '';
   locationStatusHtml.value = '<span style="color: #2196F3;">🔄 Starting location request...</span>';
   
   try {
     // Check 1: Browser support
-    console.log('5. Checking browser support...');
     if (!navigator.geolocation) {
-      console.error('❌ Geolocation NOT supported');
       throw new Error('GEOLOCATION_NOT_SUPPORTED');
     }
-    console.log('✅ Geolocation is supported');
 
     // Check 2: Permission API
-    console.log('6. Checking permission API...');
     let permissionState = 'unknown';
     try {
       if (navigator.permissions && navigator.permissions.query) {
-        console.log('7. Permission API available, querying...');
         const status = await navigator.permissions.query({ name: 'geolocation' });
         permissionState = status.state;
-        console.log('8. Permission state:', status.state);
         
         if (status.state === 'denied') {
-          console.error('❌ Permission already DENIED');
           throw new Error('PERMISSION_DENIED');
         }
         
         if (status.state === 'prompt') {
-          console.log('9. Permission will be PROMPTED');
           locationStatusHtml.value = '<span style="color: #2196F3;">💡 Please click "Allow" when browser asks for permission</span>';
         }
-        
-        if (status.state === 'granted') {
-          console.log('9. Permission already GRANTED');
-        }
-      } else {
-        console.warn('⚠️ Permission API not available, will try direct request');
       }
     } catch (permErr) {
-      console.warn('⚠️ Permission API query failed:', permErr);
+      // Permission API not available or query failed, continue with direct request
     }
 
     // Check 3: Get current position
-    console.log('10. Requesting current position...');
     locationStatusHtml.value = '<span style="color: #2196F3;">📍 Requesting your location...</span>';
     
     const position = await new Promise((resolve, reject) => {
-      console.log('11. Inside getCurrentPosition promise...');
-      
       const timeoutId = setTimeout(() => {
-        console.error('❌ TIMEOUT after 15 seconds');
         reject(new Error('TIMEOUT'));
       }, 15000);
 
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          console.log('✅ SUCCESS! Got position:', pos);
-          console.log('   Latitude:', pos.coords.latitude);
-          console.log('   Longitude:', pos.coords.longitude);
-          console.log('   Accuracy:', pos.coords.accuracy, 'meters');
           clearTimeout(timeoutId);
           resolve(pos);
         },
         (error) => {
-          console.error('❌ ERROR in getCurrentPosition:');
-          console.error('   Error code:', error.code);
-          console.error('   Error message:', error.message);
-          console.error('   Error object:', error);
           clearTimeout(timeoutId);
           
           switch(error.code) {
             case 1:
-              console.error('   -> PERMISSION_DENIED (code 1)');
               reject(new Error('PERMISSION_DENIED'));
               break;
             case 2:
-              console.error('   -> POSITION_UNAVAILABLE (code 2)');
               reject(new Error('POSITION_UNAVAILABLE'));
               break;
             case 3:
-              console.error('   -> TIMEOUT (code 3)');
               reject(new Error('TIMEOUT'));
               break;
             default:
-              console.error('   -> UNKNOWN_ERROR');
               reject(new Error('UNKNOWN_ERROR'));
           }
         },
@@ -1479,30 +1430,17 @@ async function handleLiveLocation() {
           maximumAge: 0
         }
       );
-      
-      console.log('12. getCurrentPosition call made, waiting for response...');
     });
 
     // If we got here, we have the position
-    console.log('13. Processing position...');
     const lat = position.coords.latitude;
     const lon = position.coords.longitude;
-
-    console.log('14. Coordinates:', lat, lon);
     
     // Show on map
-    console.log('15. Embedding map...');
     await embedMap(lat, lon);
-    
-    console.log('16. Validating location...');
     await validateAndSetLocation(lat, lon);
     
-    console.log('✅ === GEOLOCATION DEBUG SUCCESS ===');
-    
   } catch (error) {
-    console.error('❌ === GEOLOCATION DEBUG FAILED ===');
-    console.error('Error:', error.message);
-    console.error('Stack:', error.stack);
     
     isGettingLocation.value = false;
     
@@ -1601,7 +1539,6 @@ async function identifySpecies(imageFile) {
       throw new Error(result.message || 'Species identification failed');
     }
   } catch (error) {
-    console.error('Species identification failed:', error);
     
     // Handle different error types
     if (error.name === 'AbortError' || error.message.includes('timeout')) {
@@ -1763,7 +1700,6 @@ async function handleSpeciesIdentification(imageFile) {
     }
   } catch (error) {
     clearInterval(timerInterval);
-    console.error('Species identification error:', error);
     // Hide sticky indicator on error
     idProgress.active = false;
   }
@@ -1882,7 +1818,6 @@ async function handleSubmit(event) {
         reporterId = currentUser.uid || currentUser.email || null;
       }
     } catch (error) {
-      console.warn('Could not get current user for reporterID:', error);
       // Continue without reporterID if user fetch fails
     }
 
@@ -1948,7 +1883,6 @@ async function handleSubmit(event) {
       throw new Error(result.message || 'Failed to submit report');
     }
   } catch (error) {
-    console.error('Submit error:', error);
     let errorMsg = error.message || 'Unknown error occurred';
     
     // Handle network errors more gracefully

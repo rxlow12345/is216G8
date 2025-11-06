@@ -27,7 +27,7 @@
       </div>
       <!-- Reports Banner (matches deployed style) -->
       <div class="reports-banner">
-        <h2 class="reports-banner-title">🌿 Accept Reports 🌿</h2>
+        <h2 class="reports-banner-title">Accept Reports</h2>
         <p class="reports-banner-subtitle">{{ animatedPendingCount }} pending reports</p>
         <div class="reports-banner-status">
           <span class="status-dot" :class="{ active: isConnected }"></span>
@@ -400,10 +400,6 @@ export default {
             report.coordinates = this.mapCenter; // safe fallback
           }
         } catch (err) {
-          console.warn(
-            "Failed to geocode incoming report; using fallback",
-            err?.message
-          );
           report.coordinates = this.mapCenter;
         }
 
@@ -411,14 +407,12 @@ export default {
         try {
           const ready = await this.ensureMapViewReady();
           if (ready) {
-            console.debug("new-report addPin", report.coordinates);
             await this.$refs.mapView.addPin(report.coordinates, {
               popupContent: `<b>${report.speciesName || "New Case"}</b>`,
               persistent: false,
             });
           }
         } catch (e) {
-          console.warn("addPin failed", e?.message);
         }
 
         // Only add valid pending reports and normalize minimal fields
@@ -507,7 +501,6 @@ export default {
       window.selectReport = (reportId) => {
         const report = this.reports?.find((r) => r.reportId === reportId);
         if (report) this.selectedReportId = report.reportId;
-        console.log("Case selected");
       };
       // Quick manual test helper to drop a pin
       window.dropPin = (lat, lng) =>
@@ -550,7 +543,6 @@ export default {
           (report) => report.status === "pending"
         );
 
-        console.log(`Total pending reports from API: ${filteredReports.length}`);
 
         // Initialize counter to 0 for visible 0→N animation
         this.animatedPendingCount = 0;
@@ -586,9 +578,7 @@ export default {
                 this.incrementPendingCount();
               }
 
-              console.debug(`Added report ${report.reportId} at ${coordinates.lat}, ${coordinates.lng}`);
             } else {
-              console.warn(`Report ${report.reportId} coordinates outside Singapore bounds, using fallback`);
               report.coordinates = this.mapCenter;
               reportsToAdd.push(report);
               addedCount++;
@@ -599,10 +589,6 @@ export default {
               }
             }
           } catch (geocodeError) {
-            console.log(
-              `Report ID ${report.reportId} failed to geocode location`,
-              geocodeError.message
-            );
             report.coordinates = this.mapCenter;
             reportsToAdd.push(report);
             addedCount++;
@@ -621,37 +607,16 @@ export default {
         // Reconcile animated counter with actual displayable count
         const actualDisplayableCount = this.getCount();
         if (this.animatedPendingCount !== actualDisplayableCount) {
-          console.warn(`Counter mismatch! Animated: ${this.animatedPendingCount}, Actual: ${actualDisplayableCount}`)
           this.animatePendingCount(actualDisplayableCount);
         }
 
         skippedCount = filteredReports.length - processedCount;
         this.loadingReports = false;
 
-        console.log(`All Reports Fetched: ${addedCount} added, ${skippedCount} skipped out of ${filteredReports.length} total`);
-        console.log(`Reports array length: ${this.reports.length}`);
 
-        // Check which reports have valid coordinates
-        const reportsWithCoords = this.reports.filter(r => r.coordinates && r.coordinates.lat && r.coordinates.lng);
-        const reportsWithoutCoords = this.reports.filter(r => !r.coordinates || !r.coordinates.lat || !r.coordinates.lng);
-
-        console.error('📊 Reports Analysis:', {
-          total: this.reports.length,
-          withCoords: reportsWithCoords.length,
-          withoutCoords: reportsWithoutCoords.length,
-          reportsWithCoords: reportsWithCoords.map(r => ({
-            id: r.reportId || r.id,
-            coords: r.coordinates
-          })),
-          reportsWithoutCoords: reportsWithoutCoords.map(r => ({
-            id: r.reportId || r.id,
-            location: r.location
-          }))
-        });
 
         // Final marker update to ensure everything renders
         if (this.$refs.mapView?.updateMarkers) {
-          console.error('✅ Final updateMarkers call');
           this.$refs.mapView.updateMarkers();
         }
       } catch (error) {
@@ -687,7 +652,6 @@ export default {
 
         const lat = data.results[0].geometry.lat;
         const lng = data.results[0].geometry.lng;
-        console.log("Geocode ran successfully");
         return { lat: lat, lng: lng };
       } catch (error) {
         console.error("Geocoding Error:", error);
@@ -719,8 +683,6 @@ export default {
       }
 
       this.showModal = true;
-      console.log("coordinates", this.selectReportCoordinates);
-      console.log("Case Accepted", this.selectedReportId);
     },
 
     async handleConfirmation(payload) {
@@ -826,7 +788,6 @@ export default {
       this.selectedDocId = null;
       this.selectReportCoordinates = { lat: null, lng: null };
       this.selectedLocation = "";
-      console.log("Modal closed - report deselected");
     },
     
     handleOpenRescueStages(reportId) {
@@ -844,19 +805,15 @@ export default {
         throw new Error("No report ID selected");
       }
       try {
-        console.log("Attempting to update status for docId:", docIdtoUpdate);
 
         const response = await reportApi.updateReportStatus(
           docIdtoUpdate,
           "active"
         );
-        console.log("Status updated successfully, new status:", response);
 
         return response;
       } catch (e) {
         console.error("Failed to update status:", e);
-        console.error("Error message:", e, message);
-        console.error("Error response", e.response?.data);
         throw e; // so handleconfirmation catches it
       }
     },
@@ -866,7 +823,6 @@ export default {
         const result = await getCurrentUser();
         return result.uid;
       } catch (e) {
-        console.log("Error getting user", e);
       }
     },
 
@@ -905,18 +861,6 @@ export default {
         filtered = base.filter((r) => (r?.severity || "").toLowerCase() === f);
       }
       
-      // Debug logging
-      console.error('🔍 filteredReports computed:', {
-        originalCount: list.length,
-        displayableCount: base.length,
-        filteredCount: filtered.length,
-        filter: f,
-        reports: filtered.map(r => ({
-          id: r.reportId || r.id,
-          hasCoords: !!r.coordinates,
-          coords: r.coordinates
-        }))
-      });
       
       return filtered;
     },
@@ -975,20 +919,24 @@ export default {
 .sidebar .reports-banner-title,
 .reports-banner-title {
   margin: 0 0 8px 0 !important;
+  padding: 0 !important;
   font-size: 2rem !important;
   font-weight: 700 !important;
   color: #FFFFFF !important;
   line-height: 1.2 !important;
   letter-spacing: -0.5px !important;
+  text-align: left !important;
 }
 
 .sidebar .reports-banner-subtitle,
 .reports-banner-subtitle {
   margin: 0 0 8px 0 !important;
+  padding: 0 !important;
   font-size: 1.1rem !important;
   font-weight: 400 !important;
   color: rgba(255, 255, 255, 0.9) !important;
   line-height: 1.4 !important;
+  text-align: left !important;
 }
 
 .sidebar .reports-banner-status,
@@ -996,10 +944,12 @@ export default {
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
-  margin-top: 8px !important;
+  margin: 8px 0 0 0 !important;
+  padding: 0 !important;
   font-size: 0.9rem !important;
   color: rgba(255, 255, 255, 0.95) !important;
   font-weight: 400 !important;
+  justify-content: flex-start !important;
 }
 
 .sidebar .reports-banner-status .status-dot,

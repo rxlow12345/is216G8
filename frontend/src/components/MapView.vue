@@ -76,47 +76,24 @@ export default {
     }
   },
   async mounted() {
-    console.log('MapView mounted - starting initialization')
     await this.initMap()
     this.loading = false
-    console.log('MapView: map initialized, loading = false')
     
     // Handle window resize to ensure map stays interactive
     window.addEventListener('resize', this.handleResize)
     
     // Ensure markers are created after map is ready
     this.$nextTick(() => {
-      console.log('Mount check:', {
-        map: !!this.map,
-        reportsCount: this.reports?.length || 0,
-        markersCount: this.markers.length,
-        reports: this.reports
-      })
       if (this.map && this.reports && this.reports.length > 0) {
         if (this.markers.length === 0) {
-          console.log('Mount check: creating markers - calling updateMarkers')
           this.updateMarkers()
-        } else {
-          console.log('Mount check: markers already exist, skipping')
         }
-      } else {
-        console.warn('Mount check: cannot create markers', {
-          map: !!this.map,
-          reports: this.reports?.length || 0,
-          reportsArray: this.reports
-        })
       }
     })
     
     // Also check again after a delay in case reports are loaded asynchronously
     setTimeout(() => {
-      console.log('Delayed mount check:', {
-        map: !!this.map,
-        reportsCount: this.reports?.length || 0,
-        markersCount: this.markers.length
-      })
       if (this.map && this.reports && this.reports.length > 0 && this.markers.length === 0) {
-        console.log('Delayed mount check: creating markers - calling updateMarkers')
         this.updateMarkers()
       }
     }, 1000)
@@ -124,31 +101,16 @@ export default {
   watch: {
     reports: {
       handler(newReports, oldReports) {
-        console.error('🟢 Reports watch triggered!', {
-          newCount: newReports?.length || 0,
-          oldCount: oldReports?.length || 0,
-          isInitialLoad: this._isInitialLoad,
-          isUserDragging: this._isUserDragging,
-          mapReady: !!this.map,
-          newReports: newReports,
-          oldReports: oldReports
-        })
-        
         // Always update markers on initial load (when oldReports is undefined/null or empty)
         if (!oldReports || oldReports.length === 0) {
-          console.error('🟢 Initial load detected, updating markers')
           if (this.map) {
-            console.error('🟢 Map is ready, calling updateMarkers from watch')
             this.updateMarkers()
-          } else {
-            console.error('🟡 Map not ready yet, will update markers after map initializes')
           }
           return
         }
         
         // If no new reports, clear markers but don't prevent display
         if (!newReports || newReports.length === 0) {
-          console.debug('No new reports, clearing markers')
           if (this.map) {
             this.markers.forEach((marker) => this.map.removeLayer(marker))
             this.markers = []
@@ -166,14 +128,6 @@ export default {
           [...newIds].some(id => !oldIds.has(id)) ||
           [...oldIds].some(id => !newIds.has(id))
         
-        console.debug('Reports comparison:', {
-          newIds: newIds.size,
-          oldIds: oldIds.size,
-          idsChanged,
-          isInitialLoad: this._isInitialLoad,
-          markersCount: this.markers.length
-        })
-        
         // Always update if IDs changed OR if we have no markers but have reports
         // Also update if markers array is empty but we have reports (safety check)
         const shouldUpdate = idsChanged || 
@@ -182,22 +136,12 @@ export default {
                             (!this.map || this.markers.some(m => !this.map.hasLayer(m)))
         
         if (shouldUpdate) {
-          console.debug('Updating markers due to:', {
-            idsChanged,
-            isInitialLoad: this._isInitialLoad,
-            noMarkers: this.markers.length === 0,
-            hasReports: newReports.length > 0,
-            markersNotOnMap: this.map && this.markers.some(m => !this.map.hasLayer(m))
-          })
           this.updateMarkers()
         }
         // If only properties changed and user is dragging, skip update to avoid resetting map position
         else if (!this._isUserDragging) {
-          console.debug('Updating popup contents only (no marker recreation)')
           // Only update popup content if needed, don't recreate markers
           this.updatePopupContents(newReports || [])
-        } else {
-          console.debug('Skipping update - user is dragging')
         }
       },
       deep: true,
@@ -250,13 +194,11 @@ export default {
         this.map.on('dragstart', () => {
           this._isUserDragging = true
           this._isInitialLoad = false // Immediately disable auto-fit once user starts dragging
-          console.debug('User started dragging map')
           // Close any open popups to prevent autoPan from interfering
           this.map.closePopup()
         })
         
         this.map.on('dragend', () => {
-          console.debug('User finished dragging map')
           // After drag ends, mark that initial load should be disabled
           // This prevents any future auto-fit operations
           this._isInitialLoad = false
@@ -264,7 +206,6 @@ export default {
           clearTimeout(this._dragEndTimeout)
           this._dragEndTimeout = setTimeout(() => {
             this._isUserDragging = false
-            console.debug('User drag flag reset, auto-recenter allowed again')
           }, 2000) // Wait 2 seconds after drag ends to be safe
         })
         
@@ -273,7 +214,6 @@ export default {
           // If this move was programmatic (not from user drag), it's okay
           // But we should still prevent auto-recenter if user was dragging recently
           if (this._isUserDragging) {
-            console.debug('Move detected while user dragging flag is true')
           }
         })
         
@@ -281,19 +221,8 @@ export default {
 
         // Add markers for existing reports after a short delay to ensure map is fully ready
         this.$nextTick(() => {
-          console.log('initMap $nextTick: checking for reports', {
-            map: !!this.map,
-            reportsCount: this.reports?.length || 0,
-            reports: this.reports
-          })
           if (this.map && this.reports && this.reports.length > 0) {
-            console.log('Initial marker creation from initMap - calling updateMarkers')
             this.updateMarkers()
-          } else {
-            console.warn('initMap: Cannot create markers yet', {
-              map: !!this.map,
-              reportsCount: this.reports?.length || 0
-            })
           }
         })
 
@@ -314,7 +243,6 @@ export default {
           }
         })
       } catch (error) {
-        console.error('Error loading map:', error)
         alert('Failed to load map')
       }
     },
@@ -346,7 +274,6 @@ export default {
         marker = L.marker([lat, lng]).addTo(this.map)
       }
       
-      // console.debug('addPin: marker added at', lat, lng)
       if (popupContent) marker.bindPopup(popupContent, {
         autoPan: true,
         keepInView: true,
@@ -398,36 +325,22 @@ export default {
 
 
     updateMarkers() {
-      console.error('🔵 updateMarkers called!', {
-        map: !!this.map,
-        reportsCount: this.reports?.length || 0,
-        reports: this.reports
-      })
-      
       if (!this.map) {
-        console.error('❌ updateMarkers: map not initialized - ABORTING')
         return
       }
-
-      console.error('✅ updateMarkers: map is ready, processing reports...')
-      console.log('updateMarkers called with', this.reports?.length || 0, 'reports')
-      console.log('Reports array:', this.reports)
 
       // Ensure map is properly sized before updating markers
       this.map.invalidateSize();
 
       // Remove old markers
-      const oldMarkerCount = this.markers.length
       this.markers.forEach((marker) => this.map.removeLayer(marker))
       this.markers = []
-      console.log(`Removed ${oldMarkerCount} old markers`)
 
       // Add new markers
       let created = 0
       let skipped = 0
       
       if (!this.reports || this.reports.length === 0) {
-        console.warn('No reports to display')
         return
       }
       
@@ -436,21 +349,7 @@ export default {
         const lat = coords ? Number(coords.lat) : NaN
         const lng = coords ? Number(coords.lng) : NaN
         
-        console.log(`Processing report ${index + 1}/${this.reports.length}:`, {
-          reportId: report.reportId || report.id,
-          hasCoordinates: !!coords,
-          lat,
-          lng,
-          isValid: !Number.isNaN(lat) && !Number.isNaN(lng)
-        })
-        
         if (!coords || Number.isNaN(lat) || Number.isNaN(lng)){
-          console.warn(`Report ${report.id || report.reportId} skipped due to invalid coordinates`, {
-            report,
-            coords,
-            lat,
-            lng
-          });
           skipped += 1
           return;
         }
@@ -513,19 +412,13 @@ export default {
 
         this.markers.push(marker)
         created += 1
-        console.log(`Created marker ${created} for report ${report.reportId || report.id} at [${lat}, ${lng}]`)
       })
-
-      console.log(`Markers: ${created} created, ${skipped} skipped, total: ${this.markers.length}`)
       
-      // Log marker positions to check for overlaps
+      // Check for duplicate positions
       const markerPositions = this.markers.map(m => {
         const pos = m.getLatLng();
         return { reportId: m.reportId, lat: pos.lat, lng: pos.lng };
       });
-      console.log('All marker positions:', markerPositions);
-      
-      // Check for duplicate positions
       const positionMap = new Map();
       markerPositions.forEach(pos => {
         const key = `${pos.lat.toFixed(6)},${pos.lng.toFixed(6)}`;
@@ -535,18 +428,9 @@ export default {
         positionMap.get(key).push(pos.reportId);
       });
       
-      const duplicates = Array.from(positionMap.entries()).filter(([key, ids]) => ids.length > 1);
-      if (duplicates.length > 0) {
-        console.warn('Found markers with duplicate positions:', duplicates);
-        duplicates.forEach(([key, ids]) => {
-          console.warn(`Position ${key} has ${ids.length} markers:`, ids);
-        });
-      }
-      
       // Verify markers are actually on the map
       const markersOnMap = this.markers.filter(m => this.map.hasLayer(m)).length
       if (markersOnMap !== this.markers.length) {
-        console.warn(`Some markers not on map: ${this.markers.length} total, ${markersOnMap} on map`)
         // Re-add missing markers
         this.markers.forEach(marker => {
           if (!this.map.hasLayer(marker)) {
@@ -558,7 +442,6 @@ export default {
       // Only auto-fit bounds on the very first load, never again after that
       // This prevents the map from snapping back to original position after user drags
       if (this.markers.length > 0 && this._isInitialLoad) {
-        console.debug('Auto-fitting bounds on initial load with', this.markers.length, 'markers')
         const group = L.featureGroup(this.markers)
         this.map.fitBounds(group.getBounds().pad(0.1), {
           paddingTopLeft: [300, 70], // leave space for search box
@@ -567,7 +450,6 @@ export default {
         // Mark as no longer initial load - never auto-fit again
         this._isInitialLoad = false
       } else {
-        console.debug('Skipping auto-fit: isInitialLoad=', this._isInitialLoad, 'markers=', this.markers.length)
       }
     },
     
@@ -805,7 +687,6 @@ export default {
           alert('Location not found')
         }
       } catch (error) {
-        console.error('Geocoding error:', error)
         alert('Failed to search location')
       }
     },
@@ -838,11 +719,8 @@ export default {
       // Only allow recenter if forced (button click) or it's the initial load
       // Once user interacts with map, don't auto-recenter unless forced
       if (!force && this._isInitialLoad === false) {
-        console.debug('Skipping auto-recenter, user has interacted with map')
         return;
       }
-      
-      console.debug('RecenterMap called, force=', force)
       
       // Invalidate size before recentering to ensure proper calculations
       this.map.invalidateSize();

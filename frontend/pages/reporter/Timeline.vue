@@ -277,7 +277,6 @@ export default {
           }
           return this.toGMT8String(etaDate);
         } catch (e) {
-          console.warn("Error formatting volunteerETA:", e);
         }
       }
       
@@ -302,7 +301,6 @@ export default {
               return this.toGMT8String(etaTime.toISOString());
             }
           } catch (e) {
-            console.warn("Error calculating ETA:", e);
           }
         }
         
@@ -315,7 +313,6 @@ export default {
               return this.toGMT8String(etaTime.toISOString());
             }
           } catch (e) {
-            console.warn("Error calculating ETA from activeSummary:", e);
           }
         }
       }

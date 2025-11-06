@@ -573,7 +573,6 @@ export default {
             }
           }
         } catch (summaryError) {
-          console.warn("Could not fetch activeSummary:", summaryError);
           // Continue even if activeSummary fails - report data is still useful
         }
 
@@ -592,7 +591,6 @@ export default {
               const volunteerName = await api.getVolunteerName(reportId);
               this.volunteerInfo.name = volunteerName;
             } catch (nameError) {
-              console.warn("Could not fetch volunteer name:", nameError);
               // Fallback to report data if API fails
               if (this.report.assignedVolunteerName) {
                 this.volunteerInfo.name = this.report.assignedVolunteerName;
@@ -606,10 +604,8 @@ export default {
               const volunteerEmail = await api.getUserEmail(reportId);
               this.volunteerInfo.email = volunteerEmail;
             } catch (emailError) {
-              console.warn("Could not fetch volunteer email:", emailError);
             }
           } catch (error) {
-            console.warn("Error fetching volunteer info:", error);
           }
         }
       } catch (e) {
@@ -619,7 +615,6 @@ export default {
     handleImageError(event) {
       this.imageError = true;
       this.imageLoading = false;
-      console.warn("Failed to load main image:", event.target.src);
     },
     handleThumbnailError(event, index) {
       // Mark thumbnail as failed - will hide container via v-show
@@ -629,7 +624,6 @@ export default {
       } else {
         this.thumbnailErrors[index] = true;
       }
-      console.warn(`Failed to load thumbnail ${index}:`, event.target.src);
     },
     handleThumbnailLoad() {
       // Thumbnail loaded successfully
@@ -649,7 +643,6 @@ export default {
       return this.stages[nextStageIndex] || this.stages[this.currentStageIndex];
     },
     capitalize(str) {
-      console.log("Value being capitalized:", str); // Add this line
       if (!str) return ""; // Example of a fix, but for verification, just log
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
@@ -687,7 +680,6 @@ export default {
             const doc = snapshot.docs[0];
             const data = doc.data();
             
-            console.log("🔄 Real-time checkpoint update received:", data);
             
             // Update checkpoints
             if (data.checkpoints) {
@@ -717,7 +709,6 @@ export default {
                 api.getVolunteerName(reportId).then(name => {
                   this.volunteerInfo.name = name;
                 }).catch(err => {
-                  console.warn("Could not fetch volunteer name in real-time update:", err);
                 });
               }
             }
@@ -740,7 +731,6 @@ export default {
           }
         },
         (error) => {
-          console.error("Error listening to activeStatusSummary:", error);
         }
       );
       
@@ -757,7 +747,6 @@ export default {
             const doc = snapshot.docs[0];
             const data = doc.data();
             
-            console.log("🔄 Real-time status update received:", data);
             
             // Update report status and other fields
             if (data.status !== undefined) {
@@ -790,7 +779,6 @@ export default {
                 api.getVolunteerName(reportId).then(name => {
                   this.volunteerInfo.name = name;
                 }).catch(err => {
-                  console.warn("Could not fetch volunteer name in real-time update:", err);
                 });
               }
             }
@@ -822,7 +810,6 @@ export default {
           }
         },
         (error) => {
-          console.error("Error listening to incidentReports:", error);
         }
       );
     },
@@ -836,7 +823,6 @@ export default {
         this.userRole = user.role;
       }
     } catch (error) {
-      console.error("Error fetching current user:", error);
     }
 
     const reportId = this.$route.params.id;

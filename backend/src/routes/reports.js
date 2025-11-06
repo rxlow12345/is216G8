@@ -27,7 +27,6 @@ router.get('/reverse-geocode', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Missing lat or lon parameter' });
     }
 
-    console.log(`Reverse geocoding request: ${lat}, ${lon}`);
 
     const nominatimUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
 
@@ -87,7 +86,6 @@ router.get('/reverse-geocode', async (req, res) => {
         data.category === 'waterway' ||
         /\b(ocean|sea|strait|bay|water|beach)\b/i.test(data.display_name);
 
-      console.log(`✅ Formatted address: ${address}`);
 
       return res.json({
         success: true,

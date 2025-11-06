@@ -53,7 +53,6 @@ if (!getApps().length) {
       storageBucket: storageBucket
     });
     
-    console.log(`[Firebase Init] Initialized with storage bucket: ${storageBucket}`);
   } catch (error) {
     console.error("[Firebase Init] Failed to initialize Firebase:", error.message);
     throw error;
