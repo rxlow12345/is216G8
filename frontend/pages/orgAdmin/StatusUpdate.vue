@@ -8,7 +8,7 @@
     <!-- Top Banner -->
     <div class="bannerTitles">
       <header class="text-center mb-2">
-        <h1>🌿 Reports Dashboard 🌿</h1>
+        <h1>🌿 Admin Dashboard 🌿</h1>
         <p>A Comprehensive View Of All Reports</p>
       </header>
     </div>
