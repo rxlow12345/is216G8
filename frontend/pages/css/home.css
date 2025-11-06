@@ -264,6 +264,7 @@
   overflow: hidden;
 }
 
+
 .carousel-slide {
   position: absolute;
   width: 100%;
@@ -649,10 +650,29 @@
 }
 
 
+@media (max-width: 768px) {
+  .hero-title { font-size: 43px; }
+  .hero-subtitle { font-size: 21px; }
+  .section-title { font-size: 37px; }
+  .carousel-track { height: 380px; }
+  .about-description { font-size: 16px; }
+  .banner-title { font-size: 43px; }
+  .banner-text { font-size: 18px; }
+  .banner-animals { font-size: 43px; }
+}
+
+
 @media (max-width: 520px) {
+  .hero-title { font-size: 38px; }
   .about-card { padding: 40px 30px; }
   .final-cta-card { padding: 60px 30px; }
   .hero-subtitle { font-size: 18px; }
+  .section-title { font-size: 32px; }
+  .carousel-track { height: 300px; }
+  .about-description { font-size: 15px; }
+  .banner-title { font-size: 38px; }
+  .banner-text { font-size: 16px; }
+  .banner-animals { font-size: 38px; }
   .cta-buttons,
   .hero-buttons { flex-direction: column; align-items: stretch; }
   .btn { width: 100%; }
