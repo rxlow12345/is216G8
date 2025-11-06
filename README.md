@@ -307,9 +307,9 @@ npm run preview
 
 ### 5) Testing the Application
 #### Creating Users
-1. Navigate to the signup page and create a few user accounts. The accounts will have the 'reporter' role by default.
-2. Create accounts with the 'volunteer' and 'admin' roles by changing the roles of some accounts in the Firebase console:
-<br><img src="screenshots/changingUserRole.png" width="600">
+1. Navigate to the signup page and create a user account. The accounts will have the 'reporter' role by default.
+2. To create accounts with 'volunteer' and 'admin' roles, navigate to /frontend and open dev-useOnly-create-accounts.js. Edit the function calls at the bottom to edit the email, password and username of the accounts.
+3. Run `node dev-useOnly-create-accounts.js` to create accounts
 
 #### Manual Testing
 
