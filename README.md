@@ -171,6 +171,8 @@ Open your terminal in the project folder and run the following commands to insta
 
 ```bash
 npm install confetti-canvas
+npm install mathjs
+npm intall date-fns
 
 # Backend
 cd backend
@@ -358,7 +360,7 @@ Each member should contribute 2–3 sentences on their learning and project expe
 
 > - Amelia: I've not only learned how to design a website, but also how to debug code  and understand why the code or certain features may not work as expected across different screens and devices. This project has taught me to be patient, pay attention to detail that I thought was not that significant, and recognise the importance of testing every small component before merging into the main system. Initially, there were a lot of challenges faced because some parts were not integrated well, but working as a team has made the process much easier because we do not struggle with this alone. Instead, we were able to ask questions and collaborated with each other out to solve problems together.
 
-> - Jessica:
+> - Jessica: With a tight schedule, it was challenging juggling all the work at hand. This experience has taught me how to prioritise tasks and manage my time effectively. Furthermore, as there are multiple people working on the same project, we had multiple ideas for the UI. Through this, I leanred how to integrate our UI designs to make them more cohesive and flow better.
 
 > - Rui Xuan: I thought it was difficult since I was learning an entirely new language and have to use that knowledge to build the app, however, I thought it was a good learning experience and this helped me build my fundamentals for the module. Ensuring everyone could code without merge conflicts was definitely a pain, but it was worthwhile seeing everyone come together and helping each other solve their bugs. We did have miscommunications here and there, but we sat down with each other and fought it out, eventually coming to a conclusion.
 
