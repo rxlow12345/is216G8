@@ -51,8 +51,11 @@ Explain the core features and the benefit each provides.
 | Live Incident Map                            | Volunteers can access map which will provide them with real time location of the animal                | Allow volunteers to easily locate the animal                                                            |
 | Status Page                                  | Page will update and reporters can see live updates of the animal they rescued                         | Allows reporters to gain a sense of fulfilment when they see that the animal has been rescued           |
 | Donation Page                                | Page that will accept donation from users                                                              | Clear and informative donation page for users to donate to the cause easily                             |
-| Reporter Dashboard                           | Reports made by users show up here and can be sorted                                                   | Allows users to check the cases that they reported                                                      |
-| Volunteer Dashboard                          | Cases accepted by volunteers show up here and they can update the details of the case as it progresses | Allows volunteers to easily manage cases that they accepted and have a standard workflow for each case  |
+| Resources                             | View news and updates about our organisation or wildlife rescue, and report feedback                | Users can learn more about wildlife rescue and report feedback |
+| Reporter and Volunteer Dashboards                         | Includes links to different reporter and volunteer functions                                              | Allows users to easily access the functions for their role                                                   |
+| Reporter Past Reports                         | Reports made by users show up here and can be sorted                                                   | Allows users to check the cases that they reported                                                      |
+| Volunteer Active Reports                        | Cases accepted by volunteers show up here and they can update the details of the case as it progresses | Allows volunteers to easily manage cases that they accepted and have a standard workflow for each case  |
+| Volunteer Rescue Impact                        | Volunteers can view their past resolved cases and their rescue impact | Motivates volunteers with their rescue impact  |
 | Admin Dashboard                              | All reports show up here and it is possible to reset/change the progress of each case                 | Allows admin to check the details of all reports and change/reset the progress of each case if neededof |
 
 ---
@@ -61,7 +64,7 @@ Explain the core features and the benefit each provides.
 
 |                                                                                      Logo                                                                                      | Technology                        | Purpose / Usage                                       |
 | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------- | :---------------------------------------------------- |
-|                                      <img src="https://raw.githubusercontent.com/github/explore/main/topics/html/html.png" width="40">`                                     | **HTML5**                   | Structure and content                                 |
+|                                      <img src="https://raw.githubusercontent.com/github/explore/main/topics/html/html.png" width="40">                                     | **HTML5**                   | Structure and content                                 |
 |                                       <img src="https://raw.githubusercontent.com/github/explore/main/topics/css/css.png" width="40">                                       | **CSS3 / Bootstrap**        | Styling and responsiveness                            |
 |                                <img src="https://raw.githubusercontent.com/github/explore/main/topics/javascript/javascript.png" width="40">                                | **JavaScript (ES6)**        | Client-side logic and interactivity                   |
 |                                                             <img src="https://vitejs.dev/logo.svg" width="40">                                                             | **Vite**                    | Development server and build tool                     |
@@ -71,7 +74,7 @@ Explain the core features and the benefit each provides.
 |             <img src="https://socket.io/images/logo.svg" width="40" alt="Socket.io" onerror="this.src='https://via.placeholder.com/40/010101/ffffff?text=IO'">             | **Socket.io**               | Real-time bidirectional communication (WebSocket)     |
 |             <img src="https://axios-http.com/assets/logo.svg" width="40" alt="Axios" onerror="this.src='https://via.placeholder.com/40/5A29E4/ffffff?text=AX'">             | **Axios**                   | HTTP client for API requests                          |
 |          <img src="https://leafletjs.com/docs/images/logo.png" width="40" alt="Leaflet" onerror="this.src='https://via.placeholder.com/40/199900/ffffff?text=LF'">          | **Leaflet**                 | Interactive maps and geospatial visualization         |
-|                             <img src="https://firebase.google.com/downloads/brand-guidelines/PNG/logo-logomark.png" width="40" alt="Firebase">`                            | **Firebase**                | Authentication, Firestore database, and cloud storage |
+|                             <img src="https://firebase.google.com/downloads/brand-guidelines/PNG/logo-logomark.png" width="40" alt="Firebase">                            | **Firebase**                | Authentication, Firestore database, and cloud storage |
 |    <img src="https://opencagedata.com/images/opencage-logo.png" width="40" alt="OpenCage API" onerror="this.src='https://via.placeholder.com/40/4A90E2/ffffff?text=OC'">    | **OpenCage API**            | Geocoding and reverse geocoding services              |
 |                                    <img src="https://www.docker.com/app/uploads/2023/08/logo-guide-logos-1.svg" width="40" alt="Docker"                                     | **Docker**                       | Deploying machine learning model                      |
 | <img src="https://www.python.org/static/community_logos/python-logo.png" width="40" alt="Python" onerror="this.src='https://via.placeholder.com/40/3776AB/ffffff?text=PY'"> | **Python / SpeciesNet API** | AI-powered species identification from images         |
@@ -80,28 +83,79 @@ Explain the core features and the benefit each provides.
 
 ## Use Case & User Journey (Images NOT YET UPDATED)
 
-Provide screenshots and captions showing how users interact with your app.
+General Usage for all roles:
 
-1. **Landing Page**<img src="screenshots/landing.png" width="600">
+1. **Landing/Home Page**<img src="screenshots/Landing_Page.png" width="600">
 
    - Displays the homepage with navigation options.
-2. **Report Feature**<img src="screenshots/search.png" width="600">
 
-   - Users can report wild distressed animals that they encounter
-3. **Guidebook**<img src="screenshots/dashboard.png" width="600">
+2. **Guidebook**<img src="screenshots/Guidebook.png" width="600">
 
    - Users can read the guidebook to learn more about the animals
-4. **Game**
-   `<img>`
+3. **Game**
+   <img src="screenshots/Game.png" width="600">
 
-- Interactive game users can play to test their knowledge or use to learn more
+   - Interactive game users can play to test their knowledge or learn more about animals
 
-5. **Status Update**
+4. **Report Status**
+   <img src="screenshots/Status.png" width="600">
 
-- Allows users to estimate when the rescue services are coming, as well as key updates after they leave the wild animal with the rescue organisation
+   - Users can view the status and rescue timeline of animal
 
-6. **Donation Page**
-   - Users can decides to donate out of goodwill and respect for the cause.
+5. **Donation Page**
+   <img src="screenshots/Donation.png" width="600">
+   - Users can donate to our partners
+
+6. **Resources Page**
+   <img src="screenshots/Resources.png" width="600">
+
+   - Users can donate to our partners
+
+Reporter Role:
+
+1. **Reporter Dashboard**
+   <img src="screenshots/ReporterDashboard.png" width="600">
+
+   - Reporter can report cases or check past reports from here
+
+2. **Report Feature**
+   <img src="screenshots/Report.png" width="600">
+
+   - Users can report wild distressed animals that they encounter
+
+3. **Past Reports**
+   <img src="screenshots/Report.png" width="600">
+
+   - Users can check on previously submitted reports
+
+Volunteer Role:
+
+1. **Volunteer Dashboard**
+<img src="screenshots/VolunteerDashboard.png" width="600">
+
+- Volunteer can open the map to accept cases, view active cases and check cases resolved from here
+
+2. **Map**
+<img src="screenshots/Map.png" width="600">
+
+- Volunteer can view pending reports and accept them to take on the case
+
+3. **Volunteer Active Reports**
+<img src="screenshots/VolunteerActive.png" width="600">
+<img src="screenshots/VolunteerActiveModal.png" width="600">
+- Volunteer can view active reports that he has accepted and update on their progress here
+
+4. **Volunteer Rescue Impact**
+<img src="screenshots/RescueImpact.png" width="600">
+- Volunteer can view past resolved cases and rescue impact statistics
+
+
+Admin Role:
+
+1. **Admin Dashboard**
+<img src="screenshots/AdminDashboard.png" width="600">
+<img src="screenshots/AdminDashboardModal.png" width="600">
+- Admin can view all reports and reset the progress of cases as needed
 
 > Save screenshots inside `/screenshots` with clear filenames.
 
