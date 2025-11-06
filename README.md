@@ -71,7 +71,7 @@ Explain the core features and the benefit each provides.
 |          <img src="https://leafletjs.com/docs/images/logo.png" width="40" alt="Leaflet" onerror="this.src='https://via.placeholder.com/40/199900/ffffff?text=LF'">          | **Leaflet**                 | Interactive maps and geospatial visualization         |
 |                             <img src="https://firebase.google.com/downloads/brand-guidelines/PNG/logo-logomark.png" width="40" alt="Firebase">                            | **Firebase**                | Authentication, Firestore database, and cloud storage |
 |    <img src="https://opencagedata.com/images/opencage-logo.png" width="40" alt="OpenCage API" onerror="this.src='https://via.placeholder.com/40/4A90E2/ffffff?text=OC'">    | **OpenCage API**            | Geocoding and reverse geocoding services              |
-|                                    <img src="https://www.docker.com/app/uploads/2023/08/logo-guide-logos-1.svg" width="40" alt="Docker"                                     | **Docker**                       | Deploying machine learning model                      |
+|                                    <img src="https://www.docker.com/app/uploads/2023/08/logo-guide-logos-1.svg" width="40" alt="Docker">                                    | **Docker**                       | Deploying machine learning model                      |
 | <img src="https://www.python.org/static/community_logos/python-logo.png" width="40" alt="Python" onerror="this.src='https://via.placeholder.com/40/3776AB/ffffff?text=PY'"> | **Python / SpeciesNet API** | AI-powered species identification from images         |
 
 ---
@@ -307,6 +307,10 @@ npm run preview
 ---
 
 ### 5) Testing the Application
+#### Creating Users
+1. Navigate to the signup page and create a few user accounts. The accounts will have the 'reporter' role by default.
+2. Create accounts with the 'volunteer' and 'admin' roles by changing the roles of some accounts in the Firebase console:
+<br><img src="screenshots/changingUserRole.png" width="600">
 
 #### Manual Testing
 
@@ -319,16 +323,6 @@ Perform the following checks before submission:
 | Responsiveness  | Test on mobile & desktop       | Layout adjusts without distortion      |
 | Navigation      | All menu links functional      | Pages route correctly                  |
 | Error Handling  | Invalid inputs or missing data | User-friendly error messages displayed |
-
-#### Automated Testing (Optional)
-
-If applicable:
-
-```bash
-npm run test
-```
-
----
 
 ### 6) Common Issues & Fixes
 
