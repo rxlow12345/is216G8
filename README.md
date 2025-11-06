@@ -28,10 +28,7 @@ G3 Group 8
 
 Describe the **real-world business or community problem** your project addresses.
 
-> *Example:*  
-> Singapore's current wildlife rescue system faces slow response timings & inefficient processes
-> Our web application aims to enhance coordination with resuce organisations by enabling the public to make faster, more efficient reports which results in quicker case response. It also aims to educate, empower and increase community involvement and support among the general public.
-
+Wildlife rescue operations face critical delays due to inefficient public reporting methods and fragmented coordination between rescue organizations. When members of the public encounter wildlife in distress, the lack of a standardized reporting platform creates operational bottlenecks that slow response time, often making the difference between life and death for injured animals. Additionally, rescue organizations struggle to leverage community support at scale, missing opportunities to mobilize volunteers and resources effectively during emergencies.
 ---
 
 ## Web Solution Overview
@@ -46,7 +43,7 @@ Explain the core features and the benefit each provides.
 | Feature | Description | User Benefit |
 |:--|:--|:--|
 | Register & Login | Secure authentication system | Personalized experience and data security |
-| GuideBook | Educational Guide for all users with game function| Increase knowledge of animals while improving app interactivity|
+| GuideBook | Educational Guide for all users, along with a game function| Increase knowledge of animals while improving app interactivity|
 | Reporting function with integrated AI camera | Helps to identify the animal and pre-fill the report page with the animal| Makes the reporting process smooth and easy for users |
 |Live Incident Map| Volunteers can access map which will provide them with real time location of the animal | Allow volunteers to easily locate the animal |
 |Status Page| Page will update and reporters can see live updates of the animal they rescued | Allows reporters to gain a sense of fulfilment when they see that the animal has been rescued |
@@ -159,6 +156,9 @@ VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
 VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id_here
 VITE_FIREBASE_APP_ID=your_app_id_here
 VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id_here
+VITE_OPENCAGE_API_KEY=your_opencage_api_key_here
+VITE_API_URL=http://localhost:4100/api
+VITE_SOCKET_URL=http://localhost:4100
 ```
 
 > ⚠️ Never commit `.env` or `service-account.json` to GitHub.

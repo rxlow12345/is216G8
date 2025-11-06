@@ -7,26 +7,34 @@
     <div class="bannerTitles">
       <header class="text-center mb-2">
         <h1>📋 Rescue Report 📋</h1>
-        <p>ID: {{ report.reportId || 'Loading...' }}</p>
+        <p>ID: {{ report.reportId || "Loading..." }}</p>
       </header>
     </div>
-    <div class="row" style="margin-top: 40px;">
+    <div class="row" style="margin-top: 40px">
       <div class="col-md-1"></div>
       <div class="col-md-10 d-flex justify-content-center">
         <div class="container-lg my-1">
           <!-- Loading State -->
-          <div v-if="isLoading" class="d-flex justify-content-center align-items-center py-5">
-            <div class="spinner-border" style="color: #086143;" role="status">
+          <div
+            v-if="isLoading"
+            class="d-flex justify-content-center align-items-center py-5"
+          >
+            <div class="spinner-border" style="color: #086143" role="status">
               <span class="visually-hidden">Loading...</span>
             </div>
-            <span class="ms-3 fs-4" style="color: #285436;">Loading report...</span>
+            <span class="ms-3 fs-4" style="color: #285436"
+              >Loading report...</span
+            >
           </div>
 
           <!-- Error State -->
-          <div v-else-if="error" class="alert alert-danger shadow-sm border-0 p-2">
+          <div
+            v-else-if="error"
+            class="alert alert-danger shadow-sm border-0 p-2"
+          >
             <h4 class="alert-heading">An Error Occurred!</h4>
             <p>Sorry, we couldn't fetch the data. Please try again later.</p>
-            <hr>
+            <hr />
             <p class="mb-0"><strong>Details:</strong> {{ error }}</p>
           </div>
 
@@ -37,10 +45,13 @@
               <div class="card custom-card shadow-lg border-0 rounded-4 mb-5">
                 <!-- Green Header Banner - Full Width -->
                 <div
-                  class="card-header custom-card-header text-white d-flex justify-content-between align-items-center">
-                  <h4 class="mb-0">{{ capitalize(report.speciesName) || 'Unnamed Species' }}</h4>
+                  class="card-header custom-card-header text-white d-flex justify-content-between align-items-center"
+                >
+                  <h4 class="mb-0">
+                    {{ capitalize(report.speciesName) || "Unnamed Species" }}
+                  </h4>
                   <span class="badge custom-badge">
-                    {{ capitalize(report.status || 'Unknown Status') }}
+                    {{ capitalize(report.status || "Unknown Status") }}
                   </span>
                 </div>
 
@@ -51,27 +62,53 @@
                     <div class="card-body p-4">
                       <div class="row mb-3">
                         <div class="col-md-6">
-                          <p class="info-item"><strong>Incident Type:</strong> {{ capitalize(report.incidentType) }}</p>
-                          <p class="info-item"><strong>Location:</strong> {{ report.location?.address || report.location || 'Unknown Location' }}</p>
-                          <p class="info-item"><strong>Severity:</strong>
-                            <span :class="severityClass">{{ capitalize(report.severity) }}</span>
+                          <p class="info-item">
+                            <strong>Incident Type:</strong>
+                            {{ capitalize(report.incidentType) }}
+                          </p>
+                          <p class="info-item">
+                            <strong>Location:</strong>
+                            {{
+                              report.location?.address ||
+                              report.location ||
+                              "Unknown Location"
+                            }}
+                          </p>
+                          <p class="info-item">
+                            <strong>Severity: </strong>
+                            <span :class="severityClass">{{
+                              capitalize(report.severity)
+                            }}</span>
                           </p>
                         </div>
                         <div class="col-md-6">
-                          <p class="info-item"><strong>Priority:</strong> {{ capitalize(report.priority) }}</p>
-                          <p class="info-item"><strong>Urgent:</strong>
-                            <span :class="report.isUrgent ? 'text-danger fw-bold' : 'text-muted'">
-                              {{ report.isUrgent ? 'Yes ⚠️' : 'No' }}
+                          <p class="info-item">
+                            <strong>Priority:</strong>
+                            {{ capitalize(report.priority) }}
+                          </p>
+                          <p class="info-item">
+                            <strong>Urgent: </strong>
+                            <span
+                              :class="
+                                report.isUrgent
+                                  ? 'text-danger fw-bold'
+                                  : 'text-muted'
+                              "
+                            >
+                              {{ report.isUrgent ? "Yes ⚠️" : "No" }}
                             </span>
                           </p>
-                          <p class="info-item"><strong>Moving Normally:</strong> {{ capitalize(report.isMovingNormally)
-                          }}</p>
+                          <p class="info-item">
+                            <strong>Moving Normally:</strong>
+                            {{ capitalize(report.isMovingNormally) }}
+                          </p>
                         </div>
                       </div>
 
                       <div class="mb-3">
                         <p class="mb-2"><strong>Description:</strong></p>
-                        <p class="text-muted description-text">{{ report.description || 'No description provided.' }}
+                        <p class="text-muted description-text">
+                          {{ report.description || "No description provided." }}
                         </p>
                       </div>
 
@@ -82,14 +119,22 @@
                   </div>
 
                   <!-- Photo Section - Right Column -->
-                  <div class="col-md-5 d-flex justify-content-center align-items-center">
+                  <div
+                    class="col-md-5 d-flex justify-content-center align-items-center"
+                  >
                     <div class="card-body p-4">
                       <div class="animal-image-section">
-                        <img 
-                          v-if="report.photoURLs && report.photoURLs[0] && !imageError" 
-                          :src="report.photoURLs[0]" 
+                        <img
+                          v-if="
+                            report.photoURLs &&
+                            report.photoURLs[0] &&
+                            !imageError
+                          "
+                          :src="report.photoURLs[0]"
                           class="animal-image"
-                          :alt="`${report.speciesName || 'Animal'} rescue photo`"
+                          :alt="`${
+                            report.speciesName || 'Animal'
+                          } rescue photo`"
                           @error="handleImageError"
                           @load="imageLoading = false"
                         />
@@ -97,7 +142,15 @@
                           <span class="placeholder-icon">🐾</span>
                           <p>No photo available</p>
                         </div>
-                        <div v-if="imageLoading && report.photoURLs && report.photoURLs[0] && !imageError" class="image-loading">
+                        <div
+                          v-if="
+                            imageLoading &&
+                            report.photoURLs &&
+                            report.photoURLs[0] &&
+                            !imageError
+                          "
+                          class="image-loading"
+                        >
                           <span class="loading-spinner">📷</span>
                         </div>
                       </div>
@@ -107,17 +160,23 @@
               </div>
 
               <!-- Photos Section, for more than 1 photo -->
-              <div v-if="report.photoURLs && report.photoURLs.length > 1"
-                class="card custom-card border-0 shadow-sm rounded-4 p-4 mb-4">
-                <h6 class="fw-bold mb-3" style="color: #285436;">Additional Photos</h6>
-                <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
-                  <div 
-                    v-for="(url, index) in report.photoURLs" 
+              <div
+                v-if="report.photoURLs && report.photoURLs.length > 1"
+                class="card custom-card border-0 shadow-sm rounded-4 p-4 mb-4"
+              >
+                <h6 class="fw-bold mb-3" style="color: #285436">
+                  Additional Photos
+                </h6>
+                <div
+                  class="d-flex flex-wrap justify-content-center align-items-center gap-3"
+                >
+                  <div
+                    v-for="(url, index) in report.photoURLs"
                     :key="index"
                     v-show="!thumbnailErrors[index]"
                     class="photo-thumbnail-container"
                   >
-                    <img 
+                    <img
                       :src="url"
                       class="photo-thumbnail"
                       :alt="`Additional photo ${index + 1}`"
@@ -129,48 +188,83 @@
               </div>
 
               <!-- Compact Timeline View -->
-              <div class="card custom-card border-0 shadow-sm rounded-4 p-4 mb-4" 
-                   v-if="(report.status === 'active' || report.status === 'resolved' || report.status === 'pending') && canViewRescueJourney">
+              <div
+                class="card custom-card border-0 shadow-sm rounded-4 p-4 mb-4"
+                v-if="
+                  (report.status === 'active' ||
+                    report.status === 'resolved' ||
+                    report.status === 'pending') &&
+                  canViewRescueJourney
+                "
+              >
                 <h5 class="section-title mb-4">Rescue Journey Progress</h5>
-                
+
                 <div class="timeline-compact">
                   <!-- Horizontal Stage Icons -->
                   <div class="stage-icons-row">
-                    <div v-for="(stage, index) in stages" :key="index" class="stage-icon-wrapper">
-                      <div class="stage-icon" :class="{
-                        'completed': index <= currentStageIndex && currentStageIndex >= 0,
-                        'pending': index > currentStageIndex || currentStageIndex < 0
-                      }">
-                        <i v-if="index <= currentStageIndex && currentStageIndex >= 0" class="bi bi-check-lg"></i>
+                    <div
+                      v-for="(stage, index) in stages"
+                      :key="index"
+                      class="stage-icon-wrapper"
+                    >
+                      <div
+                        class="stage-icon"
+                        :class="{
+                          completed:
+                            index <= currentStageIndex &&
+                            currentStageIndex >= 0,
+                          pending:
+                            index > currentStageIndex || currentStageIndex < 0,
+                        }"
+                      >
+                        <i
+                          v-if="
+                            index <= currentStageIndex && currentStageIndex >= 0
+                          "
+                          class="bi bi-check-lg"
+                        ></i>
                         <span v-else>{{ index + 1 }}</span>
                       </div>
                       <span class="stage-name">{{ stage }}</span>
-                      <div v-if="index < stages.length - 1" 
-                           class="stage-connector" 
-                           :class="{
-                             'completed': index < currentStageIndex && currentStageIndex >= 0
-                           }">
-                      </div>
+                      <div
+                        v-if="index < stages.length - 1"
+                        class="stage-connector"
+                        :class="{
+                          completed:
+                            index < currentStageIndex && currentStageIndex >= 0,
+                        }"
+                      ></div>
                     </div>
                   </div>
-                  
+
                   <!-- Progress Bar -->
                   <div class="progress-bar-container">
-                    <div class="progress-bar-fill" :style="{ width: Math.max(progressPercent, 0) + '%' }"></div>
+                    <div
+                      class="progress-bar-fill"
+                      :style="{ width: Math.max(progressPercent, 0) + '%' }"
+                    ></div>
                   </div>
-                  
+
                   <!-- Progress Summary -->
                   <div class="progress-summary">
                     <p class="progress-text">
-                      <strong>{{ completedStagesCount }} of {{ stages.length }}</strong> stages completed ({{ Math.round(progressPercent) }}%)
+                      <strong
+                        >{{ completedStagesCount }} of
+                        {{ stages.length }}</strong
+                      >
+                      stages completed ({{ Math.round(progressPercent) }}%)
                     </p>
                     <p class="current-stage-text">
-                      Current Stage: <strong>{{ getCurrentStageName() }}</strong>
+                      Current Stage:
+                      <strong>{{ getCurrentStageName() }}</strong>
                     </p>
                   </div>
-                  
+
                   <!-- Button to open modal -->
-                  <button class="view-timeline-button" @click="showTimelineModal = true">
+                  <button
+                    class="view-timeline-button"
+                    @click="showTimelineModal = true"
+                  >
                     📋 View Full Timeline Details
                   </button>
                 </div>
@@ -178,14 +272,21 @@
 
               <!-- Meta Information -->
               <div class="card custom-card border-0 shadow-sm rounded-4 mb-4">
-                <div class="card-header custom-card-header-secondary text-white">
+                <div
+                  class="card-header custom-card-header-secondary text-white"
+                >
                   <h6 class="mb-0">📄 Report Meta Information</h6>
                 </div>
                 <div class="card-body p-4">
                   <div class="meta-info">
-                    <p><strong>Report ID:</strong> {{ report.reportId }} </p>
-                    <p><strong>Created:</strong> {{ createdAtReadable || 'N/A' }}</p>
-                    <p class="mb-0"><strong>Last Updated:</strong> {{ updatedAtReadable || 'N/A' }}</p>
+                    <p><strong>Report ID:</strong> {{ report.reportId }}</p>
+                    <p>
+                      <strong>Created:</strong> {{ createdAtReadable || "N/A" }}
+                    </p>
+                    <p class="mb-0">
+                      <strong>Last Updated:</strong>
+                      {{ updatedAtReadable || "N/A" }}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -195,7 +296,6 @@
       </div>
       <div class="col-md-1"></div>
     </div>
-
   </div>
 
   <!-- Back to Top Button -->
@@ -204,7 +304,11 @@
   </button>
 
   <!-- Timeline Modal -->
-  <div v-if="showTimelineModal && canViewRescueJourney" class="timeline-modal-overlay" @click="showTimelineModal = false">
+  <div
+    v-if="showTimelineModal && canViewRescueJourney"
+    class="timeline-modal-overlay"
+    @click="showTimelineModal = false"
+  >
     <div class="timeline-modal-content" @click.stop>
       <div class="modal-header">
         <h2>Rescue Journey Timeline</h2>
@@ -212,16 +316,22 @@
           ✕
         </button>
       </div>
-      
+
       <div class="modal-body">
         <!-- Full Vertical Timeline -->
         <Timeline
-          v-if="report.status === 'active' || report.status === 'resolved' || report.status === 'pending'"
+          v-if="
+            report.status === 'active' ||
+            report.status === 'resolved' ||
+            report.status === 'pending'
+          "
           :reportId="report.reportId"
           :volunteerETA="report.volunteerETA"
           :timeAccepted="report.timeAccepted"
           :volunteerInfo="volunteerInfo"
-          :hasVolunteer="!!(report.assignedVolunteerID || report.uid || report.volunteerId)"
+          :hasVolunteer="
+            !!(report.assignedVolunteerID || report.uid || report.volunteerId)
+          "
           :reportData="report"
         />
       </div>
@@ -230,14 +340,14 @@
 </template>
 
 <script>
-import api from '../../src/api/reportApi.js';
-import '../css/common.css'
-import BackToTop from '../../src/components/BackToTop.vue';
-import Timeline from './Timeline.vue';
-import { getCurrentUser } from '../../src/api/auth.js';
+import api from "../../src/api/reportApi.js";
+import "../css/common.css";
+import BackToTop from "../../src/components/BackToTop.vue";
+import Timeline from "./Timeline.vue";
+import { getCurrentUser } from "../../src/api/auth.js";
 
 export default {
-  name: 'StatusUpdate',
+  name: "StatusUpdate",
   components: { Timeline },
   data() {
     return {
@@ -259,73 +369,86 @@ export default {
         severity: "",
         sightingDateTime: "",
         speciesName: "",
-      status: "",
-      updatedAt: "",
-    },
-    imageError: false,
-    imageLoading: true,
-    thumbnailErrors: {},
-    stages: ["Case Accepted", "Volunteer Arrival", "Animal Secured", "Medical Assessment", "Case Resolved"],
+        status: "",
+        updatedAt: "",
+      },
+      imageError: false,
+      imageLoading: true,
+      thumbnailErrors: {},
+      stages: [
+        "Case Accepted",
+        "Volunteer Arrival",
+        "Animal Secured",
+        "Medical Assessment",
+        "Case Resolved",
+      ],
       checkpointStages: ["arrived", "handled", "treated", "reconciled"],
       volunteerInfo: {
         name: null,
-        email: null
+        email: null,
       },
-      showTimelineModal: false
+      showTimelineModal: false,
     };
   },
   watch: {
     showTimelineModal(newVal) {
       // Prevent body scroll when modal is open
       if (newVal) {
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow = "hidden";
       } else {
-        document.body.style.overflow = '';
+        document.body.style.overflow = "";
       }
-    }
+    },
   },
   computed: {
-    isVolunteerViewer(){
-      return (this.$route?.query?.viewer || '').toString().toLowerCase() === 'volunteer'
+    isVolunteerViewer() {
+      return (
+        (this.$route?.query?.viewer || "").toString().toLowerCase() ===
+        "volunteer"
+      );
     },
     canViewRescueJourney() {
       // Only reporter and admin can view the Rescue Journey Progress section
-      return this.userRole === 'reporter' || this.userRole === 'admin';
+      return this.userRole === "reporter" || this.userRole === "admin";
     },
     currentStage() {
       const index = this.currentStageIndex;
       if (index >= 0 && index < this.stages.length) {
         return this.stages[index];
       }
-      return 'Pending';
+      return "Pending";
     },
     currentStageIndex() {
       // Map report status and checkpoints to the 5 recommended stages
       // Stage 1: Case Accepted - check if volunteerId exists
-      if (!this.report.assignedVolunteerID && !this.report.uid && !this.report.volunteerId) {
+      if (
+        !this.report.assignedVolunteerID &&
+        !this.report.uid &&
+        !this.report.volunteerId
+      ) {
         return -1; // Case not accepted yet - no volunteer assigned
       }
-      
+
       // Stage 5: Case Resolved - checkpoints.treated
       if (this.report.checkpoints?.treated?.completed) {
         return 4; // Case Resolved (Stage 5, index 4)
       }
-      
+
       // Stage 4: Medical Assessment - checkpoints.reconciled
       if (this.report.checkpoints?.reconciled?.completed) {
         return 3; // Medical Assessment (Stage 4, index 3)
       }
-      
+
       // Stage 3: Animal Secured - checkpoints.handled
       if (this.report.checkpoints?.handled?.completed) {
         return 2; // Animal Secured (Stage 3, index 2)
       }
-      
+
       // Stage 2: Volunteer Arrival - checkpoints.arrived
       if (this.report.checkpoints?.arrived?.completed) {
         return 1; // Volunteer Arrival (Stage 2, index 1)
       }
-      
+
       // Stage 1: Case Accepted - volunteer assigned but not arrived yet
       return 0; // Case Accepted (Stage 1, index 0)
     },
@@ -333,23 +456,32 @@ export default {
       // Calculate progress based on completed stages
       let completedStages = 0;
       const totalStages = 5;
-      
+
       // Stage 1: Case Accepted - check if volunteerId exists
-      if (this.report.assignedVolunteerID || this.report.uid || this.report.volunteerId) {
+      if (
+        this.report.assignedVolunteerID ||
+        this.report.uid ||
+        this.report.volunteerId
+      ) {
         completedStages++;
       }
-      
+
       // Stage 2-5: Checkpoints
       if (this.report.checkpoints?.arrived?.completed) completedStages++;
       if (this.report.checkpoints?.handled?.completed) completedStages++;
       if (this.report.checkpoints?.reconciled?.completed) completedStages++;
       if (this.report.checkpoints?.treated?.completed) completedStages++;
-      
+
       return (completedStages / totalStages) * 100;
     },
     completedStagesCount() {
       let count = 0;
-      if (this.report.assignedVolunteerID || this.report.uid || this.report.volunteerId) count++;
+      if (
+        this.report.assignedVolunteerID ||
+        this.report.uid ||
+        this.report.volunteerId
+      )
+        count++;
       if (this.report.checkpoints?.arrived?.completed) count++;
       if (this.report.checkpoints?.handled?.completed) count++;
       if (this.report.checkpoints?.reconciled?.completed) count++;
@@ -358,9 +490,9 @@ export default {
     },
     severityClass() {
       return {
-        'text-danger fw-bold': this.report.severity === 'high',
-        'text-warning fw-semibold': this.report.severity === 'medium',
-        'text-success fw-semibold': this.report.severity === 'low'
+        "text-danger fw-bold": this.report.severity === "high",
+        "text-warning fw-semibold": this.report.severity === "medium",
+        "text-success fw-semibold": this.report.severity === "low",
       };
     },
     createdAtReadable() {
@@ -375,7 +507,7 @@ export default {
       try {
         // Fetch report data
         this.report = await api.getReportByReportId(reportId);
-        
+
         // Also fetch activeSummary to get checkpoint data (checkpoints are in activeStatusSummary, not incidentReports)
         try {
           const activeSummary = await api.getActiveSummary(reportId);
@@ -385,7 +517,11 @@ export default {
               this.report.checkpoints = activeSummary.checkpoints;
             }
             // Merge volunteer assignment info if not present in report
-            if (!this.report.assignedVolunteerID && !this.report.uid && !this.report.volunteerId) {
+            if (
+              !this.report.assignedVolunteerID &&
+              !this.report.uid &&
+              !this.report.volunteerId
+            ) {
               if (activeSummary.volunteerID) {
                 this.report.assignedVolunteerID = activeSummary.volunteerID;
               }
@@ -405,15 +541,19 @@ export default {
             }
           }
         } catch (summaryError) {
-          console.warn('Could not fetch activeSummary:', summaryError);
+          console.warn("Could not fetch activeSummary:", summaryError);
           // Continue even if activeSummary fails - report data is still useful
         }
-        
+
         // Reset image loading state
         this.imageLoading = true;
         this.imageError = false;
         // Fetch volunteer email if volunteer is assigned
-        if (this.report.assignedVolunteerID || this.report.uid || this.report.volunteerId) {
+        if (
+          this.report.assignedVolunteerID ||
+          this.report.uid ||
+          this.report.volunteerId
+        ) {
           try {
             const volunteerEmail = await api.getUserEmail(reportId);
             this.volunteerInfo.email = volunteerEmail;
@@ -424,7 +564,7 @@ export default {
               this.volunteerInfo.name = this.report.volunteerName;
             }
           } catch (emailError) {
-            console.warn('Could not fetch volunteer email:', emailError);
+            console.warn("Could not fetch volunteer email:", emailError);
           }
         }
       } catch (e) {
@@ -434,7 +574,7 @@ export default {
     handleImageError(event) {
       this.imageError = true;
       this.imageLoading = false;
-      console.warn('Failed to load main image:', event.target.src);
+      console.warn("Failed to load main image:", event.target.src);
     },
     handleThumbnailError(event, index) {
       // Mark thumbnail as failed - will hide container via v-show
@@ -452,7 +592,7 @@ export default {
     getCurrentStageName() {
       // If no volunteer assigned, show "Pending"
       if (this.currentStageIndex < 0) {
-        return 'Pending';
+        return "Pending";
       }
       // currentStageIndex is the last completed stage, so current stage is the next one
       // If all stages completed (currentStageIndex is last index), show last stage
@@ -464,10 +604,12 @@ export default {
       return this.stages[nextStageIndex] || this.stages[this.currentStageIndex];
     },
     capitalize(str) {
+      console.log("Value being capitalized:", str); // Add this line
+      if (!str) return ""; // Example of a fix, but for verification, just log
       return str.charAt(0).toUpperCase() + str.slice(1);
     },
     scrollToTop() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     },
     handleScroll() {
       this.showBackToTop = window.scrollY > 300;
@@ -475,17 +617,17 @@ export default {
     convertDate(timeStamp) {
       const date = new Date(timeStamp._seconds * 1000);
       const options = {
-        timeZone: 'Asia/Singapore', // This sets the timezone to GMT+8
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
+        timeZone: "Asia/Singapore", // This sets the timezone to GMT+8
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
       };
-      const formattedDate = date.toLocaleString('en-US', options);
+      const formattedDate = date.toLocaleString("en-US", options);
       return formattedDate;
-    }
+    },
   },
   async mounted() {
     // Get current user and role
@@ -496,26 +638,26 @@ export default {
         this.userRole = user.role;
       }
     } catch (error) {
-      console.error('Error fetching current user:', error);
+      console.error("Error fetching current user:", error);
     }
-    
+
     const reportId = this.$route.params.id;
     this.isLoading = true;
     this.error = null;
     await this.fetchReport(reportId);
     this.isLoading = false;
-    window.addEventListener('scroll', this.handleScroll);
+    window.addEventListener("scroll", this.handleScroll);
   },
   beforeUnmount() {
-    window.removeEventListener('scroll', this.handleScroll);
+    window.removeEventListener("scroll", this.handleScroll);
     // Restore body scroll in case component unmounts with modal open
-    document.body.style.overflow = '';
-  }
-}
+    document.body.style.overflow = "";
+  },
+};
 </script>
 
 <style scoped>
-@import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css');
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css");
 
 /* Top Banner - using common.css bannerTitles styles */
 .bannerTitles {
@@ -555,12 +697,12 @@ export default {
   .bannerTitles {
     padding: 20px !important;
   }
-  
+
   .bannerTitles h1 {
     font-size: 40px !important;
     margin-top: 20px !important;
   }
-  
+
   .bannerTitles p {
     font-size: 20px !important;
   }
@@ -584,12 +726,12 @@ export default {
 }
 
 .custom-card-header-secondary {
-  background: linear-gradient(135deg, #BC6C25 0%, #DDA15E 100%);
+  background: linear-gradient(135deg, #bc6c25 0%, #dda15e 100%);
   padding: 1rem 1.5rem;
 }
 
 .custom-badge {
-  background-color: #FEFAE0;
+  background-color: #fefae0;
   color: #285436;
   font-size: 0.95rem;
   padding: 0.5rem 1rem;
@@ -600,7 +742,7 @@ export default {
 /* Info Items */
 .info-item {
   margin-bottom: 0.75rem;
-  color: #606C38;
+  color: #606c38;
   font-size: 0.95rem;
 }
 
@@ -650,7 +792,7 @@ export default {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-.stage-circle>* {
+.stage-circle > * {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -684,7 +826,6 @@ export default {
 }
 
 @keyframes pulse {
-
   0%,
   100% {
     box-shadow: 0 4px 10px rgba(8, 97, 67, 0.3);
@@ -795,13 +936,13 @@ export default {
 
 /* Summary Box */
 .summary-box {
-  background-color: #FEFAE0;
-  border-left: 4px solid #BC6C25;
+  background-color: #fefae0;
+  border-left: 4px solid #bc6c25;
 }
 
 /* Meta Info */
 .meta-info {
-  color: #606C38;
+  color: #606c38;
   font-size: 0.9rem;
 }
 
@@ -993,8 +1134,12 @@ export default {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .timeline-modal-content {
@@ -1006,7 +1151,7 @@ export default {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.3s ease;
 }
 
@@ -1050,7 +1195,7 @@ export default {
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .modal-close-button:hover {
@@ -1103,16 +1248,16 @@ export default {
     gap: 16px;
     padding: 0;
   }
-  
+
   .stage-icon-wrapper {
     flex: 0 0 calc(50% - 8px);
     min-width: 120px;
   }
-  
+
   .stage-connector {
     display: none;
   }
-  
+
   .stage-name {
     font-size: 11px;
   }
@@ -1123,15 +1268,15 @@ export default {
     max-height: 90vh;
     margin: 10px;
   }
-  
+
   .timeline-modal-content .modal-header {
     padding: 14px 16px;
   }
-  
+
   .timeline-modal-content .modal-header h2 {
     font-size: 16px;
   }
-  
+
   .timeline-modal-content .modal-body {
     padding: 14px 16px;
   }

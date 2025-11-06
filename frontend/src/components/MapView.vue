@@ -34,13 +34,13 @@ import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
 // import markerIcon2x from '../public/assets/locationMarker2x.png'
 // import markerIcon from '../public/assets/locationMarker.png'
-// import markerShadow from 'leaflet/dist/images/marker-shadow.png'
+
 
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
   iconUrl: markerIcon,
-  // shadowUrl: markerShadow,
+  
 })
 
 export default {
@@ -92,20 +92,19 @@ export default {
         this.mapReadyResolve = resolve
       })
       try {
-        // Create Leaflet map
+        // Creates the Leaflet map
         this.map = L.map(this.$refs.mapContainer, { zoomControl: false }).setView(
           [this.center.lat, this.center.lng],
           10, // zoom level
         )
 
         // Add OpenStreetMap tiles 
-        // Add OpenStreetMap tiles 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: 'Ac OpenStreetMap contributors',
           maxZoom: 19,
         }).addTo(this.map)
 
-        // Add zoom controls at bottom-left to avoid overlay conflicts
+        // Zoom position 
         L.control.zoom({ position: 'bottomleft' }).addTo(this.map)
         if (this.mapReadyResolve) this.mapReadyResolve()
 
@@ -140,8 +139,6 @@ export default {
       if (this.mapReadyPromise) await this.mapReadyPromise
       return this.map
     },
-
-    // Programmatically add a pin. By default persistent and part of markers collection
     async addPin(coordinates, { popupContent = null, persistent = true, icon = null, variant = 'svg' } = {}) {
       if (!coordinates) return null
       const lat = Number(coordinates.lat)
@@ -162,7 +159,7 @@ export default {
         const usedIcon = icon || this.createCustomIcon({ severity: 'moderate', incidentType: 'unknown' })
         marker = L.marker([lat, lng]).addTo(this.map)
       }
-      // For quick sanity checks while debugging
+      
       // console.debug('addPin: marker added at', lat, lng)
       if (popupContent) marker.bindPopup(popupContent, {
         autoPan: true,
@@ -176,7 +173,6 @@ export default {
     },
 
     async openMarkerPopup(reportId, report = null) {
-      // Find by attached reportId to avoid floating point equality issues
       const marker = this.markers.find(m => m.reportId === reportId)
       if (marker) { marker.openPopup(); return true }
       // Fallback: if report and coordinates are provided, drop a temp marker and open
@@ -215,14 +211,6 @@ export default {
           console.log(`Report ${report.id} skipped due to invalid coordinates`, report);
           return;
         }
-        // Use high-visibility circle markers to ensure pins are unmistakable
-        // const marker = L.circleMarker([lat, lng], {
-        //   radius: 12,
-        //   color: '#111827',
-        //   weight: 2,
-        //   fillColor: '#f59e0b',
-        //   fillOpacity: 0.95,
-        // }).addTo(this.map)
         const marker = L.marker([lat, lng]).addTo(this.map)
         // marker.bringToFront()
 
@@ -297,8 +285,6 @@ export default {
 
     createCustomIcon(report) {
       let color = this.severityColor(report).text;
-      // Larger, higher-contrast custom pin icon
-      // SHADOW CHANGE
       const svgIcon = `
         <svg width="44" height="60" xmlns="http://www.w3.org/2000/svg">
           <path d="M22,58 Q8,44 8,30 A14,14 0 1,1 36,30 Q36,44 22,58"
@@ -308,25 +294,9 @@ export default {
           <circle cx="22" cy="32" r="6" fill="white"/>
         </svg>
       `;
-      // const svgIcon = `
-      //   <svg width="44" height="60" xmlns="http://www.w3.org/2000/svg">
-      //     <defs>
-      //       <filter id="markerShadow" x="-50%" y="-50%" width="200%" height="200%">
-      //         <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="rgba(0,0,0,0.4)" />
-      //       </filter>
-      //     </defs>
-      //     <path d="M22,58 Q8,44 8,30 A14,14 0 1,1 36,30 Q36,44 22,58"
-      //       fill="${color}"
-      //       stroke="white"
-      //       stroke-width="3"
-      //       filter="url(#markerShadow)" />
-      //     <circle cx="22" cy="32" r="6" fill="white"/>
-      //   </svg>
-      // `;
 
       return L.divIcon({
         html: svgIcon,
-        // Include Leaflet's base class so the icon positions correctly
         className: 'leaflet-div-icon custom-marker custom-marker-bounce',
         iconSize: [44, 60],
         iconAnchor: [22, 60],
@@ -344,7 +314,7 @@ export default {
     ? report.location.address 
     : report.location;
       return `
-        <div style="min-width: 280px; padding: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <div style="min-width: 280px; max-width: 320px; padding: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
           <h3 style="margin: 0 0 12px; color: #065f46; font-size: 18px; font-weight: 700; letter-spacing: -0.5px;">
             ${species}
           </h3>
@@ -494,7 +464,7 @@ export default {
         const group = L.featureGroup(this.markers);
         this.map.fitBounds(group.getBounds().pad(0.1));
       } else {
-        // Otherwise, center on Singapore with default zoom
+        // Default: center on Singapore with default zoom
         this.map.setView([this.center.lat, this.center.lng], 11);
       }
     },
@@ -582,6 +552,10 @@ export default {
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   padding: 0;
+}
+:deep(.leaflet-popup-content) {
+  margin: 0;
+  width: auto !important;
 }
 
 :deep(.leaflet-popup-content) {

@@ -10,7 +10,7 @@
   >
     <!-- Report Content -->
     <div class="report-content">
-      <!-- Header Section (image + titles side by side) -->
+      <!-- Header  -->
       <div class="card-header">
         <div class="header-row">
           <div class="thumb" v-if="resolvedPhotoUrl || photoUrl">
@@ -36,7 +36,7 @@
       <!-- Description -->
       <p class="description">{{ report.description }}</p>
 
-      <!-- Meta Info -->
+      <!-- Info -->
       <div class="report-meta">
         <div class="meta-item">
           <span class="icon">📍</span>
@@ -76,7 +76,7 @@ export default {
       const r = this.report || {}
       const pick = (arr) => Array.isArray(arr) && arr.length > 0 ? arr[0] : ""
       const candidates = [
-        // Primary source: photoURLs (array) — take first image
+        //  take first image of photos in the array 
         pick(r.photoURLs),
         pick(r.photosURL),
         pick(r.photosUrl),

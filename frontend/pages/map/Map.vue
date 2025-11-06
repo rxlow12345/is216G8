@@ -17,7 +17,10 @@
       </div>
       <!-- Header -->
       <div class="header">
-        <p class="subtitle">{{ getCount() }} Pending Reports</p>
+        <div class="pending-count">
+          <p class="subtitle">{{ getCount() }} Pending Reports</p>
+          <Spinner v-if="isCountLoading" :size="18" :stroke-width="2.5" />
+        </div>
 
         <!-- Connection Status -->
         <div class="connection-status">
@@ -100,6 +103,7 @@
 <script>
 import MapView from "../../src/components/MapView.vue";
 import ReportCard from "../../src/components/ReportCard.vue";
+import Spinner from "../../src/components/Spinner.vue";
 import reportApi from "../../src/api/reportApi";
 import { db } from "../../src/firebase.js";
 import { collection, addDoc, doc as fsDoc, updateDoc, Timestamp, serverTimestamp } from "firebase/firestore";
@@ -117,6 +121,7 @@ export default {
   components: {
     MapView,
     ReportCard,
+    Spinner,
     acceptCaseModal,
     BackToTop,
     MapNotification,
@@ -136,6 +141,8 @@ export default {
       currentUser: "",
       severityFilter: "all",
       notificationData: { title: "", message: "", type: "info", duration: 6000 },
+      countUpdating: false,
+      countUpdateTimer: null,
       
       isSheetExpanded: false,
     };
@@ -160,12 +167,39 @@ export default {
   async unmounted() {
     socket.disconnect();
     // next;
+    if (this.countUpdateTimer) {
+      clearTimeout(this.countUpdateTimer);
+      this.countUpdateTimer = null;
+    }
   },
   methods: {
     toggleSheet() { this.isSheetExpanded = !this.isSheetExpanded; },
     showNotification(title = "", message = "", type = "info", duration = 6000) {
       this.notificationData = { title, message, type, duration };
       this.$nextTick(() => this.$refs.notify?.show());
+    },
+    pulseCountSpinner(duration = 600) {
+      this.countUpdating = true;
+      if (this.countUpdateTimer) clearTimeout(this.countUpdateTimer);
+      this.countUpdateTimer = setTimeout(() => {
+        this.countUpdating = false;
+        this.countUpdateTimer = null;
+      }, duration);
+    },
+    isDisplayable(report) {
+      if (!report) return false;
+      const statusOk = (report?.status || "").toLowerCase().trim() === "pending";
+      const hasBasics =
+        !!(report?.speciesName || report?.animalType) &&
+        !!report?.severity &&
+        !!report?.incidentType;
+      const coords = report?.coordinates;
+      const coordsOk =
+        coords &&
+        typeof coords.lat === "number" &&
+        typeof coords.lng === "number" &&
+        this.isWithinSingapore(coords);
+      return statusOk && hasBasics && coordsOk;
     },
     async selectReport(report) {
       if (!report) return;
@@ -197,10 +231,7 @@ export default {
     },
     getCount() {
       if (!Array.isArray(this.reports)) return 0;
-      return this.reports.filter((r) => {
-        const statusOk = (r?.status || "").toLowerCase().trim() === "pending";
-        return statusOk && this.isWithinSingapore(r?.coordinates);
-      }).length;
+      return this.reports.filter((r) => this.isDisplayable(r)).length;
     },
     connectWebSocket() {
       socket.connect();
@@ -259,7 +290,9 @@ export default {
           }
 
           // Then update reactive list so MapView rebuilds persistent markers
+          const beforeCount = this.getCount();
           this.reports?.unshift(report);
+          if (this.getCount() !== beforeCount) this.pulseCountSpinner();
           // Notify about new report
           const species = report?.speciesName || report?.animalType || "An animal";
           this.showNotification("New Report", `${species} needs help!`, "info", 7000);
@@ -290,13 +323,25 @@ export default {
             }
           }
 
-          this.reports?.splice(index, 1, updatedReport);
+          const wasDisplayable = this.isDisplayable(this.reports?.[index]);
+          const nowDisplayable = this.isDisplayable(updatedReport);
+          if (nowDisplayable) {
+            this.reports?.splice(index, 1, updatedReport);
+            if (!wasDisplayable) this.pulseCountSpinner();
+          } else if (wasDisplayable) {
+            this.reports?.splice(index, 1);
+            this.pulseCountSpinner();
+          } else {
+            this.reports?.splice(index, 1);
+          }
         }
       });
 
       // Listen for deleted reports
       socket.on("report-deleted", (reportId) => {
+        const beforeCount = this.getCount();
         this.reports = this.reports?.filter((r) => r.id !== reportId);
+        if (this.getCount() !== beforeCount) this.pulseCountSpinner();
       });
 
       // Connection status
@@ -378,7 +423,9 @@ export default {
 
             if (this.isWithinSingapore(coordinates)) {
               report.coordinates = coordinates;
+              const beforeCount = this.getCount();
               this.reports.push(report); // report only added if in SG
+              if (this.getCount() !== beforeCount) this.pulseCountSpinner();
               this.loadingReports = false;
             }
           } catch (geocodeError) {
@@ -388,7 +435,9 @@ export default {
             );
             report.coordinates = this.mapCenter;
             // Ensure we still render a fallback marker
+            const beforeCount = this.getCount();
             this.reports.push(report);
+            if (this.getCount() !== beforeCount) this.pulseCountSpinner();
             // break;
           }
           // to handle geocoding errors
@@ -619,17 +668,21 @@ export default {
     selectedReport() {
       return this.reports?.find((r) => r.reportId === this.selectedReportId);
     },
+    isCountLoading() {
+      return this.loadingReports || this.countUpdating;
+    },
     filteredReports() {
       const list = Array.isArray(this.reports) ? this.reports : [];
+      const base = list.filter((r) => this.isDisplayable(r));
       const f = (this.severityFilter || "all").toLowerCase();
-      if (f === "all") return list;
+      if (f === "all") return base;
       if (f === "low") {
-        return list.filter((r) => {
+        return base.filter((r) => {
           const sev = (r?.severity || "").toLowerCase();
           return sev !== "urgent" && sev !== "moderate";
         });
       }
-      return list.filter((r) => (r?.severity || "").toLowerCase() === f);
+      return base.filter((r) => (r?.severity || "").toLowerCase() === f);
     },
   },
   watch: {
@@ -646,4 +699,13 @@ export default {
 </script>
 
 <style scoped>
+.pending-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pending-count .subtitle {
+  margin: 0;
+}
 </style>
