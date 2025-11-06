@@ -99,7 +99,7 @@ export default {
 
 @media (max-width: 520px) {
   #cursorAnimal {
-    font-size: 28px !important;
+    display: none !important;
   }
 }
 </style>
