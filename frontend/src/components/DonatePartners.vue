@@ -4,7 +4,7 @@
     <h2 class="fw-bold text-center mb-4">Support Our Trusted Partners</h2>
 
     <div class="row g-4">
-      <div class="col-6 col-md-4" v-for="org in orgs" :key="org.id">
+      <div class="col-12 col-sm-6 col-md-4" v-for="org in orgs" :key="org.id">
         <div class="card h-100 shadow-sm border-0 rounded-4 partner-card">
           <div class="card-body d-flex flex-column">
 

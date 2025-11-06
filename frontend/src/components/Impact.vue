@@ -160,10 +160,10 @@ const props = defineProps({
   stories: {
     type: Array,
     default: () => ([
-      { id: 'pangolin', title: 'Pangolin safely released', body: 'Your donations funded rehab and a GPS tag to ensure post-release monitoring.', fundedBy: '22 donors', date: 'Oct 2025', image: '../src/public/assets/SundaPangolin.png' },
-      { id: 'deer', title: 'Rescuing an Injured Deer', body: 'Swift response and care led to a full recovery.', fundedBy: '12 donors', date: 'Sep 2025', image: '../src/public/assets/GreaterMouseDeer.png' },
-      { id: 'junglefowl', title: 'Red Junglefowl wing recovery', body: 'Micro-surgery and physiotherapy covered by the medical fund.', fundedBy: '11 donors', date: 'Sep 2025', image: '../src/public/assets/RedJunglefowl.png' },
-      { id: 'otter', title: 'Otter family relocation', body: 'Field team humanely relocated a family from a risky construction site.', fundedBy: '22 donors', date: 'Aug 2025', image: '../src/public/assets/SmoothOtter.png' },
+      { id: 'pangolin', title: 'Pangolin safely released', body: 'Your donations funded rehab and a GPS tag to ensure post-release monitoring.', fundedBy: '22 donors', date: 'Oct 2025', image: new URL('../public/assets/SundaPangolin.png', import.meta.url).href },
+      { id: 'deer', title: 'Rescuing an Injured Deer', body: 'Swift response and care led to a full recovery.', fundedBy: '12 donors', date: 'Sep 2025', image: new URL('../public/assets/GreaterMouseDeer.png', import.meta.url).href },
+      { id: 'junglefowl', title: 'Red Junglefowl wing recovery', body: 'Micro-surgery and physiotherapy covered by the medical fund.', fundedBy: '11 donors', date: 'Sep 2025', image: new URL('../public/assets/RedJunglefowl.png', import.meta.url).href },
+      { id: 'otter', title: 'Otter family relocation', body: 'Field team humanely relocated a family from a risky construction site.', fundedBy: '22 donors', date: 'Aug 2025', image: new URL('../public/assets/SmoothOtter.png', import.meta.url).href },
     ])
   },
   counters: {
@@ -345,7 +345,9 @@ h2 {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 }
 
-
+.text-center-custom {
+  text-align: center;
+}
 
 .collapse-content {
   max-height: 0;
@@ -364,12 +366,9 @@ h2 {
   transform: translateY(0);
 }
 
-
-
 .custom-collapse-btn {
   background-color: #285436;
   color: rgb(254, 250, 224);
-
 
   /* Interaction & Display */
   cursor: pointer;
@@ -378,7 +377,7 @@ h2 {
 }
 
 .custom-collapse-btn:hover {
-  background-color: #d1ccb0;
+  background-color: #606C38;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
