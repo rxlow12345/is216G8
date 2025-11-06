@@ -1,14 +1,5 @@
 <template>
   <BackToTop />
-  <!-- Notification -->
-  <MapNotification
-    ref="notify"
-    :title="notificationData.title"
-    :message="notificationData.message"
-    :type="notificationData.type"
-    :duration="notificationData.duration || 3000"
-    @close="notificationData = {}"
-  />
   <!-- Left Sidebar -->
   <div class="rescuemapwrapper" :class="{ 'sidebar-expanded': isSheetExpanded }">
     <div 
@@ -126,7 +117,6 @@ import { getCurrentUser } from "../../src/api/auth.js";
 import socket from "../../src/api/socket";
 import acceptCaseModal from "../../src/components/acceptCaseModal.vue";
 import BackToTop from "../../src/components/BackToTop.vue";
-import MapNotification from "../../src/components/MapNotification.vue";
 import "../css/common.css"
 import "../css/map.css"
 // import { filter } from "mathjs";
@@ -139,7 +129,6 @@ export default {
     Spinner,
     acceptCaseModal,
     BackToTop,
-    MapNotification,
   },
   data() {
     return {
@@ -155,7 +144,6 @@ export default {
       selectedLocation: "",
       currentUser: "",
       severityFilter: "all",
-      notificationData: { title: "", message: "", type: "info", duration: 6000 },
       countUpdating: false,
       countUpdateTimer: null,
       
@@ -300,10 +288,6 @@ export default {
       this.dragCurrentY = 0;
       this.drawerHeight = 0;
       this.drawerStartHeight = 0;
-    },
-    showNotification(title = "", message = "", type = "info", duration = 6000) {
-      this.notificationData = { title, message, type, duration };
-      this.$nextTick(() => this.$refs.notify?.show());
     },
     pulseCountSpinner(duration = 600) {
       this.countUpdating = true;
@@ -843,14 +827,6 @@ export default {
       }
     },
 
-    // showNotification(title = "", message) {
-    //   if ("Notification" in window && Notification.permission === "granted") {
-    //     new Notification(title, {
-    //       body: message,
-    //       icon: "/favicon.ico",
-    //     });
-    //   }
-    // },
   },
   computed: {
     selectedReport() {

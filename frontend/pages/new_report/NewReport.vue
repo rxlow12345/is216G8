@@ -417,33 +417,16 @@
       <!-- Status Message -->
       <div v-if="statusMessage" class="mt-3" v-html="statusMessage"></div>
 
-      <!-- Success Modal -->
-      <div 
-        class="modal fade" 
-        id="submitSuccessModal" 
-        tabindex="-1"
-        aria-labelledby="submitSuccessLabel" 
-        aria-hidden="true"
-        ref="successModal"
-      >
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="submitSuccessLabel">Report Submitted</h5>
-              <button type="button" class="btn-close" aria-label="Close" @click="closeModal"></button>
-            </div>
-
-            <div class="modal-body">
-              <div v-html="modalStatus"></div>
-            </div>
-
-            <div class="modal-footer">
-              <button type="button" class="btn btn-outline-secondary" @click="goHome">Home</button>
-              <router-link to="/report" class="btn btn-primary">Go to Status Page</router-link>
-            </div>
-          </div>
-        </div>
-      </div>
+      <NewReportPopup
+        ref="successModalRef"
+        :title="modalContent.title"
+        :message="modalContent.message"
+        :description="modalContent.description"
+        :report-id="modalContent.reportId"
+        :status="modalContent.status"
+        :priority="modalContent.priority"
+        :info-message="modalContent.infoMessage"
+      />
     </main>
   </div>
 </template>
@@ -451,14 +434,13 @@
 <script setup>
 import { ref, reactive, computed, onMounted, nextTick, onBeforeMount, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { Modal } from 'bootstrap';
 import { getCurrentUser } from '../../src/api/auth.js';
 // Import CSS in order so our styles override common.css
 import './report.css'; // Import local styles first
 import '../css/report.css';
 import '../css/common.css'; // Then common.css (we'll override it)
 import BackToTop from '../../src/components/BackToTop.vue';
-
+import NewReportPopup from '../../src/components/NewReportPopup.vue';
 const router = useRouter();
 
   // IMMEDIATELY on component creation, before mount, hide footers only (keep banner)
@@ -492,8 +474,11 @@ onBeforeMount(() => {
     let current = el.parentElement;
     while (current) {
       if (current.classList.contains('modal') ||
+          current.classList.contains('new-report-modal') ||
           current.classList.contains('modal-overlay') ||
           current.classList.contains('modal-content') ||
+          current.classList.contains('new-report-modal__content') ||
+          current.classList.contains('new-report-modal__header') ||
           current.classList.contains('modal-dialog') ||
           current.classList.contains('modal-body') ||
           current.classList.contains('modal-header') ||
@@ -567,11 +552,19 @@ const showMap = ref(false);
 const isSubmitting = ref(false);
 const statusMessage = ref('');
 const speciesDetectionMessage = ref('');
-const modalStatus = ref('');
 const map = ref(null);
 const mapContainer = ref(null);
 const reportForm = ref(null);
-const successModal = ref(null);
+const successModalRef = ref(null);
+const modalContent = reactive({
+  title: 'Report Submitted',
+  message: 'Report submitted successfully!',
+  description: 'Your wildlife rescue report has been received and is being processed.',
+  infoMessage: 'You will be contacted if further information is needed. Thank you for helping protect wildlife!',
+  reportId: '',
+  status: 'Pending',
+  priority: 'Not Assigned'
+});
 const marker = ref(null);
 const isDragging = ref(false);
 const selectedLat = ref(null);
@@ -680,8 +673,11 @@ onMounted(async () => {
       let current = el.parentElement;
       while (current) {
         if (current.classList.contains('modal') ||
+            current.classList.contains('new-report-modal') ||
             current.classList.contains('modal-overlay') ||
             current.classList.contains('modal-content') ||
+            current.classList.contains('new-report-modal__content') ||
+            current.classList.contains('new-report-modal__header') ||
             current.classList.contains('modal-dialog') ||
             current.classList.contains('modal-body') ||
             current.classList.contains('modal-header') ||
@@ -813,12 +809,15 @@ onMounted(async () => {
             if (!el) return false;
             let current = el.parentElement;
             while (current) {
-              if (current.classList.contains('modal') ||
-                  current.classList.contains('modal-overlay') ||
-                  current.classList.contains('modal-content') ||
-                  current.classList.contains('modal-dialog') ||
-                  current.classList.contains('modal-body') ||
-                  current.classList.contains('modal-header') ||
+             if (current.classList.contains('modal') ||
+                 current.classList.contains('new-report-modal') ||
+                 current.classList.contains('modal-overlay') ||
+                 current.classList.contains('modal-content') ||
+                 current.classList.contains('new-report-modal__content') ||
+                 current.classList.contains('new-report-modal__header') ||
+                 current.classList.contains('modal-dialog') ||
+                 current.classList.contains('modal-body') ||
+                 current.classList.contains('modal-header') ||
                   current.classList.contains('modal-actions') ||
                   current.classList.contains('modal-footer') ||
                   current.classList.contains('modal-backdrop') ||
@@ -1671,21 +1670,13 @@ async function handleSubmit(event) {
     }
 
     if (response.ok && result.success) {
-      modalStatus.value = `
-        <div class="fw-bold text-success">
-          ✅ Report submitted successfully!<br>
-          Report ID: ${result.data.reportId}<br>
-          Status: ${result.data.status}<br>
-          Priority: ${result.data.priority}<br>
-          <small>You will be contacted if further information is needed.</small>
-        </div>
-      `;
+      modalContent.reportId = result.data.reportId ? String(result.data.reportId) : '';
+      modalContent.status = result.data.status ? String(result.data.status) : 'Pending';
+      modalContent.priority = result.data.priority ? String(result.data.priority) : 'Not Assigned';
 
-      // Show modal
-      if (successModal.value) {
-        const modal = new Modal(successModal.value);
-        modal.show();
-      }
+      nextTick(() => {
+        successModalRef.value?.show();
+      });
 
       // Reset form
       Object.keys(formData).forEach(key => {
@@ -1722,19 +1713,6 @@ async function handleSubmit(event) {
   } finally {
     isSubmitting.value = false;
   }
-}
-
-function closeModal() {
-  if (successModal.value) {
-    const modal = Modal.getInstance(successModal.value);
-    if (modal) {
-      modal.hide();
-    }
-  }
-}
-
-function goHome() {
-  router.push('/');
 }
 </script>
 
@@ -2756,7 +2734,7 @@ div:not(.button-group):not(.content-card):not(.form-group):not(.form-row) {
     margin-bottom: 1.5rem !important;
     width: 100%;
     clear: both !important;
-    height: 50vh;
+    height: 30vh;
   }
 
   /* Force map to appear after button */

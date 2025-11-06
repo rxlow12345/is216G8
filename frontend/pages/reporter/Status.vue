@@ -55,11 +55,48 @@
                   </span>
                 </div>
 
-                <!-- Content Row: Details on Left, Image on Right -->
+                <!-- Content Row: Image on Left, Details on Right -->
                 <div class="row g-0">
-                  <!-- Report Details - Left Column -->
-                  <div class="col-md-7">
-                    <div class="card-body p-4">
+                  <!-- Photo Section - Left Column -->
+                  <div class="col-md-5 d-flex align-items-stretch">
+                    <div class="card-body p-4 flex-fill d-flex">
+                      <div class="animal-image-section">
+                        <img
+                          v-if="
+                            report.photoURLs &&
+                            report.photoURLs[0] &&
+                            !imageError
+                          "
+                          :src="report.photoURLs[0]"
+                          class="animal-image"
+                          :alt="`${
+                            report.speciesName || 'Animal'
+                          } rescue photo`"
+                          @error="handleImageError"
+                          @load="imageLoading = false"
+                        />
+                        <div v-else class="image-placeholder">
+                          <span class="placeholder-icon">🐾</span>
+                          <p>No photo available</p>
+                        </div>
+                        <div
+                          v-if="
+                            imageLoading &&
+                            report.photoURLs &&
+                            report.photoURLs[0] &&
+                            !imageError
+                          "
+                          class="image-loading"
+                        >
+                          <span class="loading-spinner">📷</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Report Details - Right Column -->
+                  <div class="col-md-7 d-flex align-items-stretch">
+                    <div class="card-body p-4 flex-fill d-flex flex-column">
                       <div class="row mb-3">
                         <div class="col-md-6">
                           <p class="info-item">
@@ -115,45 +152,6 @@
                       <p class="text-muted small mb-0">
                         <strong>Reported:</strong> {{ createdAtReadable }}
                       </p>
-                    </div>
-                  </div>
-
-                  <!-- Photo Section - Right Column -->
-                  <div
-                    class="col-md-5 d-flex justify-content-center align-items-center"
-                  >
-                    <div class="card-body p-4">
-                      <div class="animal-image-section">
-                        <img
-                          v-if="
-                            report.photoURLs &&
-                            report.photoURLs[0] &&
-                            !imageError
-                          "
-                          :src="report.photoURLs[0]"
-                          class="animal-image"
-                          :alt="`${
-                            report.speciesName || 'Animal'
-                          } rescue photo`"
-                          @error="handleImageError"
-                          @load="imageLoading = false"
-                        />
-                        <div v-else class="image-placeholder">
-                          <span class="placeholder-icon">🐾</span>
-                          <p>No photo available</p>
-                        </div>
-                        <div
-                          v-if="
-                            imageLoading &&
-                            report.photoURLs &&
-                            report.photoURLs[0] &&
-                            !imageError
-                          "
-                          class="image-loading"
-                        >
-                          <span class="loading-spinner">📷</span>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -840,27 +838,26 @@ export default {
 .animal-image-section {
   position: relative;
   width: 100%;
-  max-width: 100%;
-  aspect-ratio: 4 / 3; /* Back to 4:3 for right column layout */
-  min-height: 300px;
-  max-height: 500px;
+  height: 100%;
+  flex: 1;
+  min-height: 280px;
+  max-height: 520px;
   overflow: hidden;
   background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
 }
 
 /* Main Animal Image */
 .animal-image {
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   width: 100%;
   height: 100%;
-  object-fit: cover; /* CRITICAL: Crops to fill container while maintaining aspect ratio */
-  object-position: center; /* Centers the focal point */
+  object-fit: cover;
+  object-position: center;
   transition: transform 0.3s ease;
 }
 
@@ -1227,9 +1224,8 @@ export default {
   }
 
   .animal-image-section {
-    min-height: 250px;
-    max-height: 400px;
-    aspect-ratio: 4 / 3;
+    min-height: 220px;
+    max-height: 360px;
   }
 
   .photo-thumbnail-container {
