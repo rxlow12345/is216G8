@@ -121,17 +121,17 @@
                     <div class="mb-4 col-6">
                         <h6 class="fw-bold text-success mb-3">Follow Us</h6>
                         <div class="d-flex flex-wrap gap-3">
-                            <a href="https://facebook.com/critterconnect" target="_blank" class="social-link">
+                            <a href="https://facebook.com/facebook" target="_blank" class="social-link">
                                 <div class="social-icon">
                                     <img :src="facebookIcon" alt="Facebook">
                                 </div>
                             </a>
-                            <a href="https://instagram.com/critterconnect" target="_blank" class="social-link">
+                            <a href="https://instagram.com/instagram" target="_blank" class="social-link">
                                 <div class="social-icon">
                                     <img :src="instagramIcon" alt="Instagram">
                                 </div>
                             </a>
-                            <a href="https://x.com/critterconnect" target="_blank" class="social-link">
+                            <a href="https://x.com/x" target="_blank" class="social-link">
                                 <div class="social-icon">
                                     <img :src="twitterIcon" alt="Twitter/X">
                                 </div>
