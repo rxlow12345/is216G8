@@ -120,10 +120,9 @@
           <div class="timestamp">Accepted {{ formatSince(r.data.acceptedAt) }}</div>
 
           <button class="view-details-btn" @click="openDetailsModal(r)">
-            View Details
+            Rescue Checkpoints
           </button>
           <button class="view-original-btn" @click="viewOriginal(r)">
-            <span class="doc-icon">📄</span>
             View Original Report
           </button>
         </section>
@@ -696,13 +695,15 @@ async function onSubmitModal(payload){
     modalSubmitting.value = true
     updatingId.value = r.id
 
-    // 1) Build update data with dot-notation
+    // 1) Update activeStatusSummary: Store checkpoint data including outcome
+    // This updates checkpoints.reconciled.outcome in activeStatusSummary collection
     const docRef = doc(db, 'activeStatusSummary', r.id)
     const updateData = {
       [`checkpoints.${key}.completed`]: true,
       [`checkpoints.${key}.completedAt`]: Timestamp.now(),
       lastUpdated: serverTimestamp(),
     }
+    // Add all payload fields (outcome, notes, etc.) to the checkpoint
     Object.keys(payload || {}).forEach((fieldKey) => {
       updateData[`checkpoints.${key}.${fieldKey}`] = payload[fieldKey]
     })
@@ -715,23 +716,29 @@ async function onSubmitModal(payload){
     const done = ['arrived','handled','treated','reconciled'].reduce((acc, k) => acc + (cp?.[k]?.completed ? 1 : 0), 0)
     updateData.progressPercentage = Math.round((done / 4) * 100)
 
+    // Update activeStatusSummary with reconciled checkpoint data (including outcome)
     await updateDoc(docRef, updateData)
 
-    // 2) If reconciled, update incidentReports
-    if (key === 'reconciled'){
+    // 2) If reconciled checkpoint is completed with outcome, update incidentReports status to 'resolved'
+    // This ensures both collections are synchronized:
+    // - activeStatusSummary: checkpoints.reconciled.outcome is stored
+    // - incidentReports: status is set to 'resolved'
+    if (key === 'reconciled' && payload?.outcome){
       const q2 = query(collection(db, 'incidentReports'), where('reportId','==', r.data.reportId))
       const rs = await getDocs(q2)
       const first = rs.docs[0]
       if (first){
-        // Try client-side update
+        // Update incidentReports: Set status to 'resolved' and add resolvedAt timestamp
         await updateDoc(doc(db, 'incidentReports', first.id), {
           status: 'resolved',
           resolvedAt: Timestamp.now(),
         })
-        // Also call backend to ensure status flips even if client rules block
+        // Also call backend API to ensure status update persists (handles any client-side rule restrictions)
         try {
           await api.updateReportFields(first.id, { status: 'resolved' })
-        } catch (_) { /* ignore backend errors here */ }
+        } catch (err) { 
+          console.warn('Backend status update failed (non-critical):', err)
+        }
       }
       // Immediately remove locally and show success toast, and close details modal
       reports.value = reports.value.filter(rep => rep.id !== r.id)
@@ -1459,8 +1466,9 @@ function hideSuccess(){
   font-weight: 500;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s, color 0.2s;
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
 }
 

@@ -362,16 +362,22 @@
             <h2 class="section-title">Animal Identification</h2>
               
               <div class="form-group">
-                <label for="speciesName" class="form-label">Species Name (if known)</label>
+                <label for="speciesName" class="form-label">
+                  Species Name <span class="required">*</span>
+                </label>
                 <div class="input-wrapper">
                   <input 
                     type="text" 
                     id="speciesName" 
                     v-model="formData.speciesName"
                     class="modern-input"
-                    placeholder="e.g., Common Palm Civet, Hornbill, Wild Boar, etc."
+                    :class="{ 'is-invalid': errors.speciesName }"
+                    placeholder="e.g., Common Palm Civet, Hornbill, Wild Boar, or 'Unknown' if unknown"
+                    required
                   >
                 </div>
+                <div v-if="errors.speciesName" class="invalid-feedback">{{ errors.speciesName }}</div>
+                <small class="form-hint">If the species is unknown, enter "Unknown" - the image will be saved for manual identification.</small>
               </div>
 
               <div class="form-group">
@@ -587,6 +593,7 @@ watch(() => formData.sightingDateTime, (val) => { if (val) { delete errors.sight
 watch(() => formData.incidentType, (val) => { if (val) { delete errors.incidentType; } });
 watch(() => formData.severity, (val) => { if (val) { delete errors.severity; } });
 watch(() => formData.isMovingNormally, (val) => { if (val) { delete errors.isMovingNormally; } });
+watch(() => formData.speciesName, (val) => { if (val) { delete errors.speciesName; } });
 watch(() => formData.description, (val) => { if (val) { delete errors.description; } });
 
 // Computed
@@ -809,15 +816,15 @@ onMounted(async () => {
             if (!el) return false;
             let current = el.parentElement;
             while (current) {
-             if (current.classList.contains('modal') ||
+              if (current.classList.contains('modal') ||
                  current.classList.contains('new-report-modal') ||
-                 current.classList.contains('modal-overlay') ||
-                 current.classList.contains('modal-content') ||
+                  current.classList.contains('modal-overlay') ||
+                  current.classList.contains('modal-content') ||
                  current.classList.contains('new-report-modal__content') ||
                  current.classList.contains('new-report-modal__header') ||
-                 current.classList.contains('modal-dialog') ||
-                 current.classList.contains('modal-body') ||
-                 current.classList.contains('modal-header') ||
+                  current.classList.contains('modal-dialog') ||
+                  current.classList.contains('modal-body') ||
+                  current.classList.contains('modal-header') ||
                   current.classList.contains('modal-actions') ||
                   current.classList.contains('modal-footer') ||
                   current.classList.contains('modal-backdrop') ||
@@ -1120,31 +1127,83 @@ function getCurrentLocation() {
     if (!("geolocation" in navigator)) {
       return reject(new Error("Geolocation not supported."));
     }
-    navigator.geolocation.getCurrentPosition(resolve, reject);
+    const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
+    navigator.geolocation.getCurrentPosition(resolve, (err) => {
+      // Normalize common errors for better handling upstream
+      if (err && (err.code === 1 || /denied/i.test(err.message))) {
+        reject(new Error("permission denied"));
+      } else if (err && (err.code === 2)) {
+        reject(new Error("position unavailable"));
+      } else if (err && (err.code === 3)) {
+        reject(new Error("timeout"));
+      } else {
+        reject(err || new Error("Unable to get location"));
+      }
+    }, options);
   });
 }
 
 async function reverseGeocode(lat, lon) {
-  // Force English language regardless of system language
-  const url = `${OPENCAGE_BASE_URL}?q=${lat}+${lon}&key=${OPENCAGE_API_KEY}&language=en`;
+  console.log(`🔄 Reverse geocoding: ${lat}, ${lon}`);
 
+  // Try OpenCage first (if key is available and not exhausted)
+  if (OPENCAGE_API_KEY && OPENCAGE_API_KEY !== 'undefined') {
   try {
+      const url = `${OPENCAGE_BASE_URL}?q=${lat}+${lon}&key=${OPENCAGE_API_KEY}&language=en`;
     const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`OpenCage API request failed with status: ${response.status}`);
-    }
 
+      if (response.ok) {
     const data = await response.json();
     if (data.results && data.results.length > 0) {
-      return parseOpenCageInfo(data);
-    } else if (data.status.code === 402) {
-      throw new Error("OpenCage quota exceeded or key invalid.");
+          const info = parseOpenCageInfo(data);
+          console.log('✅ OpenCage reverse geocoding succeeded');
+          return info;
+        }
+      } else if (response.status === 402) {
+        console.warn('⚠️ OpenCage API quota exceeded (402), using backend proxy...');
     } else {
-      return { address: `No street address found for this location. (Lat: ${lat.toFixed(5)})`, postalCode: null, countryCode: null, isWater: false };
+        console.warn(`⚠️ OpenCage API error ${response.status}, using backend proxy...`);
     }
   } catch (error) {
-    console.error("Reverse Geocoding Error:", error);
-    throw new Error("Failed to connect to the geocoding service.");
+      console.warn('⚠️ OpenCage error:', error.message, '- using backend proxy...');
+    }
+  }
+  
+  // Fallback: Use our backend proxy endpoint
+  try {
+    console.log('🔄 Calling backend reverse geocoding endpoint...');
+    const response = await fetch(`${API_BASE_URL}/reports/reverse-geocode?lat=${lat}&lon=${lon}`);
+    
+    if (!response.ok) {
+      throw new Error(`Backend reverse geocode failed: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    
+    if (result.success && result.data) {
+      console.log('✅ Backend reverse geocoding succeeded:', result.data.address);
+      return {
+        address: result.data.address,
+        postalCode: result.data.postalCode,
+        countryCode: result.data.countryCode,
+        isWater: result.data.isWater,
+        point: { lat: result.data.lat, lon: result.data.lon }
+      };
+    } else {
+      throw new Error(result.error || 'Backend reverse geocode returned no data');
+    }
+  } catch (error) {
+    console.error('❌ Backend reverse geocoding failed:', error);
+    
+    // Last resort: return coordinates
+    console.warn('⚠️ Falling back to coordinates');
+    return {
+      address: `Coordinates: ${lat.toFixed(6)}, ${lon.toFixed(6)}`,
+      postalCode: null,
+      countryCode: 'sg',
+      isWater: false,
+      point: { lat, lon }
+    };
   }
 }
 
@@ -1243,9 +1302,28 @@ async function validateAndSetLocation(lat, lon) {
 
   try {
     isGettingLocation.value = true;
-    const info = await reverseGeocode(lat, lon);
-    const nominatim = await nominatimReverse(lat, lon);
-    const countryOk = (info.countryCode === 'sg');
+    let info = null;
+    try {
+      info = await reverseGeocode(lat, lon);
+    } catch (geErr) {
+      // Handle OpenCage failures (e.g., 402 quota) gracefully – fall back to Nominatim only
+      console.warn('Reverse Geocoding (OpenCage) failed, falling back to Nominatim:', geErr?.message || geErr);
+      info = null;
+    }
+    let nominatim = null;
+    try {
+      nominatim = await nominatimReverse(lat, lon);
+    } catch (nomErr) {
+      // Nominatim also failed - that's okay, we'll use coordinates
+      console.warn('Nominatim reverse geocoding failed:', nomErr?.message || nomErr);
+      nominatim = null;
+    }
+    
+    // If OpenCage failed, be more lenient - only check basic bounds (already done above)
+    // Only do strict validation if we have OpenCage data
+    if (info) {
+      // We have OpenCage data, do full validation
+      const countryOk = info.countryCode === 'sg';
     const waterOk = !info.isWater && !(nominatim && nominatim.isWater);
 
     // Distance sanity check: if reverse-geocoded point is far from marker, likely offshore
@@ -1255,7 +1333,7 @@ async function validateAndSetLocation(lat, lon) {
       distances.push(haversineMeters(lat, lon, info.point.lat, info.point.lon));
     }
     if (nominatim && nominatim.point) {
-      distances.push(haversineMeters(lat, lon, nominatim.point.lat, nominatim.point.lon));
+        distances.push(haversineMeters(lat, lon, nominatim.point.lat, nominatim.point.lng));
     }
     if (distances.length > 0) {
       const maxDist = Math.max(...distances);
@@ -1274,15 +1352,19 @@ async function validateAndSetLocation(lat, lon) {
       }
       return;
     }
+    }
+    // If OpenCage failed, we already checked Singapore bounds above, so accept it
 
-    formData.location = info.address || `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+    const addressText = (info && info.address) ? info.address : `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+    formData.location = addressText;
     delete errors.location;
     locationValid.value = true;
     locationStatusHtml.value = '<span style="color:#2d6b2f;">✓ Location confirmed</span>';
     if (marker.value) {
-      marker.value.bindPopup(`<div style=\"color:#2d6b2f;font-weight:600;\">✓ Valid Location</div><div>${formData.location}</div>`).openPopup();
+      marker.value.bindPopup(`<div style=\"color:#2d6b2f;font-weight:600;\">✓ Valid Location</div><div>${addressText}</div>`).openPopup();
     }
   } catch (e) {
+    console.error('Unexpected error in validateAndSetLocation:', e);
     locationValid.value = false;
     errors.location = 'Failed to verify location. Please try again.';
     locationStatusHtml.value = '';
@@ -1292,29 +1374,191 @@ async function validateAndSetLocation(lat, lon) {
 }
 
 
+// If user initially denied permission, listen for a change to 'granted' and auto-retry once
+let pendingPermissionListener = null;
+
 async function handleLiveLocation() {
+  console.log('=== GEOLOCATION DEBUG START ===');
+  console.log('1. Button clicked');
+  console.log('2. Current URL:', window.location.href);
+  console.log('3. Protocol:', window.location.protocol);
+  console.log('4. Is HTTPS or localhost?', window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+  
   isGettingLocation.value = true;
   formData.location = '';
+  locationStatusHtml.value = '<span style="color: #2196F3;">🔄 Starting location request...</span>';
   
   try {
-    const position = await getCurrentLocation();
+    // Check 1: Browser support
+    console.log('5. Checking browser support...');
+    if (!navigator.geolocation) {
+      console.error('❌ Geolocation NOT supported');
+      throw new Error('GEOLOCATION_NOT_SUPPORTED');
+    }
+    console.log('✅ Geolocation is supported');
+
+    // Check 2: Permission API
+    console.log('6. Checking permission API...');
+    let permissionState = 'unknown';
+    try {
+      if (navigator.permissions && navigator.permissions.query) {
+        console.log('7. Permission API available, querying...');
+        const status = await navigator.permissions.query({ name: 'geolocation' });
+        permissionState = status.state;
+        console.log('8. Permission state:', status.state);
+        
+        if (status.state === 'denied') {
+          console.error('❌ Permission already DENIED');
+          throw new Error('PERMISSION_DENIED');
+        }
+        
+        if (status.state === 'prompt') {
+          console.log('9. Permission will be PROMPTED');
+          locationStatusHtml.value = '<span style="color: #2196F3;">💡 Please click "Allow" when browser asks for permission</span>';
+        }
+        
+        if (status.state === 'granted') {
+          console.log('9. Permission already GRANTED');
+        }
+      } else {
+        console.warn('⚠️ Permission API not available, will try direct request');
+      }
+    } catch (permErr) {
+      console.warn('⚠️ Permission API query failed:', permErr);
+    }
+
+    // Check 3: Get current position
+    console.log('10. Requesting current position...');
+    locationStatusHtml.value = '<span style="color: #2196F3;">📍 Requesting your location...</span>';
+    
+    const position = await new Promise((resolve, reject) => {
+      console.log('11. Inside getCurrentPosition promise...');
+      
+      const timeoutId = setTimeout(() => {
+        console.error('❌ TIMEOUT after 15 seconds');
+        reject(new Error('TIMEOUT'));
+      }, 15000);
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          console.log('✅ SUCCESS! Got position:', pos);
+          console.log('   Latitude:', pos.coords.latitude);
+          console.log('   Longitude:', pos.coords.longitude);
+          console.log('   Accuracy:', pos.coords.accuracy, 'meters');
+          clearTimeout(timeoutId);
+          resolve(pos);
+        },
+        (error) => {
+          console.error('❌ ERROR in getCurrentPosition:');
+          console.error('   Error code:', error.code);
+          console.error('   Error message:', error.message);
+          console.error('   Error object:', error);
+          clearTimeout(timeoutId);
+          
+          switch(error.code) {
+            case 1:
+              console.error('   -> PERMISSION_DENIED (code 1)');
+              reject(new Error('PERMISSION_DENIED'));
+              break;
+            case 2:
+              console.error('   -> POSITION_UNAVAILABLE (code 2)');
+              reject(new Error('POSITION_UNAVAILABLE'));
+              break;
+            case 3:
+              console.error('   -> TIMEOUT (code 3)');
+              reject(new Error('TIMEOUT'));
+              break;
+            default:
+              console.error('   -> UNKNOWN_ERROR');
+              reject(new Error('UNKNOWN_ERROR'));
+          }
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        }
+      );
+      
+      console.log('12. getCurrentPosition call made, waiting for response...');
+    });
+
+    // If we got here, we have the position
+    console.log('13. Processing position...');
     const lat = position.coords.latitude;
     const lon = position.coords.longitude;
 
-    // Show map first, then update with address
+    console.log('14. Coordinates:', lat, lon);
+    
+    // Show on map
+    console.log('15. Embedding map...');
     await embedMap(lat, lon);
+    
+    console.log('16. Validating location...');
     await validateAndSetLocation(lat, lon);
+    
+    console.log('✅ === GEOLOCATION DEBUG SUCCESS ===');
+    
   } catch (error) {
-    let errorMessage = 'Unable to get location.';
-    if (error.message.includes('permission denied')) {
-      errorMessage = 'Geolocation permission denied. Please allow location access or enter location manually.';
-    } else if (error.message.includes('OpenCage')) {
-      errorMessage = error.message;
+    console.error('❌ === GEOLOCATION DEBUG FAILED ===');
+    console.error('Error:', error.message);
+    console.error('Stack:', error.stack);
+    
+    isGettingLocation.value = false;
+    
+    // Show error to user
+    if (error.message === 'GEOLOCATION_NOT_SUPPORTED') {
+      locationStatusHtml.value = `
+        <div class="location-error-box">
+          <p class="error-title">❌ Geolocation Not Supported</p>
+          <p class="error-description">Your browser does not support geolocation. Please select your location on the map below.</p>
+        </div>
+      `;
+      const defaultLat = 1.3521;
+      const defaultLon = 103.8198;
+      await embedMap(defaultLat, defaultLon);
+      
+    } else if (error.message === 'PERMISSION_DENIED') {
+      locationStatusHtml.value = `
+        <div class="location-error-box">
+          <p class="error-title">❌ Location Permission Denied</p>
+          <p class="error-description">To enable location access:</p>
+          <ol class="error-steps">
+            <li>Click the 🔒 or ⓘ icon in your browser's address bar</li>
+            <li>Find "Location" in site settings</li>
+            <li>Change to "Allow"</li>
+            <li>Refresh page and try again</li>
+          </ol>
+          <p class="error-alternative">Or select your location on the map below 👇</p>
+        </div>
+      `;
+      const defaultLat = 1.3521;
+      const defaultLon = 103.8198;
+      await embedMap(defaultLat, defaultLon);
+      
+    } else if (error.message === 'POSITION_UNAVAILABLE') {
+      locationStatusHtml.value = `
+        <span style="color: #f57c00;">⚠️ Location unavailable. Please check that location services are enabled on your device, or select location on the map.</span>
+      `;
+      const defaultLat = 1.3521;
+      const defaultLon = 103.8198;
+      await embedMap(defaultLat, defaultLon);
+      
+    } else if (error.message === 'TIMEOUT') {
+      locationStatusHtml.value = `
+        <span style="color: #f57c00;">⏱️ Location request timed out. Please try again or select location on the map.</span>
+      `;
+      const defaultLat = 1.3521;
+      const defaultLon = 103.8198;
+      await embedMap(defaultLat, defaultLon);
+      
+    } else {
+      locationStatusHtml.value = `
+        <span style="color: #f57c00;">⚠️ Error: ${error.message}. Please select location on the map.</span>
+      `;
     }
-    // Only show alert if called manually (not on mount)
-    if (errorMessage !== '') {
-      console.error('Location error:', errorMessage);
-    }
+    
+    return;
   } finally {
     isGettingLocation.value = false;
   }
@@ -1392,12 +1636,16 @@ function displaySpeciesResults(predictions) {
       const topPrediction = prediction[0];
 
       if (topPrediction.unidentified) {
+        // Auto-fill "Unknown" so user can still submit
+        if (!formData.speciesName || formData.speciesName.trim() === '') {
+          formData.speciesName = 'Unknown';
+        }
         speciesDetectionMessage.value = `
           <div style="color: #000000ff; font-weight: bold; padding: 10px; border-radius: 4px; font-size: 14px;">
             🔍 Species Identification Result:
-            <br><em>${topPrediction.message || 'Please enter the species name manually below.'}</em>
+            <br><em>${topPrediction.message || 'Species could not be identified automatically.'}</em>
             <br><small style="color: #2e2e2eff; font-weight: normal; margin-top: 5px; display: block;">
-              💡 Tip: You can enter common names like "Hornbill", "Wild Boar", "Palm Civet", etc.
+              💡 "Unknown" has been filled in. You can change it to a specific species name if you know it, or submit as "Unknown" for manual review.
             </small>
           </div>
         `;
@@ -1557,6 +1805,10 @@ function validateCurrentStep() {
       isValid = false;
     }
   } else if (currentStep.value === 3) {
+    if (!formData.speciesName || formData.speciesName.trim() === '') {
+      errors.speciesName = 'Please enter the species name (or "Unknown" if unknown).';
+      isValid = false;
+    }
     if (!formData.description) {
       errors.description = 'Please describe the condition of the animal.';
       isValid = false;
@@ -2203,6 +2455,28 @@ textarea:focus {
 .species-message {
   margin-top: 1rem;
   min-height: 20px;
+}
+
+/* Lightweight styles for geolocation error box */
+.location-error-box {
+  background: #fff8e1;
+  border: 1px solid #ffe0b2;
+  color: #5d4037;
+  padding: 12px 14px;
+  border-radius: 10px;
+}
+.location-error-box .error-title {
+  margin: 0 0 6px 0;
+  font-weight: 700;
+}
+.location-error-box .error-description {
+  margin: 0 0 6px 0;
+}
+.location-error-box .error-steps {
+  margin: 6px 0 6px 18px;
+}
+.location-error-box .error-alternative {
+  margin: 8px 0 0 0;
 }
 
 /* Identification progress styles */

@@ -36,10 +36,6 @@
                 <span class="detail-label">Volunteer Name:</span>
                 <span class="detail-value">{{ volunteerInfo?.name || reportData?.assignedVolunteerName || reportData?.volunteerName || 'Unknown' }}</span>
               </div>
-              <div class="detail-item" v-if="reportData?.volunteerId || reportData?.assignedVolunteerID || reportData?.uid">
-                <span class="detail-label">Volunteer ID:</span>
-                <span class="detail-value">{{ reportData?.volunteerId || reportData?.assignedVolunteerID || reportData?.uid || 'N/A' }}</span>
-              </div>
               <div class="detail-item" v-if="timeAccepted">
                 <span class="detail-label">Acceptance Time:</span>
                 <span class="detail-value">{{ toGMT8String(timeAccepted) }}</span>
@@ -93,9 +89,9 @@
                   <span class="detail-label">Status:</span>
                   <span class="detail-value">Volunteer is en route / has not arrived yet</span>
                 </div>
-                <div class="detail-item" v-if="volunteerETA">
+                <div class="detail-item" v-if="calculatedETA">
                   <span class="detail-label">Estimated Arrival:</span>
-                  <span class="detail-value">{{ toGMT8String(volunteerETA) }}</span>
+                  <span class="detail-value">{{ calculatedETA }}</span>
                 </div>
               </template>
               <template v-else>
@@ -141,8 +137,8 @@
               </template>
             </template>
 
-            <!-- Stage 4: Medical Assessment - checkpoints.reconciled -->
-            <template v-if="stage === 'reconciled'">
+            <!-- Stage 4: Medical Assessment - checkpoints.treated -->
+            <template v-if="stage === 'treated'">
               <template v-if="!checkpoints[stage]?.completed">
                 <!-- Pending State -->
                 <div class="detail-item">
@@ -171,8 +167,8 @@
               </template>
             </template>
 
-            <!-- Stage 5: Case Resolved - checkpoints.treated -->
-            <template v-if="stage === 'treated'">
+            <!-- Stage 5: Case Resolved - checkpoints.reconciled -->
+            <template v-if="stage === 'reconciled'">
               <template v-if="!checkpoints[stage]?.completed">
                 <!-- Pending State -->
                 <div class="detail-item">
@@ -214,36 +210,36 @@ export default {
       error: null,
       activeSummary: {},
       // Stage 2-5: Checkpoint stages in correct order
-      checkpointStages: ['arrived', 'handled', 'reconciled', 'treated'],
+      checkpointStages: ['arrived', 'handled', 'treated', 'reconciled'],
       stageTitles: {
         arrived: 'Volunteer Arrival',
         handled: 'Animal Secured',
-        reconciled: 'Medical Assessment', // Stage 4
-        treated: 'Case Resolved', // Stage 5
+        treated: 'Medical Assessment', // Stage 4
+        reconciled: 'Case Resolved', // Stage 5
       },
       stageDescriptions: {
         arrived: 'Volunteer is en route / has arrived on scene',
         handled: 'Animal has been safely captured/contained',
-        reconciled: 'Veterinary examination/treatment provided', // Stage 4
-        treated: 'Final outcome recorded (released/transferred/etc)', // Stage 5
+        treated: 'Veterinary examination/treatment provided', // Stage 4
+        reconciled: 'Final outcome recorded (released/transferred/etc)', // Stage 5
       },
       stageIcons: {
         arrived: 'bi bi-geo-alt-fill',
         handled: 'bi bi-hand-thumbs-up-fill',
-        reconciled: 'bi bi-heart-pulse-fill', // Stage 4: Medical Assessment
-        treated: 'bi bi-house-check-fill', // Stage 5: Case Resolved
+        treated: 'bi bi-heart-pulse-fill', // Stage 4: Medical Assessment
+        reconciled: 'bi bi-house-check-fill', // Stage 5: Case Resolved
       },
       defaultDescriptions: {
         arrived: 'Team on-site has assessed the situation.',
         handled: 'The animal has been safely secured.',
-        reconciled: 'Veterinary assessment and care has been provided.', // Stage 4
-        treated: 'A final outcome for the animal has been determined.', // Stage 5
+        treated: 'Veterinary assessment and care has been provided.', // Stage 4
+        reconciled: 'A final outcome for the animal has been determined.', // Stage 5
       },
       defaultUncompletedDescriptions: {
         arrived: 'Team is en route to the location.',
         handled: 'Preparing to safely secure the animal.',
-        reconciled: 'Awaiting veterinary assessment and care.', // Stage 4
-        treated: 'The animal\'s long-term outcome is being evaluated.', // Stage 5
+        treated: 'Awaiting veterinary assessment and care.', // Stage 4
+        reconciled: 'The animal\'s long-term outcome is being evaluated.', // Stage 5
       }
     };
   },
@@ -263,6 +259,68 @@ export default {
     isCaseAccepted() {
       // Stage 1: Check if volunteer is assigned
       return this.hasVolunteer;
+    },
+    calculatedETA() {
+      // Calculate ETA from timeAccepted + estimatedDurationMinutes
+      // Priority: use volunteerETA if available, otherwise calculate from timeAccepted + estimatedDurationMinutes
+      if (this.volunteerETA) {
+        try {
+          // Handle Firestore Timestamp
+          let etaDate;
+          if (this.volunteerETA && typeof this.volunteerETA.toDate === 'function') {
+            etaDate = this.volunteerETA.toDate().toISOString();
+          } else if (this.volunteerETA && this.volunteerETA._seconds) {
+            // Handle Firestore Timestamp object with _seconds
+            etaDate = new Date(this.volunteerETA._seconds * 1000).toISOString();
+          } else {
+            etaDate = this.volunteerETA;
+          }
+          return this.toGMT8String(etaDate);
+        } catch (e) {
+          console.warn("Error formatting volunteerETA:", e);
+        }
+      }
+      
+      // Fallback: calculate from timeAccepted + estimatedDurationMinutes
+      if (this.timeAccepted) {
+        let acceptedTime;
+        // Handle Firestore Timestamp
+        if (this.timeAccepted && typeof this.timeAccepted.toDate === 'function') {
+          acceptedTime = this.timeAccepted.toDate();
+        } else if (this.timeAccepted && this.timeAccepted._seconds) {
+          acceptedTime = new Date(this.timeAccepted._seconds * 1000);
+        } else {
+          acceptedTime = new Date(this.timeAccepted);
+        }
+        
+        // Try reportData first
+        if (this.reportData?.estimatedDurationMinutes) {
+          try {
+            const minutes = Number(this.reportData.estimatedDurationMinutes);
+            if (!isNaN(acceptedTime.getTime()) && !isNaN(minutes) && minutes > 0) {
+              const etaTime = new Date(acceptedTime.getTime() + minutes * 60000);
+              return this.toGMT8String(etaTime.toISOString());
+            }
+          } catch (e) {
+            console.warn("Error calculating ETA:", e);
+          }
+        }
+        
+        // Also check activeSummary for estimatedDurationMinutes
+        if (this.activeSummary?.estimatedDurationMinutes) {
+          try {
+            const minutes = Number(this.activeSummary.estimatedDurationMinutes);
+            if (!isNaN(acceptedTime.getTime()) && !isNaN(minutes) && minutes > 0) {
+              const etaTime = new Date(acceptedTime.getTime() + minutes * 60000);
+              return this.toGMT8String(etaTime.toISOString());
+            }
+          } catch (e) {
+            console.warn("Error calculating ETA from activeSummary:", e);
+          }
+        }
+      }
+      
+      return null;
     },
   },
   methods: {
@@ -312,6 +370,15 @@ export default {
   },
   async mounted() {
     await this.fetchActiveSummary(this.reportId);
+    // Re-fetch if volunteerETA or estimatedDurationMinutes might be in activeSummary
+    if (this.activeSummary && !this.volunteerETA && this.activeSummary.volunteerETA) {
+      // volunteerETA might be a Firestore Timestamp, convert to ISO string
+      if (this.activeSummary.volunteerETA && typeof this.activeSummary.volunteerETA.toDate === 'function') {
+        this.$emit('update:volunteerETA', this.activeSummary.volunteerETA.toDate().toISOString());
+      } else if (this.activeSummary.volunteerETA) {
+        this.$emit('update:volunteerETA', this.activeSummary.volunteerETA);
+      }
+    }
   },
 };
 </script>

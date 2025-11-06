@@ -748,6 +748,8 @@ export default {
             status: 'active',
             assignedVolunteerID: uid,
             timeAccepted: serverTimestamp(),
+            volunteerETA: arrivalJs.toISOString(),
+            estimatedDurationMinutes: minutes,
           });
         }
 

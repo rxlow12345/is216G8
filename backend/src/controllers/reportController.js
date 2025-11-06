@@ -344,7 +344,7 @@ export const createReport = async (req, res) => {
     //   'isInDanger', 'rescueCalled', 'stayingOnSite'
     // ];
       const requiredFields = [
-      'incidentType', 'severity', 'sightingDateTime', 'description', 'isMovingNormally'
+      'incidentType', 'severity', 'sightingDateTime', 'description', 'isMovingNormally', 'speciesName'
     ];
 
     // Validate location first before geocoding
@@ -852,6 +852,70 @@ export const getUserEmail = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to retrieve user email.',
+    });
+  }
+};
+
+/**
+ * Gets the name of the volunteer assigned to the case
+ */
+export const getVolunteerName = async (req, res) => {
+  try {
+    const { id } = req.params; // this will be the reportId value
+
+    const reportSnap = await db
+      .collection('incidentReports')
+      .where('reportId', '==', id)
+      .limit(1)
+      .get();
+
+    if (reportSnap.empty) {
+      return res.status(404).json({
+        success: false,
+        message: `Report not found: ${id}`,
+      });
+    }
+
+    const reportData = reportSnap.docs[0].data();
+    // Try multiple possible field names for volunteer ID
+    const volunteerId = reportData?.assignedVolunteerID || reportData?.uid || reportData?.volunteerId;
+
+    if (!volunteerId) {
+      return res.status(400).json({
+        success: false,
+        message: 'No volunteer ID found in the report data.',
+      });
+    }
+
+    const userRef = db.collection('users').doc(volunteerId);
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        message: `Volunteer not found for UID: ${volunteerId}`,
+      });
+    }
+
+    const userData = userDoc.data();
+    const username = userData?.username;
+
+    if (!username) {
+      return res.status(404).json({
+        success: false,
+        message: 'Username not found for volunteer.',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      name: username,
+    });
+  } catch (error) {
+    console.error('Error fetching volunteer name:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve volunteer name.',
     });
   }
 };

@@ -160,6 +160,23 @@ const api = {
     
     return result.email;
   },
+  /**
+   * Gets the name of the volunteer assigned to the case
+   * @param {string} reportId - The report ID of the report to fetch.
+   * @returns {Promise<string>} A promise that resolves to the volunteer name.
+   */
+  async getVolunteerName(reportId) {
+    const response = await fetch(`${API_BASE_URL}/reports/getReport/volunteerName/${reportId}`);
+    if (!response.ok) {
+      throw new Error('Network response was not ok while fetching the volunteer name.');
+    }
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to get volunteer name from API.');
+    }
+    
+    return result.name;
+  },
 };
 
 

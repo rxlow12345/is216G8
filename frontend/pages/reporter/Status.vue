@@ -209,15 +209,21 @@
                         class="stage-icon"
                         :class="{
                           completed:
-                            index <= currentStageIndex &&
-                            currentStageIndex >= 0,
+                            index < currentStageIndex ||
+                            (index === currentStageIndex && currentStageIndex >= 0 &&
+                             // Stage 5 (index 4) only shows as completed if status is 'resolved' AND reconciled checkpoint has outcome
+                             (index !== 4 || (report.status === 'resolved' && report.checkpoints?.reconciled?.completed && report.checkpoints?.reconciled?.outcome))),
                           pending:
-                            index > currentStageIndex || currentStageIndex < 0,
+                            index > currentStageIndex || 
+                            currentStageIndex < 0 ||
+                            (index === currentStageIndex && index === 4 && (report.status !== 'resolved' || !report.checkpoints?.reconciled?.completed || !report.checkpoints?.reconciled?.outcome)),
                         }"
                       >
                         <i
                           v-if="
-                            index <= currentStageIndex && currentStageIndex >= 0
+                            (index < currentStageIndex || 
+                             (index === currentStageIndex && currentStageIndex >= 0 &&
+                              (index !== 4 || (report.status === 'resolved' && report.checkpoints?.reconciled?.completed && report.checkpoints?.reconciled?.outcome))))
                           "
                           class="bi bi-check-lg"
                         ></i>
@@ -251,10 +257,6 @@
                         {{ stages.length }}</strong
                       >
                       stages completed ({{ Math.round(progressPercent) }}%)
-                    </p>
-                    <p class="current-stage-text">
-                      Current Stage:
-                      <strong>{{ getCurrentStageName() }}</strong>
                     </p>
                   </div>
 
@@ -343,6 +345,8 @@ import "../css/common.css";
 import BackToTop from "../../src/components/BackToTop.vue";
 import Timeline from "./Timeline.vue";
 import { getCurrentUser } from "../../src/api/auth.js";
+import { db } from "../../src/firebase.js";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 
 export default {
   name: "StatusUpdate",
@@ -386,6 +390,8 @@ export default {
         email: null,
       },
       showTimelineModal: false,
+      unsubscribeActiveSummary: null,
+      unsubscribeIncidentReport: null,
     };
   },
   watch: {
@@ -427,13 +433,18 @@ export default {
         return -1; // Case not accepted yet - no volunteer assigned
       }
 
-      // Stage 5: Case Resolved - checkpoints.treated
-      if (this.report.checkpoints?.treated?.completed) {
+      // Stage 5: Case Resolved - only show when status is 'resolved' AND reconciled checkpoint has outcome
+      // Status becomes 'resolved' only when volunteer completes reconciled checkpoint with outcome
+      if (
+        this.report.status === 'resolved' &&
+        this.report.checkpoints?.reconciled?.completed &&
+        this.report.checkpoints?.reconciled?.outcome
+      ) {
         return 4; // Case Resolved (Stage 5, index 4)
       }
 
-      // Stage 4: Medical Assessment - checkpoints.reconciled
-      if (this.report.checkpoints?.reconciled?.completed) {
+      // Stage 4: Medical Assessment - checkpoints.treated (diagnosis, treatment)
+      if (this.report.checkpoints?.treated?.completed) {
         return 3; // Medical Assessment (Stage 4, index 3)
       }
 
@@ -464,11 +475,19 @@ export default {
         completedStages++;
       }
 
-      // Stage 2-5: Checkpoints
+      // Stage 2-4: Checkpoints
       if (this.report.checkpoints?.arrived?.completed) completedStages++;
       if (this.report.checkpoints?.handled?.completed) completedStages++;
-      if (this.report.checkpoints?.reconciled?.completed) completedStages++;
-      if (this.report.checkpoints?.treated?.completed) completedStages++;
+      if (this.report.checkpoints?.treated?.completed) completedStages++; // Stage 4: Medical Assessment
+      
+      // Stage 5: Case Resolved - only count when status is 'resolved' AND has outcome
+      if (
+        this.report.status === 'resolved' &&
+        this.report.checkpoints?.reconciled?.completed &&
+        this.report.checkpoints?.reconciled?.outcome
+      ) {
+        completedStages++;
+      }
 
       return (completedStages / totalStages) * 100;
     },
@@ -482,8 +501,15 @@ export default {
         count++;
       if (this.report.checkpoints?.arrived?.completed) count++;
       if (this.report.checkpoints?.handled?.completed) count++;
-      if (this.report.checkpoints?.reconciled?.completed) count++;
-      if (this.report.checkpoints?.treated?.completed) count++;
+      if (this.report.checkpoints?.treated?.completed) count++; // Stage 4: Medical Assessment
+      // Stage 5: Case Resolved - only count when status is 'resolved' AND has outcome
+      if (
+        this.report.status === 'resolved' &&
+        this.report.checkpoints?.reconciled?.completed &&
+        this.report.checkpoints?.reconciled?.outcome
+      ) {
+        count++;
+      }
       return count;
     },
     severityClass() {
@@ -535,7 +561,15 @@ export default {
               this.report.timeAccepted = activeSummary.timeAccepted;
             }
             if (activeSummary.volunteerETA && !this.report.volunteerETA) {
-              this.report.volunteerETA = activeSummary.volunteerETA;
+              // Handle Firestore Timestamp conversion
+              if (activeSummary.volunteerETA && typeof activeSummary.volunteerETA.toDate === 'function') {
+                this.report.volunteerETA = activeSummary.volunteerETA.toDate().toISOString();
+              } else {
+                this.report.volunteerETA = activeSummary.volunteerETA;
+              }
+            }
+            if (activeSummary.estimatedDurationMinutes !== undefined) {
+              this.report.estimatedDurationMinutes = activeSummary.estimatedDurationMinutes;
             }
           }
         } catch (summaryError) {
@@ -546,23 +580,36 @@ export default {
         // Reset image loading state
         this.imageLoading = true;
         this.imageError = false;
-        // Fetch volunteer email if volunteer is assigned
+        // Fetch volunteer name and email if volunteer is assigned
         if (
           this.report.assignedVolunteerID ||
           this.report.uid ||
           this.report.volunteerId
         ) {
           try {
-            const volunteerEmail = await api.getUserEmail(reportId);
-            this.volunteerInfo.email = volunteerEmail;
-            // Try to get volunteer name from report data
-            if (this.report.assignedVolunteerName) {
-              this.volunteerInfo.name = this.report.assignedVolunteerName;
-            } else if (this.report.volunteerName) {
-              this.volunteerInfo.name = this.report.volunteerName;
+            // Fetch volunteer name from API
+            try {
+              const volunteerName = await api.getVolunteerName(reportId);
+              this.volunteerInfo.name = volunteerName;
+            } catch (nameError) {
+              console.warn("Could not fetch volunteer name:", nameError);
+              // Fallback to report data if API fails
+              if (this.report.assignedVolunteerName) {
+                this.volunteerInfo.name = this.report.assignedVolunteerName;
+              } else if (this.report.volunteerName) {
+                this.volunteerInfo.name = this.report.volunteerName;
+              }
             }
-          } catch (emailError) {
-            console.warn("Could not fetch volunteer email:", emailError);
+            
+            // Fetch volunteer email
+            try {
+              const volunteerEmail = await api.getUserEmail(reportId);
+              this.volunteerInfo.email = volunteerEmail;
+            } catch (emailError) {
+              console.warn("Could not fetch volunteer email:", emailError);
+            }
+          } catch (error) {
+            console.warn("Error fetching volunteer info:", error);
           }
         }
       } catch (e) {
@@ -626,6 +673,159 @@ export default {
       const formattedDate = date.toLocaleString("en-US", options);
       return formattedDate;
     },
+    setupRealtimeListeners(reportId) {
+      // Listen to activeStatusSummary for checkpoint updates
+      const activeSummaryQuery = query(
+        collection(db, "activeStatusSummary"),
+        where("reportId", "==", reportId)
+      );
+      
+      this.unsubscribeActiveSummary = onSnapshot(
+        activeSummaryQuery,
+        (snapshot) => {
+          if (!snapshot.empty) {
+            const doc = snapshot.docs[0];
+            const data = doc.data();
+            
+            console.log("🔄 Real-time checkpoint update received:", data);
+            
+            // Update checkpoints
+            if (data.checkpoints) {
+              this.report.checkpoints = data.checkpoints;
+            }
+            
+            // Update volunteer assignment info (always update if present)
+            const volunteerIdChanged = 
+              (data.volunteerID !== undefined && data.volunteerID !== this.report.assignedVolunteerID) ||
+              (data.uid !== undefined && data.uid !== this.report.uid) ||
+              (data.volunteerId !== undefined && data.volunteerId !== this.report.volunteerId);
+            
+            if (data.volunteerID !== undefined) {
+              this.report.assignedVolunteerID = data.volunteerID;
+            }
+            if (data.uid !== undefined) {
+              this.report.uid = data.uid;
+            }
+            if (data.volunteerId !== undefined) {
+              this.report.volunteerId = data.volunteerId;
+            }
+            
+            // If volunteer ID changed, fetch volunteer name
+            if (volunteerIdChanged && (data.volunteerID || data.uid || data.volunteerId)) {
+              const reportId = this.report.reportId;
+              if (reportId) {
+                api.getVolunteerName(reportId).then(name => {
+                  this.volunteerInfo.name = name;
+                }).catch(err => {
+                  console.warn("Could not fetch volunteer name in real-time update:", err);
+                });
+              }
+            }
+            
+            // Update other useful fields
+            if (data.timeAccepted !== undefined) {
+              this.report.timeAccepted = data.timeAccepted;
+            }
+            if (data.volunteerETA !== undefined) {
+              // Handle Firestore Timestamp conversion
+              if (data.volunteerETA && typeof data.volunteerETA.toDate === 'function') {
+                this.report.volunteerETA = data.volunteerETA.toDate().toISOString();
+              } else {
+                this.report.volunteerETA = data.volunteerETA;
+              }
+            }
+            if (data.estimatedDurationMinutes !== undefined) {
+              this.report.estimatedDurationMinutes = data.estimatedDurationMinutes;
+            }
+          }
+        },
+        (error) => {
+          console.error("Error listening to activeStatusSummary:", error);
+        }
+      );
+      
+      // Listen to incidentReports for status updates
+      const incidentReportQuery = query(
+        collection(db, "incidentReports"),
+        where("reportId", "==", reportId)
+      );
+      
+      this.unsubscribeIncidentReport = onSnapshot(
+        incidentReportQuery,
+        (snapshot) => {
+          if (!snapshot.empty) {
+            const doc = snapshot.docs[0];
+            const data = doc.data();
+            
+            console.log("🔄 Real-time status update received:", data);
+            
+            // Update report status and other fields
+            if (data.status !== undefined) {
+              this.report.status = data.status;
+            }
+            if (data.updatedAt !== undefined) {
+              this.report.updatedAt = data.updatedAt;
+            }
+            
+            // Check if volunteer ID changed
+            const volunteerIdChanged = 
+              (data.assignedVolunteerID !== undefined && data.assignedVolunteerID !== this.report.assignedVolunteerID) ||
+              (data.uid !== undefined && data.uid !== this.report.uid) ||
+              (data.volunteerId !== undefined && data.volunteerId !== this.report.volunteerId);
+            
+            if (data.assignedVolunteerID !== undefined) {
+              this.report.assignedVolunteerID = data.assignedVolunteerID;
+            }
+            if (data.uid !== undefined) {
+              this.report.uid = data.uid;
+            }
+            if (data.volunteerId !== undefined) {
+              this.report.volunteerId = data.volunteerId;
+            }
+            
+            // If volunteer ID changed, fetch volunteer name
+            if (volunteerIdChanged && (data.assignedVolunteerID || data.uid || data.volunteerId)) {
+              const reportId = this.report.reportId;
+              if (reportId) {
+                api.getVolunteerName(reportId).then(name => {
+                  this.volunteerInfo.name = name;
+                }).catch(err => {
+                  console.warn("Could not fetch volunteer name in real-time update:", err);
+                });
+              }
+            }
+            
+            // Fallback to report data if available
+            if (data.assignedVolunteerName !== undefined) {
+              this.report.assignedVolunteerName = data.assignedVolunteerName;
+              if (!this.volunteerInfo.name) {
+                this.volunteerInfo.name = data.assignedVolunteerName;
+              }
+            }
+            if (data.volunteerName !== undefined) {
+              this.report.volunteerName = data.volunteerName;
+              if (!this.volunteerInfo.name) {
+                this.volunteerInfo.name = data.volunteerName;
+              }
+            }
+            
+            // Update ETA-related fields
+            if (data.timeAccepted !== undefined) {
+              this.report.timeAccepted = data.timeAccepted;
+            }
+            if (data.volunteerETA !== undefined) {
+              this.report.volunteerETA = data.volunteerETA;
+            }
+            if (data.estimatedDurationMinutes !== undefined) {
+              this.report.estimatedDurationMinutes = data.estimatedDurationMinutes;
+            }
+          }
+        },
+        (error) => {
+          console.error("Error listening to incidentReports:", error);
+        }
+      );
+    },
   },
   async mounted() {
     // Get current user and role
@@ -645,11 +845,24 @@ export default {
     await this.fetchReport(reportId);
     this.isLoading = false;
     window.addEventListener("scroll", this.handleScroll);
+    
+    // Set up real-time listeners for checkpoint and status updates
+    this.setupRealtimeListeners(reportId);
   },
   beforeUnmount() {
     window.removeEventListener("scroll", this.handleScroll);
     // Restore body scroll in case component unmounts with modal open
     document.body.style.overflow = "";
+    
+    // Clean up Firestore listeners
+    if (this.unsubscribeActiveSummary) {
+      this.unsubscribeActiveSummary();
+      this.unsubscribeActiveSummary = null;
+    }
+    if (this.unsubscribeIncidentReport) {
+      this.unsubscribeIncidentReport();
+      this.unsubscribeIncidentReport = null;
+    }
   },
 };
 </script>
