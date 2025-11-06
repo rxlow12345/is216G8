@@ -312,8 +312,11 @@ npm run preview
 3. Run `node dev-useOnly-create-accounts.js` to create accounts
 
 #### Manual Testing
-
-Perform the following checks before submission:
+Working with these dimensions:
+Mobile M - width: 375px
+Tablet  - width: 768px
+Laptop - width: 1024px
+Laptop L - width: 1440px
 
 | Area            | Test Description               | Expected Outcome                       |
 | :-------------- | :----------------------------- | :------------------------------------- |
