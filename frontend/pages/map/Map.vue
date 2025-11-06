@@ -33,12 +33,11 @@
       >
         <span class="sheet-grabber"></span>
       </div>
-      <!-- Header -->
-      <div class="header">
-        <p class="subtitle">{{ getCount() }} Pending Reports</p>
-
-        <!-- Connection Status -->
-        <div class="connection-status">
+      <!-- Reports Banner -->
+      <div class="reports-banner">
+        <h1 class="reports-banner-title">🌿 Accept Reports</h1>
+        <p class="reports-banner-subtitle">{{ getCount() }} pending reports</p>
+        <div class="reports-banner-status">
           <span class="status-dot" :class="{ active: isConnected }"></span>
           <span>{{ isConnected ? "Online" : "Offline" }}</span>
           <span v-if="activeUsers > 0">({{ activeUsers }} Active)</span>
@@ -162,6 +161,7 @@ export default {
       dragCurrentY: 0,
       drawerHeight: 0, // Dynamic height during drag
       drawerStartHeight: 0,
+      _pendingNavigation: null, // Store pending navigation after accept
     };
   },
   computed: {
@@ -183,7 +183,7 @@ export default {
         };
       }
       
-      // Normal state
+      // Normal state - controlled by CSS and expanded class
       return {
         height: this.isSheetExpanded ? '70vh' : '180px',
         transform: 'translateY(0)',
@@ -679,9 +679,13 @@ export default {
           },
         });
 
-        // Close modal and redirect to Active Reports with case pre-open
-        this.handleModalClose();
-        this.$router.push({ path: '/volunteer/active', query: { caseId: reportIdtoUpload } });
+        // Don't close modal yet - let it show success state
+        // The modal will handle navigation when user clicks the link
+        // If user closes without clicking, we'll handle navigation on close
+        this._pendingNavigation = {
+          path: '/volunteer/active',
+          query: { caseId: reportIdtoUpload }
+        };
       } catch (error) {
         console.error("Error accepting case:", error);
         this.showNotification(
@@ -694,11 +698,26 @@ export default {
 
     handleModalClose() {
       this.showModal = false;
+      // If there's pending navigation and user didn't click the link, navigate now
+      if (this._pendingNavigation) {
+        this.$router.push(this._pendingNavigation);
+        this._pendingNavigation = null;
+      }
       this.selectedReportId = null;
       this.selectedDocId = null;
       this.selectReportCoordinates = { lat: null, lng: null };
       this.selectedLocation = "";
       console.log("Modal closed - report deselected");
+    },
+    
+    handleOpenRescueStages(reportId) {
+      // Navigate to Active Reports with caseId to open the modal
+      this.$router.push({ 
+        path: '/volunteer/active', 
+        query: { caseId: reportId || this.selectedReportId } 
+      });
+      // Clear pending navigation since we're navigating now
+      this._pendingNavigation = null;
     },
 
     async updateReportStatus(docIdtoUpdate) {

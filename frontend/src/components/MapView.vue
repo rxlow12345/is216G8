@@ -77,6 +77,14 @@ export default {
     
     // Handle window resize to ensure map stays interactive
     window.addEventListener('resize', this.handleResize)
+    
+    // Ensure markers are created after map is ready
+    this.$nextTick(() => {
+      if (this.map && this.reports && this.reports.length > 0 && this.markers.length === 0) {
+        console.debug('Mount check: creating markers if missing')
+        this.updateMarkers()
+      }
+    })
   },
   watch: {
     reports: {
@@ -95,7 +103,7 @@ export default {
           return
         }
         
-        // If no new reports, don't update
+        // If no new reports, clear markers but don't prevent display
         if (!newReports || newReports.length === 0) {
           console.debug('No new reports, clearing markers')
           if (this.map) {
@@ -119,11 +127,25 @@ export default {
           newIds: newIds.size,
           oldIds: oldIds.size,
           idsChanged,
-          isInitialLoad: this._isInitialLoad
+          isInitialLoad: this._isInitialLoad,
+          markersCount: this.markers.length
         })
         
-        if (idsChanged || this._isInitialLoad) {
-          console.debug('Updating markers due to ID changes or initial load')
+        // Always update if IDs changed OR if we have no markers but have reports
+        // Also update if markers array is empty but we have reports (safety check)
+        const shouldUpdate = idsChanged || 
+                            this._isInitialLoad || 
+                            (this.markers.length === 0 && newReports.length > 0) ||
+                            (!this.map || this.markers.some(m => !this.map.hasLayer(m)))
+        
+        if (shouldUpdate) {
+          console.debug('Updating markers due to:', {
+            idsChanged,
+            isInitialLoad: this._isInitialLoad,
+            noMarkers: this.markers.length === 0,
+            hasReports: newReports.length > 0,
+            markersNotOnMap: this.map && this.markers.some(m => !this.map.hasLayer(m))
+          })
           this.updateMarkers()
         }
         // If only properties changed and user is dragging, skip update to avoid resetting map position
@@ -136,7 +158,7 @@ export default {
         }
       },
       deep: true,
-      immediate: false, // Don't run on mount, let mounted() handle initial load
+      immediate: false, // Let initMap handle initial load, watch handles updates
     },
   },
   beforeUnmount() {
@@ -224,8 +246,13 @@ export default {
         
         if (this.mapReadyResolve) this.mapReadyResolve()
 
-        // Add markers for existing reports 
-        this.updateMarkers()
+        // Add markers for existing reports after a short delay to ensure map is fully ready
+        this.$nextTick(() => {
+          if (this.map && this.reports && this.reports.length > 0) {
+            console.debug('Initial marker creation from initMap')
+            this.updateMarkers()
+          }
+        })
 
         // Keep popups anchored during zoom by closing then reopening
         this.map.on('zoomstart', () => {
@@ -397,6 +424,18 @@ export default {
       })
 
       console.debug(`Markers: ${created} created, ${skipped} skipped, total: ${this.markers.length}`)
+      
+      // Verify markers are actually on the map
+      const markersOnMap = this.markers.filter(m => this.map.hasLayer(m)).length
+      if (markersOnMap !== this.markers.length) {
+        console.warn(`Some markers not on map: ${this.markers.length} total, ${markersOnMap} on map`)
+        // Re-add missing markers
+        this.markers.forEach(marker => {
+          if (!this.map.hasLayer(marker)) {
+            marker.addTo(this.map)
+          }
+        })
+      }
 
       // Only auto-fit bounds on the very first load, never again after that
       // This prevents the map from snapping back to original position after user drags
