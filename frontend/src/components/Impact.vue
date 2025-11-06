@@ -88,7 +88,7 @@
         <!-- /Right -->
 
         <!-- Stories accordion -->
-        <div class="row mt-4">
+        <div class="row mt-6">
           <div class="col-12">
             <div class="accordion shadow-sm rounded-4 overflow-hidden" id="impactStories">
               <div class="accordion-item" v-for="(s, i) in stories" :key="s.id">
@@ -302,8 +302,8 @@ h2 {
 
 /* Accordion appearance */
 .accordion-item {
+  margin-top: 12px;
   border: none;
-  margin-bottom: 12px;
   border-radius: 16px;
   overflow: hidden;
   transition: all 0.3s ease;

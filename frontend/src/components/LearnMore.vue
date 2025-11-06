@@ -1,6 +1,7 @@
 <template>
     <FloatingBackground/>
     <OtterCursor animal="🦦" :speed="0.08" />
+    <BackToTop/>
     <div class="bannerTitles">
         <header class="text-center mb-2">
             <h1>📝 Resources 📝</h1>
@@ -164,6 +165,7 @@ import FloatingBackground from './FloatingBackground.vue';
 import facebookIcon from '../public/assets/facebook.png';
 import instagramIcon from '../public/assets/instagram.png';
 import twitterIcon from '../public/assets/twitter.png';
+import BackToTop from './BackToTop.vue';
 
 
 const faqs = ref([
@@ -241,20 +243,41 @@ const latestNews = ref([
     background: #064301;
     /* fallback */
 }
+/* Accordion appearance */
+.accordion-item {
+  border: none;
+  margin-top: 12px;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
 
 .accordion-button {
-    font-weight: 600;
-    background-color: #f8f9fa;
+  background-color: #f0f4ec;
+  color: #285436;
+  font-weight: 600;
+  font-size: 18px;
+  padding: 15px 20px;
+  border: none;
+  box-shadow: none;
+  transition: all 0.3s ease;
 }
 
 .accordion-button:not(.collapsed) {
-    background-color: #d4edda;
-    color: #155724;
+  background-color: #285436;
+  color: #fff;
+  box-shadow: inset 0 -2px 6px rgba(0, 0, 0, 0.15);
 }
 
-.accordion-button:focus {
-    box-shadow: none;
-    border-color: #5a7c5e;
+.accordion-button::after {
+  filter: brightness(0.5);
+}
+
+.accordion-body {
+  background-color: #fff;
+  border-top: 1px solid #e0e4d9;
+  padding: 20px;
+  line-height: 1.6;
 }
 
 .card {
