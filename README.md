@@ -702,13 +702,13 @@ Each member should contribute 2–3 sentences on their learning and project expe
 ## Use of AI/LLMS 
 | Tasks                                                  |Yes/No   |Description
 | :------------------------------------------------------| :-------| :--------------------------------------------------------------------------|
-|Information Search|Yes|-|
-|Generating Website concepts, layouts, or themes|Yes|-|
-|Exploring UI/UX design inspiration|Yes|-|
-|Explaining coding errors / debugging hints|Yes|-|
-|Boilerplate code generation (starter code, small code snippets)|Yes|-|
-|Generating unit tests, sample inputs, or mock data|Yes|For guidebook data, as there were little reliable API to use|
-|Core Implementation tasks|No|-|
-|Major business logic, backend endpoints, or critical frontend interactivity|No|Only for debugging hints|
-Solving significant implementation issues|No|Only for debugging hints|
+|Information Search|Yes|Used to gather information on problems faced by our target group and gain inspiration from other websites|
+|Generating Website concepts, layouts, or themes|Yes|Search for possible themes and colour palettes that use for our website|
+|Exploring UI/UX design inspiration|Yes|Gain inspiration on how we can make our UI/UX better and more intuitive for our users|
+|Explaining coding errors / debugging hints|Yes|Since our codes were long, some bugs were overly tedious and difficult to identify manually.|
+|Boilerplate code generation (starter code, small code snippets)|Yes|When we needed to code what was taught outside of class and it was too difficult, AI was used to help generate boilerplate codes to help us achieve what we wanted / give us a starting point|
+|Generating unit tests, sample inputs, or mock data|Yes|For test data in map. Also for guidebook information as there were very little reliable API to use|
+|Core Implementation tasks|No|We only used AI/LLMs to help us clarify concepts when we are stuck, but actual coding, structuring and logic were all manually implemented by us.|
+|Major business logic, backend endpoints, or critical frontend interactivity|Yes|AI/LLMs were used for debugging purposes. It did not implement the business logic, endpoints or interactivity, final implementation was still done by us|
+Solving significant implementation issues|Yes|We used AI/LLMs only to point out possible reasons or suggest other methods to diagnose the issue when faced with major issues.|
 
