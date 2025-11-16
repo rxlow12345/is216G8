@@ -698,8 +698,17 @@ Each member should contribute 2–3 sentences on their learning and project expe
 
 > - Rui Xuan: I thought it was difficult since I was learning an entirely new language and have to use that knowledge to build the app, however, I thought it was a good learning experience and this helped me build my fundamentals for the module. Ensuring everyone could code without merge conflicts was definitely a pain, but it was worthwhile seeing everyone come together and helping each other solve their bugs. We did have miscommunications here and there, but we sat down with each other and fought it out, eventually coming to a conclusion.
 
-As a team, reflect on:
 
-- Key takeaways from working with real-world frameworks
-- Challenges faced and how they were resolved
-- Insights on teamwork, project management, and problem-solving
+## Use of AI/LLMS 
+| Tasks                                                  |Yes/No   |Description
+| :------------------------------------------------------| :-------| :--------------------------------------------------------------------------|
+|Information Search|Yes|-|
+|Generating Website concepts, layouts, or themes|Yes|-|
+|Exploring UI/UX design inspiration|Yes|-|
+|Explaining coding errors / debugging hints|Yes|-|
+|Boilerplate code generation (starter code, small code snippets)|Yes|-|
+|Generating unit tests, sample inputs, or mock data|Yes|For guidebook data, as there were little reliable API to use|
+|Core Implementation tasks|No|-|
+|Major business logic, backend endpoints, or critical frontend interactivity|No|Only for debugging hints|
+Solving significant implementation issues|No|Only for debugging hints|
+
